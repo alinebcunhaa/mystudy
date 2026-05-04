@@ -7,313 +7,168 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --lavender:       #c4b5d4;
-    --lavender-light: #ede8f5;
-    --lavender-soft:  #f5f1fb;
-    --olive:          #a8b89a;
-    --olive-light:    #e8edd5;
-    --rose:           #d4a5a5;
-    --rose-light:     #f5e8e8;
-    --cream:          #faf8f4;
-    --clinica:        #e8935a;
-    --clinica-bg:     #fdf3ea;
-    --cirurgia:       #6a9e60;
-    --cirurgia-bg:    #eaf3e8;
-    --preventiva:     #4a7fa0;
-    --preventiva-bg:  #e5f0f8;
-    --gineco:         #c26b80;
-    --gineco-bg:      #faeaee;
-    --pediatria:      #7a5fa0;
-    --pediatria-bg:   #f0eaf8;
-    --psa:            #c4b5d4;
-    --psa-bg:         #f5f1fb;
-    --pos:            #a8b89a;
-    --pos-bg:         #e8edd5;
-    --geral:          #b0a898;
-    --geral-bg:       #f5f3f0;
-    --text-dark:      #2d2d35;
-    --text-mid:       #5a5a68;
-    --text-light:     #9a9aaa;
-    --border:         rgba(196,181,212,0.3);
+    --lavender:#c4b5d4; --lavender-light:#ede8f5; --lavender-soft:#f5f1fb;
+    --olive:#a8b89a; --olive-light:#e8edd5;
+    --rose:#d4a5a5; --rose-light:#f5e8e8;
+    --cream:#faf8f4;
+    --clinica:#e8935a; --clinica-bg:#fdf3ea;
+    --cirurgia:#6a9e60; --cirurgia-bg:#eaf3e8;
+    --preventiva:#4a7fa0; --preventiva-bg:#e5f0f8;
+    --gineco:#c26b80; --gineco-bg:#faeaee;
+    --pediatria:#7a5fa0; --pediatria-bg:#f0eaf8;
+    --psa:#c4b5d4; --psa-bg:#f5f1fb;
+    --pos:#a8b89a; --pos-bg:#e8edd5;
+    --geral:#b0a898; --geral-bg:#f5f3f0;
+    --text-dark:#2d2d35; --text-mid:#5a5a68; --text-light:#9a9aaa;
+    --border:rgba(196,181,212,0.3);
   }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text-dark);min-height:100vh;}
 
-  * { margin:0; padding:0; box-sizing:border-box; }
-  html { scroll-behavior: smooth; }
+  nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(255,255,255,0.88);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 48px;height:60px;display:flex;align-items:center;justify-content:space-between;}
+  .nav-logo{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;color:var(--text-dark);}
+  .nav-logo span{color:var(--lavender);font-style:italic;}
+  .nav-links{display:flex;align-items:center;gap:6px;}
+  .nav-link{font-size:13px;color:var(--text-mid);padding:6px 14px;border-radius:50px;cursor:pointer;border:none;background:none;font-family:'DM Sans',sans-serif;transition:background 0.15s,color 0.15s;}
+  .nav-link:hover{background:var(--lavender-light);color:var(--text-dark);}
+  .nav-link.active{background:var(--lavender-light);color:var(--text-dark);font-weight:500;}
 
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--cream);
-    color: var(--text-dark);
-    min-height: 100vh;
-  }
+  #home{min-height:100vh;padding-top:60px;display:flex;flex-direction:column;}
+  .hero{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:60px 40px 40px;position:relative;overflow:hidden;}
+  .hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 700px 500px at 20% 30%,rgba(196,181,212,0.2) 0%,transparent 65%),radial-gradient(ellipse 500px 400px at 80% 70%,rgba(168,184,154,0.15) 0%,transparent 60%),radial-gradient(ellipse 400px 300px at 60% 10%,rgba(212,165,165,0.12) 0%,transparent 55%);pointer-events:none;}
+  .datetime-pill{display:inline-flex;align-items:center;gap:8px;background:white;border:1px solid var(--border);border-radius:50px;padding:8px 20px;font-size:13px;color:var(--text-mid);margin-bottom:32px;position:relative;z-index:1;animation:fadeUp 0.5s ease both;}
+  .datetime-dot{width:7px;height:7px;border-radius:50%;background:var(--olive);animation:pulse 2s ease-in-out infinite;}
+  @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.6;transform:scale(0.85);}}
+  .hero-title{font-family:'Cormorant Garamond',serif;font-size:clamp(42px,6vw,72px);font-weight:300;line-height:1.1;color:var(--text-dark);margin-bottom:20px;position:relative;z-index:1;animation:fadeUp 0.5s ease 0.1s both;}
+  .hero-title em{font-style:italic;color:var(--lavender);}
+  .hero-sub{font-size:15px;color:var(--text-light);max-width:440px;line-height:1.7;margin-bottom:40px;position:relative;z-index:1;animation:fadeUp 0.5s ease 0.2s both;}
+  .hero-cta{display:inline-flex;align-items:center;gap:8px;background:var(--text-dark);color:white;padding:12px 28px;border-radius:50px;font-size:13px;font-family:'DM Sans',sans-serif;border:none;cursor:pointer;transition:transform 0.2s,opacity 0.2s;position:relative;z-index:1;animation:fadeUp 0.5s ease 0.3s both;}
+  .hero-cta:hover{transform:translateY(-2px);opacity:0.88;}
 
-  /* NAV */
-  nav {
-    position: fixed; top:0; left:0; right:0; z-index:100;
-    background: rgba(255,255,255,0.88);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--border);
-    padding: 0 48px; height: 60px;
-    display: flex; align-items: center; justify-content: space-between;
-  }
+  .quick-access{padding:0 48px 60px;position:relative;z-index:1;animation:fadeUp 0.5s ease 0.35s both;}
+  .quick-label{font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var(--text-light);text-align:center;margin-bottom:20px;}
+  .subjects-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+  .subject-chip{display:flex;align-items:center;gap:8px;padding:10px 20px;border-radius:50px;border:1.5px solid transparent;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;transition:transform 0.2s cubic-bezier(.34,1.56,.64,1),box-shadow 0.2s;background:none;}
+  .subject-chip:hover{transform:translateY(-3px);box-shadow:0 8px 20px rgba(0,0,0,0.1);}
+  .chip-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
 
-  .nav-logo {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 20px; font-weight: 600; color: var(--text-dark);
-  }
-  .nav-logo span { color: var(--lavender); font-style: italic; }
+  .section-divider{display:flex;align-items:center;gap:16px;padding:0 48px;margin-bottom:32px;}
+  .section-divider::before,.section-divider::after{content:'';flex:1;height:1px;background:var(--border);}
+  .divider-label{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:400;color:var(--text-dark);white-space:nowrap;}
+  .divider-label span{font-style:italic;color:var(--lavender);}
 
-  .nav-links { display:flex; align-items:center; gap:6px; }
+  #library{padding:0 48px 60px;}
+  .filter-bar{display:flex;align-items:center;gap:8px;margin-bottom:24px;flex-wrap:wrap;}
+  .filter-btn{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:50px;border:1px solid var(--border);background:white;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--text-mid);cursor:pointer;transition:all 0.15s;}
+  .filter-btn:hover{background:var(--lavender-soft);}
+  .filter-btn.active{background:var(--lavender-light);border-color:var(--lavender);color:var(--text-dark);font-weight:500;}
+  .filter-dot{width:7px;height:7px;border-radius:50%;}
+  .filter-spacer{flex:1;}
+  .search-box{display:flex;align-items:center;gap:8px;background:white;border:1px solid var(--border);border-radius:50px;padding:7px 16px;}
+  .search-box input{border:none;background:none;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text-dark);outline:none;width:180px;}
+  .search-box input::placeholder{color:var(--text-light);}
 
-  .nav-link {
-    font-size: 13px; color: var(--text-mid);
-    padding: 6px 14px; border-radius: 50px;
-    cursor: pointer; border: none; background: none;
-    font-family: 'DM Sans', sans-serif;
-    transition: background 0.15s, color 0.15s;
-  }
-  .nav-link:hover { background: var(--lavender-light); color: var(--text-dark); }
-  .nav-link.active { background: var(--lavender-light); color: var(--text-dark); font-weight: 500; }
+  .cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;}
+  .file-card{background:white;border:1px solid var(--border);border-radius:16px;overflow:hidden;cursor:pointer;transition:transform 0.22s cubic-bezier(.34,1.56,.64,1),box-shadow 0.22s;animation:fadeUp 0.35s ease both;}
+  .file-card:hover{transform:translateY(-4px);box-shadow:0 12px 28px rgba(0,0,0,0.08);}
+  .card-color-bar{height:4px;}
+  .card-body{padding:18px;}
+  .card-category{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-light);margin-bottom:8px;}
+  .card-name{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:var(--text-dark);margin-bottom:6px;line-height:1.2;}
+  .card-desc{font-size:11px;color:var(--text-mid);line-height:1.5;margin-bottom:14px;}
+  .card-footer{display:flex;align-items:center;justify-content:space-between;}
+  .card-open-btn{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--text-light);padding:5px 12px;border-radius:8px;border:1px solid var(--border);background:var(--cream);cursor:pointer;font-family:'DM Sans',sans-serif;transition:background 0.15s,color 0.15s;}
+  .card-open-btn:hover{background:var(--lavender-light);color:var(--text-dark);}
+  .card-badge{font-size:10px;padding:3px 8px;border-radius:20px;font-weight:500;}
+  .badge-local{background:var(--lavender-light);color:var(--lavender);}
+  .badge-lovable{background:var(--olive-light);color:var(--olive);}
+  .library-meta{margin-bottom:20px;}
+  .total-count{font-size:12px;color:var(--text-light);}
+  .total-count strong{color:var(--text-mid);}
 
-  /* HERO */
-  #home { min-height: 100vh; padding-top: 60px; display: flex; flex-direction: column; }
+  /* MAPAS */
+  #mapas{padding:0 48px 80px;}
+  .mapas-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;}
+  .mapas-title-block{}
+  .mapas-main-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:400;color:var(--text-dark);}
+  .mapas-main-title span{font-style:italic;color:var(--rose);}
+  .mapas-count{font-size:12px;color:var(--text-light);margin-top:4px;}
+  .mapas-count strong{color:var(--text-mid);}
+  .mapas-actions{display:flex;gap:8px;flex-wrap:wrap;}
+  .btn-add-mapa{display:flex;align-items:center;gap:6px;background:var(--rose-light);border:1.5px solid var(--rose);color:var(--gineco);padding:8px 16px;border-radius:50px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;transition:background 0.2s,transform 0.15s;}
+  .btn-add-mapa:hover{background:var(--rose);color:white;transform:scale(1.02);}
+  .btn-action{display:flex;align-items:center;gap:6px;background:white;border:1px solid var(--border);color:var(--text-mid);padding:8px 14px;border-radius:50px;font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;transition:background 0.2s;}
+  .btn-action:hover{background:var(--olive-light);color:var(--text-dark);}
 
-  .hero {
-    flex: 1; display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    text-align: center; padding: 60px 40px 40px;
-    position: relative; overflow: hidden;
-  }
+  .mapas-filter-bar{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;align-items:center;}
+  .mapas-search{display:flex;align-items:center;gap:8px;background:white;border:1px solid var(--border);border-radius:50px;padding:7px 16px;flex:1;max-width:320px;}
+  .mapas-search input{border:none;background:none;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text-dark);outline:none;width:100%;}
+  .mapas-search input::placeholder{color:var(--text-light);}
+  .area-filter,.subarea-filter{padding:7px 14px;border-radius:50px;border:1px solid var(--border);background:white;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--text-mid);outline:none;cursor:pointer;}
 
-  .hero::before {
-    content: ''; position: absolute; inset: 0;
-    background:
-      radial-gradient(ellipse 700px 500px at 20% 30%, rgba(196,181,212,0.2) 0%, transparent 65%),
-      radial-gradient(ellipse 500px 400px at 80% 70%, rgba(168,184,154,0.15) 0%, transparent 60%),
-      radial-gradient(ellipse 400px 300px at 60% 10%, rgba(212,165,165,0.12) 0%, transparent 55%);
-    pointer-events: none;
-  }
+  /* MAPAS GROUP */
+  .mapas-group{margin-bottom:28px;}
+  .mapas-group-title{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+  .mapas-group-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+  .mapas-group-name{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:var(--text-dark);}
+  .mapas-group-count{font-size:11px;color:var(--text-light);background:var(--lavender-light);padding:2px 10px;border-radius:20px;}
 
-  .datetime-pill {
-    display: inline-flex; align-items: center; gap: 8px;
-    background: white; border: 1px solid var(--border);
-    border-radius: 50px; padding: 8px 20px;
-    font-size: 13px; color: var(--text-mid);
-    margin-bottom: 32px; position: relative; z-index: 1;
-    animation: fadeUp 0.5s ease both;
-  }
+  .mapas-list{display:flex;flex-direction:column;gap:8px;}
+  .mapa-item{background:white;border:1px solid var(--border);border-radius:12px;padding:14px 18px;display:flex;align-items:center;gap:14px;animation:fadeUp 0.3s ease both;transition:box-shadow 0.2s;}
+  .mapa-item:hover{box-shadow:0 4px 16px rgba(196,181,212,0.2);}
+  .mapa-item.personal{border-left:3px solid var(--lavender);}
+  .mapa-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+  .mapa-info{flex:1;min-width:0;}
+  .mapa-nome{font-size:14px;font-weight:500;color:var(--text-dark);margin-bottom:3px;line-height:1.3;}
+  .mapa-meta{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+  .mapa-subarea{font-size:11px;color:var(--text-light);}
+  .mapa-nota{font-size:11px;color:var(--text-mid);margin-top:4px;font-style:italic;}
+  .mapa-personal-badge{font-size:10px;background:var(--lavender-light);color:var(--lavender);padding:2px 8px;border-radius:20px;}
+  .mapa-actions{display:flex;gap:4px;flex-shrink:0;}
+  .mapa-btn{width:28px;height:28px;border-radius:8px;border:1px solid var(--border);background:var(--cream);display:flex;align-items:center;justify-content:center;font-size:12px;cursor:pointer;transition:background 0.15s;}
+  .mapa-btn:hover{background:var(--lavender-light);}
+  .mapa-btn.del:hover{background:var(--rose-light);}
 
-  .datetime-dot {
-    width: 7px; height: 7px; border-radius: 50%;
-    background: var(--olive);
-    animation: pulse 2s ease-in-out infinite;
-  }
+  .mapas-empty{text-align:center;padding:48px;color:var(--text-light);font-family:'Cormorant Garamond',serif;font-size:20px;}
 
-  @keyframes pulse {
-    0%,100% { opacity:1; transform:scale(1); }
-    50% { opacity:0.6; transform:scale(0.85); }
-  }
+  /* MODAL */
+  .overlay{display:none;position:fixed;inset:0;background:rgba(45,45,53,0.45);backdrop-filter:blur(6px);z-index:200;align-items:center;justify-content:center;}
+  .overlay.active{display:flex;}
+  .modal{background:white;border-radius:24px;padding:36px;width:480px;max-width:95vw;animation:modalIn 0.3s cubic-bezier(.34,1.56,.64,1);position:relative;max-height:90vh;overflow-y:auto;}
+  @keyframes modalIn{from{transform:scale(0.88) translateY(20px);opacity:0;}to{transform:scale(1) translateY(0);opacity:1;}}
+  .modal-close{position:absolute;top:18px;right:18px;width:30px;height:30px;border-radius:50%;border:none;background:var(--lavender-light);color:var(--text-mid);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:background 0.2s;}
+  .modal-close:hover{background:var(--lavender);color:white;}
+  .modal-title{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:600;color:var(--text-dark);margin-bottom:6px;}
+  .modal-sub{font-size:13px;color:var(--text-light);margin-bottom:24px;}
+  .form-group{margin-bottom:16px;}
+  .form-label{display:block;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-mid);margin-bottom:6px;}
+  .form-input,.form-select,.form-textarea{width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text-dark);background:var(--cream);outline:none;transition:border-color 0.2s;}
+  .form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--lavender);background:white;}
+  .form-textarea{resize:vertical;min-height:80px;}
+  .modal-actions{display:flex;gap:10px;margin-top:24px;}
+  .btn-primary{flex:1;padding:11px;background:var(--lavender);color:white;border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;transition:opacity 0.2s,transform 0.15s;}
+  .btn-primary:hover{opacity:0.88;transform:scale(1.02);}
+  .btn-secondary{padding:11px 20px;background:var(--cream);color:var(--text-mid);border:1px solid var(--border);border-radius:12px;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;transition:background 0.2s;}
+  .btn-secondary:hover{background:var(--lavender-light);}
 
-  .hero-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(42px, 6vw, 72px);
-    font-weight: 300; line-height: 1.1;
-    color: var(--text-dark); margin-bottom: 20px;
-    position: relative; z-index: 1;
-    animation: fadeUp 0.5s ease 0.1s both;
-  }
-  .hero-title em { font-style: italic; color: var(--lavender); }
+  .empty-state{grid-column:1/-1;display:flex;flex-direction:column;align-items:center;padding:60px 0;text-align:center;gap:10px;}
+  .empty-icon{font-size:40px;opacity:0.3;}
+  .empty-title{font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--text-mid);}
 
-  .hero-sub {
-    font-size: 15px; color: var(--text-light);
-    max-width: 440px; line-height: 1.7; margin-bottom: 40px;
-    position: relative; z-index: 1;
-    animation: fadeUp 0.5s ease 0.2s both;
-  }
+  @keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+  ::-webkit-scrollbar{width:4px;}
+  ::-webkit-scrollbar-track{background:transparent;}
+  ::-webkit-scrollbar-thumb{background:var(--lavender);border-radius:10px;}
+  .toast{position:fixed;bottom:24px;right:24px;background:var(--text-dark);color:white;padding:12px 20px;border-radius:12px;font-size:13px;z-index:300;transform:translateY(80px);opacity:0;transition:all 0.3s cubic-bezier(.34,1.56,.64,1);}
+  .toast.show{transform:translateY(0);opacity:1;}
 
-  .hero-cta {
-    display: inline-flex; align-items: center; gap: 8px;
-    background: var(--text-dark); color: white;
-    padding: 12px 28px; border-radius: 50px;
-    font-size: 13px; font-family: 'DM Sans', sans-serif;
-    border: none; cursor: pointer;
-    transition: transform 0.2s, opacity 0.2s;
-    position: relative; z-index: 1;
-    animation: fadeUp 0.5s ease 0.3s both;
-  }
-  .hero-cta:hover { transform: translateY(-2px); opacity: 0.88; }
-
-  /* QUICK ACCESS */
-  .quick-access {
-    padding: 0 48px 60px;
-    position: relative; z-index: 1;
-    animation: fadeUp 0.5s ease 0.35s both;
-  }
-
-  .quick-label {
-    font-size: 11px; letter-spacing: 0.15em;
-    text-transform: uppercase; color: var(--text-light);
-    text-align: center; margin-bottom: 20px;
-  }
-
-  .subjects-row {
-    display: flex; gap: 12px;
-    justify-content: center; flex-wrap: wrap;
-  }
-
-  .subject-chip {
-    display: flex; align-items: center; gap: 8px;
-    padding: 10px 20px; border-radius: 50px;
-    border: 1.5px solid transparent; cursor: pointer;
-    font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500;
-    transition: transform 0.2s cubic-bezier(.34,1.56,.64,1), box-shadow 0.2s;
-    background: none;
-  }
-  .subject-chip:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
-  .chip-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-
-  /* DIVIDER */
-  .section-divider {
-    display: flex; align-items: center; gap: 16px;
-    padding: 0 48px; margin-bottom: 32px;
-  }
-  .section-divider::before, .section-divider::after {
-    content: ''; flex: 1; height: 1px; background: var(--border);
-  }
-  .divider-label {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 20px; font-weight: 400; color: var(--text-dark); white-space: nowrap;
-  }
-  .divider-label span { font-style: italic; color: var(--lavender); }
-
-  /* LIBRARY */
-  #library { padding: 0 48px 80px; }
-
-  .filter-bar {
-    display: flex; align-items: center; gap: 8px;
-    margin-bottom: 24px; flex-wrap: wrap;
-  }
-
-  .filter-btn {
-    display: flex; align-items: center; gap: 6px;
-    padding: 7px 14px; border-radius: 50px;
-    border: 1px solid var(--border); background: white;
-    font-family: 'DM Sans', sans-serif; font-size: 12px; color: var(--text-mid);
-    cursor: pointer; transition: all 0.15s;
-  }
-  .filter-btn:hover { background: var(--lavender-soft); }
-  .filter-btn.active { background: var(--lavender-light); border-color: var(--lavender); color: var(--text-dark); font-weight: 500; }
-  .filter-dot { width: 7px; height: 7px; border-radius: 50%; }
-  .filter-spacer { flex: 1; }
-
-  .search-box {
-    display: flex; align-items: center; gap: 8px;
-    background: white; border: 1px solid var(--border);
-    border-radius: 50px; padding: 7px 16px;
-  }
-  .search-box input {
-    border: none; background: none;
-    font-family: 'DM Sans', sans-serif; font-size: 13px;
-    color: var(--text-dark); outline: none; width: 180px;
-  }
-  .search-box input::placeholder { color: var(--text-light); }
-
-  /* CARDS */
-  .cards-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 16px;
-  }
-
-  .file-card {
-    background: white; border: 1px solid var(--border);
-    border-radius: 16px; overflow: hidden; cursor: pointer;
-    transition: transform 0.22s cubic-bezier(.34,1.56,.64,1), box-shadow 0.22s;
-    animation: fadeUp 0.35s ease both;
-  }
-  .file-card:hover { transform: translateY(-4px); box-shadow: 0 12px 28px rgba(0,0,0,0.08); }
-
-  .card-color-bar { height: 4px; }
-  .card-body { padding: 18px; }
-
-  .card-category {
-    font-size: 10px; letter-spacing: 0.12em;
-    text-transform: uppercase; color: var(--text-light); margin-bottom: 8px;
-  }
-
-  .card-name {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 18px; font-weight: 600; color: var(--text-dark);
-    margin-bottom: 6px; line-height: 1.2;
-  }
-
-  .card-desc {
-    font-size: 11px; color: var(--text-mid);
-    line-height: 1.5; margin-bottom: 14px;
-  }
-
-  .card-footer {
-    display: flex; align-items: center; justify-content: space-between;
-  }
-
-  .card-open-btn {
-    display: inline-flex; align-items: center; gap: 6px;
-    font-size: 11px; color: var(--text-light);
-    padding: 5px 12px; border-radius: 8px;
-    border: 1px solid var(--border); background: var(--cream);
-    cursor: pointer; font-family: 'DM Sans', sans-serif;
-    transition: background 0.15s, color 0.15s;
-  }
-  .card-open-btn:hover { background: var(--lavender-light); color: var(--text-dark); }
-
-  .card-badge {
-    font-size: 10px; padding: 3px 8px;
-    border-radius: 20px; font-weight: 500;
-  }
-  .badge-local { background: var(--lavender-light); color: var(--lavender); }
-  .badge-lovable { background: var(--olive-light); color: var(--olive); }
-
-  /* EMPTY */
-  .empty-state {
-    grid-column: 1/-1;
-    display: flex; flex-direction: column;
-    align-items: center; padding: 60px 0; text-align: center; gap: 10px;
-  }
-  .empty-icon { font-size: 40px; opacity: 0.3; }
-  .empty-title { font-family: 'Cormorant Garamond', serif; font-size: 22px; color: var(--text-mid); }
-  .empty-sub { font-size: 13px; color: var(--text-light); }
-
-  .library-meta { margin-bottom: 20px; }
-  .total-count { font-size: 12px; color: var(--text-light); }
-  .total-count strong { color: var(--text-mid); }
-
-  @keyframes fadeUp {
-    from { opacity:0; transform:translateY(14px); }
-    to   { opacity:1; transform:translateY(0); }
-  }
-
-  ::-webkit-scrollbar { width: 4px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: var(--lavender); border-radius: 10px; }
-
-  .toast {
-    position: fixed; bottom: 24px; right: 24px;
-    background: var(--text-dark); color: white;
-    padding: 12px 20px; border-radius: 12px;
-    font-size: 13px; z-index: 300;
-    transform: translateY(80px); opacity: 0;
-    transition: all 0.3s cubic-bezier(.34,1.56,.64,1);
-  }
-  .toast.show { transform: translateY(0); opacity: 1; }
-
-  @media (max-width: 700px) {
-    nav { padding: 0 20px; }
-    .hero { padding: 80px 24px 40px; }
-    .quick-access { padding: 0 24px 48px; }
-    .section-divider { padding: 0 24px; }
-    #library { padding: 0 24px 60px; }
-    .subjects-row { gap: 8px; }
-    .subject-chip { font-size: 12px; padding: 8px 14px; }
+  @media(max-width:700px){
+    nav{padding:0 20px;}
+    .hero{padding:80px 24px 40px;}
+    .quick-access{padding:0 24px 48px;}
+    .section-divider{padding:0 24px;}
+    #library,#mapas{padding:0 24px 60px;}
   }
 </style>
 </head>
@@ -322,279 +177,398 @@
 <nav>
   <div class="nav-logo">Med<span>Study</span></div>
   <div class="nav-links">
-    <button class="nav-link active" onclick="scrollToSection('home', this)">Início</button>
-    <button class="nav-link" onclick="scrollToSection('library', this)">Biblioteca</button>
+    <button class="nav-link active" onclick="scrollToSection('home',this)">Início</button>
+    <button class="nav-link" onclick="scrollToSection('library',this)">Biblioteca</button>
+    <button class="nav-link" onclick="scrollToSection('mapas',this)">Mapas Mentais</button>
   </div>
 </nav>
 
 <section id="home">
   <div class="hero">
-    <div class="datetime-pill">
-      <div class="datetime-dot"></div>
-      <span id="datetimeDisplay">carregando...</span>
-    </div>
-    <h1 class="hero-title">
-      Seu espaço para<br><em>estudar, crescer</em><br>e conquistar.
-    </h1>
-    <p class="hero-sub">
-      Todos os seus templates, organizados por matéria e prontos para abrir em qualquer dispositivo.
-    </p>
-    <button class="hero-cta" onclick="scrollToSection('library', null)">
-      Ver biblioteca →
-    </button>
+    <div class="datetime-pill"><div class="datetime-dot"></div><span id="datetimeDisplay">carregando...</span></div>
+    <h1 class="hero-title">Seu espaço para<br><em>estudar, crescer</em><br>e conquistar.</h1>
+    <p class="hero-sub">Templates, mapas mentais e recursos organizados por matéria — prontos para abrir em qualquer dispositivo.</p>
+    <button class="hero-cta" onclick="scrollToSection('library',null)">Ver biblioteca →</button>
   </div>
-
   <div class="quick-access">
     <div class="quick-label">Acesso rápido por matéria</div>
     <div class="subjects-row">
-      <button class="subject-chip" style="background:var(--clinica-bg);border-color:var(--clinica);color:var(--clinica);" onclick="goToLibrary('clinica')">
-        <div class="chip-dot" style="background:var(--clinica)"></div>Clínica Médica
-      </button>
-      <button class="subject-chip" style="background:var(--cirurgia-bg);border-color:var(--cirurgia);color:var(--cirurgia);" onclick="goToLibrary('cirurgia')">
-        <div class="chip-dot" style="background:var(--cirurgia)"></div>Cirurgia
-      </button>
-      <button class="subject-chip" style="background:var(--preventiva-bg);border-color:var(--preventiva);color:var(--preventiva);" onclick="goToLibrary('preventiva')">
-        <div class="chip-dot" style="background:var(--preventiva)"></div>Preventiva
-      </button>
-      <button class="subject-chip" style="background:var(--gineco-bg);border-color:var(--gineco);color:var(--gineco);" onclick="goToLibrary('gineco')">
-        <div class="chip-dot" style="background:var(--gineco)"></div>GO
-      </button>
-      <button class="subject-chip" style="background:var(--pediatria-bg);border-color:var(--pediatria);color:var(--pediatria);" onclick="goToLibrary('pediatria')">
-        <div class="chip-dot" style="background:var(--pediatria)"></div>Pediatria
-      </button>
-      <button class="subject-chip" style="background:var(--pos-bg);border-color:var(--pos);color:var(--pos);" onclick="goToLibrary('pos')">
-        <div class="chip-dot" style="background:var(--pos)"></div>PÓS
-      </button>
-      <button class="subject-chip" style="background:var(--psa-bg);border-color:var(--psa);color:var(--psa);" onclick="goToLibrary('psa')">
-        <div class="chip-dot" style="background:var(--psa)"></div>PSA
-      </button>
-      <button class="subject-chip" style="background:var(--geral-bg);border-color:var(--geral);color:var(--geral);" onclick="goToLibrary('geral')">
-        <div class="chip-dot" style="background:var(--geral)"></div>Geral
-      </button>
+      <button class="subject-chip" style="background:var(--clinica-bg);border-color:var(--clinica);color:var(--clinica);" onclick="goToLibrary('clinica')"><div class="chip-dot" style="background:var(--clinica)"></div>Clínica Médica</button>
+      <button class="subject-chip" style="background:var(--cirurgia-bg);border-color:var(--cirurgia);color:var(--cirurgia);" onclick="goToLibrary('cirurgia')"><div class="chip-dot" style="background:var(--cirurgia)"></div>Cirurgia</button>
+      <button class="subject-chip" style="background:var(--preventiva-bg);border-color:var(--preventiva);color:var(--preventiva);" onclick="goToLibrary('preventiva')"><div class="chip-dot" style="background:var(--preventiva)"></div>Preventiva</button>
+      <button class="subject-chip" style="background:var(--gineco-bg);border-color:var(--gineco);color:var(--gineco);" onclick="goToLibrary('gineco')"><div class="chip-dot" style="background:var(--gineco)"></div>GO</button>
+      <button class="subject-chip" style="background:var(--pediatria-bg);border-color:var(--pediatria);color:var(--pediatria);" onclick="goToLibrary('pediatria')"><div class="chip-dot" style="background:var(--pediatria)"></div>Pediatria</button>
+      <button class="subject-chip" style="background:var(--pos-bg);border-color:var(--pos);color:var(--pos);" onclick="goToLibrary('pos')"><div class="chip-dot" style="background:var(--pos)"></div>PÓS</button>
+      <button class="subject-chip" style="background:var(--psa-bg);border-color:var(--psa);color:var(--psa);" onclick="goToLibrary('psa')"><div class="chip-dot" style="background:var(--psa)"></div>PSA</button>
+      <button class="subject-chip" style="background:var(--geral-bg);border-color:var(--geral);color:var(--geral);" onclick="goToLibrary('geral')"><div class="chip-dot" style="background:var(--geral)"></div>Geral</button>
+      <button class="subject-chip" style="background:#f5e8e8;border-color:#d4a5a5;color:var(--gineco);" onclick="scrollToSection('mapas',null)"><div class="chip-dot" style="background:#d4a5a5"></div>Mapas Mentais</button>
     </div>
   </div>
 </section>
 
-<div class="section-divider">
-  <div class="divider-label">Minha <span>Biblioteca</span></div>
-</div>
+<div class="section-divider"><div class="divider-label">Minha <span>Biblioteca</span></div></div>
 
 <section id="library">
   <div class="filter-bar">
-    <button class="filter-btn active" data-cat="all" onclick="filterCategory('all', this)">Todos</button>
-    <button class="filter-btn" data-cat="pos" onclick="filterCategory('pos', this)"><div class="filter-dot" style="background:var(--pos)"></div>PÓS</button>
-    <button class="filter-btn" data-cat="psa" onclick="filterCategory('psa', this)"><div class="filter-dot" style="background:var(--psa)"></div>PSA</button>
-    <button class="filter-btn" data-cat="clinica" onclick="filterCategory('clinica', this)"><div class="filter-dot" style="background:var(--clinica)"></div>Clínica</button>
-    <button class="filter-btn" data-cat="cirurgia" onclick="filterCategory('cirurgia', this)"><div class="filter-dot" style="background:var(--cirurgia)"></div>Cirurgia</button>
-    <button class="filter-btn" data-cat="preventiva" onclick="filterCategory('preventiva', this)"><div class="filter-dot" style="background:var(--preventiva)"></div>Preventiva</button>
-    <button class="filter-btn" data-cat="gineco" onclick="filterCategory('gineco', this)"><div class="filter-dot" style="background:var(--gineco)"></div>GO</button>
-    <button class="filter-btn" data-cat="pediatria" onclick="filterCategory('pediatria', this)"><div class="filter-dot" style="background:var(--pediatria)"></div>Pediatria</button>
-    <button class="filter-btn" data-cat="geral" onclick="filterCategory('geral', this)"><div class="filter-dot" style="background:var(--geral)"></div>Geral</button>
+    <button class="filter-btn active" data-cat="all" onclick="filterCategory('all',this)">Todos</button>
+    <button class="filter-btn" data-cat="pos" onclick="filterCategory('pos',this)"><div class="filter-dot" style="background:var(--pos)"></div>PÓS</button>
+    <button class="filter-btn" data-cat="psa" onclick="filterCategory('psa',this)"><div class="filter-dot" style="background:var(--psa)"></div>PSA</button>
+    <button class="filter-btn" data-cat="clinica" onclick="filterCategory('clinica',this)"><div class="filter-dot" style="background:var(--clinica)"></div>Clínica</button>
+    <button class="filter-btn" data-cat="cirurgia" onclick="filterCategory('cirurgia',this)"><div class="filter-dot" style="background:var(--cirurgia)"></div>Cirurgia</button>
+    <button class="filter-btn" data-cat="preventiva" onclick="filterCategory('preventiva',this)"><div class="filter-dot" style="background:var(--preventiva)"></div>Preventiva</button>
+    <button class="filter-btn" data-cat="gineco" onclick="filterCategory('gineco',this)"><div class="filter-dot" style="background:var(--gineco)"></div>GO</button>
+    <button class="filter-btn" data-cat="pediatria" onclick="filterCategory('pediatria',this)"><div class="filter-dot" style="background:var(--pediatria)"></div>Pediatria</button>
+    <button class="filter-btn" data-cat="geral" onclick="filterCategory('geral',this)"><div class="filter-dot" style="background:var(--geral)"></div>Geral</button>
     <div class="filter-spacer"></div>
-    <div class="search-box">
-      <span style="color:var(--text-light);font-size:13px">🔍</span>
-      <input type="text" placeholder="Buscar..." id="searchInput" oninput="renderCards()">
+    <div class="search-box"><span style="color:var(--text-light);font-size:13px">🔍</span><input type="text" placeholder="Buscar..." id="searchInput" oninput="renderCards()"></div>
+  </div>
+  <div class="library-meta"><div class="total-count" id="totalCount"></div></div>
+  <div class="cards-grid" id="cardsGrid"></div>
+</section>
+
+<div class="section-divider"><div class="divider-label">Mapas <span>Mentais</span></div></div>
+
+<section id="mapas">
+  <div class="mapas-header">
+    <div class="mapas-title-block">
+      <div class="mapas-main-title">Minha coleção de <span>Mapas Mentais</span></div>
+      <div class="mapas-count" id="mapasCount"></div>
+    </div>
+    <div class="mapas-actions">
+      <button class="btn-action" onclick="exportPersonal()">💾 Exportar meus adds</button>
+      <button class="btn-action" onclick="document.getElementById('importInput').click()">📂 Importar</button>
+      <button class="btn-add-mapa" onclick="openMapaModal()">＋ Adicionar mapa</button>
+      <input type="file" id="importInput" accept=".json" style="display:none" onchange="importPersonal(event)">
     </div>
   </div>
 
-  <div class="library-meta">
-    <div class="total-count" id="totalCount"></div>
+  <div class="mapas-filter-bar">
+    <div class="mapas-search"><span style="color:var(--text-light);font-size:13px">🔍</span><input type="text" placeholder="Buscar mapa mental..." id="mapasSearch" oninput="renderMapas()"></div>
+    <select class="area-filter" id="mapasArea" onchange="renderMapas()">
+      <option value="">Todas as áreas</option>
+      <option value="Clínica Médica">Clínica Médica</option>
+      <option value="Cirurgia">Cirurgia</option>
+      <option value="Preventiva">Preventiva</option>
+      <option value="GO">GO</option>
+      <option value="Pediatria">Pediatria</option>
+      <option value="PÓS">PÓS</option>
+      <option value="PSA">PSA</option>
+      <option value="Geral">Geral</option>
+    </select>
   </div>
 
-  <div class="cards-grid" id="cardsGrid"></div>
+  <div id="mapasList"></div>
 </section>
+
+<!-- MODAL -->
+<div class="overlay" id="mapaOverlay" onclick="closeOnOverlay(event)">
+  <div class="modal">
+    <button class="modal-close" onclick="closeMapaModal()">✕</button>
+    <div class="modal-title" id="mapaModalTitle">Adicionar Mapa Mental</div>
+    <div class="modal-sub">Preencha as informações do mapa</div>
+    <input type="hidden" id="mapaEditId">
+    <div class="form-group"><label class="form-label">Nome do mapa mental</label><input type="text" class="form-input" id="mapaNome" placeholder="Ex: Ciclo Cardíaco"></div>
+    <div class="form-group"><label class="form-label">Área</label><select class="form-select" id="mapaArea"><option value="Clínica Médica">Clínica Médica</option><option value="Cirurgia">Cirurgia</option><option value="Preventiva">Preventiva</option><option value="GO">GO</option><option value="Pediatria">Pediatria</option><option value="PÓS">PÓS</option><option value="PSA">PSA</option><option value="Geral">Geral</option></select></div>
+    <div class="form-group"><label class="form-label">Subárea</label><input type="text" class="form-input" id="mapaSubarea" placeholder="Ex: Cardiologia"></div>
+    <div class="form-group"><label class="form-label">Link do Google Drive (opcional)</label><input type="text" class="form-input" id="mapaLink" placeholder="https://drive.google.com/..."></div>
+    <div class="form-group"><label class="form-label">Anotações (opcional)</label><textarea class="form-textarea" id="mapaNote" placeholder="Observações sobre este mapa..."></textarea></div>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeMapaModal()">Cancelar</button>
+      <button class="btn-primary" onclick="saveMapa()">Salvar</button>
+    </div>
+  </div>
+</div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-  // ── TODOS OS TEMPLATES ──
-  // Para adicionar novo: copie um bloco { } e cole antes do ]
+  // ── TEMPLATES ──
   const ALL_FILES = [
-    {
-      name: 'ECG & Arritmias',
-      category: 'clinica',
-      file: 'ecg-arritmias.html',
-      desc: 'Eletrocardiograma e principais arritmias',
-      type: 'local'
-    },
-    {
-      name: 'Revisão VM & Gasometria',
-      category: 'clinica',
-      file: 'revisao_vm_gasometria.html',
-      desc: 'Ventilação mecânica e interpretação de gasometria',
-      type: 'local'
-    },
-    {
-      name: 'Hipertensão',
-      category: 'clinica',
-      file: 'https://draaline-hipertensaosec.lovable.app',
-      desc: 'Hipertensão arterial sistêmica e causas secundárias',
-      type: 'lovable'
-    },
-    {
-      name: 'Neuro — Exame Físico',
-      category: 'clinica',
-      file: 'https://draaline-examneuro.lovable.app',
-      desc: 'Exame neurológico e semiologia neuronal',
-      type: 'lovable'
-    },
-    {
-      name: 'Anatomofisiologia & Farmacologia da Dor',
-      category: 'pos',
-      file: 'https://draaline-anatomofisio-dor.lovable.app',
-      desc: 'Bases anatômicas, fisiológicas e farmacológicas da dor',
-      type: 'lovable'
-    },
-    {
-      name: 'Questionário de Dor McGill',
-      category: 'pos',
-      file: 'https://draaline-dor-mcgill.lovable.app',
-      desc: 'Escala Br-MPQ para avaliação da dor',
-      type: 'lovable'
-    },
-    {
-      name: 'Caderno de Erros',
-      category: 'geral',
-      file: 'erros_prova.html',
-      desc: 'Registro e revisão dos erros de prova',
-      type: 'local'
-    },
-    {
-      name: 'Evolução do SUS',
-      category: 'preventiva',
-      file: 'sus-timeline.html',
-      desc: 'Timeline da evolução histórica do SUS',
-      type: 'local'
-    },
+    {name:'ECG & Arritmias',category:'clinica',file:'ecg-arritmias.html',desc:'Eletrocardiograma e principais arritmias',type:'local'},
+    {name:'Revisão VM & Gasometria',category:'clinica',file:'revisao_vm_gasometria.html',desc:'Ventilação mecânica e interpretação de gasometria',type:'local'},
+    {name:'Hipertensão',category:'clinica',file:'https://draaline-hipertensaosec.lovable.app',desc:'Hipertensão arterial sistêmica e causas secundárias',type:'lovable'},
+    {name:'Neuro — Exame Físico',category:'clinica',file:'https://draaline-examneuro.lovable.app',desc:'Exame neurológico e semiologia neuronal',type:'lovable'},
+    {name:'Anatomofisiologia & Farmacologia da Dor',category:'pos',file:'https://draaline-anatomofisio-dor.lovable.app',desc:'Bases anatômicas, fisiológicas e farmacológicas da dor',type:'lovable'},
+    {name:'Questionário de Dor McGill',category:'pos',file:'https://draaline-dor-mcgill.lovable.app',desc:'Escala Br-MPQ para avaliação da dor',type:'lovable'},
+    {name:'Cardiotocografia',category:'gineco',file:'ctg_tutorial_v2.html',desc:'Tutorial de cardiotocografia fetal',type:'local'},
+    {name:'Caderno de Erros',category:'geral',file:'erros_prova.html',desc:'Registro e revisão dos erros de prova',type:'local'},
+    {name:'Evolução do SUS',category:'preventiva',file:'sus-timeline.html',desc:'Timeline da evolução histórica do SUS',type:'local'},
   ];
 
   const categoryMeta = {
-    clinica:    { label: 'Clínica Médica',  color: '#e8935a' },
-    cirurgia:   { label: 'Cirurgia',        color: '#6a9e60' },
-    preventiva: { label: 'Preventiva',      color: '#4a7fa0' },
-    gineco:     { label: 'GO',              color: '#c26b80' },
-    pediatria:  { label: 'Pediatria',       color: '#7a5fa0' },
-    psa:        { label: 'PSA',             color: '#c4b5d4' },
-    pos:        { label: 'PÓS',             color: '#a8b89a' },
-    geral:      { label: 'Geral',           color: '#b0a898' },
+    clinica:{label:'Clínica Médica',color:'#e8935a'},cirurgia:{label:'Cirurgia',color:'#6a9e60'},
+    preventiva:{label:'Preventiva',color:'#4a7fa0'},gineco:{label:'GO',color:'#c26b80'},
+    pediatria:{label:'Pediatria',color:'#7a5fa0'},psa:{label:'PSA',color:'#c4b5d4'},
+    pos:{label:'PÓS',color:'#a8b89a'},geral:{label:'Geral',color:'#b0a898'},
   };
 
-  let currentFilter = 'all';
+  // ── MAPAS MENTAIS FIXOS ──
+  const DEFAULT_MAPAS = [
+    // PEDIATRIA — Neonatologia
+    {id:'d1',area:'Pediatria',subarea:'Neonatologia',nome:'Período Neonatal — Metabólico'},
+    {id:'d2',area:'Pediatria',subarea:'Neonatologia',nome:'Período Neonatal — Infecções'},
+    {id:'d3',area:'Pediatria',subarea:'Neonatologia',nome:'Doença Hematológica do RN'},
+    {id:'d4',area:'Pediatria',subarea:'Neonatologia',nome:'Distúrbio Metabólico do RN'},
+    {id:'d5',area:'Pediatria',subarea:'Neonatologia',nome:'Distúrbio Respiratório do RN'},
+    {id:'d6',area:'Pediatria',subarea:'Neonatologia',nome:'Sala de Parto'},
+    // PEDIATRIA — Triagem Neonatal
+    {id:'d7',area:'Pediatria',subarea:'Triagem Neonatal',nome:'Mapa Visual Triagem Neo'},
+    {id:'d8',area:'Pediatria',subarea:'Triagem Neonatal',nome:'Teste do Pezinho'},
+    {id:'d9',area:'Pediatria',subarea:'Triagem Neonatal',nome:'Teste da Orelhinha (1)'},
+    {id:'d10',area:'Pediatria',subarea:'Triagem Neonatal',nome:'Teste da Orelhinha (2)'},
+    {id:'d11',area:'Pediatria',subarea:'Triagem Neonatal',nome:'Triagem Neonatal (1)'},
+    {id:'d12',area:'Pediatria',subarea:'Triagem Neonatal',nome:'Triagem Neonatal (2)'},
+    {id:'d13',area:'Pediatria',subarea:'Triagem Neonatal',nome:'Triagem Neonatal (3)'},
+    // CLÍNICA MÉDICA — Cardiologia
+    {id:'d14',area:'Clínica Médica',subarea:'Cardiologia',nome:'Sopro Cardíaco'},
+    {id:'d15',area:'Clínica Médica',subarea:'Cardiologia',nome:'Bulhas Cardíacas'},
+    {id:'d16',area:'Clínica Médica',subarea:'Cardiologia',nome:'Síndrome Coronariana Aguda'},
+    {id:'d17',area:'Clínica Médica',subarea:'Cardiologia',nome:'Insuficiência Cardíaca'},
+    {id:'d18',area:'Clínica Médica',subarea:'Cardiologia',nome:'Valvopatias e Cardiomiopatias'},
+    {id:'d19',area:'Clínica Médica',subarea:'Cardiologia',nome:'Emergência Hipertensiva'},
+    {id:'d20',area:'Clínica Médica',subarea:'Cardiologia',nome:'HAS Secundária'},
+    {id:'d21',area:'Clínica Médica',subarea:'Cardiologia',nome:'Farmacoterapia HAS (1)'},
+    {id:'d22',area:'Clínica Médica',subarea:'Cardiologia',nome:'Farmacoterapia HAS (2)'},
+    {id:'d23',area:'Clínica Médica',subarea:'Cardiologia',nome:'HAS — Mapa Mental'},
+    {id:'d24',area:'Clínica Médica',subarea:'Cardiologia',nome:'Diagnóstico de HAS'},
+    {id:'d25',area:'Clínica Médica',subarea:'Cardiologia',nome:'Arritmia, Bradi, PCR'},
+    {id:'d26',area:'Clínica Médica',subarea:'Cardiologia',nome:'Arritmia — Conduta (1)'},
+    {id:'d27',area:'Clínica Médica',subarea:'Cardiologia',nome:'Arritmias'},
+    {id:'d28',area:'Clínica Médica',subarea:'Cardiologia',nome:'Taquiarritmias (2)'},
+    {id:'d29',area:'Clínica Médica',subarea:'Cardiologia',nome:'Guia Visual de ECG'},
+    // CLÍNICA MÉDICA — Gastroenterologia
+    {id:'d30',area:'Clínica Médica',subarea:'Gastroenterologia',nome:'Pancreatite'},
+    // CLÍNICA MÉDICA — Onco-Hematologia
+    {id:'d31',area:'Clínica Médica',subarea:'Onco-Hematologia',nome:'Onco-Hemato'},
+    // CIRURGIA — Trauma
+    {id:'d32',area:'Cirurgia',subarea:'Trauma',nome:'Uso de Hemocomponentes no Trauma'},
+    {id:'d33',area:'Cirurgia',subarea:'Trauma',nome:'ATLS 11 — Atualizações'},
+    {id:'d34',area:'Cirurgia',subarea:'Trauma',nome:'News ATLS'},
+    {id:'d35',area:'Cirurgia',subarea:'Trauma',nome:'Tromboelastograma'},
+    {id:'d36',area:'Cirurgia',subarea:'Trauma',nome:'Trauma Torácico'},
+    {id:'d37',area:'Cirurgia',subarea:'Trauma',nome:'Trauma de Face e Pescoço'},
+    // CIRURGIA — Abdome
+    {id:'d38',area:'Cirurgia',subarea:'Abdome',nome:'Abdome Agudo'},
+    // CIRURGIA — TGI
+    {id:'d39',area:'Cirurgia',subarea:'TGI',nome:'Sd. Disfágica e Dispéptica'},
+    {id:'d40',area:'Cirurgia',subarea:'TGI',nome:'Disfagia e Dispepsia'},
+    {id:'d41',area:'Cirurgia',subarea:'TGI',nome:'Mapa Mental TGI'},
+    {id:'d42',area:'Cirurgia',subarea:'TGI',nome:'Tumores TGI'},
+    // CIRURGIA — Oncologia
+    {id:'d43',area:'Cirurgia',subarea:'Oncologia',nome:'Tumores Estômago e Esôfago (1)'},
+    {id:'d44',area:'Cirurgia',subarea:'Oncologia',nome:'CA Gástrico'},
+    {id:'d45',area:'Cirurgia',subarea:'Oncologia',nome:'Tumores Hepáticos'},
+    {id:'d46',area:'Cirurgia',subarea:'Oncologia',nome:'Tumor Pancreático'},
+    {id:'d47',area:'Cirurgia',subarea:'Oncologia',nome:'CA Colorretal'},
+    {id:'d48',area:'Cirurgia',subarea:'Oncologia',nome:'Check-list Pólipos Colorretais'},
+    // CIRURGIA — Técnica
+    {id:'d49',area:'Cirurgia',subarea:'Técnica Cirúrgica',nome:'Técnica Cirúrgica (1)'},
+    // PREVENTIVA — SUS
+    {id:'d50',area:'Preventiva',subarea:'SUS',nome:'Financiamento do SUS (1)'},
+    {id:'d51',area:'Preventiva',subarea:'SUS',nome:'Financiamento do SUS (2)'},
+    {id:'d52',area:'Preventiva',subarea:'SUS',nome:'Mapa Mental SUS'},
+    {id:'d53',area:'Preventiva',subarea:'SUS',nome:'Evolução do SUS'},
+    {id:'d54',area:'Preventiva',subarea:'SUS',nome:'Aspectos Históricos do SUS (1)'},
+    {id:'d55',area:'Preventiva',subarea:'SUS',nome:'Aspectos Históricos do SUS (2)'},
+    {id:'d56',area:'Preventiva',subarea:'SUS',nome:'Princípios Básicos do SUS'},
+    {id:'d57',area:'Preventiva',subarea:'SUS',nome:'Revisão — SUS e Suas Bases (1)'},
+    // PREVENTIVA — Geral
+    {id:'d58',area:'Preventiva',subarea:'Questões',nome:'Preventiva — Questões'},
+    // GO — Ginecologia
+    {id:'d59',area:'GO',subarea:'Ginecologia',nome:'Ciclo Menstrual'},
+    {id:'d60',area:'GO',subarea:'Ginecologia',nome:'Gráfico Fluxo Menstrual (1)'},
+    // GO — Anatomia
+    {id:'d61',area:'GO',subarea:'Anatomia',nome:'Anatomia Pélvica'},
+  ];
 
-  // DATE TIME
-  function updateDateTime() {
-    const now = new Date();
-    const dias  = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
-    const meses = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
-    const hora  = now.toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' });
-    document.getElementById('datetimeDisplay').textContent =
-      `${dias[now.getDay()]}, ${now.getDate()} ${meses[now.getMonth()]} · ${hora}`;
+  const areaColors = {
+    'Clínica Médica':{dot:'#e8935a',bg:'#fdf3ea',text:'#c97030',border:'#f5c9a0'},
+    'Cirurgia':{dot:'#6a9e60',bg:'#eaf3e8',text:'#4a7040',border:'#b8d4b0'},
+    'Preventiva':{dot:'#4a7fa0',bg:'#e5f0f8',text:'#2a5070',border:'#a8c4dc'},
+    'GO':{dot:'#c26b80',bg:'#faeaee',text:'#a04060',border:'#f0bfc9'},
+    'Pediatria':{dot:'#7a5fa0',bg:'#f0eaf8',text:'#5a3f80',border:'#c9b8e0'},
+    'PÓS':{dot:'#a8b89a',bg:'#e8edd5',text:'#607050',border:'#c8d8b0'},
+    'PSA':{dot:'#c4b5d4',bg:'#f5f1fb',text:'#7a5fa0',border:'#e0d0f0'},
+    'Geral':{dot:'#b0a898',bg:'#f5f3f0',text:'#706858',border:'#d8d0c8'},
+  };
+
+  const PERSONAL_KEY = 'medstudy_mapas_personal';
+  let editMapaId = null;
+
+  function loadPersonal(){try{return JSON.parse(localStorage.getItem(PERSONAL_KEY))||[];}catch{return[];}}
+  function savePersonal(list){localStorage.setItem(PERSONAL_KEY,JSON.stringify(list));}
+
+  // DATETIME
+  function updateDateTime(){
+    const now=new Date();
+    const dias=['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
+    const meses=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+    const hora=now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+    document.getElementById('datetimeDisplay').textContent=`${dias[now.getDay()]}, ${now.getDate()} ${meses[now.getMonth()]} · ${hora}`;
   }
-  updateDateTime();
-  setInterval(updateDateTime, 1000);
+  updateDateTime(); setInterval(updateDateTime,1000);
 
-  // SCROLL
-  function scrollToSection(id, btn) {
-    document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
-    if (btn) {
-      document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
-      btn.classList.add('active');
-    }
+  function scrollToSection(id,btn){
+    document.getElementById(id).scrollIntoView({behavior:'smooth'});
+    if(btn){document.querySelectorAll('.nav-link').forEach(el=>el.classList.remove('active'));btn.classList.add('active');}
   }
 
-  // GO TO LIBRARY WITH FILTER
-  function goToLibrary(cat) {
-    document.getElementById('library').scrollIntoView({ behavior: 'smooth' });
-    setTimeout(() => {
-      filterCategory(cat, null);
-      document.querySelectorAll('.filter-btn').forEach(el => {
-        el.classList.toggle('active', el.dataset.cat === cat);
-      });
-    }, 400);
+  function goToLibrary(cat){
+    document.getElementById('library').scrollIntoView({behavior:'smooth'});
+    setTimeout(()=>{filterCategory(cat,null);document.querySelectorAll('.filter-btn').forEach(el=>{el.classList.toggle('active',el.dataset.cat===cat);});},400);
   }
 
-  // FILTER
-  function filterCategory(cat, btn) {
-    currentFilter = cat;
-    if (btn) {
-      document.querySelectorAll('.filter-btn').forEach(el => el.classList.remove('active'));
-      btn.classList.add('active');
-    }
+  let currentFilter='all';
+  function filterCategory(cat,btn){
+    currentFilter=cat;
+    if(btn){document.querySelectorAll('.filter-btn').forEach(el=>el.classList.remove('active'));btn.classList.add('active');}
     renderCards();
   }
 
-  // RENDER
-  function renderCards() {
-    const query = document.getElementById('searchInput').value.toLowerCase();
-    const grid  = document.getElementById('cardsGrid');
-    const count = document.getElementById('totalCount');
-
-    let filtered = ALL_FILES;
-    if (currentFilter !== 'all') filtered = filtered.filter(f => f.category === currentFilter);
-    if (query) filtered = filtered.filter(f =>
-      f.name.toLowerCase().includes(query) ||
-      (f.desc || '').toLowerCase().includes(query)
-    );
-
-    count.innerHTML = `<strong>${filtered.length}</strong> template${filtered.length !== 1 ? 's' : ''} encontrado${filtered.length !== 1 ? 's' : ''}`;
-
-    if (filtered.length === 0) {
-      grid.innerHTML = `
-        <div class="empty-state">
-          <div class="empty-icon">🔍</div>
-          <div class="empty-title">Nenhum resultado</div>
-          <div class="empty-sub">Tente buscar por outro termo ou categoria.</div>
-        </div>`;
-      return;
-    }
-
-    grid.innerHTML = filtered.map((f, i) => {
-      const meta = categoryMeta[f.category] || { label: f.category, color: '#b0a898' };
-      const isExternal = f.file.startsWith('http');
-      const badge = isExternal
-        ? `<span class="card-badge badge-lovable">Lovable ↗</span>`
-        : `<span class="card-badge badge-local">Local</span>`;
-      return `
-        <div class="file-card" style="animation-delay:${i*0.05}s" onclick="openFile('${f.file.replace(/'/g,"\\'")}')">
-          <div class="card-color-bar" style="background:${meta.color}"></div>
-          <div class="card-body">
-            <div class="card-category">${meta.label}</div>
-            <div class="card-name">${f.name}</div>
-            <div class="card-desc">${f.desc || ''}</div>
-            <div class="card-footer">
-              <button class="card-open-btn" onclick="event.stopPropagation();openFile('${f.file.replace(/'/g,"\\'")}')">
-                Abrir ↗
-              </button>
-              ${badge}
-            </div>
-          </div>
-        </div>`;
+  function renderCards(){
+    const query=document.getElementById('searchInput').value.toLowerCase();
+    const grid=document.getElementById('cardsGrid');
+    const count=document.getElementById('totalCount');
+    let filtered=ALL_FILES;
+    if(currentFilter!=='all')filtered=filtered.filter(f=>f.category===currentFilter);
+    if(query)filtered=filtered.filter(f=>f.name.toLowerCase().includes(query)||(f.desc||'').toLowerCase().includes(query));
+    count.innerHTML=`<strong>${filtered.length}</strong> template${filtered.length!==1?'s':''} encontrado${filtered.length!==1?'s':''}`;
+    if(!filtered.length){grid.innerHTML=`<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">Nenhum resultado</div></div>`;return;}
+    grid.innerHTML=filtered.map((f,i)=>{
+      const meta=categoryMeta[f.category]||{label:f.category,color:'#b0a898'};
+      const safe=f.file.replace(/'/g,"\\'");
+      const badge=f.file.startsWith('http')?`<span class="card-badge badge-lovable">Lovable ↗</span>`:`<span class="card-badge badge-local">Local</span>`;
+      return`<div class="file-card" style="animation-delay:${i*0.05}s" onclick="openFile('${safe}')"><div class="card-color-bar" style="background:${meta.color}"></div><div class="card-body"><div class="card-category">${meta.label}</div><div class="card-name">${f.name}</div><div class="card-desc">${f.desc||''}</div><div class="card-footer"><button class="card-open-btn" onclick="event.stopPropagation();openFile('${safe}')">Abrir ↗</button>${badge}</div></div></div>`;
     }).join('');
   }
 
-  function openFile(url) {
-    window.open(url, '_blank');
+  function openFile(url){window.open(url,'_blank');}
+
+  // ── MAPAS ──
+  function renderMapas(){
+    const query=document.getElementById('mapasSearch').value.toLowerCase();
+    const areaF=document.getElementById('mapasArea').value;
+    const container=document.getElementById('mapasList');
+    const personal=loadPersonal();
+
+    let allMapas=[...DEFAULT_MAPAS,...personal.map(m=>({...m,personal:true}))];
+    if(areaF)allMapas=allMapas.filter(m=>m.area===areaF);
+    if(query)allMapas=allMapas.filter(m=>m.nome.toLowerCase().includes(query)||(m.subarea||'').toLowerCase().includes(query)||(m.nota||'').toLowerCase().includes(query));
+
+    document.getElementById('mapasCount').innerHTML=`<strong>${allMapas.length}</strong> mapa${allMapas.length!==1?'s mentais':' mental'} · <span style="color:var(--lavender)">${personal.length} adicionado${personal.length!==1?'s':''} por você</span>`;
+
+    if(!allMapas.length){container.innerHTML=`<div class="mapas-empty">✏️ Nenhum mapa encontrado.</div>`;return;}
+
+    // Group by area then subarea
+    const grouped={};
+    allMapas.forEach(m=>{
+      if(!grouped[m.area])grouped[m.area]={};
+      if(!grouped[m.area][m.subarea||'Geral'])grouped[m.area][m.subarea||'Geral']=[];
+      grouped[m.area][m.subarea||'Geral'].push(m);
+    });
+
+    const areaOrder=['Clínica Médica','Cirurgia','Preventiva','GO','Pediatria','PÓS','PSA','Geral'];
+    let html='';
+
+    areaOrder.forEach(area=>{
+      if(!grouped[area])return;
+      const ac=areaColors[area]||areaColors['Geral'];
+      const totalArea=Object.values(grouped[area]).flat().length;
+      html+=`<div class="mapas-group"><div class="mapas-group-title"><div class="mapas-group-dot" style="background:${ac.dot}"></div><div class="mapas-group-name">${area}</div><span class="mapas-group-count">${totalArea}</span></div>`;
+
+      Object.keys(grouped[area]).forEach(sub=>{
+        const items=grouped[area][sub];
+        html+=`<div style="margin-bottom:14px"><div style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-light);margin-bottom:8px;padding-left:22px">${sub}</div><div class="mapas-list">`;
+        items.forEach((m,i)=>{
+          const isPersonal=m.personal===true;
+          const editBtn=isPersonal?`<button class="mapa-btn" onclick="editMapa('${m.id}')" title="Editar">✏️</button><button class="mapa-btn del" onclick="delMapa('${m.id}')" title="Excluir">🗑</button>`:'';
+          const linkBtn=m.link?`<a style="display:inline-flex;align-items:center;gap:4px;font-size:11px;color:var(--text-light);padding:4px 10px;border-radius:8px;border:1px solid var(--border);background:var(--cream);cursor:pointer;text-decoration:none;flex-shrink:0;" href="${m.link}" target="_blank">🔗</a>`:'';
+          const nota=m.nota?`<div class="mapa-nota">📝 ${m.nota}</div>`:'';
+          const pBadge=isPersonal?`<span class="mapa-personal-badge">✦ meu add</span>`:'';
+          html+=`<div class="mapa-item${isPersonal?' personal':''}" style="animation-delay:${i*0.03}s"><div class="mapa-dot" style="background:${ac.dot}"></div><div class="mapa-info"><div class="mapa-nome">${m.nome} ${pBadge}</div>${nota}</div>${linkBtn}<div class="mapa-actions">${editBtn}</div></div>`;
+        });
+        html+=`</div></div>`;
+      });
+      html+=`</div>`;
+    });
+
+    container.innerHTML=html;
   }
 
-  function showToast(msg) {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 3000);
+  function openMapaModal(id){
+    editMapaId=id||null;
+    const personal=loadPersonal();
+    const m=id?personal.find(x=>x.id===id):null;
+    document.getElementById('mapaModalTitle').textContent=id?'Editar Mapa Mental':'Adicionar Mapa Mental';
+    document.getElementById('mapaEditId').value=id||'';
+    document.getElementById('mapaNome').value=m?m.nome:'';
+    document.getElementById('mapaArea').value=m?m.area:'Clínica Médica';
+    document.getElementById('mapaSubarea').value=m?m.subarea:'';
+    document.getElementById('mapaLink').value=m?m.link:'';
+    document.getElementById('mapaNote').value=m?m.nota:'';
+    document.getElementById('mapaOverlay').classList.add('active');
   }
 
-  // Nav highlight on scroll
-  window.addEventListener('scroll', () => {
-    const lib = document.getElementById('library').getBoundingClientRect().top;
-    const links = document.querySelectorAll('.nav-link');
-    if (lib <= 80) {
-      links[0].classList.remove('active'); links[1].classList.add('active');
-    } else {
-      links[0].classList.add('active'); links[1].classList.remove('active');
-    }
+  function closeMapaModal(){document.getElementById('mapaOverlay').classList.remove('active');}
+  function closeOnOverlay(e){if(e.target===document.getElementById('mapaOverlay'))closeMapaModal();}
+
+  function editMapa(id){openMapaModal(id);}
+  function delMapa(id){
+    if(!confirm('Remover este mapa?'))return;
+    savePersonal(loadPersonal().filter(m=>m.id!==id));
+    renderMapas(); showToast('🗑 Removido.');
+  }
+
+  function saveMapa(){
+    const nome=document.getElementById('mapaNome').value.trim();
+    if(!nome){showToast('⚠️ Nome obrigatório!');return;}
+    const obj={id:editMapaId||Date.now().toString(),nome,area:document.getElementById('mapaArea').value,subarea:document.getElementById('mapaSubarea').value.trim(),link:document.getElementById('mapaLink').value.trim(),nota:document.getElementById('mapaNote').value.trim()};
+    let personal=loadPersonal();
+    if(editMapaId){personal=personal.map(m=>m.id===editMapaId?obj:m);showToast('✏️ Atualizado!');}
+    else{personal.unshift(obj);showToast('✅ Mapa adicionado!');}
+    savePersonal(personal); closeMapaModal(); renderMapas();
+  }
+
+  function exportPersonal(){
+    const p=loadPersonal();
+    if(!p.length){showToast('⚠️ Nenhum mapa pessoal para exportar.');return;}
+    const blob=new Blob([JSON.stringify(p,null,2)],{type:'application/json'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url; a.download=`meus-mapas-${new Date().toLocaleDateString('pt-BR').replace(/\//g,'-')}.json`; a.click();
+    URL.revokeObjectURL(url); showToast('💾 Exportado!');
+  }
+
+  function importPersonal(event){
+    const file=event.target.files[0]; if(!file)return;
+    const reader=new FileReader();
+    reader.onload=function(e){
+      try{
+        const imported=JSON.parse(e.target.result);
+        if(!Array.isArray(imported))throw new Error();
+        const existing=loadPersonal();
+        const ids=new Set(existing.map(m=>m.id));
+        const newOnes=imported.filter(m=>!ids.has(m.id));
+        savePersonal([...newOnes,...existing]);
+        renderMapas(); showToast(`✅ ${newOnes.length} mapa(s) importado(s)!`);
+      }catch{showToast('❌ Arquivo inválido.');}
+    };
+    reader.readAsText(file); event.target.value='';
+  }
+
+  function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
+
+  window.addEventListener('scroll',()=>{
+    const links=document.querySelectorAll('.nav-link');
+    const lib=document.getElementById('library').getBoundingClientRect().top;
+    const map=document.getElementById('mapas').getBoundingClientRect().top;
+    if(map<=80){links.forEach(l=>l.classList.remove('active'));links[2].classList.add('active');}
+    else if(lib<=80){links.forEach(l=>l.classList.remove('active'));links[1].classList.add('active');}
+    else{links.forEach(l=>l.classList.remove('active'));links[0].classList.add('active');}
   });
 
   renderCards();
+  renderMapas();
 </script>
 </body>
 </html>
