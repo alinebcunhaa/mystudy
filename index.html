@@ -68,7 +68,6 @@
   .search-box{display:flex;align-items:center;gap:8px;background:white;border:1px solid var(--border);border-radius:50px;padding:7px 16px;}
   .search-box input{border:none;background:none;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text-dark);outline:none;width:180px;}
   .search-box input::placeholder{color:var(--text-light);}
-
   .cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;}
   .file-card{background:white;border:1px solid var(--border);border-radius:16px;overflow:hidden;cursor:pointer;transition:transform 0.22s cubic-bezier(.34,1.56,.64,1),box-shadow 0.22s;animation:fadeUp 0.35s ease both;}
   .file-card:hover{transform:translateY(-4px);box-shadow:0 12px 28px rgba(0,0,0,0.08);}
@@ -90,7 +89,6 @@
   /* MAPAS */
   #mapas{padding:0 48px 80px;}
   .mapas-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;}
-  .mapas-title-block{}
   .mapas-main-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:400;color:var(--text-dark);}
   .mapas-main-title span{font-style:italic;color:var(--rose);}
   .mapas-count{font-size:12px;color:var(--text-light);margin-top:4px;}
@@ -105,9 +103,8 @@
   .mapas-search{display:flex;align-items:center;gap:8px;background:white;border:1px solid var(--border);border-radius:50px;padding:7px 16px;flex:1;max-width:320px;}
   .mapas-search input{border:none;background:none;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text-dark);outline:none;width:100%;}
   .mapas-search input::placeholder{color:var(--text-light);}
-  .area-filter,.subarea-filter{padding:7px 14px;border-radius:50px;border:1px solid var(--border);background:white;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--text-mid);outline:none;cursor:pointer;}
+  .area-filter{padding:7px 14px;border-radius:50px;border:1px solid var(--border);background:white;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--text-mid);outline:none;cursor:pointer;}
 
-  /* MAPAS GROUP */
   .mapas-group{margin-bottom:28px;}
   .mapas-group-title{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
   .mapas-group-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
@@ -115,18 +112,38 @@
   .mapas-group-count{font-size:11px;color:var(--text-light);background:var(--lavender-light);padding:2px 10px;border-radius:20px;}
 
   .mapas-list{display:flex;flex-direction:column;gap:8px;}
-  .mapa-item{background:white;border:1px solid var(--border);border-radius:12px;padding:14px 18px;display:flex;align-items:center;gap:14px;animation:fadeUp 0.3s ease both;transition:box-shadow 0.2s;}
-  .mapa-item:hover{box-shadow:0 4px 16px rgba(196,181,212,0.2);}
-  .mapa-item.personal{border-left:3px solid var(--lavender);}
+
+  /* MAPA ITEM — clicável */
+  .mapa-item{
+    background:white;border:1px solid var(--border);border-radius:12px;
+    padding:14px 18px;display:flex;align-items:center;gap:14px;
+    animation:fadeUp 0.3s ease both;transition:box-shadow 0.2s,transform 0.18s;
+  }
+  .mapa-item.has-link{cursor:pointer;}
+  .mapa-item.has-link:hover{box-shadow:0 6px 20px rgba(196,181,212,0.25);transform:translateY(-2px);}
+  .mapa-item.no-link{cursor:default;}
+  .mapa-item.no-link:hover{box-shadow:0 3px 10px rgba(196,181,212,0.15);}
+
   .mapa-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
   .mapa-info{flex:1;min-width:0;}
   .mapa-nome{font-size:14px;font-weight:500;color:var(--text-dark);margin-bottom:3px;line-height:1.3;}
-  .mapa-meta{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
-  .mapa-subarea{font-size:11px;color:var(--text-light);}
   .mapa-nota{font-size:11px;color:var(--text-mid);margin-top:4px;font-style:italic;}
-  .mapa-personal-badge{font-size:10px;background:var(--lavender-light);color:var(--lavender);padding:2px 8px;border-radius:20px;}
-  .mapa-actions{display:flex;gap:4px;flex-shrink:0;}
-  .mapa-btn{width:28px;height:28px;border-radius:8px;border:1px solid var(--border);background:var(--cream);display:flex;align-items:center;justify-content:center;font-size:12px;cursor:pointer;transition:background 0.15s;}
+
+  .mapa-link-hint{
+    font-size:10px;color:var(--text-light);
+    display:flex;align-items:center;gap:4px;margin-top:3px;
+  }
+
+  .mapa-no-link-hint{
+    font-size:10px;color:#d0c8c0;margin-top:3px;
+  }
+
+  .mapa-actions{display:flex;gap:4px;flex-shrink:0;align-items:center;}
+  .mapa-btn{
+    width:28px;height:28px;border-radius:8px;border:1px solid var(--border);
+    background:var(--cream);display:flex;align-items:center;justify-content:center;
+    font-size:12px;cursor:pointer;transition:background 0.15s;flex-shrink:0;
+  }
   .mapa-btn:hover{background:var(--lavender-light);}
   .mapa-btn.del:hover{background:var(--rose-light);}
 
@@ -146,11 +163,14 @@
   .form-input,.form-select,.form-textarea{width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text-dark);background:var(--cream);outline:none;transition:border-color 0.2s;}
   .form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--lavender);background:white;}
   .form-textarea{resize:vertical;min-height:80px;}
+  .form-hint{font-size:11px;color:var(--text-light);margin-top:5px;line-height:1.5;}
   .modal-actions{display:flex;gap:10px;margin-top:24px;}
   .btn-primary{flex:1;padding:11px;background:var(--lavender);color:white;border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;transition:opacity 0.2s,transform 0.15s;}
   .btn-primary:hover{opacity:0.88;transform:scale(1.02);}
   .btn-secondary{padding:11px 20px;background:var(--cream);color:var(--text-mid);border:1px solid var(--border);border-radius:12px;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;transition:background 0.2s;}
   .btn-secondary:hover{background:var(--lavender-light);}
+  .btn-danger{padding:11px 16px;background:var(--rose-light);color:var(--gineco);border:1px solid var(--rose);border-radius:12px;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;transition:background 0.2s;}
+  .btn-danger:hover{background:var(--rose);color:white;}
 
   .empty-state{grid-column:1/-1;display:flex;flex-direction:column;align-items:center;padding:60px 0;text-align:center;gap:10px;}
   .empty-icon{font-size:40px;opacity:0.3;}
@@ -230,15 +250,15 @@
 
 <section id="mapas">
   <div class="mapas-header">
-    <div class="mapas-title-block">
+    <div>
       <div class="mapas-main-title">Minha coleção de <span>Mapas Mentais</span></div>
       <div class="mapas-count" id="mapasCount"></div>
     </div>
     <div class="mapas-actions">
-      <button class="btn-action" onclick="exportPersonal()">💾 Exportar meus adds</button>
-      <button class="btn-action" onclick="document.getElementById('importInput').click()">📂 Importar</button>
-      <button class="btn-add-mapa" onclick="openMapaModal()">＋ Adicionar mapa</button>
-      <input type="file" id="importInput" accept=".json" style="display:none" onchange="importPersonal(event)">
+      <button class="btn-action" onclick="exportEdits()">💾 Exportar edições</button>
+      <button class="btn-action" onclick="document.getElementById('importInput').click()">📂 Importar edições</button>
+      <button class="btn-add-mapa" onclick="openMapaModal(null,'new')">＋ Adicionar mapa</button>
+      <input type="file" id="importInput" accept=".json" style="display:none" onchange="importEdits(event)">
     </div>
   </div>
 
@@ -264,15 +284,43 @@
 <div class="overlay" id="mapaOverlay" onclick="closeOnOverlay(event)">
   <div class="modal">
     <button class="modal-close" onclick="closeMapaModal()">✕</button>
-    <div class="modal-title" id="mapaModalTitle">Adicionar Mapa Mental</div>
-    <div class="modal-sub">Preencha as informações do mapa</div>
+    <div class="modal-title" id="mapaModalTitle">Editar Mapa Mental</div>
+    <div class="modal-sub" id="mapaModalSub">Adicione o link do Drive e ajuste as informações</div>
     <input type="hidden" id="mapaEditId">
-    <div class="form-group"><label class="form-label">Nome do mapa mental</label><input type="text" class="form-input" id="mapaNome" placeholder="Ex: Ciclo Cardíaco"></div>
-    <div class="form-group"><label class="form-label">Área</label><select class="form-select" id="mapaArea"><option value="Clínica Médica">Clínica Médica</option><option value="Cirurgia">Cirurgia</option><option value="Preventiva">Preventiva</option><option value="GO">GO</option><option value="Pediatria">Pediatria</option><option value="PÓS">PÓS</option><option value="PSA">PSA</option><option value="Geral">Geral</option></select></div>
-    <div class="form-group"><label class="form-label">Subárea</label><input type="text" class="form-input" id="mapaSubarea" placeholder="Ex: Cardiologia"></div>
-    <div class="form-group"><label class="form-label">Link do Google Drive (opcional)</label><input type="text" class="form-input" id="mapaLink" placeholder="https://drive.google.com/..."></div>
-    <div class="form-group"><label class="form-label">Anotações (opcional)</label><textarea class="form-textarea" id="mapaNote" placeholder="Observações sobre este mapa..."></textarea></div>
+    <input type="hidden" id="mapaEditType">
+
+    <div class="form-group">
+      <label class="form-label">Nome do mapa mental</label>
+      <input type="text" class="form-input" id="mapaNome" placeholder="Ex: Ciclo Cardíaco">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Área</label>
+      <select class="form-select" id="mapaArea">
+        <option value="Clínica Médica">Clínica Médica</option>
+        <option value="Cirurgia">Cirurgia</option>
+        <option value="Preventiva">Preventiva</option>
+        <option value="GO">GO</option>
+        <option value="Pediatria">Pediatria</option>
+        <option value="PÓS">PÓS</option>
+        <option value="PSA">PSA</option>
+        <option value="Geral">Geral</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Subárea</label>
+      <input type="text" class="form-input" id="mapaSubarea" placeholder="Ex: Cardiologia">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Link do Google Drive</label>
+      <input type="text" class="form-input" id="mapaLink" placeholder="https://drive.google.com/...">
+      <div class="form-hint">📌 Ao clicar no mapa, este link será aberto automaticamente</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Anotações (opcional)</label>
+      <textarea class="form-textarea" id="mapaNote" placeholder="Observações sobre este mapa..."></textarea>
+    </div>
     <div class="modal-actions">
+      <button class="btn-danger" id="btnDel" onclick="delMapa()" style="display:none">🗑 Excluir</button>
       <button class="btn-secondary" onclick="closeMapaModal()">Cancelar</button>
       <button class="btn-primary" onclick="saveMapa()">Salvar</button>
     </div>
@@ -295,23 +343,21 @@
     {name:'Evolução do SUS',category:'preventiva',file:'sus-timeline.html',desc:'Timeline da evolução histórica do SUS',type:'local'},
   ];
 
-  const categoryMeta = {
+  const categoryMeta={
     clinica:{label:'Clínica Médica',color:'#e8935a'},cirurgia:{label:'Cirurgia',color:'#6a9e60'},
     preventiva:{label:'Preventiva',color:'#4a7fa0'},gineco:{label:'GO',color:'#c26b80'},
     pediatria:{label:'Pediatria',color:'#7a5fa0'},psa:{label:'PSA',color:'#c4b5d4'},
     pos:{label:'PÓS',color:'#a8b89a'},geral:{label:'Geral',color:'#b0a898'},
   };
 
-  // ── MAPAS MENTAIS FIXOS ──
+  // ── MAPAS FIXOS ──
   const DEFAULT_MAPAS = [
-    // PEDIATRIA — Neonatologia
     {id:'d1',area:'Pediatria',subarea:'Neonatologia',nome:'Período Neonatal — Metabólico'},
     {id:'d2',area:'Pediatria',subarea:'Neonatologia',nome:'Período Neonatal — Infecções'},
     {id:'d3',area:'Pediatria',subarea:'Neonatologia',nome:'Doença Hematológica do RN'},
     {id:'d4',area:'Pediatria',subarea:'Neonatologia',nome:'Distúrbio Metabólico do RN'},
     {id:'d5',area:'Pediatria',subarea:'Neonatologia',nome:'Distúrbio Respiratório do RN'},
     {id:'d6',area:'Pediatria',subarea:'Neonatologia',nome:'Sala de Parto'},
-    // PEDIATRIA — Triagem Neonatal
     {id:'d7',area:'Pediatria',subarea:'Triagem Neonatal',nome:'Mapa Visual Triagem Neo'},
     {id:'d8',area:'Pediatria',subarea:'Triagem Neonatal',nome:'Teste do Pezinho'},
     {id:'d9',area:'Pediatria',subarea:'Triagem Neonatal',nome:'Teste da Orelhinha (1)'},
@@ -319,7 +365,6 @@
     {id:'d11',area:'Pediatria',subarea:'Triagem Neonatal',nome:'Triagem Neonatal (1)'},
     {id:'d12',area:'Pediatria',subarea:'Triagem Neonatal',nome:'Triagem Neonatal (2)'},
     {id:'d13',area:'Pediatria',subarea:'Triagem Neonatal',nome:'Triagem Neonatal (3)'},
-    // CLÍNICA MÉDICA — Cardiologia
     {id:'d14',area:'Clínica Médica',subarea:'Cardiologia',nome:'Sopro Cardíaco'},
     {id:'d15',area:'Clínica Médica',subarea:'Cardiologia',nome:'Bulhas Cardíacas'},
     {id:'d16',area:'Clínica Médica',subarea:'Cardiologia',nome:'Síndrome Coronariana Aguda'},
@@ -336,34 +381,26 @@
     {id:'d27',area:'Clínica Médica',subarea:'Cardiologia',nome:'Arritmias'},
     {id:'d28',area:'Clínica Médica',subarea:'Cardiologia',nome:'Taquiarritmias (2)'},
     {id:'d29',area:'Clínica Médica',subarea:'Cardiologia',nome:'Guia Visual de ECG'},
-    // CLÍNICA MÉDICA — Gastroenterologia
     {id:'d30',area:'Clínica Médica',subarea:'Gastroenterologia',nome:'Pancreatite'},
-    // CLÍNICA MÉDICA — Onco-Hematologia
     {id:'d31',area:'Clínica Médica',subarea:'Onco-Hematologia',nome:'Onco-Hemato'},
-    // CIRURGIA — Trauma
     {id:'d32',area:'Cirurgia',subarea:'Trauma',nome:'Uso de Hemocomponentes no Trauma'},
     {id:'d33',area:'Cirurgia',subarea:'Trauma',nome:'ATLS 11 — Atualizações'},
     {id:'d34',area:'Cirurgia',subarea:'Trauma',nome:'News ATLS'},
     {id:'d35',area:'Cirurgia',subarea:'Trauma',nome:'Tromboelastograma'},
     {id:'d36',area:'Cirurgia',subarea:'Trauma',nome:'Trauma Torácico'},
     {id:'d37',area:'Cirurgia',subarea:'Trauma',nome:'Trauma de Face e Pescoço'},
-    // CIRURGIA — Abdome
     {id:'d38',area:'Cirurgia',subarea:'Abdome',nome:'Abdome Agudo'},
-    // CIRURGIA — TGI
     {id:'d39',area:'Cirurgia',subarea:'TGI',nome:'Sd. Disfágica e Dispéptica'},
     {id:'d40',area:'Cirurgia',subarea:'TGI',nome:'Disfagia e Dispepsia'},
     {id:'d41',area:'Cirurgia',subarea:'TGI',nome:'Mapa Mental TGI'},
     {id:'d42',area:'Cirurgia',subarea:'TGI',nome:'Tumores TGI'},
-    // CIRURGIA — Oncologia
     {id:'d43',area:'Cirurgia',subarea:'Oncologia',nome:'Tumores Estômago e Esôfago (1)'},
     {id:'d44',area:'Cirurgia',subarea:'Oncologia',nome:'CA Gástrico'},
     {id:'d45',area:'Cirurgia',subarea:'Oncologia',nome:'Tumores Hepáticos'},
     {id:'d46',area:'Cirurgia',subarea:'Oncologia',nome:'Tumor Pancreático'},
     {id:'d47',area:'Cirurgia',subarea:'Oncologia',nome:'CA Colorretal'},
     {id:'d48',area:'Cirurgia',subarea:'Oncologia',nome:'Check-list Pólipos Colorretais'},
-    // CIRURGIA — Técnica
     {id:'d49',area:'Cirurgia',subarea:'Técnica Cirúrgica',nome:'Técnica Cirúrgica (1)'},
-    // PREVENTIVA — SUS
     {id:'d50',area:'Preventiva',subarea:'SUS',nome:'Financiamento do SUS (1)'},
     {id:'d51',area:'Preventiva',subarea:'SUS',nome:'Financiamento do SUS (2)'},
     {id:'d52',area:'Preventiva',subarea:'SUS',nome:'Mapa Mental SUS'},
@@ -372,16 +409,13 @@
     {id:'d55',area:'Preventiva',subarea:'SUS',nome:'Aspectos Históricos do SUS (2)'},
     {id:'d56',area:'Preventiva',subarea:'SUS',nome:'Princípios Básicos do SUS'},
     {id:'d57',area:'Preventiva',subarea:'SUS',nome:'Revisão — SUS e Suas Bases (1)'},
-    // PREVENTIVA — Geral
     {id:'d58',area:'Preventiva',subarea:'Questões',nome:'Preventiva — Questões'},
-    // GO — Ginecologia
     {id:'d59',area:'GO',subarea:'Ginecologia',nome:'Ciclo Menstrual'},
     {id:'d60',area:'GO',subarea:'Ginecologia',nome:'Gráfico Fluxo Menstrual (1)'},
-    // GO — Anatomia
     {id:'d61',area:'GO',subarea:'Anatomia',nome:'Anatomia Pélvica'},
   ];
 
-  const areaColors = {
+  const areaColors={
     'Clínica Médica':{dot:'#e8935a',bg:'#fdf3ea',text:'#c97030',border:'#f5c9a0'},
     'Cirurgia':{dot:'#6a9e60',bg:'#eaf3e8',text:'#4a7040',border:'#b8d4b0'},
     'Preventiva':{dot:'#4a7fa0',bg:'#e5f0f8',text:'#2a5070',border:'#a8c4dc'},
@@ -392,11 +426,14 @@
     'Geral':{dot:'#b0a898',bg:'#f5f3f0',text:'#706858',border:'#d8d0c8'},
   };
 
-  const PERSONAL_KEY = 'medstudy_mapas_personal';
-  let editMapaId = null;
+  // ── EDIÇÕES LOCAIS (sobreescrevem os fixos + novos) ──
+  const EDITS_KEY='medstudy_mapas_edits';
+  const NEW_KEY='medstudy_mapas_new';
 
-  function loadPersonal(){try{return JSON.parse(localStorage.getItem(PERSONAL_KEY))||[];}catch{return[];}}
-  function savePersonal(list){localStorage.setItem(PERSONAL_KEY,JSON.stringify(list));}
+  function loadEdits(){try{return JSON.parse(localStorage.getItem(EDITS_KEY))||{};}catch{return{};}}
+  function saveEdits(obj){localStorage.setItem(EDITS_KEY,JSON.stringify(obj));}
+  function loadNew(){try{return JSON.parse(localStorage.getItem(NEW_KEY))||[];}catch{return[];}}
+  function saveNew(arr){localStorage.setItem(NEW_KEY,JSON.stringify(arr));}
 
   // DATETIME
   function updateDateTime(){
@@ -412,7 +449,6 @@
     document.getElementById(id).scrollIntoView({behavior:'smooth'});
     if(btn){document.querySelectorAll('.nav-link').forEach(el=>el.classList.remove('active'));btn.classList.add('active');}
   }
-
   function goToLibrary(cat){
     document.getElementById('library').scrollIntoView({behavior:'smooth'});
     setTimeout(()=>{filterCategory(cat,null);document.querySelectorAll('.filter-btn').forEach(el=>{el.classList.toggle('active',el.dataset.cat===cat);});},400);
@@ -441,30 +477,49 @@
       return`<div class="file-card" style="animation-delay:${i*0.05}s" onclick="openFile('${safe}')"><div class="card-color-bar" style="background:${meta.color}"></div><div class="card-body"><div class="card-category">${meta.label}</div><div class="card-name">${f.name}</div><div class="card-desc">${f.desc||''}</div><div class="card-footer"><button class="card-open-btn" onclick="event.stopPropagation();openFile('${safe}')">Abrir ↗</button>${badge}</div></div></div>`;
     }).join('');
   }
-
   function openFile(url){window.open(url,'_blank');}
 
   // ── MAPAS ──
+  function getMergedMapas(){
+    const edits=loadEdits();
+    const newMapas=loadNew();
+    // Apply edits to defaults
+    const merged=DEFAULT_MAPAS.map(m=>{
+      const e=edits[m.id];
+      return e?{...m,...e}:m;
+    });
+    return [...merged,...newMapas];
+  }
+
   function renderMapas(){
     const query=document.getElementById('mapasSearch').value.toLowerCase();
     const areaF=document.getElementById('mapasArea').value;
+    const edits=loadEdits();
+    const newMapas=loadNew();
     const container=document.getElementById('mapasList');
-    const personal=loadPersonal();
 
-    let allMapas=[...DEFAULT_MAPAS,...personal.map(m=>({...m,personal:true}))];
+    let allMapas=getMergedMapas();
     if(areaF)allMapas=allMapas.filter(m=>m.area===areaF);
-    if(query)allMapas=allMapas.filter(m=>m.nome.toLowerCase().includes(query)||(m.subarea||'').toLowerCase().includes(query)||(m.nota||'').toLowerCase().includes(query));
+    if(query)allMapas=allMapas.filter(m=>
+      m.nome.toLowerCase().includes(query)||
+      (m.subarea||'').toLowerCase().includes(query)||
+      (m.nota||'').toLowerCase().includes(query)
+    );
 
-    document.getElementById('mapasCount').innerHTML=`<strong>${allMapas.length}</strong> mapa${allMapas.length!==1?'s mentais':' mental'} · <span style="color:var(--lavender)">${personal.length} adicionado${personal.length!==1?'s':''} por você</span>`;
+    const totalEdited=Object.keys(edits).length;
+    document.getElementById('mapasCount').innerHTML=
+      `<strong>${allMapas.length}</strong> mapas mentais` +
+      (totalEdited?` · <span style="color:var(--lavender)">${totalEdited} editado${totalEdited!==1?'s':''}</span>`:'') +
+      (newMapas.length?` · <span style="color:var(--rose)">${newMapas.length} adicionado${newMapas.length!==1?'s':''}</span>`:'');
 
     if(!allMapas.length){container.innerHTML=`<div class="mapas-empty">✏️ Nenhum mapa encontrado.</div>`;return;}
 
-    // Group by area then subarea
     const grouped={};
     allMapas.forEach(m=>{
       if(!grouped[m.area])grouped[m.area]={};
-      if(!grouped[m.area][m.subarea||'Geral'])grouped[m.area][m.subarea||'Geral']=[];
-      grouped[m.area][m.subarea||'Geral'].push(m);
+      const sub=m.subarea||'Geral';
+      if(!grouped[m.area][sub])grouped[m.area][sub]=[];
+      grouped[m.area][sub].push(m);
     });
 
     const areaOrder=['Clínica Médica','Cirurgia','Preventiva','GO','Pediatria','PÓS','PSA','Geral'];
@@ -474,19 +529,54 @@
       if(!grouped[area])return;
       const ac=areaColors[area]||areaColors['Geral'];
       const totalArea=Object.values(grouped[area]).flat().length;
-      html+=`<div class="mapas-group"><div class="mapas-group-title"><div class="mapas-group-dot" style="background:${ac.dot}"></div><div class="mapas-group-name">${area}</div><span class="mapas-group-count">${totalArea}</span></div>`;
+      html+=`<div class="mapas-group">
+        <div class="mapas-group-title">
+          <div class="mapas-group-dot" style="background:${ac.dot}"></div>
+          <div class="mapas-group-name">${area}</div>
+          <span class="mapas-group-count">${totalArea}</span>
+        </div>`;
 
       Object.keys(grouped[area]).forEach(sub=>{
         const items=grouped[area][sub];
-        html+=`<div style="margin-bottom:14px"><div style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-light);margin-bottom:8px;padding-left:22px">${sub}</div><div class="mapas-list">`;
+        html+=`<div style="margin-bottom:14px">
+          <div style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-light);margin-bottom:8px;padding-left:22px">${sub}</div>
+          <div class="mapas-list">`;
+
         items.forEach((m,i)=>{
-          const isPersonal=m.personal===true;
-          const editBtn=isPersonal?`<button class="mapa-btn" onclick="editMapa('${m.id}')" title="Editar">✏️</button><button class="mapa-btn del" onclick="delMapa('${m.id}')" title="Excluir">🗑</button>`:'';
-          const linkBtn=m.link?`<a style="display:inline-flex;align-items:center;gap:4px;font-size:11px;color:var(--text-light);padding:4px 10px;border-radius:8px;border:1px solid var(--border);background:var(--cream);cursor:pointer;text-decoration:none;flex-shrink:0;" href="${m.link}" target="_blank">🔗</a>`:'';
+          const hasLink=!!(m.link&&m.link.trim());
+          const isNew=!!newMapas.find(x=>x.id===m.id);
+          const isEdited=!!edits[m.id];
+
+          const clickFn=hasLink?`openMapa('${(m.link).replace(/'/g,"\\'")}')`:'' ;
           const nota=m.nota?`<div class="mapa-nota">📝 ${m.nota}</div>`:'';
-          const pBadge=isPersonal?`<span class="mapa-personal-badge">✦ meu add</span>`:'';
-          html+=`<div class="mapa-item${isPersonal?' personal':''}" style="animation-delay:${i*0.03}s"><div class="mapa-dot" style="background:${ac.dot}"></div><div class="mapa-info"><div class="mapa-nome">${m.nome} ${pBadge}</div>${nota}</div>${linkBtn}<div class="mapa-actions">${editBtn}</div></div>`;
+
+          const hint=hasLink
+            ? `<div class="mapa-link-hint">🔗 Toque para abrir no Drive</div>`
+            : `<div class="mapa-no-link-hint">Sem link — clique em ✏️ para adicionar</div>`;
+
+          const badges=[
+            isNew?`<span style="font-size:10px;background:var(--rose-light);color:var(--gineco);padding:2px 8px;border-radius:20px;margin-left:4px">novo</span>`:'',
+            isEdited&&!isNew?`<span style="font-size:10px;background:var(--lavender-light);color:var(--lavender);padding:2px 8px;border-radius:20px;margin-left:4px">editado</span>`:'',
+          ].join('');
+
+          const delBtn=isNew?`<button class="mapa-btn del" onclick="event.stopPropagation();delNew('${m.id}')" title="Excluir">🗑</button>`:'';
+
+          html+=`<div class="mapa-item ${hasLink?'has-link':'no-link'}"
+            style="animation-delay:${i*0.03}s"
+            onclick="${clickFn}">
+            <div class="mapa-dot" style="background:${ac.dot}"></div>
+            <div class="mapa-info">
+              <div class="mapa-nome">${m.nome}${badges}</div>
+              ${hint}
+              ${nota}
+            </div>
+            <div class="mapa-actions">
+              <button class="mapa-btn" onclick="event.stopPropagation();openMapaModal('${m.id}','${isNew?'new':'default'}')" title="Editar">✏️</button>
+              ${delBtn}
+            </div>
+          </div>`;
         });
+
         html+=`</div></div>`;
       });
       html+=`</div>`;
@@ -495,62 +585,125 @@
     container.innerHTML=html;
   }
 
-  function openMapaModal(id){
-    editMapaId=id||null;
-    const personal=loadPersonal();
-    const m=id?personal.find(x=>x.id===id):null;
+  function openMapa(url){window.open(url,'_blank');}
+
+  // MODAL
+  let currentEditId=null;
+  let currentEditType=null;
+
+  function openMapaModal(id,type){
+    currentEditId=id;
+    currentEditType=type;
+
+    const edits=loadEdits();
+    const newMapas=loadNew();
+
+    let m=null;
+    if(type==='new'){
+      m=newMapas.find(x=>x.id===id)||null;
+    } else if(type==='default'){
+      const base=DEFAULT_MAPAS.find(x=>x.id===id)||{};
+      const edit=edits[id]||{};
+      m={...base,...edit};
+    }
+
+    const isNew=(type==='new'&&!!id);
+
     document.getElementById('mapaModalTitle').textContent=id?'Editar Mapa Mental':'Adicionar Mapa Mental';
-    document.getElementById('mapaEditId').value=id||'';
+    document.getElementById('mapaModalSub').textContent=id?'Edite o nome, link do Drive ou anotações':'Preencha as informações do novo mapa';
     document.getElementById('mapaNome').value=m?m.nome:'';
     document.getElementById('mapaArea').value=m?m.area:'Clínica Médica';
-    document.getElementById('mapaSubarea').value=m?m.subarea:'';
-    document.getElementById('mapaLink').value=m?m.link:'';
-    document.getElementById('mapaNote').value=m?m.nota:'';
+    document.getElementById('mapaSubarea').value=m?m.subarea||'':'';
+    document.getElementById('mapaLink').value=m?m.link||'':'';
+    document.getElementById('mapaNote').value=m?m.nota||'':'';
+
+    // Show delete only for new (user-added) mapas
+    document.getElementById('btnDel').style.display=isNew?'block':'none';
+
     document.getElementById('mapaOverlay').classList.add('active');
   }
 
   function closeMapaModal(){document.getElementById('mapaOverlay').classList.remove('active');}
   function closeOnOverlay(e){if(e.target===document.getElementById('mapaOverlay'))closeMapaModal();}
 
-  function editMapa(id){openMapaModal(id);}
-  function delMapa(id){
-    if(!confirm('Remover este mapa?'))return;
-    savePersonal(loadPersonal().filter(m=>m.id!==id));
-    renderMapas(); showToast('🗑 Removido.');
-  }
-
   function saveMapa(){
     const nome=document.getElementById('mapaNome').value.trim();
     if(!nome){showToast('⚠️ Nome obrigatório!');return;}
-    const obj={id:editMapaId||Date.now().toString(),nome,area:document.getElementById('mapaArea').value,subarea:document.getElementById('mapaSubarea').value.trim(),link:document.getElementById('mapaLink').value.trim(),nota:document.getElementById('mapaNote').value.trim()};
-    let personal=loadPersonal();
-    if(editMapaId){personal=personal.map(m=>m.id===editMapaId?obj:m);showToast('✏️ Atualizado!');}
-    else{personal.unshift(obj);showToast('✅ Mapa adicionado!');}
-    savePersonal(personal); closeMapaModal(); renderMapas();
+
+    const data={
+      nome,
+      area:document.getElementById('mapaArea').value,
+      subarea:document.getElementById('mapaSubarea').value.trim(),
+      link:document.getElementById('mapaLink').value.trim(),
+      nota:document.getElementById('mapaNote').value.trim(),
+    };
+
+    if(!currentEditId){
+      // Novo mapa
+      const newMapas=loadNew();
+      newMapas.unshift({...data,id:'n'+Date.now()});
+      saveNew(newMapas);
+      showToast('✅ Mapa adicionado!');
+    } else if(currentEditType==='default'){
+      // Editar fixo — salva edição local
+      const edits=loadEdits();
+      edits[currentEditId]=data;
+      saveEdits(edits);
+      showToast('✏️ Edição salva!');
+    } else if(currentEditType==='new'){
+      // Editar novo
+      const newMapas=loadNew().map(m=>m.id===currentEditId?{...m,...data}:m);
+      saveNew(newMapas);
+      showToast('✏️ Atualizado!');
+    }
+
+    closeMapaModal();
+    renderMapas();
   }
 
-  function exportPersonal(){
-    const p=loadPersonal();
-    if(!p.length){showToast('⚠️ Nenhum mapa pessoal para exportar.');return;}
-    const blob=new Blob([JSON.stringify(p,null,2)],{type:'application/json'});
+  function delMapa(){
+    // Called from modal delete button — only for 'new' type
+    if(!confirm('Remover este mapa?'))return;
+    saveNew(loadNew().filter(m=>m.id!==currentEditId));
+    closeMapaModal();
+    renderMapas();
+    showToast('🗑 Removido.');
+  }
+
+  function delNew(id){
+    if(!confirm('Remover este mapa?'))return;
+    saveNew(loadNew().filter(m=>m.id!==id));
+    renderMapas();
+    showToast('🗑 Removido.');
+  }
+
+  function exportEdits(){
+    const edits=loadEdits();
+    const newMapas=loadNew();
+    const data={edits,newMapas};
+    if(!Object.keys(edits).length&&!newMapas.length){showToast('⚠️ Nenhuma edição para exportar.');return;}
+    const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
     const url=URL.createObjectURL(blob);
     const a=document.createElement('a');
-    a.href=url; a.download=`meus-mapas-${new Date().toLocaleDateString('pt-BR').replace(/\//g,'-')}.json`; a.click();
-    URL.revokeObjectURL(url); showToast('💾 Exportado!');
+    a.href=url; a.download=`mapas-edits-${new Date().toLocaleDateString('pt-BR').replace(/\//g,'-')}.json`; a.click();
+    URL.revokeObjectURL(url);
+    showToast('💾 Edições exportadas!');
   }
 
-  function importPersonal(event){
+  function importEdits(event){
     const file=event.target.files[0]; if(!file)return;
     const reader=new FileReader();
     reader.onload=function(e){
       try{
-        const imported=JSON.parse(e.target.result);
-        if(!Array.isArray(imported))throw new Error();
-        const existing=loadPersonal();
-        const ids=new Set(existing.map(m=>m.id));
-        const newOnes=imported.filter(m=>!ids.has(m.id));
-        savePersonal([...newOnes,...existing]);
-        renderMapas(); showToast(`✅ ${newOnes.length} mapa(s) importado(s)!`);
+        const data=JSON.parse(e.target.result);
+        if(data.edits)saveEdits({...loadEdits(),...data.edits});
+        if(data.newMapas){
+          const existing=loadNew();
+          const ids=new Set(existing.map(m=>m.id));
+          saveNew([...data.newMapas.filter(m=>!ids.has(m.id)),...existing]);
+        }
+        renderMapas();
+        showToast('✅ Edições importadas!');
       }catch{showToast('❌ Arquivo inválido.');}
     };
     reader.readAsText(file); event.target.value='';
