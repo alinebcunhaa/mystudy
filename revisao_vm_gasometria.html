@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Revisão CLM — VM & Gasometria</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #1c2333;
+    --border: #30363d;
+    --accent: #58a6ff;
+    --accent2: #f78166;
+    --accent3: #3fb950;
+    --accent4: #d2a8ff;
+    --accent5: #ffa657;
+    --text: #e6edf3;
+    --text-muted: #8b949e;
+    --text-dim: #6e7681;
+    --danger: #f85149;
+    --warning: #e3b341;
+    --success: #3fb950;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  /* NAV */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(13,17,23,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    display: flex; align-items: center; gap: 0;
+    height: 52px;
+    overflow-x: auto;
+  }
+  nav a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0 1.2rem;
+    height: 52px;
+    display: flex; align-items: center;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    transition: all 0.2s;
+  }
+  nav a:hover { color: var(--text); border-color: var(--border); }
+  nav a.active { color: var(--accent); border-color: var(--accent); }
+
+  /* LAYOUT */
+  .container { max-width: 960px; margin: 0 auto; padding: 3rem 2rem 6rem; }
+
+  /* HERO */
+  .hero {
+    text-align: center;
+    padding: 3rem 0 4rem;
+  }
+  .hero .tag {
+    display: inline-block;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    text-transform: uppercase;
+    border: 1px solid rgba(88,166,255,0.3);
+    padding: 0.25rem 0.8rem;
+    border-radius: 2rem;
+    margin-bottom: 1.5rem;
+    background: rgba(88,166,255,0.05);
+  }
+  .hero h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2.2rem, 5vw, 3.5rem);
+    line-height: 1.1;
+    color: var(--text);
+    margin-bottom: 0.8rem;
+  }
+  .hero h1 em {
+    font-style: italic;
+    color: var(--accent);
+  }
+  .hero p {
+    color: var(--text-muted);
+    font-size: 1rem;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  /* SECTION */
+  section { margin-bottom: 5rem; scroll-margin-top: 70px; }
+  .section-header {
+    display: flex; align-items: center; gap: 1rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+  }
+  .section-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.8rem;
+    color: var(--text);
+  }
+
+  /* CARD */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-bottom: 1.2rem;
+    transition: border-color 0.2s;
+  }
+  .card:hover { border-color: #484f58; }
+
+  .card-header {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  .card-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.2rem;
+    color: var(--text);
+  }
+  .badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    white-space: nowrap;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+  }
+  .badge-blue { background: rgba(88,166,255,0.15); color: var(--accent); border: 1px solid rgba(88,166,255,0.3); }
+  .badge-orange { background: rgba(255,166,87,0.15); color: var(--accent5); border: 1px solid rgba(255,166,87,0.3); }
+  .badge-green { background: rgba(63,185,80,0.15); color: var(--accent3); border: 1px solid rgba(63,185,80,0.3); }
+  .badge-purple { background: rgba(210,168,255,0.15); color: var(--accent4); border: 1px solid rgba(210,168,255,0.3); }
+  .badge-red { background: rgba(248,81,73,0.15); color: var(--danger); border: 1px solid rgba(248,81,73,0.3); }
+
+  /* PROPS LIST */
+  .props { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.8rem; margin-bottom: 1rem; }
+  .prop {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.6rem 0.8rem;
+  }
+  .prop-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 0.2rem;
+  }
+  .prop-value { font-size: 0.9rem; font-weight: 500; color: var(--text); }
+
+  /* ALERT BOX */
+  .alert {
+    border-radius: 6px;
+    padding: 0.8rem 1rem;
+    font-size: 0.88rem;
+    display: flex; gap: 0.6rem; align-items: flex-start;
+    margin-top: 0.8rem;
+  }
+  .alert-blue { background: rgba(88,166,255,0.08); border: 1px solid rgba(88,166,255,0.2); color: #93c5fd; }
+  .alert-orange { background: rgba(255,166,87,0.08); border: 1px solid rgba(255,166,87,0.2); color: #fbbf24; }
+  .alert-red { background: rgba(248,81,73,0.08); border: 1px solid rgba(248,81,73,0.2); color: #fca5a5; }
+  .alert-green { background: rgba(63,185,80,0.08); border: 1px solid rgba(63,185,80,0.2); color: #86efac; }
+  .alert-icon { font-size: 1rem; flex-shrink: 0; margin-top: 0.05rem; }
+
+  /* TABLE */
+  .table-wrap { overflow-x: auto; margin: 1rem 0; }
+  table {
+    width: 100%; border-collapse: collapse;
+    font-size: 0.88rem;
+  }
+  th {
+    background: var(--surface2);
+    color: var(--text-muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.7rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  td {
+    padding: 0.7rem 1rem;
+    border-bottom: 1px solid rgba(48,54,61,0.6);
+    color: var(--text);
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+  td.mono { font-family: 'DM Mono', monospace; font-size: 0.82rem; }
+
+  /* FORMULA */
+  .formula-box {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+    padding: 1rem 1.2rem;
+    margin: 1rem 0;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.95rem;
+    color: var(--accent);
+  }
+  .formula-box span { color: var(--text-muted); font-size: 0.78rem; display: block; margin-top: 0.3rem; font-family: 'DM Sans', sans-serif; }
+
+  /* STEP FLOW */
+  .steps { counter-reset: step; }
+  .step {
+    display: flex; gap: 1rem;
+    margin-bottom: 1rem;
+    align-items: flex-start;
+  }
+  .step::before {
+    counter-increment: step;
+    content: counter(step);
+    flex-shrink: 0;
+    width: 28px; height: 28px;
+    background: var(--accent);
+    color: #0d1117;
+    border-radius: 50%;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.78rem;
+    font-weight: 600;
+    display: flex; align-items: center; justify-content: center;
+    margin-top: 0.1rem;
+  }
+  .step-content { flex: 1; }
+  .step-title { font-weight: 600; color: var(--text); margin-bottom: 0.2rem; }
+  .step-desc { font-size: 0.88rem; color: var(--text-muted); }
+
+  /* HIGHLIGHT */
+  .hl-blue { color: var(--accent); font-weight: 600; }
+  .hl-orange { color: var(--accent5); font-weight: 600; }
+  .hl-green { color: var(--accent3); font-weight: 600; }
+  .hl-red { color: var(--danger); font-weight: 600; }
+  .hl-purple { color: var(--accent4); font-weight: 600; }
+
+  /* GRID 2 */
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  @media(max-width:600px) { .grid2 { grid-template-columns: 1fr; } }
+
+  /* DIVIDER */
+  .divider { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+
+  /* CURVE DIAGRAM */
+  .curve-diagram {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.2rem;
+    margin: 0.8rem 0;
+  }
+  .curve-diagram h4 {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 0.8rem;
+  }
+  .curve-row {
+    display: flex; align-items: center; gap: 0.8rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.83rem;
+  }
+  .curve-label { width: 60px; color: var(--text-muted); font-family: 'DM Mono', monospace; font-size: 0.72rem; flex-shrink: 0; }
+  .curve-bar { height: 20px; border-radius: 3px; display: flex; align-items: center; padding: 0 0.5rem; font-size: 0.72rem; color: rgba(255,255,255,0.7); }
+  .bar-square { background: rgba(88,166,255,0.4); border: 1px solid rgba(88,166,255,0.5); min-width: 120px; }
+  .bar-ramp { background: linear-gradient(to right, rgba(255,166,87,0.2), rgba(255,166,87,0.5)); border: 1px solid rgba(255,166,87,0.4); min-width: 100px; }
+  .bar-sine { background: rgba(63,185,80,0.3); border: 1px solid rgba(63,185,80,0.4); min-width: 110px; }
+
+  /* MNEMONIC */
+  .mnemonic {
+    background: linear-gradient(135deg, rgba(210,168,255,0.05), rgba(88,166,255,0.05));
+    border: 1px solid rgba(210,168,255,0.2);
+    border-radius: 8px;
+    padding: 1.2rem;
+    margin-top: 1rem;
+  }
+  .mnemonic-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--accent4);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+  .mnemonic-text { font-size: 0.92rem; color: var(--text-muted); }
+  .mnemonic-text strong { color: var(--text); }
+
+  /* SCROLL PROGRESS */
+  #progress {
+    position: fixed; top: 0; left: 0;
+    height: 2px; background: var(--accent);
+    z-index: 200; transition: width 0.1s;
+    width: 0%;
+  }
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<nav>
+  <a href="#vm" class="active" onclick="setActive(this)">Modos Ventilatórios</a>
+  <a href="#gaso" onclick="setActive(this)">Gasometria</a>
+  <a href="#passo-a-passo" onclick="setActive(this)">Passo a Passo</a>
+  <a href="#compensacoes" onclick="setActive(this)">Compensações</a>
+  <a href="#ag" onclick="setActive(this)">Ânion Gap</a>
+  <a href="#macetes" onclick="setActive(this)">Macetes</a>
+</nav>
+
+<div class="container">
+
+  <div class="hero">
+    <div class="tag">CLM · Revisão Rápida</div>
+    <h1>Ventilação Mecânica<br><em>&</em> Gasometria</h1>
+    <p>Tudo que você precisa dominar para não errar mais essas questões.</p>
+  </div>
+
+  <!-- ======================== MODOS VENTILATÓRIOS ======================== -->
+  <section id="vm">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <h2 class="section-title">Modos Ventilatórios</h2>
+    </div>
+
+    <!-- CONCEITOS BASE -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">As 3 variáveis de qualquer ciclo respiratório</div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Variável</th>
+              <th>O que define?</th>
+              <th>Opções</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="hl-blue">Trigger (gatilho)</span></td>
+              <td>O que <strong>inicia</strong> o ciclo</td>
+              <td>Tempo (ventilador) ou esforço do paciente (fluxo/pressão)</td>
+            </tr>
+            <tr>
+              <td><span class="hl-orange">Limite</span></td>
+              <td>O que é <strong>controlado/mantido</strong> durante a inspiração</td>
+              <td>Pressão (PCV) ou Volume/Fluxo (VCV)</td>
+            </tr>
+            <tr>
+              <td><span class="hl-green">Cycling (ciclagem)</span></td>
+              <td>O que <strong>termina</strong> a inspiração</td>
+              <td>Tempo, volume, fluxo ou pressão</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="alert alert-blue">
+        <span class="alert-icon">💡</span>
+        <span><strong>Macete:</strong> Para identificar o modo, analise as curvas nessa ordem: (1) a curva de pressão é quadrada? → limitado a pressão. (2) A curva de volume é quadrada? → limitado a volume. (3) Há esforço do paciente? → assistido.</span>
+      </div>
+    </div>
+
+    <!-- MODOS PRINCIPAIS -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">VCV — Volume Controlled Ventilation</div>
+        <span class="badge badge-blue">VOLUME CONTROLADO</span>
+      </div>
+      <div class="props">
+        <div class="prop"><div class="prop-label">Limite</div><div class="prop-value">Volume / Fluxo</div></div>
+        <div class="prop"><div class="prop-label">Ciclagem</div><div class="prop-value">Volume (ou tempo)</div></div>
+        <div class="prop"><div class="prop-label">Trigger</div><div class="prop-value">Tempo (controlado)</div></div>
+        <div class="prop"><div class="prop-label">Curva de pressão</div><div class="prop-value">Rampa crescente</div></div>
+        <div class="prop"><div class="prop-label">Curva de volume</div><div class="prop-value">Rampa linear → platô</div></div>
+      </div>
+      <div class="curve-diagram">
+        <h4>Curvas típicas — VCV</h4>
+        <div class="curve-row"><span class="curve-label">Pressão</span><div class="curve-bar bar-ramp">▲ rampa</div><span style="color:var(--text-dim);font-size:0.78rem">sobe progressivamente</span></div>
+        <div class="curve-row"><span class="curve-label">Volume</span><div class="curve-bar bar-ramp" style="min-width:90px">▲ linear</div><span style="color:var(--text-dim);font-size:0.78rem">sobe e para no VT programado</span></div>
+        <div class="curve-row"><span class="curve-label">Fluxo</span><div class="curve-bar bar-square">■ quadrado</div><span style="color:var(--text-dim);font-size:0.78rem">constante (onda quadrada)</span></div>
+      </div>
+      <div class="alert alert-orange">
+        <span class="alert-icon">⚠️</span>
+        <span>Garante o <strong>volume corrente</strong> mas não controla a pressão → risco de barotrauma se complacência cair.</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">PCV — Pressure Controlled Ventilation</div>
+        <span class="badge badge-orange">PRESSÃO CONTROLADA</span>
+      </div>
+      <div class="props">
+        <div class="prop"><div class="prop-label">Limite</div><div class="prop-value">Pressão</div></div>
+        <div class="prop"><div class="prop-label">Ciclagem</div><div class="prop-value">Tempo</div></div>
+        <div class="prop"><div class="prop-label">Trigger</div><div class="prop-value">Tempo (controlado)</div></div>
+        <div class="prop"><div class="prop-label">Curva de pressão</div><div class="prop-value"><strong>QUADRADA</strong> ← chave!</div></div>
+        <div class="prop"><div class="prop-label">Curva de fluxo</div><div class="prop-value">Desacelerante</div></div>
+      </div>
+      <div class="curve-diagram">
+        <h4>Curvas típicas — PCV</h4>
+        <div class="curve-row"><span class="curve-label">Pressão</span><div class="curve-bar bar-square">■ quadrada</div><span style="color:var(--text-dim);font-size:0.78rem">mantida constante — LIMITADO A PRESSÃO</span></div>
+        <div class="curve-row"><span class="curve-label">Volume</span><div class="curve-bar bar-ramp" style="min-width:80px">▲ variável</div><span style="color:var(--text-dim);font-size:0.78rem">depende da complacência</span></div>
+        <div class="curve-row"><span class="curve-label">Fluxo</span><div class="curve-bar bar-ramp" style="background:linear-gradient(to right,rgba(63,185,80,0.5),rgba(63,185,80,0.1));border-color:rgba(63,185,80,0.4)">▼ desacelera</div><span style="color:var(--text-dim);font-size:0.78rem">começa alto, cai</span></div>
+      </div>
+      <div class="alert alert-green">
+        <span class="alert-icon">✅</span>
+        <span>Questão 4 da sua prova: pressão quadrada + ciclagem por tempo + sem esforço = <strong>PCV = Controlado, limitado a pressão, ciclado a tempo</strong>.</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">PSV — Pressure Support Ventilation</div>
+        <span class="badge badge-purple">ESPONTÂNEO / SUPORTE</span>
+      </div>
+      <div class="props">
+        <div class="prop"><div class="prop-label">Limite</div><div class="prop-value">Pressão</div></div>
+        <div class="prop"><div class="prop-label">Ciclagem</div><div class="prop-value">Fluxo (queda a 25%)</div></div>
+        <div class="prop"><div class="prop-label">Trigger</div><div class="prop-value">Esforço do paciente</div></div>
+      </div>
+      <div class="alert alert-blue">
+        <span class="alert-icon">💡</span>
+        <span>O paciente controla a <strong>frequência e o tempo inspiratório</strong>. Ventilador apenas "empurra" uma pressão de suporte. Usado no desmame.</span>
+      </div>
+    </div>
+
+    <!-- TABELA RESUMO -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Tabela-Resumo dos Modos</div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Modo</th>
+              <th>Trigger</th>
+              <th>Limite</th>
+              <th>Ciclagem</th>
+              <th>Curva pressão</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>VCV (controlado)</strong></td>
+              <td class="mono">Tempo</td>
+              <td class="mono">Volume/Fluxo</td>
+              <td class="mono">Volume</td>
+              <td>Rampa ▲</td>
+            </tr>
+            <tr>
+              <td><strong>PCV (controlado)</strong></td>
+              <td class="mono">Tempo</td>
+              <td class="mono"><span class="hl-orange">Pressão</span></td>
+              <td class="mono"><span class="hl-orange">Tempo</span></td>
+              <td><span class="hl-orange">Quadrada ■</span></td>
+            </tr>
+            <tr>
+              <td><strong>A/C (assist.-control.)</strong></td>
+              <td class="mono"><span class="hl-green">Paciente ou tempo</span></td>
+              <td class="mono">Volume ou pressão</td>
+              <td class="mono">Volume ou tempo</td>
+              <td>Depende do limite</td>
+            </tr>
+            <tr>
+              <td><strong>PSV (suporte)</strong></td>
+              <td class="mono"><span class="hl-blue">Paciente</span></td>
+              <td class="mono">Pressão</td>
+              <td class="mono"><span class="hl-blue">Fluxo</span></td>
+              <td>Quadrada ■</td>
+            </tr>
+            <tr>
+              <td><strong>SIMV</strong></td>
+              <td class="mono">Misto</td>
+              <td class="mono">Volume ou pressão</td>
+              <td class="mono">Volume ou tempo</td>
+              <td>Mista</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="mnemonic">
+      <div class="mnemonic-title">🧠 Macete definitivo — Identificar modo pelo ECG ventilatório</div>
+      <div class="mnemonic-text">
+        <strong>1.</strong> Curva de pressão <strong>quadrada</strong>? → <strong>limitado a pressão (PCV)</strong><br>
+        <strong>2.</strong> Curva de fluxo <strong>quadrada</strong>? → <strong>limitado a volume (VCV)</strong><br>
+        <strong>3.</strong> O ciclo <strong>começa no mesmo tempo sempre</strong>? → <strong>controlado</strong><br>
+        <strong>4.</strong> O ciclo <strong>varia com esforço</strong>? → <strong>assistido ou espontâneo</strong><br>
+        <strong>5.</strong> O que <strong>termina</strong> a inspiração? Olhe onde a curva cai: volume? fluxo? pressão? tempo?
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================== GASOMETRIA ======================== -->
+  <section id="gaso">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <h2 class="section-title">Gasometria — Valores Normais</h2>
+    </div>
+
+    <div class="card">
+      <div class="grid2">
+        <div>
+          <div class="prop" style="margin-bottom:0.6rem"><div class="prop-label">pH</div><div class="prop-value">7,35 – 7,45</div></div>
+          <div class="prop" style="margin-bottom:0.6rem"><div class="prop-label">pCO₂</div><div class="prop-value">35 – 45 mmHg</div></div>
+          <div class="prop"><div class="prop-label">HCO₃⁻</div><div class="prop-value">22 – 26 mEq/L</div></div>
+        </div>
+        <div>
+          <div class="prop" style="margin-bottom:0.6rem"><div class="prop-label">BE (base excess)</div><div class="prop-value">−2 a +2</div></div>
+          <div class="prop" style="margin-bottom:0.6rem"><div class="prop-label">SatO₂</div><div class="prop-value">≥ 95%</div></div>
+          <div class="prop"><div class="prop-label">pO₂</div><div class="prop-value">80 – 100 mmHg</div></div>
+        </div>
+      </div>
+      <div class="alert alert-blue" style="margin-top:1rem">
+        <span class="alert-icon">💡</span>
+        <span><strong>Regra simples de orientação:</strong> pH &lt; 7,35 = acidose · pH &gt; 7,45 = alcalose · pCO₂ ↑ = componente respiratório · HCO₃ ↓ = componente metabólico</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================== PASSO A PASSO ======================== -->
+  <section id="passo-a-passo">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <h2 class="section-title">Passo a Passo de Interpretação</h2>
+    </div>
+
+    <div class="card">
+      <div class="steps">
+        <div class="step">
+          <div class="step-content">
+            <div class="step-title">Determine o pH — qual o distúrbio primário?</div>
+            <div class="step-desc">pH &lt; 7,35 → <span class="hl-red">Acidose</span> · pH &gt; 7,45 → <span class="hl-blue">Alcalose</span> · pH normal → distúrbio misto ou compensado</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-content">
+            <div class="step-title">Identifique o componente primário</div>
+            <div class="step-desc">
+              Olhe pCO₂ e HCO₃: qual está alterado <em>na mesma direção</em> do pH?<br>
+              <span class="hl-orange">pCO₂ ↑ + acidose</span> = Acidose respiratória &nbsp;|&nbsp; <span class="hl-green">HCO₃ ↓ + acidose</span> = Acidose metabólica
+            </div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-content">
+            <div class="step-title">Verifique se há compensação adequada</div>
+            <div class="step-desc">Use as fórmulas de compensação esperada (ver seção abaixo). Se estiver fora do esperado → distúrbio misto.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-content">
+            <div class="step-title">Calcule o Ânion Gap (se acidose metabólica)</div>
+            <div class="step-desc">AG = Na⁺ – (Cl⁻ + HCO₃⁻). Normal: 8–12 mEq/L. AG elevado → causa diferente de AG normal.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-content">
+            <div class="step-title">Se AG elevado: calcule o Delta-Delta</div>
+            <div class="step-desc">ΔAG / ΔHCO₃ = (AG – 12) / (24 – HCO₃). Resultado 1–2: pura AG. &lt;1: + acidose hiperclorêmica. &gt;2: + alcalose metabólica oculta.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TABELA DISTÚRBIOS -->
+    <div class="card">
+      <div class="card-header"><div class="card-title">Os 4 Distúrbios Primários</div></div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Distúrbio</th><th>pH</th><th>Alteração primária</th><th>Compensação</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="hl-red">Acidose Resp.</span></td>
+              <td class="mono">↓</td>
+              <td>pCO₂ ↑</td>
+              <td>Rins retêm HCO₃ (lento, dias)</td>
+            </tr>
+            <tr>
+              <td><span class="hl-blue">Alcalose Resp.</span></td>
+              <td class="mono">↑</td>
+              <td>pCO₂ ↓</td>
+              <td>Rins excretam HCO₃</td>
+            </tr>
+            <tr>
+              <td><span class="hl-orange">Acidose Metab.</span></td>
+              <td class="mono">↓</td>
+              <td>HCO₃ ↓</td>
+              <td>Hiperventilação (pCO₂ ↓) — imediato</td>
+            </tr>
+            <tr>
+              <td><span class="hl-green">Alcalose Metab.</span></td>
+              <td class="mono">↑</td>
+              <td>HCO₃ ↑</td>
+              <td>Hipoventilação (pCO₂ ↑) — limitado</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================== COMPENSAÇÕES ======================== -->
+  <section id="compensacoes">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <h2 class="section-title">Fórmulas de Compensação</h2>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><div class="card-title">Acidose Metabólica → compensação respiratória</div><span class="badge badge-orange">MAIS COBRADA</span></div>
+      <div class="formula-box">
+        pCO₂ esperada = 1,5 × HCO₃ + 8 (± 2)
+        <span>Regra de Winter — a mais cobrada em prova. Ex: HCO₃ = 10 → pCO₂ esperada = 23 ± 2. Se pCO₂ real = 22 → compensação adequada ✅</span>
+      </div>
+      <div class="alert alert-green">
+        <span class="alert-icon">✅</span>
+        <span>Aplicando à Q1 da sua prova: HCO₃ = 10 → pCO₂ esperada = 1,5×10 + 8 = <strong>23</strong>. pCO₂ real = 22 → compensação adequada → Acidose metabólica pura.</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><div class="card-title">Alcalose Metabólica → compensação respiratória</div></div>
+      <div class="formula-box">
+        pCO₂ esperada = 0,7 × HCO₃ + 21 (± 2)
+        <span>Ou: ΔpCO₂ = 0,7 × ΔHCO₃</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><div class="card-title">Distúrbios Respiratórios → compensação renal</div></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Distúrbio</th><th>Compensação esperada do HCO₃</th><th>Tempo</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>Acidose Resp. Aguda</td>
+              <td class="mono">↑ 1 para cada ↑ 10 de pCO₂</td>
+              <td>Minutos</td>
+            </tr>
+            <tr>
+              <td>Acidose Resp. Crônica</td>
+              <td class="mono">↑ 3,5 para cada ↑ 10 de pCO₂</td>
+              <td>3–5 dias</td>
+            </tr>
+            <tr>
+              <td>Alcalose Resp. Aguda</td>
+              <td class="mono">↓ 2 para cada ↓ 10 de pCO₂</td>
+              <td>Minutos</td>
+            </tr>
+            <tr>
+              <td>Alcalose Resp. Crônica</td>
+              <td class="mono">↓ 5 para cada ↓ 10 de pCO₂</td>
+              <td>3–5 dias</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================== ÂNION GAP ======================== -->
+  <section id="ag">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <h2 class="section-title">Ânion Gap — O Divisor de Águas</h2>
+    </div>
+
+    <div class="card">
+      <div class="formula-box">
+        AG = Na⁺ – (Cl⁻ + HCO₃⁻)
+        <span>Normal: 8–12 mEq/L (com albumina normal). Se albumina ↓, corrija: AG corrigido = AG + 2,5 × (4 – albumina)</span>
+      </div>
+
+      <div class="grid2" style="margin-top:1.2rem">
+        <div>
+          <div class="card" style="border-color:rgba(248,81,73,0.3)">
+            <div class="card-header"><div class="card-title" style="font-size:1rem">AG <span class="hl-red">Elevado</span> (&gt;12)</div></div>
+            <div style="font-size:0.85rem;color:var(--text-muted)">
+              <strong style="color:var(--text)">MUDPILAS / CATMUDPILES:</strong><br>
+              · Metanol / Metformina (acidose lática)<br>
+              · Uremia<br>
+              · Diabética (cetoacidose)<br>
+              · Propileno glicol<br>
+              · Isoniazida / Iron (ferro)<br>
+              · Lactato (<span class="hl-red">acidose lática!</span>)<br>
+              · Etilenoglicol<br>
+              · Salicilatos
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="card" style="border-color:rgba(255,166,87,0.3)">
+            <div class="card-header"><div class="card-title" style="font-size:1rem">AG <span class="hl-orange">Normal</span> (hiperclorêmica)</div></div>
+            <div style="font-size:0.85rem;color:var(--text-muted)">
+              <strong style="color:var(--text)">DURHAM / HARD-UP:</strong><br>
+              · Diarreia (perda de HCO₃)<br>
+              · Uretero-sigmoidostomia<br>
+              · RTA (acidose tubular renal)<br>
+              · Hiperalimentação<br>
+              · Acetazolamida<br>
+              · Addison<br>
+              · Reposição de NaCl em excesso
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="alert alert-red" style="margin-top:1rem">
+        <span class="alert-icon">🎯</span>
+        <span><strong>Q1 da prova:</strong> AG = 135 – (101 + 10) = <strong>24</strong> → AG <strong>elevado</strong>. Metformina causa acidose lática = AG elevado = <strong>é compatível</strong>. Por isso a resposta "metformina" estava ERRADA como "incompatível".</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><div class="card-title">Delta-Delta (ΔΔ) — detecta distúrbio misto oculto</div><span class="badge badge-purple">AVANÇADO</span></div>
+      <div class="formula-box">
+        ΔΔ = (AG – 12) / (24 – HCO₃)
+        <span>1–2: acidose AG pura · &lt;1: + acidose hiperclorêmica · &gt;2: + alcalose metabólica oculta</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================== MACETES ======================== -->
+  <section id="macetes">
+    <div class="section-header">
+      <span class="section-num">06</span>
+      <h2 class="section-title">Macetes Finais</h2>
+    </div>
+
+    <div class="grid2">
+      <div class="mnemonic">
+        <div class="mnemonic-title">🫁 Gasometria — ROME</div>
+        <div class="mnemonic-text">
+          <strong>R</strong>espiratory <strong>O</strong>pposite (oposto): pH↑ pCO₂↓ ou pH↓ pCO₂↑<br>
+          <strong>M</strong>etabolic <strong>E</strong>qual (igual): pH↑ HCO₃↑ ou pH↓ HCO₃↓
+        </div>
+      </div>
+      <div class="mnemonic">
+        <div class="mnemonic-title">🔧 VM — PCV vs VCV</div>
+        <div class="mnemonic-text">
+          <strong>PCV</strong> = pressão <em>quadrada</em>, fluxo desacelerante, volume variável<br>
+          <strong>VCV</strong> = fluxo <em>quadrado</em>, pressão em rampa, volume fixo
+        </div>
+      </div>
+      <div class="mnemonic">
+        <div class="mnemonic-title">📊 Ânion Gap rápido</div>
+        <div class="mnemonic-text">
+          <strong>AG = Na – Cl – HCO₃</strong><br>
+          Calcule SEMPRE antes de pensar na causa.<br>
+          Normal ≤ 12. Elevado &gt; 12.
+        </div>
+      </div>
+      <div class="mnemonic">
+        <div class="mnemonic-title">⏱️ Regra de Winter</div>
+        <div class="mnemonic-text">
+          <strong>pCO₂ = 1,5 × HCO₃ + 8 (±2)</strong><br>
+          Se pCO₂ real &lt; esperada → alcalose resp. associada<br>
+          Se pCO₂ real &gt; esperada → acidose resp. associada
+        </div>
+      </div>
+    </div>
+
+    <!-- TABELA FINAL -->
+    <div class="card" style="margin-top:1.5rem">
+      <div class="card-header"><div class="card-title">Causa × Gasometria — tabela rápida</div></div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Causa</th><th>pH</th><th>pCO₂</th><th>HCO₃</th><th>AG</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Cetoacidose diabética</td><td class="mono hl-red">↓</td><td class="mono">↓ (comp.)</td><td class="mono">↓↓</td><td class="mono hl-red">↑</td></tr>
+            <tr><td>Acidose lática (metformina, choque)</td><td class="mono hl-red">↓</td><td class="mono">↓ (comp.)</td><td class="mono">↓↓</td><td class="mono hl-red">↑</td></tr>
+            <tr><td>Insuficiência renal</td><td class="mono hl-red">↓</td><td class="mono">↓ (comp.)</td><td class="mono">↓</td><td class="mono hl-red">↑</td></tr>
+            <tr><td>Diarreia</td><td class="mono hl-red">↓</td><td class="mono">↓ (comp.)</td><td class="mono">↓</td><td class="mono">Normal</td></tr>
+            <tr><td>Acidose tubular renal</td><td class="mono hl-red">↓</td><td class="mono">↓ (comp.)</td><td class="mono">↓</td><td class="mono">Normal</td></tr>
+            <tr><td>Vômitos</td><td class="mono hl-green">↑</td><td class="mono">↑ (comp.)</td><td class="mono">↑</td><td class="mono">Normal/↓</td></tr>
+            <tr><td>DPOC descompensado</td><td class="mono hl-red">↓</td><td class="mono hl-red">↑↑</td><td class="mono">↑ (comp.)</td><td class="mono">Normal</td></tr>
+            <tr><td>Hiperventilação / TEP</td><td class="mono hl-green">↑</td><td class="mono hl-green">↓↓</td><td class="mono">↓ (comp.)</td><td class="mono">Normal</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+  // Progress bar
+  window.addEventListener('scroll', () => {
+    const el = document.documentElement;
+    const pct = (el.scrollTop / (el.scrollHeight - el.clientHeight)) * 100;
+    document.getElementById('progress').style.width = pct + '%';
+  });
+
+  function setActive(el) {
+    document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  // Highlight nav on scroll
+  const sections = document.querySelectorAll('section');
+  const navLinks = document.querySelectorAll('nav a');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => {
+      if (window.scrollY >= s.offsetTop - 100) current = s.id;
+    });
+    navLinks.forEach(a => {
+      a.classList.remove('active');
+      if (a.getAttribute('href') === '#' + current) a.classList.add('active');
+    });
+  });
+</script>
+</body>
+</html>

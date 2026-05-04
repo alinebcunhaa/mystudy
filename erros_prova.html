@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caderno de Erros · R1 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Nunito',sans-serif;background:#faf8f5;color:#1e293b;min-height:100vh}
+header{background:#fff;border-bottom:1px solid #e2e8f0;position:sticky;top:0;z-index:100}
+.header-inner{max-width:920px;margin:0 auto;padding:1.2rem 1.5rem 0;display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:.8rem}
+.header-tag{font-size:.68rem;font-weight:700;letter-spacing:.12em;color:#94a3b8;text-transform:uppercase;margin-bottom:.25rem}
+.header-title{font-family:'Lora',serif;font-size:clamp(1.2rem,3vw,1.7rem);font-weight:600;color:#1e293b;margin-bottom:.15rem}
+.header-sub{font-size:.78rem;color:#94a3b8}
+.header-btns{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center}
+nav{max-width:920px;margin:0 auto;padding:0 1.5rem;display:flex;gap:.15rem;margin-top:.8rem}
+.nav-btn{background:none;border:none;padding:.55rem 1rem;font-size:.8rem;font-weight:600;color:#94a3b8;cursor:pointer;border-bottom:2px solid transparent;font-family:'Nunito',sans-serif;transition:all .15s}
+.nav-btn:hover{color:#475569}
+.nav-btn.active{color:#4f46e5;border-bottom-color:#4f46e5}
+main{max-width:920px;margin:0 auto;padding:1.8rem 1.5rem 6rem}
+.view{display:none}.view.active{display:block}
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:.8rem;margin-bottom:1.3rem}
+.stat-card{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:.9rem;text-align:center;cursor:pointer;transition:border-color .15s}
+.stat-card:hover{border-color:#c7d2fe}
+.stat-num{font-family:'Lora',serif;font-size:1.8rem;font-weight:600;line-height:1}
+.stat-label{font-size:.68rem;color:#94a3b8;margin-top:.22rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem}
+.dash-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem;margin-top:1.1rem}
+@media(max-width:600px){.dash-grid,.dash-grid-2{grid-template-columns:1fr}}
+.panel{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:1.15rem 1.3rem}
+.panel-title{font-family:'Lora',serif;font-size:.93rem;font-weight:600;color:#1e293b;margin-bottom:.8rem}
+.panel-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.8rem}
+.bar-wrap{margin-bottom:.8rem;cursor:pointer}
+.bar-row{display:flex;justify-content:space-between;margin-bottom:.28rem}
+.bar-name{font-size:.82rem;font-weight:600}
+.bar-count{font-size:.75rem;color:#94a3b8}
+.bar-bg{background:#f1f5f9;border-radius:99px;height:7px;overflow:hidden}
+.bar-fill{height:100%;border-radius:99px;transition:width .4s}
+.type-row{display:flex;align-items:center;gap:.65rem;margin-bottom:.65rem;padding:.48rem .75rem;background:#faf8f5;border-radius:8px;border:1px solid #e2e8f0;cursor:pointer}
+.type-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.type-label{font-size:.81rem;color:#475569;flex:1}
+.type-count{font-weight:700;font-size:.95rem}
+.prova-item{font-size:.79rem;color:#64748b;padding:.35rem 0;border-bottom:1px solid #f1f5f9}
+.mini-card{display:flex;align-items:center;gap:.55rem;padding:.42rem 0;border-bottom:1px solid #f1f5f9}
+.mini-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.mini-title{font-size:.79rem;font-weight:600;color:#334155;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mini-sub{font-size:.68rem;color:#94a3b8}
+.filter-bar{display:flex;gap:.65rem;margin-bottom:1rem;flex-wrap:wrap}
+.filter-bar input,.filter-bar select{background:#faf8f5;border:1px solid #e2e8f0;border-radius:8px;padding:.48rem .8rem;font-size:.81rem;color:#1e293b;font-family:'Nunito',sans-serif;outline:none}
+.filter-bar input{flex:1;min-width:150px}
+.results-count{font-size:.78rem;color:#94a3b8;margin-bottom:.9rem}
+.err-card{background:#fff;border-radius:10px;margin-bottom:.75rem;overflow:hidden;border:1px solid #e2e8f0;border-left-width:4px}
+.err-card-head{padding:.82rem 1.05rem;display:flex;align-items:flex-start;gap:.75rem;cursor:pointer}
+.err-card-meta{display:flex;flex-wrap:wrap;gap:.32rem;align-items:center;margin-bottom:.25rem}
+.badge{border-radius:5px;font-size:.65rem;font-weight:700;padding:.1rem .45rem;border:1px solid}
+.badge-tipo{background:#f8fafc;color:#64748b;border-color:#e2e8f0;font-weight:500}
+.badge-prova{font-size:.65rem;color:#94a3b8}
+.err-title{font-weight:600;font-size:.88rem;color:#1e293b;font-family:'Lora',serif}
+.err-preview{font-size:.76rem;color:#94a3b8;margin-top:.1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chevron{color:#cbd5e1;font-size:.7rem;flex-shrink:0;margin-top:.1rem}
+.err-body{border-top:1px solid;padding:.82rem 1.05rem;display:none}
+.err-body.open{display:block}
+.err-text{font-size:.845rem;color:#334155;line-height:1.75;white-space:pre-wrap}
+.card-actions{display:flex;gap:.45rem;margin-top:.85rem;justify-content:flex-end}
+.res-card{background:#fff;border-radius:10px;margin-bottom:.9rem;overflow:hidden;border:1px solid #e2e8f0;border-left-width:4px}
+.res-card-head{padding:.95rem 1.15rem;display:flex;align-items:center;gap:.75rem;cursor:pointer}
+.res-body{border-top:1px solid;padding:1.1rem 1.35rem;background:#fdfcfb;display:none}
+.res-body.open{display:block}
+.res-section-title{font-family:'Lora',serif;font-weight:600;font-size:.93rem;color:#1e293b;margin-bottom:.5rem;padding-bottom:.25rem;border-bottom:1px solid #e2e8f0;margin-top:1.1rem}
+.res-section-title:first-child{margin-top:0}
+.res-text{font-size:.84rem;color:#334155;line-height:1.75;white-space:pre-wrap;margin-bottom:.45rem}
+.res-list{padding-left:1.1rem;margin:.45rem 0}
+.res-list li{font-size:.82rem;color:#334155;line-height:1.7;margin-bottom:.2rem}
+.res-ol{padding-left:1.3rem;margin:.45rem 0}
+.res-ol li{font-size:.82rem;color:#334155;line-height:1.7;margin-bottom:.32rem}
+.formula-box{background:#f0f9ff;border:1px solid #bae6fd;border-left:3px solid #0ea5e9;border-radius:0 6px 6px 0;padding:.52rem .95rem;font-family:'Lora',serif;font-size:.86rem;color:#0c4a6e;margin:.45rem 0}
+.macete-box{background:#fdf4ff;border:1px solid #e9d5ff;border-radius:8px;padding:.6rem .95rem;font-size:.81rem;color:#6b21a8;margin:.7rem 0}
+.alert-box{border-radius:8px;padding:.6rem .95rem;font-size:.81rem;margin:.52rem 0;line-height:1.6}
+.alert-red{background:#fef2f2;border:1px solid #fecaca;color:#991b1b}
+.alert-orange{background:#fffbeb;border:1px solid #fde68a;color:#92400e}
+.alert-blue{background:#eff6ff;border:1px solid #bfdbfe;color:#1e40af}
+.alert-verde{background:#f0fdf4;border:1px solid #bbf7d0;color:#14532d}
+.alert-purple{background:#fdf4ff;border:1px solid #e9d5ff;color:#6b21a8}
+.res-table-wrap{overflow-x:auto;margin:.7rem 0}
+.res-table{width:100%;border-collapse:collapse;font-size:.79rem}
+.res-table th{background:#f8fafc;color:#64748b;font-size:.65rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:.48rem .72rem;text-align:left;border-bottom:1px solid #e2e8f0;white-space:nowrap}
+.res-table td{padding:.48rem .72rem;border-bottom:1px solid #f1f5f9;color:#334155;line-height:1.5;vertical-align:top}
+.res-table tr:nth-child(even) td{background:#fafafa}
+.empty{text-align:center;color:#94a3b8;padding:3rem;font-size:.88rem}
+.btn-primary{background:#4f46e5;color:#fff;border:none;border-radius:8px;padding:.52rem 1.1rem;font-size:.8rem;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif;white-space:nowrap}
+.btn-outline{background:#fff;color:#0ea5e9;border:1.5px solid #7dd3fc;border-radius:8px;padding:.5rem 1.1rem;font-size:.8rem;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif;white-space:nowrap}
+.btn-sec{background:#f1f5f9;color:#475569;border:1px solid #e2e8f0;border-radius:8px;padding:.5rem 1rem;font-size:.8rem;font-weight:600;cursor:pointer;font-family:'Nunito',sans-serif}
+.btn-link{background:none;border:none;color:#4f46e5;font-size:.77rem;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif}
+.btn-sm{border:none;border-radius:6px;padding:.28rem .7rem;font-size:.73rem;font-weight:600;cursor:pointer;font-family:'Nunito',sans-serif}
+.btn-blue-sm{background:#eff6ff;color:#3b82f6}
+.btn-red-sm{background:#fee2e2;color:#ef4444}
+.btn-grey-sm{background:#f1f5f9;color:#64748b}
+.overlay{position:fixed;inset:0;background:rgba(15,23,42,.32);backdrop-filter:blur(4px);z-index:200;display:none;align-items:center;justify-content:center;padding:1rem}
+.overlay.open{display:flex}
+.modal{background:#fff;border-radius:14px;padding:1.6rem;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.13)}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.3rem}
+.modal-title{font-family:'Lora',serif;font-size:1.05rem;font-weight:600;color:#1e293b}
+.close-btn{background:none;border:none;font-size:.95rem;color:#94a3b8;cursor:pointer}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:.9rem}
+.form-group{display:flex;flex-direction:column}
+.form-group.full{grid-column:1/-1}
+label.lbl{font-size:.68rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.3rem;display:block}
+.form-grid input,.form-grid select,.form-grid textarea{background:#faf8f5;border:1px solid #e2e8f0;border-radius:8px;padding:.48rem .8rem;font-size:.81rem;color:#1e293b;font-family:'Nunito',sans-serif;outline:none;width:100%}
+.form-grid textarea{resize:vertical}
+.modal-actions{display:flex;gap:.65rem;justify-content:flex-end;margin-top:1.35rem}
+#toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:#1e293b;color:#fff;padding:.6rem 1.35rem;border-radius:99px;font-size:.8rem;font-weight:600;z-index:999;box-shadow:0 4px 20px rgba(0,0,0,.18);opacity:0;transition:opacity .25s;pointer-events:none}
+#toast.show{opacity:1}
+.confirm-text{font-size:.75rem;color:#ef4444}
+</style>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <div>
+      <div class="header-tag">📋 Caderno de Estudos · R1 2026</div>
+      <h1 class="header-title">Meus Erros &amp; Resumos</h1>
+      <p class="header-sub" id="header-sub">Carregando...</p>
+    </div>
+    <div class="header-btns">
+      <button class="btn-outline" id="btn-new-resumo" style="display:none" onclick="openResForm()">+ Novo Resumo</button>
+      <button class="btn-primary" id="btn-new-erro" onclick="openErrForm()">+ Novo Erro</button>
+    </div>
+  </div>
+  <nav>
+    <button class="nav-btn active" onclick="setView('dashboard',this)">📊 Painel</button>
+    <button class="nav-btn" onclick="setView('erros',this)">✏️ Erros</button>
+    <button class="nav-btn" onclick="setView('resumos',this)">📚 Resumos</button>
+  </nav>
+</header>
+<main>
+  <div class="view active" id="view-dashboard">
+    <div class="stats-row" id="stats-row"></div>
+    <div class="dash-grid">
+      <div class="panel" id="panel-materia"></div>
+      <div class="panel" id="panel-tipo"></div>
+    </div>
+    <div class="dash-grid-2">
+      <div class="panel"><div class="panel-header"><div class="panel-title">Últimos Erros</div><button class="btn-link" onclick="setView('erros',document.querySelectorAll('.nav-btn')[1])">Ver todos →</button></div><div id="dash-erros"></div></div>
+      <div class="panel"><div class="panel-header"><div class="panel-title">Resumos Disponíveis</div><button class="btn-link" onclick="setView('resumos',document.querySelectorAll('.nav-btn')[2])">Ver todos →</button></div><div id="dash-resumos"></div></div>
+    </div>
+  </div>
+  <div class="view" id="view-erros">
+    <div class="filter-bar">
+      <input type="text" id="search-err" placeholder="🔍 Buscar..." oninput="renderErros()">
+      <select id="filter-mat" onchange="renderErros()"><option value="">Todas as matérias</option><option>CLM</option><option>Cirurgia</option><option>GO</option><option>Pediatria</option><option>Preventiva</option><option>Psiquiatria</option><option>Outro</option></select>
+      <select id="filter-tipo" onchange="renderErros()"><option value="">Todos os tipos</option><option>Conceito</option><option>Distração</option><option>Nunca vi</option><option>Confusão entre temas</option></select>
+      <button class="btn-sec" id="btn-clear-err" style="display:none" onclick="clearErrFilter()">✕ Limpar</button>
+    </div>
+    <div class="results-count" id="err-count"></div>
+    <div id="erros-list"></div>
+  </div>
+  <div class="view" id="view-resumos">
+    <div class="filter-bar">
+      <input type="text" id="search-res" placeholder="🔍 Buscar resumo..." oninput="renderResumos()">
+      <select id="filter-res-mat" onchange="renderResumos()"><option value="">Todas as matérias</option><option>CLM</option><option>Cirurgia</option><option>GO</option><option>Pediatria</option><option>Preventiva</option><option>Psiquiatria</option><option>Outro</option></select>
+      <button class="btn-sec" id="btn-clear-res" style="display:none" onclick="clearResFilter()">✕ Limpar</button>
+    </div>
+    <div class="results-count" id="res-count"></div>
+    <div id="resumos-list"></div>
+  </div>
+</main>
+<div class="overlay" id="modal-err" onclick="if(event.target===this)closeErrForm()">
+  <div class="modal">
+    <div class="modal-header"><span class="modal-title" id="modal-err-title">Registrar Erro</span><button class="close-btn" onclick="closeErrForm()">✕</button></div>
+    <div class="form-grid">
+      <div class="form-group"><label class="lbl">Matéria</label><select id="ef-mat"><option>CLM</option><option>Cirurgia</option><option>GO</option><option>Pediatria</option><option>Preventiva</option><option>Psiquiatria</option><option>Outro</option></select></div>
+      <div class="form-group"><label class="lbl">Tipo de Erro</label><select id="ef-tipo"><option>Conceito</option><option>Distração</option><option>Nunca vi</option><option>Confusão entre temas</option></select></div>
+      <div class="form-group full"><label class="lbl">Tema / Assunto</label><input id="ef-tema" placeholder="Ex: Gasometria / Ânion Gap"></div>
+      <div class="form-group full"><label class="lbl">O que errei e o correto</label><textarea id="ef-erro" rows="4" placeholder="Descreva o erro e a resposta correta..."></textarea></div>
+      <div class="form-group"><label class="lbl">Prova / Simulado</label><input id="ef-prova" placeholder="Ex: Simulado R1 Abr/26"></div>
+      <div class="form-group"><label class="lbl">Data</label><input id="ef-data" type="date"></div>
+    </div>
+    <div class="modal-actions"><button class="btn-sec" onclick="closeErrForm()">Cancelar</button><button class="btn-primary" onclick="submitErr()">Registrar</button></div>
+  </div>
+</div>
+<div class="overlay" id="modal-res" onclick="if(event.target===this)closeResForm()">
+  <div class="modal">
+    <div class="modal-header"><span class="modal-title" id="modal-res-title">Novo Resumo</span><button class="close-btn" onclick="closeResForm()">✕</button></div>
+    <div class="form-grid">
+      <div class="form-group"><label class="lbl">Matéria</label><select id="rf-mat"><option>CLM</option><option>Cirurgia</option><option>GO</option><option>Pediatria</option><option>Preventiva</option><option>Psiquiatria</option><option>Outro</option></select></div>
+      <div class="form-group"><label class="lbl">Título</label><input id="rf-titulo" placeholder="Ex: Critérios de Fong"></div>
+      <div class="form-group full"><label class="lbl">Conteúdo</label><textarea id="rf-conteudo" rows="8" placeholder="Escreva o resumo aqui..."></textarea></div>
+    </div>
+    <div class="modal-actions"><button class="btn-sec" onclick="closeResForm()">Cancelar</button><button class="btn-outline" onclick="submitRes()">Criar Resumo</button></div>
+  </div>
+</div>
+<div id="toast"></div>
+<script>
+const PASTEL={CLM:{bg:"#fde8e8",border:"#f8b4b4",text:"#b91c1c",dot:"#ef4444"},Cirurgia:{bg:"#fef3e2",border:"#fcd34d",text:"#92400e",dot:"#f59e0b"},GO:{bg:"#fce7f3",border:"#f9a8d4",text:"#9d174d",dot:"#ec4899"},Pediatria:{bg:"#e0f2fe",border:"#7dd3fc",text:"#0c4a6e",dot:"#0ea5e9"},Preventiva:{bg:"#dcfce7",border:"#86efac",text:"#14532d",dot:"#22c55e"},Psiquiatria:{bg:"#ede9fe",border:"#c4b5fd",text:"#4c1d95",dot:"#8b5cf6"},Outro:{bg:"#f1f5f9",border:"#cbd5e1",text:"#334155",dot:"#64748b"}};
+const TIPO_COLORS=["#ef4444","#f59e0b","#0ea5e9","#8b5cf6"];
+const TIPOS=["Conceito","Distração","Nunca vi","Confusão entre temas"];
+const MATERIAS=["CLM","Cirurgia","GO","Pediatria","Preventiva","Psiquiatria","Outro"];
+
+const INIT_ERRORS=[
+  {id:1,materia:"CLM",tema:"Gasometria / Ânion Gap",erro:"Não calculou o AG antes de responder. AG = Na – (Cl + HCO₃) = 135 – 111 = 24 → elevado. Metformina causa acidose lática (AG alto) → é compatível com o quadro, não a resposta da 'incompatível'.",tipo:"Conceito",data:"2026-04-30",prova:"Simulado R1 Abr/26"},
+  {id:2,materia:"CLM",tema:"CCR Metastático / Critérios de Fong",erro:"Marcou colostomia profilática. Não há indicação de operar sítio primário sem obstrução em doença metastática. Critérios de Fong são exclusivamente hepáticos — acometimento pulmonar não faz parte.",tipo:"Conceito",data:"2026-04-30",prova:"Simulado R1 Abr/26"},
+  {id:3,materia:"CLM",tema:"Anti-hipertensivos / IRC + DAP",erro:"Marcou Hidralazina. Com K+ 5,7 e IRC, IECA/BRA são contraindicados. Anlodipino (BCC di-hidropiridínico) é seguro e sem contraindicação em DAP.",tipo:"Conceito",data:"2026-04-30",prova:"Simulado R1 Abr/26"},
+  {id:4,materia:"CLM",tema:"Modos Ventilatórios — PCV vs VCV",erro:"Inverteu limitado/ciclado. Curva de pressão quadrada = limitado a pressão. Fim por tempo = ciclado a tempo. Sem esforço = controlado. PCV = Controlado, limitado a pressão, ciclado a tempo.",tipo:"Confusão entre temas",data:"2026-04-30",prova:"Simulado R1 Abr/26"},
+  {id:5,materia:"CLM",tema:"Guillain-Barré / LCR",erro:"Marcou pleocitose linfocítica. No GB o LCR tem dissociação albumino-citológica: proteína elevada + células NORMAIS. Pleocitose é de meningite viral.",tipo:"Conceito",data:"2026-04-30",prova:"Simulado R1 Abr/26"},
+  {id:6,materia:"CLM",tema:"Gota vs Pseudogota — Cristais",erro:"Marcou cristais romboides + birrefringência positiva (pseudogota). Gota = cristais em agulha + birrefringência NEGATIVA forte. Pseudogota = romboides + birrefringência positiva fraca.",tipo:"Confusão entre temas",data:"2026-04-30",prova:"Simulado R1 Abr/26"},
+  {id:7,materia:"CLM",tema:"Ausculta Cardíaca / BRE — B2 Paradoxal",erro:"Marcou desdobramento fixo (CIA). BRE = tudo ao contrário → desdobramento PARADOXAL. A2 vem depois de P2; split some na inspiração. Fixo = CIA.",tipo:"Conceito",data:"2026-04-30",prova:"Simulado R1 Abr/26"},
+  {id:8,materia:"CLM",tema:"Coma Mixedematoso — Tratamento",erro:"Marcou T3 em detrimento de T4 + dose de choque. Correto: T4 + T3 juntos + corticoide em dose de ESTRESSE (não choque). Sempre coletar TSH, T4L e cortisol antes.",tipo:"Distração",data:"2026-04-30",prova:"Simulado R1 Abr/26"},
+  {id:9,materia:"CLM",tema:"Neuro-AIDS / Criptococose vs LEMP",erro:"Confundiu LEMP com Criptococose. LEMP: desmielinizante, SEM febre, sem pares cranianos agudos. Criptococose: febre + diplopia + paralisia facial + leveduras encapsuladas na histopatologia.",tipo:"Confusão entre temas",data:"2026-04-30",prova:"Simulado R1 Abr/26"},
+  {id:10,materia:"Cirurgia",tema:"Perfuração Gástrica / Reconstrução",erro:"Marcou Gastrectomia parcial Billroth I + vagotomia superseletiva. Bordas necróticas impedem rafia; vagotomia superseletiva é para úlcera duodenal péptica; Billroth I inadequado com contaminação difusa. Correto: Gastrectomia subtotal + Billroth II.",tipo:"Conceito",data:"2026-04-30",prova:"Simulado R1 Abr/26"},
+  {id:11,materia:"Cirurgia",tema:"Volvo de Ceco vs Sigmoide — Conduta",erro:"Confundiu com volvo de sigmoide. Volvo de SIGMOIDE: colonoscopia descompressiva é 1ª escolha. Volvo de CECO: colonoscopia raramente eficaz → cirurgia SEMPRE (hemicolectomia direita), mesmo sem sofrimento de alça.",tipo:"Confusão entre temas",data:"2026-04-30",prova:"Simulado R1 Abr/26"},
+  {id:12,materia:"Cirurgia",tema:"Histologia do CCR",erro:"Marcou adenocarcinoma derivado do epitélio escamoso. CCR é derivado do epitélio GLANDULAR/COLUNAR. Epitélio escamoso é do esôfago e canal anal. Fator de risco isolado mais importante: IDADE.",tipo:"Conceito",data:"2026-04-30",prova:"Simulado R1 Abr/26"},
+  {id:13,materia:"Cirurgia",tema:"AAA — Critérios de Cirurgia Eletiva",erro:"Marcou caso de 6,5cm infrarrenal como quem NÃO deve operar. Errado: 6,5cm > 5,5cm = TEM indicação. Correto: 4,8cm justarrenal crescendo 0,4cm/ano NÃO tem indicação (critério: >0,5cm/6m ou >1cm/ano).",tipo:"Conceito",data:"2026-04-30",prova:"Simulado R1 Abr/26"},
+  {id:14,materia:"Cirurgia",tema:"SHU — Síndrome Hemolítico-Urêmica",erro:"Criança com diarreia sanguinolenta (E. coli O157:H7) + anemia + plaquetopenia + IRA = SHU. Exame esperado: ESQUIZÓCITOS no esfregaço periférico (hemólise microangiopática).",tipo:"Nunca vi",data:"2026-04-30",prova:"Simulado R1 Abr/26"},
+  {id:15,materia:"Cirurgia",tema:"Invaginação Intestinal — Conduta",erro:"Target sign no US + fezes em groselha = invaginação. Se estável e sem peritonite → 1ª escolha: ENEMA PNEUMÁTICO/HIDROSTÁTICO. Cirurgia só se falhar ou houver isquemia/perfuração.",tipo:"Conceito",data:"2026-04-30",prova:"Simulado R1 Abr/26"},
+  {id:16,materia:"Cirurgia",tema:"Kissing Walls / Choque Séptico",erro:"Marcou dobutamina após kissing walls. Kissing walls = colapso ventricular = HIPOVOLEMIA → mais volume, não dobutamina. Dobutamina = falência miocárdica. Correto: hidrocortisona em choque séptico refratário.",tipo:"Conceito",data:"2026-04-30",prova:"Simulado R1 Abr/26"},
+  {id:17,materia:"Cirurgia",tema:"Técnica de McVay — Hérnia Femoral",erro:"Marcou plug de tela. McVay: sutura da aponeurose do transverso ao LIGAMENTO PECTÍNEO (Cooper). Bassini = tendão conjunto ao lig. inguinal (inguinal). McVay = tendão conjunto ao lig. pectíneo (femoral).",tipo:"Conceito",data:"2026-04-30",prova:"Simulado R1 Abr/26"},
+  {id:18,materia:"GO",tema:"Isoimunização Rh / Coombs + ACM",erro:"Marcou imunoglobulina anti-RhD. Paciente já está sensibilizada (Coombs indireto 1/128) → imunoglobulina é inútil. ACM > 1,5 MOM = anemia fetal grave. Correto: Cordocentese + transfusão intrauterina.",tipo:"Conceito",data:"2026-04-30",prova:"Simulado R1 Abr/26"},
+  {id:19,materia:"Preventiva",tema:"Insulina Basal / Efeito Somogyi",erro:"Marcou aumentar insulina basal noturna. Glicemia de jejum elevada + hipoglicemia noturna = Efeito Somogyi (hiperglicemia de rebote). Correto: DIMINUIR a basal noturna.",tipo:"Conceito",data:"2026-04-30",prova:"Simulado R1 Abr/26"},
+  {id:20,materia:"Preventiva",tema:"Notificação Compulsória — Periodicidade",erro:"Marcou V,F,V,F. Correto é F,F,V,V.\n• Síndrome gripal c/ covid: IMEDIATA → F\n• Dengue: casos=semanal, óbito=imediata → F\n• HIV em gestante/puérpera: semanal → V\n• Acidente c/ material biológico: semanal → V",tipo:"Conceito",data:"2026-04-30",prova:"Simulado R1 Abr/26"},
+  {id:21,materia:"Preventiva",tema:"Curvas de Nelson Moraes",erro:"Pontos da curva = MORTALIDADE PROPORCIONAL por faixa etária (% óbitos em cada faixa / total) — NÃO coeficientes específicos por idade.",tipo:"Conceito",data:"2026-04-30",prova:"Simulado R1 Abr/26"},
+  {id:22,materia:"Preventiva",tema:"Boxplot — Epidemiologia Descritiva",erro:"Boxplots são excelentes para comparar distribuições ENTRE grupos. A afirmação de que são inadequados para comparação entre grupos é FALSA — era essa a alternativa incorreta.",tipo:"Conceito",data:"2026-04-30",prova:"Simulado R1 Abr/26"},
+  {id:23,materia:"Preventiva",tema:"Leitura de Tabela de Hazard Ratio (HR)",erro:"Marcou que ≥60 anos têm MAIOR risco. Na tabela, HR do grupo 60-69 é <1 em relação à referência = MENOR risco. Correto: internação no SUS → HR ~1,88 = 88% maior risco.",tipo:"Conceito",data:"2026-04-30",prova:"Simulado R1 Abr/26"},
+  {id:24,materia:"Preventiva",tema:"Bioética — Ortotanásia vs Eutanásia",erro:"Caso de paciente terminal com decisão de NÃO intubar. Correto: ORTOTANÁSIA. Eutanásia = ação ativa para causar morte (proibida). Distanásia = prolongar com sofrimento. Omissão de socorro = omitir o que devia fazer.",tipo:"Confusão entre temas",data:"2026-04-30",prova:"Simulado R1 Abr/26"},
+  {id:25,materia:"Preventiva",tema:"Diagramas de Controle em Saúde",erro:"Marcou alternativa verdadeira. Na vigilância epidemiológica, limites = média ± 1 desvio padrão (NÃO 3 dp como na estatística industrial).",tipo:"Nunca vi",data:"2026-04-30",prova:"Simulado R1 Abr/26"},
+  {id:26,materia:"Preventiva",tema:"Lei Eloy Chaves (1923) — SUS / História",erro:"Marcou que criou os IAPs. Lei Eloy Chaves (1923) criou as CAPs (por empresa). Os IAPs (por categoria profissional) vieram na era Vargas (1930s).",tipo:"Conceito",data:"2026-04-30",prova:"Simulado R1 Abr/26"},
+  {id:27,materia:"GO",tema:"USG Morfológico 1º Trimestre — Translucência Nucal",erro:"Marcou alternativa verdadeira (CCN 45-84mm). Incorreto era: 'TN contém vasos da nuca' — TN é área ANECÓICA (fluido), não vascularizada.",tipo:"Distração",data:"2026-04-30",prova:"Simulado R1 Abr/26"},
+  {id:28,materia:"GO",tema:"Terbutalina — Contraindicações",erro:"Marcou anemia falciforme como CI absoluta. Correto: diabetes é a afirmativa INCORRETA (CI relativa). CI absolutas: cardiopatia grave, hipertireoidismo não controlado, glaucoma de ângulo agudo.",tipo:"Conceito",data:"2026-04-30",prova:"Simulado R1 Abr/26"},
+  {id:29,materia:"GO",tema:"Cardiotocografia Anteparto — Interpretação",erro:"Marcou que existem desacelerações. O CTG mostrava: linha de base normal, variabilidade presente, acelerações transitórias presentes, sem desacelerações → CTG REATIVO e NORMAL.",tipo:"Conceito",data:"2026-04-30",prova:"Simulado R1 Abr/26"},
+  {id:30,materia:"GO",tema:"Sangramento Uterino / Mioma Subseroso vs SUD",erro:"Marcou mioma como causa. O mioma era SUBSEROSO — miomas subserosos NÃO causam sangramento. Só submucosos e intramurais causam. Com mioma subseroso + sangramento irregular em perimenopáusica → SUD.",tipo:"Conceito",data:"2026-04-30",prova:"Simulado R1 Abr/26"},
+  {id:31,materia:"GO",tema:"Mecanismo de Parto — Desprendimento das Espáduas",erro:"Marcou que dilatação em multíparas de 1,5cm/h é incorreta. Isso é CORRETO (Curva de Friedman). O INCORRETO era: 'liberar ombro posterior depois anterior' — o OMBRO ANTERIOR se desprende primeiro.",tipo:"Conceito",data:"2026-04-30",prova:"Simulado R1 Abr/26"},
+  {id:32,materia:"GO",tema:"Disgenesia Gonadal Pura — Achados Clínicos",erro:"Marcou gônadas diminuídas + risco de neoplasias EPITELIAIS. O risco é para tumores de CÉLULAS GERMINATIVAS (gonadoblastoma, disgerminoma). O achado correto é vagina NORMAL (estruturas de Müller presentes).",tipo:"Conceito",data:"2026-04-30",prova:"Simulado R1 Abr/26"},
+  {id:33,materia:"Pediatria",tema:"Escore Phoenix — Sepse Pediátrica (2024)",erro:"Marcou que é ferramenta de triagem precoce. Phoenix não é para triagem, é para DEFINIR disfunção orgânica. Sepse = infecção + PSS ≥ 2 pts. 4 sistemas: cardiovascular, respiratório, neurológico, coagulação.",tipo:"Nunca vi",data:"2026-04-30",prova:"Simulado R1 Abr/26"},
+  {id:34,materia:"Pediatria",tema:"Vasculite por IgA / Púrpura de Henoch-Schönlein",erro:"Marcou Artrite Idiopática Juvenil. Tétrade HSP: púrpura palpável em MMII (não some à digitopressão) + dor abdominal + artralgia + comprometimento renal.",tipo:"Confusão entre temas",data:"2026-04-30",prova:"Simulado R1 Abr/26"},
+  {id:35,materia:"Pediatria",tema:"Dermatite Atópica — Padrão por Faixa Etária",erro:"Em LACTENTES a DA é exsudativa, acomete face e extensores. Liquenificação em flexão é padrão de crianças maiores e adultos. Complicação ocular: ceratoconjuntivite alérgica (em até 30% dos casos).",tipo:"Conceito",data:"2026-04-30",prova:"Simulado R1 Abr/26"},
+  {id:36,materia:"Pediatria",tema:"Profilaxia de Ferro — RN Baixo Peso",erro:"RN com 2400g = baixo peso (< 2500g). Correto: iniciar com 30 DIAS de vida, dose 2 mg/kg/dia. RN a termo com peso normal: 6 meses, 1 mg/kg/dia.",tipo:"Conceito",data:"2026-04-30",prova:"Simulado R1 Abr/26"},
+  {id:37,materia:"Pediatria",tema:"Dislipidemia na Infância — Valores de Referência",erro:"CT >150 e LDL >100 são LIMÍTROFES, não altos. Valores ALTOS: CT ≥ 170 mg/dL e LDL ≥ 130 mg/dL. Fatores de risco: obesidade, diabetes, Kawasaki com aneurisma, HIV.",tipo:"Conceito",data:"2026-04-30",prova:"Simulado R1 Abr/26"},
+];
+
+const INIT_RESUMOS=[
+  // ── CLM ──
+  {id:1,materia:"CLM",titulo:"Gasometria — Interpretação Passo a Passo",blocos:[
+    {t:"titulo",v:"Valores Normais"},{t:"tabela",cols:["Parâmetro","Valor Normal"],rows:[["pH","7,35 – 7,45"],["pCO₂","35 – 45 mmHg"],["HCO₃⁻","22 – 26 mEq/L"],["BE","-2 a +2"]]},
+    {t:"titulo",v:"Passo a Passo"},{t:"ol",v:["Checar o pH → acidose (<7,35) ou alcalose (>7,45)?","Identificar o componente primário: pCO₂ (resp.) ou HCO₃ (metab.)?","Verificar compensação com as fórmulas","Calcular o Ânion Gap se acidose metabólica","Se AG elevado → calcular Delta-Delta"]},
+    {t:"titulo",v:"Fórmulas de Compensação"},{t:"formula",v:"Acidose metab. → pCO₂ esperada = 1,5 × HCO₃ + 8 (±2) [Regra de Winter]"},{t:"formula",v:"Alcalose metab. → pCO₂ esperada = 0,7 × HCO₃ + 21 (±2)"},{t:"formula",v:"Acidose resp. aguda → ↑ 1 HCO₃ para cada ↑ 10 pCO₂"},{t:"formula",v:"Acidose resp. crônica → ↑ 3,5 HCO₃ para cada ↑ 10 pCO₂"},
+    {t:"titulo",v:"Ânion Gap"},{t:"formula",v:"AG = Na⁺ – (Cl⁻ + HCO₃⁻)   →   Normal: 8–12 mEq/L"},
+    {t:"alerta",cor:"red",v:"AG ELEVADO (>12) — MUDPILAS: Metanol, Uremia, DKA, Propileno glicol, Isoniazida/Ferro, Lactato, Etilenoglicol, Salicilatos"},
+    {t:"alerta",cor:"orange",v:"AG NORMAL (hiperclorêmica): Diarreia, ATR, Uretero-sigmoidostomia, Reposição excessiva de NaCl, Addison"},
+    {t:"titulo",v:"Tabela Causa × Gasometria"},{t:"tabela",cols:["Causa","pH","pCO₂","HCO₃","AG"],rows:[["Cetoacidose diabética","↓","↓ comp","↓↓","↑"],["Acidose lática","↓","↓ comp","↓↓","↑"],["Insuficiência renal","↓","↓ comp","↓","↑"],["Diarreia","↓","↓ comp","↓","Normal"],["Vômitos","↑","↑ comp","↑","Normal/↓"],["DPOC descompensado","↓","↑↑","↑ comp","Normal"],["Hiperventilação/TEP","↑","↓↓","↓ comp","Normal"]]},
+    {t:"macete",v:"ROME: Respiratory Opposite (pH↑ pCO₂↓) · Metabolic Equal (pH↑ HCO₃↑)"},
+  ]},
+  {id:2,materia:"CLM",titulo:"Modos Ventilatórios — Identificação e Diferenciação",blocos:[
+    {t:"tabela",cols:["Variável","O que define","Opções"],rows:[["Trigger","Inicia o ciclo","Tempo (ventilador) ou esforço do paciente"],["Limite","Mantido durante a inspiração","Pressão (PCV) ou Volume/Fluxo (VCV)"],["Cycling","Termina a inspiração","Tempo, volume, fluxo ou pressão"]]},
+    {t:"titulo",v:"PCV"},{t:"ul",v:["Limite: PRESSÃO (curva quadrada ■)","Ciclagem: TEMPO","Volume corrente variável (depende da complacência)"]},{t:"alerta",cor:"blue",v:"Curva de pressão QUADRADA = PCV. É o sinal mais fácil de reconhecer na prova!"},
+    {t:"titulo",v:"VCV"},{t:"ul",v:["Limite: VOLUME/FLUXO (curva de fluxo quadrada ■)","Ciclagem: Volume","Curva de pressão: rampa crescente ▲","Volume corrente FIXO"]},
+    {t:"tabela",cols:["Modo","Trigger","Limite","Ciclagem","Curva P"],rows:[["VCV","Tempo","Volume/Fluxo","Volume","Rampa ▲"],["PCV","Tempo","Pressão","Tempo","Quadrada ■"],["PSV","Paciente","Pressão","Fluxo","Quadrada ■"],["A/C","Misto","Var.","Var.","Depende"]]},
+    {t:"macete",v:"Pressão quadrada? → PCV. Fluxo quadrado? → VCV. Ciclo fixo no tempo? → Controlado."},
+  ]},
+  {id:3,materia:"CLM",titulo:"Desdobramentos da Segunda Bulha (B2) — Revisão Rápida",blocos:[
+    {t:"titulo",v:"As Bulhas e o Que Produzem"},
+    {t:"ul",v:["B1: fechamento de mitral (M1) + tricúspide (T1) → início da sístole. M1 antes de T1.","B2: fechamento de aórtica (A2) + pulmonar (P2) → fim da sístole. A2 antes de P2 (normalmente)."]},
+    {t:"titulo",v:"Tipos de Desdobramento da B2"},
+    {t:"tabela",cols:["Tipo","Causa clássica","O que acontece","Comportamento na inspiração"],rows:[["Fisiológico","Normal","A2 antes P2, intervalo pequeno","Aumenta (↑ enchimento VD → P2 mais tarde). Normal!"],["Amplo NÃO fixo","BRD, HAP","A2 antes P2, intervalo amplo","Aumenta"],["FIXO","CIA","A2 antes P2, intervalo largo FIXO","Não muda! Sempre igual."],["PARADOXAL","BRE, EA grave","P2 antes A2 (invertido!)","DIMINUI na inspiração (some)"]]},
+    {t:"alerta",cor:"red",v:"BRE = tudo ao contrário → B2 PARADOXAL: P2 vem antes de A2. O split SOME na inspiração (ao contrário do fisiológico)."},
+    {t:"alerta",cor:"orange",v:"CIA = desdobramento FIXO: não muda com respiração porque há equalização de pressões atrial direita-esquerda."},
+    {t:"macete",v:"FIXo = CIA. PaRADOXal = BRE (BRE faz tudo ao contrário). Amplo NÃO fixo = BRD."},
+  ]},
+  {id:4,materia:"CLM",titulo:"Coma Mixedematoso — Tratamento (Pegadinhas)",blocos:[
+    {t:"titulo",v:"Reconhecimento"},
+    {t:"ul",v:["Complicação life-threatening do hipotireoidismo","Gatilho mais comum: infecção. Outros: frio, sedativos, cirurgia","Clínica: torpor/coma + hipotermia + bradicardia + hipotensão + hipoventilação + constipação","Contexto clássico: pós-tireoidectomia ou hipotireoidismo não tratado"]},
+    {t:"titulo",v:"Tratamento — Ordem Correta"},
+    {t:"ol",v:["Coletar TSH, T4L e CORTISOL antes de tratar (avaliar insuficiência adrenal associada)","Iniciar CORTICOIDE em dose de ESTRESSE: hidrocortisona 100 mg IV q8h","Repor T4 IV (levotiroxina 200–400 mcg bolus) + T3 (liotironina) — AMBOS juntos","Suporte: aquecimento passivo, vasopressores se necessário, suporte ventilatório"]},
+    {t:"alerta",cor:"red",v:"PEGADINHA 1: Dose de ESTRESSE (100mg q8h), NÃO dose de choque. Dose de choque = 500mg-1g (sepse/choque). São coisas diferentes!"},
+    {t:"alerta",cor:"orange",v:"PEGADINHA 2: T3 em DETRIMENTO de T4 está ERRADO. O correto é usar AMBOS: T4 (reservatório) + T3 (ação imediata)."},
+    {t:"alerta",cor:"blue",v:"PEGADINHA 3: Corticoide vem ANTES dos hormônios tireoidianos — para cobrir eventual insuficiência adrenal antes de estimular o metabolismo."},
+  ]},
+  {id:5,materia:"CLM",titulo:"Anti-hipertensivos — Mecanismo, Contraindicações e Pegadinhas",blocos:[
+    {t:"titulo",v:"Tabela Resumo das Classes"},
+    {t:"tabela",cols:["Classe","Mecanismo","Contraindicações importantes"],rows:[["IECA (enalapril, captopril)","Bloqueia ECA → ↓ angiotensina II","Estenose renal bilateral, gravidez, hipercalemia, angioedema prévio"],["BRA (losartana)","Bloqueia receptor AT1 (mesmo efeito do IECA)","Mesmas do IECA. Menos tosse."],["BCC diidropiridínico (anlodipino)","Bloqueia canal L de Ca em músculo liso vascular → vasodilatação","Quase nenhuma CI! Seguro em IRC, DAP, gravidez"],["BCC não-diidropiridínico (diltiazem, verapamil)","Bloqueia Ca no coração E vasos → ↓ FC, ↓ contratilidade","Bradicardia, BAV 2º/3º, IC com FE reduzida"],["Betabloqueador (atenolol, metoprolol)","Bloqueia receptor β1 → ↓ FC, ↓ DC","Bradicardia grave, BAV, asma grave, DAP grave"],["Tiazídico (HCTZ)","↑ excreção de Na/água","IRC grave (ClCr <30), gota (↑ ácido úrico), hiponatremia"]]},
+    {t:"titulo",v:"Pegadinhas Clássicas de Prova"},
+    {t:"alerta",cor:"red",v:"IECA/BRA + hipercalemia (K+ >5,5) + IRC → CONTRAINDICADOS (pioram a hipercalemia e podem reduzir ainda mais a TFG)."},
+    {t:"alerta",cor:"orange",v:"BCC diidropiridínico (anlodipino, nifedipino) é SEGURO em DAP — ao contrário dos betabloqueadores que são relativamente contraindicados."},
+    {t:"alerta",cor:"blue",v:"Tiazídico + Gota → CONTRAINDICADO (reduz excreção de urato → ↑ ácido úrico → crise de gota)."},
+    {t:"macete",v:"Caso IRC + K+ alto + DAP + FC baixa → Anlodipino é a escolha! IECA/BRA pioram K+, betabloqueador piora DAP e FC, tiazídico ineficaz em IRC grave."},
+  ]},
+  {id:6,materia:"CLM",titulo:"Gota vs Pseudogota — Cristais e Diagnóstico",blocos:[
+    {t:"tabela",cols:["","Gota","Pseudogota"],rows:[["Cristal","Urato monossódico","Pirofosfato de cálcio"],["Forma","Agulha (needle-shaped)","Romboide (rhomboid)"],["Birrefringência","Negativa forte (amarela)","Positiva fraca (azul)"],["Depósito clássico","1ª metatarsofalângica (podagra)","Joelho, punho (grandes articulações)"],["Imagem radiológica","Tofos","Condrocalcinose"],["Gatilho","Álcool, carne vermelha, tiazídicos, AAS","Trauma, cirurgia, hiperparatireoidismo"]]},
+    {t:"alerta",cor:"red",v:"MACETE GAN: Gota = Agulha = Negativa (birrefringência). NUNCA esqueça!"},
+    {t:"alerta",cor:"orange",v:"PEGADINHA: Pseudogota tem cristais ROMBOIDES com birrefringência POSITIVA. O oposto da gota em tudo."},
+    {t:"titulo",v:"Tratamento da Crise Aguda"},
+    {t:"ul",v:["1ª escolha: AINEs (indometacina) ou Colchicina (nas primeiras 24-36h)","Corticoide: se CI a AINEs/Colchicina (idoso, IRC, anticoagulado)","Não iniciar alopurinol durante a crise aguda!","Profilaxia crônica: Alopurinol (reduz síntese de ácido úrico)","Evitar: tiazídicos, AAS em baixas doses (↑ uricemia)"]},
+  ]},
+  // ── CIRURGIA ──
+  {id:7,materia:"Cirurgia",titulo:"Aneurisma de Aorta Abdominal — Critérios Cirúrgicos",blocos:[
+    {t:"titulo",v:"Indicações de Correção Eletiva"},
+    {t:"tabela",cols:["Critério","Limiar","Obs."],rows:[["Diâmetro infrarrenal","≥ 5,5 cm","Em mulheres: ≥ 5,0 cm (aorta menor, risco relativo maior)"],["Crescimento rápido","> 0,5 cm em 6 meses OU > 1 cm/ano","Independente do diâmetro absoluto"],["Sintomático","Qualquer tamanho com dor/sensibilidade","Urgente/semi-urgente"],["Roto","Qualquer tamanho","Emergência"]]},
+    {t:"alerta",cor:"red",v:"PEGADINHA DA PROVA: AAA de 6,5 cm infrarrenal TEM indicação (> 5,5 cm). AAA de 4,8 cm crescendo 0,4 cm/ano NÃO tem (0,4 cm/ano < 1 cm/ano)."},
+    {t:"titulo",v:"Modalidades de Reparo"},
+    {t:"tabela",cols:["Técnica","Vantagens","Desvantagens"],rows:[["EVAR (endovascular)","Menos invasivo, menor mortalidade perioperatória, recuperação mais rápida","Maior taxa de reintervenção, necessita acompanhamento de imagem"],["Cirurgia aberta","Mais durável, menor re-intervenção","Maior morbidade/mortalidade perioperatória"]]},
+    {t:"alerta",cor:"blue",v:"EVAR é preferido em pacientes com alto risco cirúrgico. Cirurgia aberta é mais durável para pacientes jovens com boa anatomia."},
+    {t:"titulo",v:"Rastreamento"},
+    {t:"ul",v:["Indicado: homens ≥ 65 anos tabagistas (≥ 100 cigarros na vida) → USG abdome único","AAA pequeno (3–5,4 cm): vigilância com USG a cada 6–12 meses"]},
+  ]},
+  {id:8,materia:"Cirurgia",titulo:"Hérnias — Técnicas Cirúrgicas",blocos:[
+    {t:"tabela",cols:["Técnica","Estruturas suturadas","Tipo","Obs."],rows:[["Bassini","Tendão conjunto → lig. inguinal","Inguinal","Com tensão"],["Shouldice","Reparo em camadas","Inguinal","Baixa recidiva"],["Lichtenstein","Tela sem tensão","Inguinal","Mais usada"],["McVay (Cooper)","Transverso → lig. pectíneo (Cooper)","Femoral/Inguinal","Única que cobre femoral"],["Plug","Plug de tela no orifício","Femoral","NÃO é McVay!"]]},
+    {t:"alerta",cor:"red",v:"McVay = ligamento PECTÍNEO (Cooper). Bassini = ligamento INGUINAL. Confundir os dois é o erro mais cobrado!"},
+  ]},
+  {id:9,materia:"Cirurgia",titulo:"Volvo — Ceco vs Sigmoide",blocos:[
+    {t:"tabela",cols:["","Volvo de Sigmoide","Volvo de Ceco"],rows:[["Frequência","Mais comum (70%)","Menos comum (30%)"],["Imagem","Grão de café em pelve","Grão de café em QSD / 'coffee bean'"],["Colonoscopia","✅ 1ª escolha — resolutiva","❌ Raramente eficaz (cólon D inacessível)"],["Cirurgia","Eletiva após descompressão","SEMPRE — mesmo sem sofrimento de alça"],["Cirurgia de escolha","Sigmoidectomia eletiva","Hemicolectomia direita"]]},
+    {t:"alerta",cor:"orange",v:"Volvo de CECO = cirurgia SEMPRE, mesmo estável e sem sofrimento! Colonoscopia NÃO funciona para ceco."},
+  ]},
+  // ── GO ──
+  {id:10,materia:"GO",titulo:"Cardiotocografia Anteparto — Interpretação",blocos:[
+    {t:"titulo",v:"4 Parâmetros Avaliados"},
+    {t:"tabela",cols:["Parâmetro","Normal","Alterado"],rows:[["Linha de base","110–160 bpm","<110 bradicardia / >160 taquicardia"],["Variabilidade","≥ 6 bpm (oscilante)","< 6 bpm (silenciosa/plana)"],["Acelerações transitórias","≥ 2 em 20 min (≥15bpm × 15s)","Ausentes → CTG não reativo"],["Desacelerações","Ausentes","Presentes → investigar"]]},
+    {t:"alerta",cor:"green",v:"CTG REATIVO (normal): linha de base normal + variabilidade presente + ≥ 2 acelerações em 20 min + SEM desacelerações."},
+    {t:"titulo",v:"Tipos de Desacelerações (DIPs)"},
+    {t:"tabela",cols:["Tipo","Relação c/ contração","Causa","Gravidade"],rows:[["DIP I (precoce)","Coincide com a contração","Compressão cefálica","Benigna"],["DIP II (tardio)","Após a contração","Insuficiência uteroplacentária","Grave ⚠️"],["DIP III (variável)","Sem relação fixa","Compressão de cordão","Variável"]]},
+    {t:"alerta",cor:"red",v:"DIP II (tardio) = GRAVE. Indica insuficiência uteroplacentária. Não confunda acelerações (normal, desejável) com desacelerações (patológico)!"},
+  ]},
+  {id:11,materia:"GO",titulo:"Isoimunização Rh — Fluxograma de Conduta",blocos:[
+    {t:"tabela",cols:["Coombs Indireto","Conduta"],rows:[["Negativo","Imunoglobulina anti-RhD profilática (28 sem + pós-parto)"],["Positivo ≤ 1/8","Doppler ACM a cada 2 semanas"],["Positivo > 1/8","Doppler ACM → ACM ≤ 1,5 MOM: vigiar | ACM > 1,5 MOM: CORDOCENTESE + transfusão intrauterina"]]},
+    {t:"alerta",cor:"red",v:"Paciente já SENSIBILIZADA (Coombs positivo) → imunoglobulina é INÚTIL. Não ofertar!"},
+    {t:"alerta",cor:"orange",v:"ACM > 1,5 MOM = anemia fetal GRAVE → Cordocentese para confirmar + transfusão intrauterina."},
+  ]},
+  {id:12,materia:"GO",titulo:"Amenorreia Primária — Abordagem Diagnóstica",blocos:[
+    {t:"titulo",v:"Definição"},
+    {t:"ul",v:["Ausência de menarca até os 15 anos (com caracteres sexuais secundários presentes)","Ausência de menarca até os 13 anos (sem caracteres sexuais secundários)"]},
+    {t:"titulo",v:"Algoritmo — Passo 1: Há caracteres sexuais secundários (CSS)?"},
+    {t:"alerta",cor:"blue",v:"SEM CSS (sem desenvolvimento mamário): dosar FSH/LH\n• FSH alto → hipogonadismo hipergonadotrófico → falência gonadal\n  - Síndrome de Turner (45,X): mais comum, baixa estatura, colo alado\n  - Disgenesia gonadal 46,XY (Swyer): fenótipo feminino, vagina normal, risco de gonadoblastoma → gonadectomia\n• FSH baixo/normal → hipogonadismo hipogonadotrófico → causa central\n  - Amenorreia hipotalâmica (exercício, anorexia, estresse)\n  - Síndrome de Kallmann (+ anosmia)\n  - Tumor hipofisário"},
+    {t:"alerta",cor:"orange",v:"COM CSS (tem desenvolvimento mamário): fazer USG para verificar útero\n• SEM ÚTERO → dosar testosterona\n  - Testosterona alta (nível masculino): Síndrome de Insensibilidade a Andrógenos (CAIS) — 46,XY, fenótipo feminino, sem pelos pubianos/axilares, vagina cega\n  - Testosterona normal (feminina): Síndrome de MRKH — 46,XX, vagina ausente ou encurtada, ovários normais, hormônios normais\n• COM ÚTERO → pesquisar obstrução de saída\n  - Himen imperfurado: dor pélvica cíclica, criptomenorreia, massa pélvica, membrana azulada/abaulada\n  - Septo vaginal transverso"},
+    {t:"titulo",v:"Resumo dos Diagnósticos-Chave"},
+    {t:"tabela",cols:["Síndrome","Cariótipo","CSS","Útero","Testosterona","Pegas"],rows:[["Turner","45,X","Ausente","Ausente","Normal (F)","Baixa estatura, colo alado, coarctação Ao"],["Swyer","46,XY","Ausente","Ausente","Normal (F)","Risco gonadoblastoma → gonadectomia!"],["CAIS","46,XY","Presente (seios)","Ausente","Alta (M)","Sem pelos pubianos/axilares — insensibilidade androgênio"],["MRKH","46,XX","Presente","Ausente","Normal (F)","Ovários normais, hormônios normais, vagina ausente"],["Himen imperfurado","46,XX","Presente","Presente","Normal (F)","Dor cíclica, membrana azulada, criptomenorreia"]]},
+    {t:"alerta",cor:"red",v:"PEGADINHA: CAIS tem 46,XY mas fenótipo feminino. Testosterona ALTA mas sem receptor → não viriliza. SEM pelos axilares/pubianos é o sinal mais característico!"},
+  ]},
+  // ── PEDIATRIA ──
+  {id:13,materia:"Pediatria",titulo:"Escore Phoenix — Sepse Pediátrica (2024)",blocos:[
+    {t:"tabela",cols:["Definição","Critério"],rows:[["Sepse","Infecção suspeitada + Phoenix Sepsis Score (PSS) ≥ 2 pontos"],["Choque séptico","Sepse + ≥ 1 ponto no escore CARDIOVASCULAR (não precisa ser hipotensão)"]]},
+    {t:"titulo",v:"4 Sistemas Avaliados"},{t:"ul",v:["Cardiovascular (vasoativos, lactato, pressão arterial)","Respiratório (SpO₂/FiO₂, ventilação mecânica)","Neurológico (Glasgow)","Coagulação (plaquetas, INR, fibrinogênio, D-dímero)"]},
+    {t:"alerta",cor:"red",v:"Phoenix NÃO é ferramenta de triagem! É para DEFINIR disfunção orgânica após suspeita clínica já estabelecida."},
+    {t:"alerta",cor:"orange",v:"Aplica-se a menores de 18 anos. NÃO se aplica a neonatos (RN)."},
+  ]},
+  {id:14,materia:"Pediatria",titulo:"Profilaxia de Ferro na Infância",blocos:[
+    {t:"tabela",cols:["Grupo","Início","Dose"],rows:[["RN a termo, peso ≥ 2500g","6 meses de vida","1 mg/kg/dia"],["Baixo peso (1500–2499g)","30 dias de vida","2 mg/kg/dia"],["Muito baixo peso (1000–1499g)","30 dias de vida","3 mg/kg/dia"],["Extremo baixo peso (< 1000g)","30 dias de vida","4 mg/kg/dia"]]},
+    {t:"alerta",cor:"red",v:"RN com peso 2400g = BAIXO PESO → iniciar com 30 DIAS, dose 2 mg/kg/dia. Não aguardar 6 meses!"},
+  ]},
+  {id:15,materia:"Pediatria",titulo:"Dislipidemia na Infância — Triagem e Valores",blocos:[
+    {t:"titulo",v:"Triagem"},{t:"ul",v:["Universal: entre 9 e 11 anos","Seletiva: a partir de 2 anos se fatores de risco (obesidade, DM, HAS, Kawasaki c/ aneurisma, HIV, história familiar de IAM precoce)"]},
+    {t:"tabela",cols:["Parâmetro","Desejável","Limítrofe","Alto"],rows:[["CT","< 150","150–169","≥ 170 mg/dL"],["LDL","< 100","100–129","≥ 130 mg/dL"],["TG (0–9 anos)","< 75","75–99","≥ 100 mg/dL"],["HDL","> 45","40–45","< 40 mg/dL"]]},
+    {t:"alerta",cor:"red",v:"CT > 150 e LDL > 100 = LIMÍTROFES, NÃO altos. Altos = CT ≥ 170 e LDL ≥ 130. Pegadinha clássica!"},
+  ]},
+  {id:16,materia:"Pediatria",titulo:"Púrpura de Henoch-Schönlein (Vasculite por IgA)",blocos:[
+    {t:"titulo",v:"Tétrade Clínica"},
+    {t:"ul",v:["1. Púrpura palpável em MMII e glúteos — NÃO some à digitopressão (extravasamento, não plaquetopenia)","2. Dor abdominal (colicky) — pode ter intussuscepção como complicação","3. Artralgia/artrite (joelhos e tornozelos principalmente)","4. Nefrite (hematúria ± proteinúria — padrão de nefropatia por IgA)"]},
+    {t:"titulo",v:"Dados Epidemiológicos"},
+    {t:"ul",v:["Vasculite mais comum da infância (2–10 anos)","Frequentemente após IVAS","Autolimitada na maioria dos casos"]},
+    {t:"titulo",v:"Diagnóstico Diferencial"},
+    {t:"tabela",cols:["","HSP (IgA)","PTI","AIJ"],rows:[["Púrpura","Palpável, MMII","Petéquias difusas","Ausente"],["Plaquetas","NORMAIS","Baixas","Normais"],["Dor abdominal","Sim","Não","Não"],["Artralgia","Sim","Não","Sim (mas sem púrpura)"],["Nefrite","Sim","Não","Não"]]},
+    {t:"alerta",cor:"red",v:"PEGADINHA: Na HSP as plaquetas são NORMAIS! A púrpura é por vasculite (IgA nos vasos), não por trombocitopenia. Diferente da PTI!"},
+    {t:"alerta",cor:"orange",v:"Complicação cirúrgica: intussuscepção intestinal (leading cause de cirurgia em crianças com HSP — dor abdominal grave + piora)."},
+    {t:"macete",v:"HSP = Henoch (H de Hematúria) + Schönlein (S de Skin/pele) = Vasculite por IgA. Tétrade: Púrpura + Dor abdominal + Artralgia + Nefrite."},
+  ]},
+  // ── PREVENTIVA ──
+  {id:17,materia:"Preventiva",titulo:"Boxplot — Epidemiologia Descritiva (Resumo Aprofundado)",blocos:[
+    {t:"titulo",v:"O Que É e Para Que Serve"},
+    {t:"texto",v:"O boxplot (diagrama de caixa) é uma representação gráfica que utiliza os quartis para resumir a distribuição de um conjunto de dados. Exibe simultaneamente mediana, dispersão, simetria e outliers."},
+    {t:"titulo",v:"Anatomia do Boxplot"},
+    {t:"tabela",cols:["Elemento","O que representa"],rows:[["Linha central da caixa","Q2 = Mediana (50º percentil)"],["Borda inferior da caixa","Q1 = 25º percentil"],["Borda superior da caixa","Q3 = 75º percentil"],["Altura da caixa (IIQ)","Amplitude interquartil = Q3 – Q1 (onde estão 50% dos dados centrais)"],["Bigodes (whiskers)","Extensão até os valores mais extremos dentro de 1,5 × IIQ a partir de Q1 e Q3"],["Pontos além dos bigodes","OUTLIERS — valores extremos / discrepantes"]]},
+    {t:"formula",v:"IIQ (Amplitude Interquartil) = Q3 – Q1"},
+    {t:"titulo",v:"O Que o Boxplot Permite Identificar"},
+    {t:"ul",v:["Mediana e dispersão dos dados","Simetria da distribuição: se a mediana está centralizada na caixa → simétrico; se deslocada → assimétrico","Presença e quantidade de outliers","COMPARAÇÃO ENTRE GRUPOS: colocar múltiplos boxplots lado a lado é uma das aplicações mais poderosas — permite comparar mediana, dispersão e outliers entre grupos diferentes simultaneamente"]},
+    {t:"titulo",v:"Interpretação da Simetria pelo Boxplot"},
+    {t:"ul",v:["Caixa simétrica (mediana no centro) + bigodes iguais → distribuição aproximadamente normal","Caixa assimétrica (mediana próxima a Q1) + bigode superior longo → assimetria à direita (cauda direita)","Outliers numerosos → sugerem distribuição não-normal ou dados heterogêneos"]},
+    {t:"alerta",cor:"red",v:"PEGADINHA DA PROVA: 'Boxplot é INADEQUADO para comparar distribuições entre grupos' → FALSO! É EXCELENTE para isso. É uma das suas principais aplicações!"},
+    {t:"alerta",cor:"blue",v:"O boxplot NÃO mostra a frequência exata de cada valor (para isso: histograma). Não distingue distribuições bimodais sem análise adicional."},
+    {t:"titulo",v:"Comparação com Outros Gráficos"},
+    {t:"tabela",cols:["Gráfico","Melhor para"],rows:[["Boxplot","Comparar grupos, identificar outliers, ver dispersão e assimetria"],["Histograma","Ver formato da distribuição (unimodal, bimodal), frequências"],["Gráfico de dispersão","Ver correlação entre duas variáveis"],["Curva ROC","Avaliar desempenho de testes diagnósticos"]]},
+    {t:"macete",v:"BOXPLOT = caixa com bigodes. A CAIXA contém os 50% centrais dos dados (entre Q1 e Q3). A MEDIANA é a linha dentro da caixa. OUTLIERS são pontos soltos. Serve SIM para comparar grupos!"},
+  ]},
+  {id:18,materia:"Preventiva",titulo:"Diagrama de Controle em Saúde (Resumo Aprofundado)",blocos:[
+    {t:"titulo",v:"Conceito e Finalidade"},
+    {t:"texto",v:"Os diagramas de controle são ferramentas gráficas da vigilância epidemiológica que permitem distinguir variações aleatórias (esperadas) de variações indicativas de eventos significativos como surtos ou epidemias. Foram adaptados do controle estatístico de processos industriais (Shewhart) para o monitoramento de doenças."},
+    {t:"titulo",v:"Como é Construído"},
+    {t:"ol",v:["Coletar dados históricos de incidência da doença (mínimo 5 anos anteriores)","Calcular a média histórica de casos por período (semana/mês)","Calcular o desvio padrão dessas séries históricas","Calcular os limites de controle superior e inferior","Plotar os dados atuais sobre o diagrama e observar se ultrapassam os limites ou seguem padrões suspeitos"]},
+    {t:"titulo",v:"Os Limites — A Grande Pegadinha"},
+    {t:"alerta",cor:"red",v:"NA VIGILÂNCIA EPIDEMIOLÓGICA BRASILEIRA (SINAN): limites = média ± 1 desvio padrão. NÃO 3 desvios padrão!"},
+    {t:"alerta",cor:"orange",v:"NA ESTATÍSTICA INDUSTRIAL (Shewhart/Six Sigma): limites = média ± 3 desvios padrão. Essa regra NÃO se aplica à epidemiologia!"},
+    {t:"tabela",cols:["Contexto","Limites de controle"],rows:[["Vigilância epidemiológica (saúde pública)","Média ± 1 DP (correto!)"],["Controle estatístico de processos industriais","Média ± 3 DP (ERRADO para saúde!)"],["Alguns autores (zona de segurança)","Apenas limite superior: média + 1 DP"]]},
+    {t:"titulo",v:"O Que Analisar no Diagrama — Além dos Limites"},
+    {t:"texto",v:"Um ponto importante cobrado em prova: a interpretação NÃO se limita apenas à ultrapassagem dos limites. Mesmo com todos os pontos dentro dos limites, padrões específicos podem indicar alterações epidemiológicas relevantes:"},
+    {t:"ul",v:["Tendência ascendente persistente (vários pontos subindo consecutivamente)","Sequência prolongada acima da média (run acima da linha central)","Agrupamento incomum de pontos em determinada região","Sazonalidade inesperada"]},
+    {t:"alerta",cor:"blue",v:"A interpretação de padrões DENTRO dos limites é tão importante quanto identificar pontos fora dos limites. Isso é cobrado em prova!"},
+    {t:"titulo",v:"Utilidade na Prática"},
+    {t:"ul",v:["Detecção precoce de surtos e epidemias","Monitoramento de doenças de notificação compulsória","Avaliação de tendências temporais de doenças","Identificação de variações sazonais esperadas vs. inesperadas"]},
+    {t:"macete",v:"Diagrama de controle epidemiológico: média ± 1 DP (não 3!). Avalia pontos FORA dos limites E padrões DENTRO dos limites. Ambos podem indicar problema!"},
+  ]},
+  {id:19,materia:"Preventiva",titulo:"Bioética — Ortotanásia, Eutanásia e Distanásia",blocos:[
+    {t:"tabela",cols:["Conceito","Definição","Legal no Brasil?"],rows:[["Ortotanásia","Não prolongar artificialmente a morte; morte com dignidade sem intervenção fútil","✅ Permitida (CFM 1805/2006)"],["Eutanásia","Ação ativa para CAUSAR a morte (ex: injeção letal)","❌ Proibida"],["Distanásia","Prolongar a morte com sofrimento (obstinação terapêutica)","❌ Antiética"],["Mistanásia","Morte miserável por exclusão social","—"],["Suicídio assistido","Médico fornece meios; paciente age","❌ Proibido"]]},
+    {t:"alerta",cor:"green",v:"Cuidados paliativos + não intubação + NÃO ressuscitação em paciente terminal com decisão compartilhada = ORTOTANÁSIA."},
+    {t:"alerta",cor:"red",v:"Omissão de socorro = deixar de prestar socorro quando havia OBRIGAÇÃO de fazê-lo. Diferente da ortotanásia!"},
+  ]},
+  {id:20,materia:"Preventiva",titulo:"Notificação Compulsória — Periodicidade",blocos:[
+    {t:"tabela",cols:["Periodicidade","Doenças/Agravos"],rows:[["Imediata (24h)","Sarampo, Rubéola, Poliomielite, Raiva humana, Febre Amarela, Síndrome gripal c/ covid-19, Meningites, Botulismo, Cólera, Dengue ÓBITO"],["Semanal","Dengue CASOS, HIV em gestante/puérpera/criança exposta, Acidente c/ material biológico, Hepatites virais, Leishmanioses, Tuberculose, Sífilis"]]},
+    {t:"alerta",cor:"red",v:"Dengue CASOS = semanal. Dengue ÓBITO = imediata. Síndrome gripal c/ suspeita covid = IMEDIATA (não semanal!). Armadilhas clássicas!"},
+  ]},
+  {id:21,materia:"Preventiva",titulo:"Curvas de Nelson Moraes e Índice de Swaroop-Uemura",blocos:[
+    {t:"ul",v:["Cada ponto = mortalidade PROPORCIONAL por faixa etária = (óbitos naquela faixa / total de óbitos) × 100","NÃO representa coeficiente específico de mortalidade por idade"]},
+    {t:"tabela",cols:["Formato","Perfil","Nível de saúde"],rows:[["J (invertido)","Alta mortalidade infantil","Ruim"],["U","Alta infantil + alta em idosos","Regular"],["Banheira","Mortalidade concentrada em idosos","Bom"]]},
+    {t:"formula",v:"Índice de Swaroop-Uemura = (óbitos ≥ 50 anos / total de óbitos) × 100"},
+    {t:"alerta",cor:"blue",v:"O ÚLTIMO PONTO da curva (≥50 anos) corresponde ao NUMERADOR do Índice de Swaroop-Uemura. ISU alto = boa saúde."},
+  ]},
+  {id:22,materia:"Preventiva",titulo:"Lei Eloy Chaves e História da Previdência Social",blocos:[
+    {t:"tabela",cols:["Marco","Ano","O que criou"],rows:[["Lei Eloy Chaves","1923","CAPs — Caixas de Aposentadorias e Pensões (por empresa)"],["Era Vargas","1930s","IAPs — Institutos de Aposentadorias e Pensões (por categoria)"],["CF 1988","1988","Seguridade Social: Saúde + Previdência + Assistência"],["SUS","1990","Lei 8.080"]]},
+    {t:"alerta",cor:"red",v:"CAPs (1923, Eloy Chaves) ≠ IAPs (1930s, Vargas). Erro clássico de prova: confundir os dois!"},
+  ]},
+];
+
+let errors=JSON.parse(localStorage.getItem('erros-r1-v3')||'null')||INIT_ERRORS;
+let resumos=JSON.parse(localStorage.getItem('resumos-r1-v3')||'null')||INIT_RESUMOS;
+let editErrId=null,editResId=null;
+function save(){localStorage.setItem('erros-r1-v3',JSON.stringify(errors));localStorage.setItem('resumos-r1-v3',JSON.stringify(resumos));}
+
+function setView(v,btn){
+  document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
+  document.getElementById('view-'+v).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  document.getElementById('btn-new-resumo').style.display=v==='resumos'?'':'none';
+  document.getElementById('btn-new-erro').style.display=v==='resumos'?'none':'';
+  if(v==='dashboard')renderDashboard();
+  if(v==='erros')renderErros();
+  if(v==='resumos')renderResumos();
+}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+function renderDashboard(){
+  const mats=[...new Set(errors.map(e=>e.materia))];
+  document.getElementById('header-sub').textContent=`${errors.length} erros · ${resumos.length} resumos · ${mats.length} matérias`;
+  document.getElementById('stats-row').innerHTML=[
+    {num:errors.length,label:"Total Erros",color:"#4f46e5",click:"setView('erros',document.querySelectorAll('.nav-btn')[1])"},
+    {num:resumos.length,label:"Resumos",color:"#0ea5e9",click:"setView('resumos',document.querySelectorAll('.nav-btn')[2])"},
+    {num:errors.filter(e=>e.tipo==="Conceito").length,label:"Por Conceito",color:"#ef4444",click:"filterAndGo('tipo','Conceito')"},
+    {num:errors.filter(e=>e.tipo==="Confusão entre temas").length,label:"Confusão Tema",color:"#f59e0b",click:"filterAndGo('tipo','Confusão entre temas')"},
+  ].map(s=>`<div class="stat-card" onclick="${s.click}"><div class="stat-num" style="color:${s.color}">${s.num}</div><div class="stat-label">${s.label}</div></div>`).join('');
+  const byMat=["CLM","Cirurgia","GO","Pediatria","Preventiva","Psiquiatria","Outro"].map(m=>({m,c:errors.filter(e=>e.materia===m).length})).filter(x=>x.c>0).sort((a,b)=>b.c-a.c);
+  let mH='<div class="panel-title">Erros por Matéria</div>';
+  byMat.forEach(({m,c})=>{const pc=PASTEL[m]||PASTEL['Outro'];const pct=Math.round((c/errors.length)*100);mH+=`<div class="bar-wrap" onclick="filterAndGo('mat','${m}')"><div class="bar-row"><span class="bar-name" style="color:${pc.text}">${m}</span><span class="bar-count">${c} (${pct}%)</span></div><div class="bar-bg"><div class="bar-fill" style="width:${pct}%;background:${pc.dot}"></div></div></div>`;});
+  document.getElementById('panel-materia').innerHTML=mH;
+  let tH='<div class="panel-title">Erros por Tipo</div>';
+  TIPOS.forEach((t,i)=>{const c=errors.filter(e=>e.tipo===t).length;if(!c)return;tH+=`<div class="type-row" onclick="filterAndGo('tipo','${t}')"><div class="type-dot" style="background:${TIPO_COLORS[i]}"></div><span class="type-label">${t}</span><span class="type-count" style="color:${TIPO_COLORS[i]}">${c}</span></div>`;});
+  const pr=[...new Set(errors.map(e=>e.prova).filter(Boolean))].slice(0,5);
+  if(pr.length){tH+='<div class="panel-title" style="margin-top:1.1rem">Simulados</div>';pr.forEach(p=>{tH+=`<div class="prova-item">📋 ${esc(p)} <span style="color:#94a3b8">(${errors.filter(e=>e.prova===p).length})</span></div>`;});}
+  document.getElementById('panel-tipo').innerHTML=tH;
+  document.getElementById('dash-erros').innerHTML=errors.slice(0,5).map(e=>{const pc=PASTEL[e.materia]||PASTEL['Outro'];return`<div class="mini-card"><div class="mini-dot" style="background:${pc.dot}"></div><div><div class="mini-title">${esc(e.tema)}</div><div class="mini-sub">${esc(e.materia)}</div></div></div>`;}).join('');
+  document.getElementById('dash-resumos').innerHTML=resumos.slice(0,5).map(r=>{const pc=PASTEL[r.materia]||PASTEL['Outro'];return`<div class="mini-card"><div class="mini-dot" style="background:${pc.dot}"></div><div><div class="mini-title">${esc(r.titulo)}</div><div class="mini-sub">${esc(r.materia)}</div></div></div>`;}).join('');
+}
+function filterAndGo(type,val){if(type==='mat')document.getElementById('filter-mat').value=val;if(type==='tipo')document.getElementById('filter-tipo').value=val;setView('erros',document.querySelectorAll('.nav-btn')[1]);}
+function renderErros(){
+  const s=document.getElementById('search-err').value.toLowerCase();
+  const m=document.getElementById('filter-mat').value;
+  const t=document.getElementById('filter-tipo').value;
+  document.getElementById('btn-clear-err').style.display=(s||m||t)?'':'none';
+  const f=errors.filter(e=>(!m||e.materia===m)&&(!t||e.tipo===t)&&(!s||e.tema.toLowerCase().includes(s)||e.erro.toLowerCase().includes(s)));
+  document.getElementById('err-count').textContent=`${f.length} erro${f.length!==1?'s':''}`;
+  document.getElementById('erros-list').innerHTML=f.length?f.map(e=>{const pc=PASTEL[e.materia]||PASTEL['Outro'];return`<div class="err-card" id="ec-${e.id}" style="border-color:${pc.border};border-left-color:${pc.dot}"><div class="err-card-head" onclick="toggleEC(${e.id})"><div style="flex:1;min-width:0"><div class="err-card-meta"><span class="badge" style="background:${pc.bg};color:${pc.text};border-color:${pc.border}">${esc(e.materia)}</span><span class="badge badge-tipo">${esc(e.tipo)}</span>${e.prova?`<span class="badge-prova">· ${esc(e.prova)}</span>`:''}<span style="font-size:.64rem;color:#cbd5e1;margin-left:auto">${e.data}</span></div><div class="err-title">${esc(e.tema)}</div><div class="err-preview" id="ep-${e.id}">${esc(e.erro)}</div></div><span class="chevron" id="ch-${e.id}">▼</span></div><div class="err-body" id="eb-${e.id}" style="background:${pc.bg};border-color:${pc.border}"><div class="err-text">${esc(e.erro)}</div><div class="card-actions" id="ea-${e.id}"><button class="btn-sm btn-blue-sm" onclick="editErr(${e.id})">✏️ Editar</button><button class="btn-sm btn-red-sm" onclick="confirmDel(${e.id},'err')">🗑️</button></div></div></div>`;}).join(''):'<div class="empty">Nenhum erro encontrado 🎉</div>';
+}
+function clearErrFilter(){document.getElementById('search-err').value='';document.getElementById('filter-mat').value='';document.getElementById('filter-tipo').value='';renderErros();}
+function toggleEC(id){const b=document.getElementById('eb-'+id);const ch=document.getElementById('ch-'+id);const pr=document.getElementById('ep-'+id);if(b.classList.contains('open')){b.classList.remove('open');ch.textContent='▼';if(pr)pr.style.display='';}else{b.classList.add('open');ch.textContent='▲';if(pr)pr.style.display='none';}}
+function confirmDel(id,type){const actId=type==='err'?`ea-${id}`:`ra-${id}`;document.getElementById(actId).innerHTML=`<span class="confirm-text">Confirmar?</span><button class="btn-sm btn-red-sm" onclick="${type==='err'?`delErr(${id})`:`delRes(${id})`}">Apagar</button><button class="btn-sm btn-grey-sm" onclick="${type==='err'?'renderErros()':'renderResumos()'}">Cancelar</button>`;}
+function delErr(id){errors=errors.filter(e=>e.id!==id);save();renderErros();showToast('🗑️ Removido.');}
+function delRes(id){resumos=resumos.filter(r=>r.id!==id);save();renderResumos();showToast('🗑️ Removido.');}
+function renderResumos(){
+  const s=document.getElementById('search-res').value.toLowerCase();
+  const m=document.getElementById('filter-res-mat').value;
+  document.getElementById('btn-clear-res').style.display=(s||m)?'':'none';
+  const f=resumos.filter(r=>(!m||r.materia===m)&&(!s||r.titulo.toLowerCase().includes(s)));
+  document.getElementById('res-count').textContent=`${f.length} resumo${f.length!==1?'s':''}`;
+  document.getElementById('resumos-list').innerHTML=f.length?f.map(r=>{const pc=PASTEL[r.materia]||PASTEL['Outro'];return`<div class="res-card" id="rc-${r.id}" style="border-color:${pc.border};border-left-color:${pc.dot}"><div class="res-card-head" onclick="toggleRC(${r.id})"><div style="flex:1"><div style="display:flex;align-items:center;gap:.4rem;margin-bottom:.2rem"><span class="badge" style="background:${pc.bg};color:${pc.text};border-color:${pc.border}">${esc(r.materia)}</span><span style="font-size:.65rem;color:#94a3b8">📚 Resumo</span></div><div style="font-weight:600;font-size:.95rem;color:#1e293b;font-family:'Lora',serif">${esc(r.titulo)}</div></div><span class="chevron" id="rch-${r.id}">▼</span></div><div class="res-body" id="rb-${r.id}" style="border-color:${pc.border}">${renderBlocos(r.blocos,pc)}<div class="card-actions" id="ra-${r.id}"><button class="btn-sm btn-blue-sm" onclick="editRes(${r.id})">✏️ Editar</button><button class="btn-sm btn-red-sm" onclick="confirmDel(${r.id},'res')">🗑️</button></div></div></div>`;}).join(''):'<div class="empty">Nenhum resumo encontrado.</div>';
+}
+function clearResFilter(){document.getElementById('search-res').value='';document.getElementById('filter-res-mat').value='';renderResumos();}
+function toggleRC(id){const b=document.getElementById('rb-'+id);const ch=document.getElementById('rch-'+id);if(b.classList.contains('open')){b.classList.remove('open');ch.textContent='▼';}else{b.classList.add('open');ch.textContent='▲';}}
+function renderBlocos(blocos,pc){
+  return blocos.map(b=>{
+    if(b.t==='titulo')return`<div class="res-section-title" style="border-color:${pc.border}">${esc(b.v)}</div>`;
+    if(b.t==='texto')return`<p class="res-text">${esc(b.v)}</p>`;
+    if(b.t==='ul')return`<ul class="res-list">${b.v.map(i=>`<li>${esc(i)}</li>`).join('')}</ul>`;
+    if(b.t==='ol')return`<ol class="res-ol">${b.v.map(i=>`<li>${esc(i)}</li>`).join('')}</ol>`;
+    if(b.t==='formula')return`<div class="formula-box">${esc(b.v)}</div>`;
+    if(b.t==='macete')return`<div class="macete-box"><strong>🧠 Macete: </strong>${esc(b.v)}</div>`;
+    if(b.t==='alerta'){const cls={red:'alert-red',orange:'alert-orange',blue:'alert-blue',green:'alert-verde',purple:'alert-purple'}[b.cor]||'alert-blue';return`<div class="alert-box ${cls}">${esc(b.v)}</div>`;}
+    if(b.t==='tabela'){const ths=b.cols.map(c=>`<th>${esc(c)}</th>`).join('');const trs=b.rows.map(row=>`<tr>${row.map(c=>`<td>${esc(c)}</td>`).join('')}</tr>`).join('');return`<div class="res-table-wrap"><table class="res-table"><thead><tr>${ths}</tr></thead><tbody>${trs}</tbody></table></div>`;}
+    return'';
+  }).join('');
+}
+function openErrForm(id){editErrId=id||null;const err=id?errors.find(e=>e.id===id):null;document.getElementById('modal-err-title').textContent=id?'Editar Erro':'Registrar Erro';document.getElementById('ef-mat').value=err?err.materia:'CLM';document.getElementById('ef-tipo').value=err?err.tipo:'Conceito';document.getElementById('ef-tema').value=err?err.tema:'';document.getElementById('ef-erro').value=err?err.erro:'';document.getElementById('ef-prova').value=err?err.prova:'';document.getElementById('ef-data').value=err?err.data:new Date().toISOString().slice(0,10);document.querySelector('#modal-err .btn-primary').textContent=id?'Salvar':'Registrar';document.getElementById('modal-err').classList.add('open');}
+function closeErrForm(){document.getElementById('modal-err').classList.remove('open');}
+function submitErr(){const tema=document.getElementById('ef-tema').value.trim();const erro=document.getElementById('ef-erro').value.trim();if(!tema||!erro)return;const obj={id:editErrId||Date.now(),materia:document.getElementById('ef-mat').value,tema,erro,tipo:document.getElementById('ef-tipo').value,prova:document.getElementById('ef-prova').value,data:document.getElementById('ef-data').value};if(editErrId){errors=errors.map(e=>e.id===editErrId?obj:e);showToast('✏️ Atualizado!');}else{errors=[obj,...errors];showToast('✅ Erro salvo!');}save();closeErrForm();renderErros();}
+function editErr(id){openErrForm(id);}
+function openResForm(id){editResId=id||null;const res=id?resumos.find(r=>r.id===id):null;document.getElementById('modal-res-title').textContent=id?'Editar Resumo':'Novo Resumo';document.getElementById('rf-mat').value=res?res.materia:'CLM';document.getElementById('rf-titulo').value=res?res.titulo:'';document.getElementById('rf-conteudo').value=res?res.blocos.map(b=>b.v||'').filter(Boolean).join('\n\n'):'';document.querySelector('#modal-res .btn-outline').textContent=id?'Salvar':'Criar Resumo';document.getElementById('modal-res').classList.add('open');}
+function closeResForm(){document.getElementById('modal-res').classList.remove('open');}
+function submitRes(){const titulo=document.getElementById('rf-titulo').value.trim();const conteudo=document.getElementById('rf-conteudo').value.trim();if(!titulo||!conteudo)return;const obj={id:editResId||Date.now(),materia:document.getElementById('rf-mat').value,titulo,blocos:[{t:'texto',v:conteudo}]};if(editResId){resumos=resumos.map(r=>r.id===editResId?obj:r);showToast('✏️ Resumo atualizado!');}else{resumos=[obj,...resumos];showToast('📝 Resumo salvo!');}save();closeResForm();renderResumos();}
+function editRes(id){openResForm(id);}
+renderDashboard();
+</script>
+</body>
+</html>

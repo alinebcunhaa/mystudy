@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CTG — Tutorial Diagnóstico</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #faf8f4;
+  --bg2: #f5f1ea;
+  --card: #ffffff;
+  --border: #e8e0d4;
+  --border2: #d9cfc2;
+
+  --ink: #2d2720;
+  --ink2: #6b5f54;
+  --ink3: #a49585;
+
+  --sage: #7fa98a;
+  --sage-light: #e8f2eb;
+  --sage-mid: #b8d4bf;
+
+  --rose: #d4848a;
+  --rose-light: #faeced;
+  --rose-mid: #e8b4b8;
+
+  --amber: #c8923a;
+  --amber-light: #fdf3e3;
+  --amber-mid: #e8c98a;
+
+  --blue: #6a8fc4;
+  --blue-light: #edf2fa;
+
+  --coral: #c96060;
+
+  /* CTG paper */
+  --paper: #fffdf8;
+  --grid-major: rgba(220, 130, 130, 0.35);
+  --grid-minor: rgba(220, 130, 130, 0.12);
+  --trace-fcf: #c8505a;
+  --trace-ctx: #5a7fc8;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+/* ── Header ── */
+header {
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  padding: 3.5rem 2rem 3rem;
+  text-align: center;
+}
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--sage-light);
+  color: var(--sage);
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 0.3rem 1rem;
+  border-radius: 20px;
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--sage-mid);
+}
+header h1 {
+  font-family: 'DM Serif Display', Georgia, serif;
+  font-size: clamp(2.2rem, 5vw, 3.4rem);
+  color: var(--ink);
+  line-height: 1.1;
+  margin-bottom: 0.6rem;
+  letter-spacing: -0.02em;
+}
+header h1 em { color: var(--rose); font-style: italic; }
+header p {
+  color: var(--ink2);
+  font-size: 1rem;
+  font-weight: 300;
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+/* ── Nav ── */
+nav {
+  background: var(--card);
+  border-bottom: 2px solid var(--border);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+nav a {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.63rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink3);
+  text-decoration: none;
+  padding: 0.9rem 1.3rem;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  transition: all 0.2s;
+}
+nav a:hover { color: var(--rose); border-bottom-color: var(--rose); }
+
+/* ── Layout ── */
+main { max-width: 1020px; margin: 0 auto; padding: 3rem 1.5rem 5rem; }
+section { margin-bottom: 4rem; }
+
+.section-tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--sage);
+  margin-bottom: 0.4rem;
+}
+h2 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.7rem;
+  color: var(--ink);
+  margin-bottom: 0.3rem;
+  line-height: 1.2;
+}
+.h2-rule { width: 40px; height: 3px; background: var(--rose-mid); border-radius: 2px; margin-bottom: 1.4rem; }
+h3 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink2);
+  margin: 1.5rem 0 0.75rem;
+}
+p { color: var(--ink2); margin-bottom: 0.75rem; font-weight: 300; }
+strong { font-weight: 600; color: var(--ink); }
+
+/* ── CTG Strip (canvas wrapper) ── */
+.ctg-strip {
+  background: var(--paper);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 1.2rem 0;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.8);
+}
+.ctg-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 1rem;
+  background: rgba(255,255,255,0.7);
+  border-bottom: 1px solid var(--border);
+}
+.ctg-title {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  color: var(--ink2);
+  text-transform: uppercase;
+}
+.ctg-badge {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  padding: 0.15rem 0.6rem;
+  border-radius: 10px;
+}
+.badge-ok { background: var(--sage-light); color: var(--sage); }
+.badge-warn { background: var(--amber-light); color: var(--amber); }
+.badge-danger { background: var(--rose-light); color: var(--coral); }
+.badge-critical { background: #fce8e8; color: #b83030; }
+
+.ctg-strip canvas { display: block; width: 100%; }
+
+/* ── DIP cards ── */
+.dip-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin: 1.5rem 0;
+}
+
+.dip-card {
+  background: var(--card);
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+  transition: box-shadow 0.2s;
+}
+.dip-card:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.08); }
+
+.dip-card-header {
+  padding: 1rem 1.2rem 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+.dip-card-header.c1 { background: linear-gradient(135deg, #f0f8f2, #eaf5ec); }
+.dip-card-header.c2 { background: linear-gradient(135deg, #fdf0f0, #fae8e8); }
+.dip-card-header.c3 { background: linear-gradient(135deg, #fdf8ee, #faf2e0); }
+
+.dip-num {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.8rem;
+  line-height: 1;
+}
+.c1 .dip-num { color: var(--sage); }
+.c2 .dip-num { color: var(--coral); }
+.c3 .dip-num { color: var(--amber); }
+
+.dip-name { font-weight: 600; font-size: 0.9rem; color: var(--ink); }
+.dip-mech { font-size: 0.78rem; color: var(--ink2); font-weight: 300; margin-top: 0.1rem; }
+
+.dip-body { padding: 1rem 1.2rem; }
+.dip-body p { font-size: 0.88rem; }
+
+.pill-row { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.75rem; }
+.pill {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.05em;
+  padding: 0.2rem 0.6rem;
+  border-radius: 10px;
+}
+.pill-g { background: var(--sage-light); color: var(--sage); }
+.pill-a { background: var(--amber-light); color: var(--amber); }
+.pill-r { background: var(--rose-light); color: var(--coral); }
+
+/* ── Tables ── */
+.tbl {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+  background: var(--card);
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  margin: 1rem 0;
+}
+.tbl th {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink2);
+  background: var(--bg2);
+  padding: 0.7rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+.tbl td { padding: 0.7rem 1rem; border-bottom: 1px solid var(--border); color: var(--ink2); }
+.tbl tr:last-child td { border-bottom: none; }
+.tbl tr:hover td { background: var(--bg2); }
+.mono { font-family: 'DM Mono', monospace; font-size: 0.82rem; color: var(--ink); }
+
+/* ── Variability grid ── */
+.var-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin: 1rem 0; }
+.var-card {
+  border-radius: 8px;
+  padding: 1.1rem;
+  border: 1px solid;
+}
+.var-abs { background: #fce8e8; border-color: #f2c0c0; }
+.var-min { background: var(--amber-light); border-color: var(--amber-mid); }
+.var-mod { background: var(--sage-light); border-color: var(--sage-mid); }
+.var-acd { background: var(--blue-light); border-color: #c0d4f0; }
+
+.var-lbl { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.3rem; }
+.var-abs .var-lbl { color: var(--coral); }
+.var-min .var-lbl { color: var(--amber); }
+.var-mod .var-lbl { color: var(--sage); }
+.var-acd .var-lbl { color: var(--blue); }
+
+.var-val { font-family: 'DM Serif Display', serif; font-size: 1.5rem; line-height: 1; margin-bottom: 0.35rem; }
+.var-abs .var-val { color: var(--coral); }
+.var-min .var-val { color: var(--amber); }
+.var-mod .var-val { color: var(--sage); }
+.var-acd .var-val { color: var(--blue); }
+
+.var-txt { font-size: 0.8rem; color: var(--ink2); font-weight: 300; }
+
+/* ── Callout ── */
+.callout {
+  padding: 1rem 1.3rem;
+  border-radius: 8px;
+  margin: 1.2rem 0;
+  font-size: 0.9rem;
+  font-style: italic;
+}
+.callout-g { background: var(--sage-light); border-left: 3px solid var(--sage); color: #4a7a58; }
+.callout-a { background: var(--amber-light); border-left: 3px solid var(--amber); color: #8a6020; }
+.callout-r { background: var(--rose-light); border-left: 3px solid var(--coral); color: #8a3040; }
+
+/* ── Category cards ── */
+.cat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.2rem; margin: 1.2rem 0; }
+.cat-card { border-radius: 10px; padding: 1.4rem; border: 1px solid; }
+.cat1 { background: var(--sage-light); border-color: var(--sage-mid); }
+.cat2 { background: var(--amber-light); border-color: var(--amber-mid); }
+.cat3 { background: var(--rose-light); border-color: var(--rose-mid); }
+
+.cat-n { font-family: 'DM Serif Display', serif; font-size: 3rem; line-height: 1; }
+.cat1 .cat-n { color: var(--sage); }
+.cat2 .cat-n { color: var(--amber); }
+.cat3 .cat-n { color: var(--coral); }
+
+.cat-lbl { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.6rem; }
+.cat1 .cat-lbl { color: var(--sage); }
+.cat2 .cat-lbl { color: var(--amber); }
+.cat3 .cat-lbl { color: var(--coral); }
+
+.cat-desc { font-size: 0.87rem; margin-bottom: 0.9rem; font-weight: 300; }
+.cat-action-btn {
+  display: inline-block;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.06em;
+  padding: 0.35rem 0.85rem;
+  border-radius: 6px;
+  font-weight: 500;
+}
+.cat1 .cat-action-btn { background: rgba(127,169,138,0.2); color: #3d7a50; }
+.cat2 .cat-action-btn { background: rgba(200,146,58,0.2); color: #7a5a1a; }
+.cat3 .cat-action-btn { background: rgba(201,96,96,0.2); color: #8a2030; }
+
+/* ── Mnemônico ── */
+.mnemo-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 0.6rem; margin: 1rem 0; }
+.mnemo-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.9rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.8rem 1rem;
+}
+.mnemo-l {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.8rem;
+  color: var(--rose);
+  line-height: 1;
+  min-width: 1.6rem;
+}
+.mnemo-t strong { display: block; font-size: 0.82rem; color: var(--ink); margin-bottom: 0.1rem; }
+.mnemo-t span { font-size: 0.8rem; color: var(--ink2); font-weight: 300; }
+
+/* ── Complicada list ── */
+.comp-list { list-style: none; margin: 0.5rem 0; }
+.comp-list li {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.88rem;
+  color: var(--ink2);
+  display: flex;
+  gap: 0.6rem;
+  align-items: flex-start;
+}
+.comp-list li::before { content: '▸'; color: var(--amber); flex-shrink: 0; margin-top: 0.05rem; }
+.comp-list li:last-child { border: none; }
+
+/* ── Sinus alert ── */
+.sinus-box {
+  background: #fce8e8;
+  border: 1px solid #f2c0c0;
+  border-radius: 10px;
+  padding: 1.2rem;
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  margin: 1.2rem 0;
+}
+.sinus-icon { font-size: 1.5rem; }
+.sinus-content h4 { font-size: 0.85rem; font-weight: 600; color: var(--coral); margin-bottom: 0.3rem; }
+.sinus-content p { font-size: 0.85rem; color: #8a3040; margin: 0; }
+
+/* ── Acel grid ── */
+.acel-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0; }
+.acel-card { background: var(--blue-light); border: 1px solid #c0d4f0; border-radius: 8px; padding: 1rem; }
+.acel-card h4 { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--blue); margin-bottom: 0.4rem; }
+.acel-card .val { font-family: 'DM Serif Display', serif; font-size: 1rem; color: var(--ink); }
+
+@media(max-width:600px) {
+  .acel-2 { grid-template-columns: 1fr; }
+  nav a { font-size: 0.58rem; padding: 0.8rem 0.9rem; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="badge">Obstetrícia · Monitorização Fetal</div>
+  <h1>Cardio<em>tocografia</em></h1>
+  <p>Tutorial diagnóstico com traçados reais — da linha de base à conduta clínica</p>
+</header>
+
+<nav>
+  <a href="#baseline">Linha de Base</a>
+  <a href="#variab">Variabilidade</a>
+  <a href="#acel">Acelerações</a>
+  <a href="#dips">DIPs</a>
+  <a href="#categ">Categorias</a>
+  <a href="#mnemo">DR CONIVADO</a>
+</nav>
+
+<main>
+
+<!-- ───── LINHA DE BASE ───── -->
+<section id="baseline">
+  <div class="section-tag">Módulo 01</div>
+  <h2>Linha de Base</h2>
+  <div class="h2-rule"></div>
+  <p>Média da FCF em <strong>no mínimo 10 minutos</strong>, excluindo acelerações e desacelerações. Reflete o equilíbrio entre sistema simpático e parassimpático fetal.</p>
+
+  <div class="ctg-strip">
+    <div class="ctg-header">
+      <span class="ctg-title">FCF — Linha de Base Normal</span>
+      <span class="ctg-badge badge-ok">Normal · 130 bpm</span>
+    </div>
+    <canvas id="c-baseline" height="160"></canvas>
+  </div>
+
+  <table class="tbl">
+    <thead><tr><th>Classificação</th><th>Valor</th><th>Causas principais</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><span class="mono" style="color:var(--sage)">Normal</span></td>
+        <td><span class="mono">110–160 bpm</span></td>
+        <td>Equilíbrio simpático/parassimpático</td>
+      </tr>
+      <tr>
+        <td><span class="mono" style="color:var(--coral)">Bradicardia</span></td>
+        <td><span class="mono">&lt; 110 bpm</span></td>
+        <td>Sofrimento fetal agudo, arritmias, betabloqueadores maternos</td>
+      </tr>
+      <tr>
+        <td><span class="mono" style="color:var(--amber)">Taquicardia</span></td>
+        <td><span class="mono">&gt; 160 bpm</span></td>
+        <td>Febre materna (mais comum), sofrimento fetal, drogas</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ───── VARIABILIDADE ───── -->
+<section id="variab">
+  <div class="section-tag">Módulo 02</div>
+  <h2>Variabilidade</h2>
+  <div class="h2-rule"></div>
+  <p>Oscilações <strong>batimento a batimento</strong> — o parâmetro que melhor se correlaciona com o equilíbrio ácido-base fetal. É o mais importante.</p>
+
+  <div class="var-grid">
+    <div class="var-card var-abs">
+      <div class="var-lbl">Ausente</div>
+      <div class="var-val">≈ 0</div>
+      <div class="var-txt">Alerta grave. Alta correlação com hipóxia severa.</div>
+    </div>
+    <div class="var-card var-min">
+      <div class="var-lbl">Mínima</div>
+      <div class="var-val">≤ 5 bpm</div>
+      <div class="var-txt">Sono fetal, sedativos ou hipóxia incipiente. Mude decúbito e aguarde.</div>
+    </div>
+    <div class="var-card var-mod">
+      <div class="var-lbl">Moderada ✓</div>
+      <div class="var-val">6–25 bpm</div>
+      <div class="var-txt">Padrão de ouro. SNA íntegro e bem oxigenado.</div>
+    </div>
+    <div class="var-card var-acd">
+      <div class="var-lbl">Acentuada</div>
+      <div class="var-val">&gt; 25 bpm</div>
+      <div class="var-txt">Geralmente movimentos fetais vigorosos.</div>
+    </div>
+  </div>
+
+  <div class="ctg-strip">
+    <div class="ctg-header">
+      <span class="ctg-title">Comparativo de Variabilidade</span>
+      <span class="ctg-badge badge-ok">4 padrões</span>
+    </div>
+    <canvas id="c-variab" height="220"></canvas>
+  </div>
+</section>
+
+<!-- ───── ACELERAÇÕES ───── -->
+<section id="acel">
+  <div class="section-tag">Módulo 03</div>
+  <h2>Acelerações</h2>
+  <div class="h2-rule"></div>
+  <p>Aumento <strong>abrupto</strong> da FCF. Sinal mais robusto de reserva de oxigênio fetal — um feto que acelera nos tranquiliza.</p>
+
+  <div class="acel-2">
+    <div class="acel-card">
+      <h4>≥ 32 semanas</h4>
+      <div class="val">↑ ≥ 15 bpm por ≥ 15 segundos</div>
+    </div>
+    <div class="acel-card">
+      <h4>&lt; 32 semanas</h4>
+      <div class="val">↑ ≥ 10 bpm por ≥ 10 segundos</div>
+    </div>
+  </div>
+
+  <div class="ctg-strip">
+    <div class="ctg-header">
+      <span class="ctg-title">CTG com Acelerações Transitórias</span>
+      <span class="ctg-badge badge-ok">Feto Reativo</span>
+    </div>
+    <canvas id="c-acel" height="180"></canvas>
+  </div>
+
+  <div class="callout callout-g">
+    "Um feto que acelera é um feto que nos tranquiliza. A presença de acelerações é o sinal mais robusto de que o bebê possui boa reserva de oxigênio e não está em acidemia no momento."
+  </div>
+</section>
+
+<!-- ───── DIPs ───── -->
+<section id="dips">
+  <div class="section-tag">Módulo 04</div>
+  <h2>Desacelerações — DIPs</h2>
+  <div class="h2-rule"></div>
+  <p>O segredo está sempre na relação entre o <strong>nadir</strong> (ponto mais baixo) e o <strong>pico</strong> da contração. Acerte isso e você acerta o diagnóstico.</p>
+
+  <!-- DIP I -->
+  <div class="dip-card" style="margin-bottom:1.5rem;">
+    <div class="dip-card-header c1">
+      <div class="dip-num">I</div>
+      <div>
+        <div class="dip-name">Desaceleração Precoce</div>
+        <div class="dip-mech">Compressão do polo cefálico → estímulo vagal reflexo</div>
+      </div>
+    </div>
+    <div class="ctg-strip" style="margin:0;border-radius:0;border:none;border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+      <div class="ctg-header">
+        <span class="ctg-title">DIP I — traçado real</span>
+        <span class="ctg-badge badge-ok">Fisiológico · Nadir = Pico CTX</span>
+      </div>
+      <canvas id="c-dip1" height="200"></canvas>
+    </div>
+    <div class="dip-body">
+      <p><strong>Morfologia:</strong> Formato em "U" <em>simétrico e espelhado</em> com a contração. O nadir coincide com o pico da contração.</p>
+      <div class="pill-row">
+        <span class="pill pill-g">FISIOLÓGICO</span>
+        <span class="pill pill-g">BENIGNO</span>
+        <span class="pill pill-g">Sem intervenção necessária</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- DIP II -->
+  <div class="dip-card" style="margin-bottom:1.5rem;">
+    <div class="dip-card-header c2">
+      <div class="dip-num">II</div>
+      <div>
+        <div class="dip-name">Desaceleração Tardia</div>
+        <div class="dip-mech">Insuficiência útero-placentária → hipóxia transitória</div>
+      </div>
+    </div>
+    <div class="ctg-strip" style="margin:0;border-radius:0;border:none;border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+      <div class="ctg-header">
+        <span class="ctg-title">DIP II — traçado real</span>
+        <span class="ctg-badge badge-danger">ALERTA GRAVE · Nadir após pico CTX</span>
+      </div>
+      <canvas id="c-dip2" height="200"></canvas>
+    </div>
+    <div class="dip-body">
+      <p><strong>Morfologia:</strong> Formato em "U" com <em>decalagem</em> — nadir ocorre <strong>após</strong> o pico da contração. Quanto maior o atraso, pior a reserva.</p>
+      <div class="pill-row">
+        <span class="pill pill-r">ALERTA GRAVE</span>
+        <span class="pill pill-r">Acidose fetal</span>
+        <span class="pill pill-r">Intervenção imediata</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- DIP III -->
+  <div class="dip-card" style="margin-bottom:1.5rem;">
+    <div class="dip-card-header c3">
+      <div class="dip-num">III</div>
+      <div>
+        <div class="dip-name">Desaceleração Variável</div>
+        <div class="dip-mech">Compressão do cordão umbilical</div>
+      </div>
+    </div>
+    <div class="ctg-strip" style="margin:0;border-radius:0;border:none;border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+      <div class="ctg-header">
+        <span class="ctg-title">DIP III — traçado real</span>
+        <span class="ctg-badge badge-warn">Variável · Avalie critérios</span>
+      </div>
+      <canvas id="c-dip3" height="200"></canvas>
+    </div>
+    <div class="dip-body">
+      <p><strong>Morfologia:</strong> Formato em "V" — queda e retorno <em>abruptos</em>. Pode ou não coincidir com as contrações. Frequentemente tem "ombros" de aceleração antes/depois.</p>
+      <div class="pill-row">
+        <span class="pill pill-g">Isolada + variabilidade OK: benigna</span>
+        <span class="pill pill-a">Recorrente: atenção</span>
+        <span class="pill pill-r">Com critérios abaixo: grave</span>
+      </div>
+    </div>
+  </div>
+
+  <h3>DIP III Complicada — Critérios de Mau Prognóstico</h3>
+  <ul class="comp-list">
+    <li>Morfologia em "W" (ombros bifásicos patológicos)</li>
+    <li>Duração &gt; 60 segundos</li>
+    <li>Nadir &lt; 70 bpm</li>
+    <li>Retorno lento à linha de base</li>
+    <li>Taquicardia compensatória após a queda</li>
+  </ul>
+
+  <div class="sinus-box">
+    <div class="sinus-icon">⚡</div>
+    <div class="sinus-content">
+      <h4>Padrão Sinusoidal — Emergência Absoluta</h4>
+      <p>Onda suave, repetitiva, monótona e fixa (3–5 ciclos/min), sem variabilidade real. Associado a <strong>anemia fetal grave</strong>. Exige ação imediata — não contemple.</p>
+    </div>
+  </div>
+
+  <div class="ctg-strip">
+    <div class="ctg-header">
+      <span class="ctg-title">Padrão Sinusoidal</span>
+      <span class="ctg-badge badge-critical">EMERGÊNCIA</span>
+    </div>
+    <canvas id="c-sinus" height="130"></canvas>
+  </div>
+</section>
+
+<!-- ───── CATEGORIAS ───── -->
+<section id="categ">
+  <div class="section-tag">Módulo 05</div>
+  <h2>Categorias ACOG / FIGO</h2>
+  <div class="h2-rule"></div>
+  <p>Objetivo: evitar a acidemia confirmada por <strong>pH &lt; 7,2</strong>. Classifique e aja.</p>
+
+  <div class="cat-grid">
+    <div class="cat-card cat1">
+      <div class="cat-n">I</div>
+      <div class="cat-lbl">Normal</div>
+      <div class="cat-desc">Variabilidade moderada; sem DIP II ou III complicadas. Feto bem oxigenado.</div>
+      <span class="cat-action-btn">Acompanhamento de rotina</span>
+    </div>
+    <div class="cat-card cat2">
+      <div class="cat-n">II</div>
+      <div class="cat-lbl">Indeterminada</div>
+      <div class="cat-desc">Campo cinza: taquicardia, variabilidade mínima ou DIP III recorrente. Baixa probabilidade de hipóxia imediata.</div>
+      <span class="cat-action-btn">Manobras de ressuscitação</span>
+    </div>
+    <div class="cat-card cat3">
+      <div class="cat-n">III</div>
+      <div class="cat-lbl">Anormal</div>
+      <div class="cat-desc">Variabilidade ausente + DIP II/III recorrentes, ou padrão sinusoidal. Alta probabilidade de acidose.</div>
+      <span class="cat-action-btn">Parto imediato</span>
+    </div>
+  </div>
+
+  <h3>Manobras de Ressuscitação Fetal (Categoria II)</h3>
+  <table class="tbl">
+    <thead><tr><th>Sigla</th><th>Manobra</th><th>Objetivo</th></tr></thead>
+    <tbody>
+      <tr><td><span class="mono">DLE</span></td><td>Decúbito lateral esquerdo</td><td>Alívio da compressão aorto-cava</td></tr>
+      <tr><td><span class="mono">O₂</span></td><td>10 L/min por máscara</td><td>Aumentar oferta de oxigênio</td></tr>
+      <tr><td><span class="mono">IV</span></td><td>Hidratação venosa</td><td>Melhorar perfusão utero-placentária</td></tr>
+      <tr><td><span class="mono">OCT</span></td><td>Suspender ocitocina</td><td>Reduzir taquissistolia</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ───── MNEMÔNICO ───── -->
+<section id="mnemo">
+  <div class="section-tag">Módulo 06 · Revisão</div>
+  <h2>DR CONIVADO</h2>
+  <div class="h2-rule"></div>
+  <p>Sequência de avaliação para nunca pular nenhum parâmetro no plantão.</p>
+
+  <div class="mnemo-list">
+    <div class="mnemo-row"><div class="mnemo-l">D</div><div class="mnemo-t"><strong>Defina o Risco</strong><span>Alto risco (pré-eclâmpsia, DM) ou baixo risco?</span></div></div>
+    <div class="mnemo-row"><div class="mnemo-l">R</div><div class="mnemo-t"><strong>Ritmo — Linha de Base</strong><span>Alvo: 110–160 bpm</span></div></div>
+    <div class="mnemo-row"><div class="mnemo-l">C</div><div class="mnemo-t"><strong>Contrações</strong><span>≤ 5 em 10 min. Taquissistolia exige ação!</span></div></div>
+    <div class="mnemo-row"><div class="mnemo-l">O</div><div class="mnemo-t"><strong>Desvios de Frequência</strong><span>Taquicardia ou bradicardia presentes?</span></div></div>
+    <div class="mnemo-row"><div class="mnemo-l">N</div><div class="mnemo-t"><strong>Nível confirmado</strong><span>Linha de base dentro do alvo?</span></div></div>
+    <div class="mnemo-row"><div class="mnemo-l">I</div><div class="mnemo-t"><strong>Identificação / Intervalo</strong><span>Data, hora, velocidade 1 cm/min — valide o exame</span></div></div>
+    <div class="mnemo-row"><div class="mnemo-l">V</div><div class="mnemo-t"><strong>Variabilidade</strong><span>O mais importante. Busque 6–25 bpm.</span></div></div>
+    <div class="mnemo-row"><div class="mnemo-l">A</div><div class="mnemo-t"><strong>Acelerações</strong><span>Presentes? Feto reativo = reserva de O₂ boa ✓</span></div></div>
+    <div class="mnemo-row"><div class="mnemo-l">D</div><div class="mnemo-t"><strong>Desacelerações</strong><span>DIPs? Precoces (benignos) ou tardios/variáveis complicados (alerta)?</span></div></div>
+    <div class="mnemo-row"><div class="mnemo-l">O</div><div class="mnemo-t"><strong>Opinião Final</strong><span>Categoria I, II ou III → Conduta</span></div></div>
+  </div>
+
+  <div class="callout callout-g" style="margin-top:2rem;">
+    "O traçado é a voz do feto. Aprender a ouvi-lo com calma transforma a dúvida em segurança — para você e saúde para o bebê."
+  </div>
+</section>
+
+</main>
+
+<script>
+// ── Shared CTG drawing utilities ──────────────────────────────────────────
+
+const PAPER = '#fffdf8';
+const GRID_MAJ = 'rgba(210,120,120,0.32)';
+const GRID_MIN = 'rgba(210,120,120,0.12)';
+const FCF_COLOR = '#c8505a';
+const CTX_COLOR = '#6080c8';
+
+// Seeded pseudo-random for reproducible noise
+function seededRand(seed) {
+  let s = seed;
+  return function() {
+    s = (s * 1664525 + 1013904223) & 0xffffffff;
+    return (s >>> 0) / 0xffffffff;
+  };
+}
+
+// Draw CTG grid on canvas
+function drawGrid(ctx, W, H, cellW, cellH) {
+  ctx.fillStyle = PAPER;
+  ctx.fillRect(0, 0, W, H);
+
+  // Minor grid (1mm equivalent)
+  ctx.strokeStyle = GRID_MIN;
+  ctx.lineWidth = 0.5;
+  for (let x = 0; x <= W; x += cellW) {
+    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+  }
+  for (let y = 0; y <= H; y += cellH) {
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+  }
+
+  // Major grid (5x)
+  ctx.strokeStyle = GRID_MAJ;
+  ctx.lineWidth = 0.8;
+  for (let x = 0; x <= W; x += cellW * 5) {
+    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+  }
+  for (let y = 0; y <= H; y += cellH * 5) {
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+  }
+}
+
+// Map bpm to y coordinate (FCF panel)
+// panel top = 200 bpm, panel bottom = 80 bpm
+function bpmToY(bpm, panelTop, panelH) {
+  const min = 80, max = 200;
+  return panelTop + panelH - ((bpm - min) / (max - min)) * panelH;
+}
+
+// Draw scale labels on left
+function drawFCFScale(ctx, panelTop, panelH) {
+  ctx.fillStyle = 'rgba(180,130,130,0.7)';
+  ctx.font = '9px DM Mono, monospace';
+  ctx.textAlign = 'right';
+  [80, 100, 120, 140, 160, 180, 200].forEach(v => {
+    const y = bpmToY(v, panelTop, panelH);
+    ctx.fillText(v, 28, y + 3);
+    // light reference line
+    ctx.strokeStyle = 'rgba(210,120,120,0.18)';
+    ctx.lineWidth = 0.5;
+    ctx.beginPath();
+    ctx.moveTo(30, y); ctx.lineTo(ctx.canvas.width, y);
+    ctx.stroke();
+  });
+  // 110 and 160 danger lines
+  ctx.strokeStyle = 'rgba(200,80,90,0.35)';
+  ctx.lineWidth = 0.8;
+  ctx.setLineDash([4, 4]);
+  [110, 160].forEach(v => {
+    const y = bpmToY(v, panelTop, panelH);
+    ctx.beginPath(); ctx.moveTo(30, y); ctx.lineTo(ctx.canvas.width, y); ctx.stroke();
+  });
+  ctx.setLineDash([]);
+}
+
+// Generate smooth noise trace
+function generateTrace(seed, n, baseVal, variabilityAmp) {
+  const rnd = seededRand(seed);
+  const vals = [];
+  let current = baseVal;
+  for (let i = 0; i < n; i++) {
+    const delta = (rnd() - 0.5) * variabilityAmp;
+    current = current * 0.88 + (baseVal + delta) * 0.12;
+    // Extra micro-oscillation
+    current += (rnd() - 0.5) * (variabilityAmp * 0.4);
+    vals.push(current);
+  }
+  return vals;
+}
+
+// Draw FCF trace
+function drawFCFTrace(ctx, vals, panelTop, panelH, startX, W, color) {
+  const step = (W - startX) / vals.length;
+  ctx.strokeStyle = color || FCF_COLOR;
+  ctx.lineWidth = 1.6;
+  ctx.lineJoin = 'round';
+  ctx.lineCap = 'round';
+  ctx.beginPath();
+  vals.forEach((v, i) => {
+    const x = startX + i * step;
+    const y = bpmToY(v, panelTop, panelH);
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+}
+
+// Draw contraction (bell curve) in ctx panel
+function drawContraction(ctx, peakX, peakY_rel, width, panelTop, panelH, color) {
+  const amplitude = panelH * 0.7;
+  const pts = 80;
+  ctx.strokeStyle = color || CTX_COLOR;
+  ctx.lineWidth = 1.6;
+  ctx.lineJoin = 'round';
+  ctx.beginPath();
+  for (let i = 0; i <= pts; i++) {
+    const dx = (i / pts - 0.5) * width;
+    const x = peakX + dx;
+    const gauss = Math.exp(-Math.pow(dx / (width * 0.2), 2));
+    const y = panelTop + panelH - gauss * amplitude;
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+}
+
+// ── CANVAS 1: Baseline ────────────────────────────────────────────────────
+function drawBaseline() {
+  const c = document.getElementById('c-baseline');
+  if (!c || !c.offsetWidth) return;
+  const W = c.width = c.offsetWidth;
+  const H = c.height = 160;
+  const ctx = c.getContext('2d');
+  const cellW = W / 80, cellH = H / 20;
+  const panelH = H - 20;
+  const panelTop = 10;
+
+  drawGrid(ctx, W, H, cellW, cellH);
+  drawFCFScale(ctx, panelTop, panelH);
+
+  const n = 300;
+  const vals = generateTrace(42, n, 135, 14);
+  drawFCFTrace(ctx, vals, panelTop, panelH, 35, W - 5);
+}
+
+// ── CANVAS 2: Variability comparison ─────────────────────────────────────
+function drawVariab() {
+  const c = document.getElementById('c-variab');
+  if (!c || !c.offsetWidth) return;
+  const W = c.width = c.offsetWidth;
+  const H = c.height = 220;
+  const ctx = c.getContext('2d');
+  const cellW = W / 80, cellH = H / 40;
+
+  drawGrid(ctx, W, H, cellW, cellH);
+
+  const configs = [
+    { seed: 1, base: 135, amp: 0.3, color: '#c85060', label: 'AUSENTE', yOffset: 0 },
+    { seed: 2, base: 135, amp: 3,   color: '#c8923a', label: 'MÍNIMA',  yOffset: 55 },
+    { seed: 3, base: 135, amp: 14,  color: '#5aaa70', label: 'MODERADA',yOffset: 110 },
+    { seed: 4, base: 135, amp: 30,  color: '#6a8fc4', label: 'ACENTUADA',yOffset: 165 },
+  ];
+
+  configs.forEach(cfg => {
+    const rowH = 44;
+    const panelTop = cfg.yOffset + 6;
+
+    // Row separator
+    if (cfg.yOffset > 0) {
+      ctx.strokeStyle = 'rgba(200,150,150,0.2)';
+      ctx.lineWidth = 0.8;
+      ctx.beginPath(); ctx.moveTo(0, cfg.yOffset); ctx.lineTo(W, cfg.yOffset); ctx.stroke();
+    }
+
+    // Label
+    ctx.fillStyle = cfg.color;
+    ctx.font = 'bold 9px DM Mono, monospace';
+    ctx.textAlign = 'left';
+    ctx.fillText(cfg.label, 4, cfg.yOffset + 22);
+
+    const n = 250;
+    const vals = generateTrace(cfg.seed, n, cfg.base, cfg.amp);
+    drawFCFTrace(ctx, vals, panelTop, rowH, 70, W - 5, cfg.color);
+  });
+}
+
+// ── CANVAS 3: Accelerations ────────────────────────────────────────────────
+function drawAcel() {
+  const c = document.getElementById('c-acel');
+  if (!c || !c.offsetWidth) return;
+  const W = c.width = c.offsetWidth;
+  const H = c.height = 180;
+  const ctx = c.getContext('2d');
+  const cellW = W / 80, cellH = H / 20;
+  const fcfH = 130, ctxH = 35;
+  const fcfTop = 10, ctxTop = fcfH + 8;
+
+  drawGrid(ctx, W, H, cellW, cellH);
+  drawFCFScale(ctx, fcfTop, fcfH - 10);
+
+  const n = 300;
+  const rnd = seededRand(99);
+  const vals = generateTrace(99, n, 135, 12);
+
+  // Insert two accelerations
+  const acels = [
+    { start: 55, peak: 65, end: 80, height: 22 },
+    { start: 155, peak: 167, end: 185, height: 26 },
+  ];
+
+  const step = (W - 35) / n;
+  acels.forEach(a => {
+    for (let i = a.start; i < a.end; i++) {
+      const progress = (i - a.start) / (a.end - a.start);
+      const shape = Math.sin(progress * Math.PI);
+      vals[i] = (vals[i] || 135) + shape * a.height;
+    }
+  });
+
+  drawFCFTrace(ctx, vals, fcfTop, fcfH - 10, 35, W - 5);
+
+  // Labels for accel peaks
+  acels.forEach(a => {
+    const peakX = 35 + a.peak * step;
+    const peakBpm = 135 + a.height;
+    const peakY = bpmToY(peakBpm, fcfTop, fcfH - 10);
+    ctx.fillStyle = 'rgba(90,170,110,0.85)';
+    ctx.font = '9px DM Mono, monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText('↑ acel.', peakX, peakY - 6);
+  });
+
+  // CTX panel (uterine activity) — quiet
+  ctx.fillStyle = 'rgba(100,130,200,0.06)';
+  ctx.fillRect(35, ctxTop, W - 40, ctxH);
+  ctx.strokeStyle = 'rgba(180,180,200,0.3)';
+  ctx.lineWidth = 0.5;
+  ctx.strokeRect(35, ctxTop, W - 40, ctxH);
+  ctx.fillStyle = 'rgba(100,120,180,0.5)';
+  ctx.font = '8px DM Mono, monospace';
+  ctx.textAlign = 'left';
+  ctx.fillText('CTX', 38, ctxTop + 14);
+  // flat uterine line
+  ctx.strokeStyle = 'rgba(100,120,200,0.4)';
+  ctx.lineWidth = 1.2;
+  ctx.beginPath();
+  ctx.moveTo(55, ctxTop + ctxH - 8);
+  ctx.lineTo(W - 5, ctxTop + ctxH - 8);
+  ctx.stroke();
+}
+
+// ── Helper: draw DIP on top of a baseline trace ───────────────────────────
+function applyDip(vals, startI, nadirI, endI, nadirDrop) {
+  const n = vals.length;
+  for (let i = startI; i <= endI; i++) {
+    if (i >= n) break;
+    let shape;
+    if (i <= nadirI) {
+      shape = (i - startI) / (nadirI - startI);
+    } else {
+      shape = 1 - (i - nadirI) / (endI - nadirI);
+    }
+    shape = Math.pow(Math.max(0, shape), 0.8);
+    vals[i] = (vals[i] || 135) - shape * nadirDrop;
+  }
+}
+
+// ── CANVAS 4: DIP I ───────────────────────────────────────────────────────
+function drawDip1() {
+  const c = document.getElementById('c-dip1');
+  if (!c || !c.offsetWidth) return;
+  const W = c.width = c.offsetWidth;
+  const H = c.height = 200;
+  const ctx = c.getContext('2d');
+  const cellW = W / 80, cellH = H / 25;
+  const fcfH = 130, ctxH = 45;
+  const fcfTop = 10, ctxTop = 148;
+
+  drawGrid(ctx, W, H, cellW, cellH);
+  drawFCFScale(ctx, fcfTop, fcfH);
+
+  const n = 300;
+  const step = (W - 35) / n;
+  const vals = generateTrace(10, n, 135, 13);
+
+  // Two symmetric DIPs aligned with contractions
+  const dips = [
+    { ctxPeak: 75,  dipStart: 60,  dipNadir: 75,  dipEnd: 90,  drop: 28 },
+    { ctxPeak: 185, dipStart: 170, dipNadir: 185, dipEnd: 200, drop: 25 },
+  ];
+
+  dips.forEach(d => applyDip(vals, d.dipStart, d.dipNadir, d.dipEnd, d.drop));
+  drawFCFTrace(ctx, vals, fcfTop, fcfH, 35, W - 5);
+
+  // Annotation arrows
+  dips.forEach(d => {
+    const x = 35 + d.dipNadir * step;
+    const y = bpmToY(135 - d.drop, fcfTop, fcfH);
+    ctx.strokeStyle = 'rgba(90,160,110,0.6)';
+    ctx.lineWidth = 0.8;
+    ctx.setLineDash([3, 3]);
+    ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x, ctxTop + 5); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = 'rgba(60,130,80,0.85)';
+    ctx.font = '8px DM Mono, monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText('nadir = pico', x, y - 5);
+  });
+
+  // CTX panel
+  const ctxPanelH = ctxH;
+  ctx.fillStyle = 'rgba(100,130,200,0.05)';
+  ctx.fillRect(35, ctxTop, W - 40, ctxPanelH);
+  ctx.fillStyle = 'rgba(100,120,180,0.5)';
+  ctx.font = '8px DM Mono, monospace'; ctx.textAlign = 'left';
+  ctx.fillText('CTX', 38, ctxTop + 12);
+
+  dips.forEach(d => {
+    drawContraction(ctx, 35 + d.ctxPeak * step, 0, W * 0.25, ctxTop, ctxPanelH);
+  });
+}
+
+// ── CANVAS 5: DIP II ──────────────────────────────────────────────────────
+function drawDip2() {
+  const c = document.getElementById('c-dip2');
+  if (!c || !c.offsetWidth) return;
+  const W = c.width = c.offsetWidth;
+  const H = c.height = 200;
+  const ctx = c.getContext('2d');
+  const cellW = W / 80, cellH = H / 25;
+  const fcfH = 130, ctxH = 45;
+  const fcfTop = 10, ctxTop = 148;
+
+  drawGrid(ctx, W, H, cellW, cellH);
+  drawFCFScale(ctx, fcfTop, fcfH);
+
+  const n = 300;
+  const step = (W - 35) / n;
+  const vals = generateTrace(20, n, 140, 8); // lower variability = more ominous
+
+  // DIPs delayed after CTX peak by ~20 samples
+  const events = [
+    { ctxPeak: 70,  dipStart: 75,  dipNadir: 95,  dipEnd: 118, drop: 30 },
+    { ctxPeak: 175, dipStart: 180, dipNadir: 200, dipEnd: 222, drop: 28 },
+  ];
+
+  events.forEach(d => applyDip(vals, d.dipStart, d.dipNadir, d.dipEnd, d.drop));
+  drawFCFTrace(ctx, vals, fcfTop, fcfH, 35, W - 5, '#c03040');
+
+  // Show delay brackets
+  events.forEach(d => {
+    const ctxX = 35 + d.ctxPeak * step;
+    const nadirX = 35 + d.dipNadir * step;
+    const nadirY = bpmToY(140 - d.drop, fcfTop, fcfH) - 5;
+    const bracketY = ctxTop - 6;
+
+    // Delay arrow
+    ctx.strokeStyle = 'rgba(200,60,60,0.55)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([3, 3]);
+    ctx.beginPath(); ctx.moveTo(ctxX, fcfTop + fcfH + 2); ctx.lineTo(ctxX, bracketY); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(nadirX, nadirY); ctx.lineTo(nadirX, bracketY); ctx.stroke();
+    ctx.setLineDash([]);
+    // Horizontal delay bracket
+    ctx.strokeStyle = 'rgba(200,60,60,0.7)';
+    ctx.lineWidth = 1.2;
+    ctx.beginPath(); ctx.moveTo(ctxX, bracketY); ctx.lineTo(nadirX, bracketY); ctx.stroke();
+    // Label
+    ctx.fillStyle = 'rgba(180,40,50,0.9)';
+    ctx.font = 'bold 8px DM Mono, monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText('decalagem', (ctxX + nadirX) / 2, bracketY - 4);
+  });
+
+  // CTX panel
+  ctx.fillStyle = 'rgba(100,130,200,0.05)';
+  ctx.fillRect(35, ctxTop, W - 40, ctxH);
+  ctx.fillStyle = 'rgba(100,120,180,0.5)';
+  ctx.font = '8px DM Mono, monospace'; ctx.textAlign = 'left';
+  ctx.fillText('CTX', 38, ctxTop + 12);
+  events.forEach(d => {
+    drawContraction(ctx, 35 + d.ctxPeak * step, 0, W * 0.22, ctxTop, ctxH);
+  });
+}
+
+// ── CANVAS 6: DIP III ─────────────────────────────────────────────────────
+function drawDip3() {
+  const c = document.getElementById('c-dip3');
+  if (!c || !c.offsetWidth) return;
+  const W = c.width = c.offsetWidth;
+  const H = c.height = 200;
+  const ctx = c.getContext('2d');
+  const cellW = W / 80, cellH = H / 25;
+  const fcfH = 130, ctxH = 45;
+  const fcfTop = 10, ctxTop = 148;
+
+  drawGrid(ctx, W, H, cellW, cellH);
+  drawFCFScale(ctx, fcfTop, fcfH);
+
+  const n = 300;
+  const step = (W - 35) / n;
+  const vals = generateTrace(30, n, 140, 14);
+
+  // Abrupt V-shaped dips
+  function applyVDip(vals, center, halfWidth, drop) {
+    for (let i = center - halfWidth; i <= center + halfWidth; i++) {
+      if (i < 0 || i >= vals.length) continue;
+      const dist = Math.abs(i - center) / halfWidth;
+      const shape = 1 - Math.pow(dist, 0.5); // sharper V
+      vals[i] = (vals[i] || 140) - shape * drop;
+    }
+    // tiny shoulders (acceleration before/after)
+    const shoulderDrop = -8;
+    const sw = Math.floor(halfWidth * 0.6);
+    [center - halfWidth - sw, center + halfWidth].forEach(sc => {
+      for (let i = sc; i < sc + sw; i++) {
+        if (i < 0 || i >= vals.length) continue;
+        const d = Math.abs(i - (sc + sw / 2)) / (sw / 2);
+        vals[i] = (vals[i] || 140) - (1 - d) * shoulderDrop;
+      }
+    });
+  }
+
+  applyVDip(vals, 72, 20, 55);
+  applyVDip(vals, 185, 18, 50);
+  drawFCFTrace(ctx, vals, fcfTop, fcfH, 35, W - 5, '#c87028');
+
+  // Labels
+  [72, 185].forEach(center => {
+    const x = 35 + center * step;
+    const y = bpmToY(140 - 55, fcfTop, fcfH);
+    ctx.fillStyle = 'rgba(180,100,20,0.85)';
+    ctx.font = '8px DM Mono, monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText('nadir', x, y - 4);
+    ctx.fillText('(V abrupto)', x, y + 6);
+  });
+
+  // CTX — contractions slightly offset
+  ctx.fillStyle = 'rgba(100,130,200,0.05)';
+  ctx.fillRect(35, ctxTop, W - 40, ctxH);
+  ctx.fillStyle = 'rgba(100,120,180,0.5)';
+  ctx.font = '8px DM Mono, monospace'; ctx.textAlign = 'left';
+  ctx.fillText('CTX', 38, ctxTop + 12);
+  // Contractions offset — showing DIP III variability
+  [60, 170].forEach(cp => {
+    drawContraction(ctx, 35 + cp * step, 0, W * 0.18, ctxTop, ctxH);
+  });
+}
+
+// ── CANVAS 7: Sinusoidal ─────────────────────────────────────────────────
+function drawSinus() {
+  const c = document.getElementById('c-sinus');
+  if (!c || !c.offsetWidth) return;
+  const W = c.width = c.offsetWidth;
+  const H = c.height = 130;
+  const ctx = c.getContext('2d');
+  const cellW = W / 80, cellH = H / 20;
+  const fcfH = H - 20;
+  const fcfTop = 8;
+
+  drawGrid(ctx, W, H, cellW, cellH);
+  drawFCFScale(ctx, fcfTop, fcfH);
+
+  // Pure sinusoidal — no real variability
+  const n = 300;
+  const step = (W - 35) / n;
+  ctx.strokeStyle = '#b83030';
+  ctx.lineWidth = 2;
+  ctx.lineJoin = 'round';
+  ctx.beginPath();
+  for (let i = 0; i < n; i++) {
+    const x = 35 + i * step;
+    // 4 cycles total: amplitude ~10 bpm, around 135
+    const bpm = 135 + 10 * Math.sin((i / n) * 4 * 2 * Math.PI);
+    const y = bpmToY(bpm, fcfTop, fcfH);
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+
+  // Label
+  ctx.fillStyle = 'rgba(180,50,50,0.75)';
+  ctx.font = '9px DM Mono, monospace';
+  ctx.textAlign = 'left';
+  ctx.fillText('3–5 ciclos/min · amplitude regular · ausência de variabilidade real', 38, 18);
+}
+
+// ── Init all canvases (guarded) ───────────────────────────────────────────
+function initAll() {
+  [drawBaseline, drawVariab, drawAcel, drawDip1, drawDip2, drawDip3, drawSinus]
+    .forEach(fn => { try { fn(); } catch(e) { /* not laid out yet, skip */ } });
+}
+
+// Debounced ResizeObserver — waits for layout to settle before redrawing
+let _rt;
+const ro = new ResizeObserver(() => { clearTimeout(_rt); _rt = setTimeout(initAll, 100); });
+const mainEl = document.querySelector('main');
+if (mainEl) ro.observe(mainEl);
+
+window.addEventListener('load', initAll);
+</script>
+</body>
+</html>

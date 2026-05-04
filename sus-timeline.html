@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Evolução do SUS — Guia Completo</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --verde: #00875A;
+    --verde-escuro: #005C3D;
+    --amarelo: #F5A623;
+    --azul: #1B4F72;
+    --azul-claro: #2980B9;
+    --roxo: #6C3483;
+    --vermelho: #922B21;
+    --laranja: #CA6F1E;
+    --creme: #FAF7F2;
+    --cinza: #6B7280;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background-color: var(--creme); font-family: 'DM Sans', sans-serif; color: #1A1A1A; overflow-x: hidden; }
+
+  /* HEADER */
+  header {
+    background: linear-gradient(135deg, var(--verde-escuro) 0%, var(--verde) 60%, #34A77B 100%);
+    padding: 70px 40px 80px; text-align: center; position: relative; overflow: hidden;
+  }
+  header::before { content:''; position:absolute; top:-80px; right:-80px; width:320px; height:320px; border-radius:50%; background:rgba(255,255,255,0.05); }
+  header::after  { content:''; position:absolute; bottom:-60px; left:-60px; width:240px; height:240px; border-radius:50%; background:rgba(255,255,255,0.04); }
+  .header-tag { display:inline-block; background:var(--amarelo); color:#1A1A1A; font-size:11px; font-weight:500; letter-spacing:3px; text-transform:uppercase; padding:6px 18px; border-radius:2px; margin-bottom:24px; }
+  header h1 { font-family:'Playfair Display',serif; font-size:clamp(2.4rem,5vw,4rem); font-weight:900; color:#fff; line-height:1.1; margin-bottom:18px; position:relative; z-index:1; }
+  header p  { color:rgba(255,255,255,0.75); font-size:1rem; font-weight:300; max-width:560px; margin:0 auto; line-height:1.7; position:relative; z-index:1; }
+  .header-stats { display:flex; justify-content:center; gap:36px; margin-top:44px; flex-wrap:wrap; position:relative; z-index:1; }
+  .stat { text-align:center; color:#fff; }
+  .stat-number { font-family:'Playfair Display',serif; font-size:2rem; font-weight:700; color:var(--amarelo); display:block; }
+  .stat-label  { font-size:0.72rem; letter-spacing:1.5px; text-transform:uppercase; opacity:0.7; margin-top:4px; }
+
+  /* NAV */
+  .nav-index { background:var(--verde-escuro); position:sticky; top:0; z-index:100; box-shadow:0 2px 12px rgba(0,0,0,0.25); overflow-x:auto; }
+  .nav-index ul { list-style:none; display:flex; justify-content:center; min-width:max-content; }
+  .nav-index ul li a { display:block; color:rgba(255,255,255,0.7); text-decoration:none; font-size:0.68rem; letter-spacing:1px; text-transform:uppercase; padding:13px 14px; font-weight:500; transition:all 0.2s; white-space:nowrap; border-bottom:2px solid transparent; }
+  .nav-index ul li a:hover { color:var(--amarelo); border-bottom-color:var(--amarelo); background:rgba(255,255,255,0.05); }
+  .nav-index ul li a { cursor:pointer; }
+
+  /* DIVIDER */
+  .section-divider { height:3px; background:linear-gradient(to right, var(--verde-escuro), var(--amarelo), var(--azul)); }
+
+  /* ── TIMELINE ── */
+  .timeline-wrapper { max-width:860px; margin:0 auto; padding:72px 24px 80px; position:relative; }
+  .timeline-line { position:absolute; left:50%; top:0; bottom:0; width:2px; background:linear-gradient(to bottom, transparent, var(--verde) 5%, var(--verde) 95%, transparent); transform:translateX(-50%); }
+  .era-label { text-align:center; margin:56px 0 32px; position:relative; z-index:2; }
+  .era-label:first-child { margin-top:0; }
+  .era-label span { background:var(--azul); color:#fff; font-size:0.68rem; letter-spacing:2.5px; text-transform:uppercase; padding:8px 22px; border-radius:100px; font-weight:600; }
+  .era-label.era-verde span { background:var(--verde); }
+  .era-label.era-roxo  span { background:var(--roxo); }
+  .era-label.era-amber span { background:#B7770D; }
+
+  .event { display:flex; align-items:flex-start; margin-bottom:36px; position:relative; opacity:0; transform:translateY(20px); animation:fadeUp 0.45s ease forwards; }
+  .event.left  { flex-direction:row; }
+  .event.right { flex-direction:row-reverse; }
+  .event-content { width:calc(50% - 36px); background:#fff; border-radius:12px; padding:22px 24px; box-shadow:0 2px 14px rgba(0,0,0,0.07); transition:transform .25s, box-shadow .25s; cursor:default; }
+  .event.left  .event-content { border-left:4px solid var(--verde); }
+  .event.right .event-content { border-right:4px solid var(--amarelo); }
+  .event-content:hover { transform:translateY(-3px); box-shadow:0 8px 28px rgba(0,0,0,0.12); }
+  .event-year { font-family:'Playfair Display',serif; font-size:1.5rem; font-weight:900; line-height:1; margin-bottom:4px; }
+  .event.left  .event-year { color:var(--verde-escuro); }
+  .event.right .event-year { color:var(--azul); }
+  .event-title { font-size:0.93rem; font-weight:600; color:#1A1A1A; margin-bottom:8px; line-height:1.35; }
+  .event-desc  { font-size:0.81rem; color:var(--cinza); line-height:1.65; font-weight:300; }
+  .event-tag { display:inline-block; font-size:0.63rem; letter-spacing:1.5px; text-transform:uppercase; padding:3px 9px; border-radius:3px; font-weight:600; margin-bottom:8px; }
+  .event.left  .event-tag { background:#EDF7F2; color:var(--verde-escuro); }
+  .event.right .event-tag { background:#EEF4FB; color:var(--azul); }
+  .event-dot { width:72px; flex-shrink:0; display:flex; justify-content:center; align-items:flex-start; padding-top:18px; z-index:2; }
+  .dot { width:14px; height:14px; border-radius:50%; border:3px solid var(--creme); transition:transform .2s; }
+  .event.left  .dot { background:var(--verde); box-shadow:0 0 0 2px var(--verde); }
+  .event.right .dot { background:var(--amarelo); box-shadow:0 0 0 2px var(--amarelo); }
+  .event:hover .dot { transform:scale(1.4); }
+  .spacer { width:calc(50% - 36px); flex-shrink:0; }
+  @keyframes fadeUp { to { opacity:1; transform:translateY(0); } }
+  .event:nth-child(1)  { animation-delay:.04s } .event:nth-child(2)  { animation-delay:.08s }
+  .event:nth-child(3)  { animation-delay:.12s } .event:nth-child(4)  { animation-delay:.16s }
+  .event:nth-child(5)  { animation-delay:.20s } .event:nth-child(6)  { animation-delay:.24s }
+  .event:nth-child(7)  { animation-delay:.28s } .event:nth-child(8)  { animation-delay:.32s }
+  .event:nth-child(9)  { animation-delay:.36s } .event:nth-child(10) { animation-delay:.40s }
+  .event:nth-child(11) { animation-delay:.44s } .event:nth-child(12) { animation-delay:.48s }
+  .event:nth-child(13) { animation-delay:.52s } .event:nth-child(14) { animation-delay:.56s }
+  .event:nth-child(15) { animation-delay:.60s } .event:nth-child(16) { animation-delay:.64s }
+
+  /* ── PANEL SECTIONS ── */
+  .panel-section { padding:72px 24px; }
+  .panel-section.bg-dark  { background:var(--azul); }
+  .panel-section.bg-green { background:var(--verde-escuro); }
+  .panel-section.bg-creme { background:var(--creme); }
+  .panel-section.bg-light { background:#EEF4FB; }
+  .panel-max { max-width:1040px; margin:0 auto; }
+  .panel-header { text-align:center; margin-bottom:52px; }
+  .section-tag { display:inline-block; padding:5px 16px; border-radius:100px; font-size:0.68rem; letter-spacing:2.5px; text-transform:uppercase; font-weight:600; margin-bottom:16px; }
+  .tag-light { background:rgba(255,255,255,0.15); color:rgba(255,255,255,0.9); }
+  .tag-green { background:var(--verde); color:#fff; }
+  .tag-dark  { background:var(--azul); color:#fff; }
+  .tag-amber { background:var(--amarelo); color:#1A1A1A; }
+  .panel-header h2 { font-family:'Playfair Display',serif; font-size:clamp(1.8rem,3.5vw,2.6rem); font-weight:900; line-height:1.15; }
+  .panel-header h2.light { color:#fff; }
+  .panel-header h2.dark  { color:var(--azul); }
+  .panel-header p { margin-top:12px; font-size:0.9rem; font-weight:300; line-height:1.7; max-width:600px; margin-left:auto; margin-right:auto; }
+  .panel-header p.light { color:rgba(255,255,255,0.72); }
+  .panel-header p.dark  { color:var(--cinza); }
+
+  /* ── ORGANIZAÇÕES GRID ── */
+  .org-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(220px,1fr)); gap:20px; margin-bottom:32px; }
+  .org-card { background:#fff; border-radius:14px; padding:26px 22px; box-shadow:0 2px 16px rgba(0,0,0,0.08); border-top:5px solid var(--verde); transition:transform .25s, box-shadow .25s; cursor:default; }
+  .org-card:hover { transform:translateY(-4px); box-shadow:0 10px 28px rgba(0,0,0,0.13); }
+  .org-card.c-azul  { border-top-color:var(--azul); }
+  .org-card.c-roxo  { border-top-color:var(--roxo); }
+  .org-card.c-amber { border-top-color:var(--amarelo); }
+  .org-card.c-verm  { border-top-color:var(--vermelho); }
+  .org-sigla { font-family:'Playfair Display',serif; font-size:2rem; font-weight:900; color:var(--verde-escuro); line-height:1; margin-bottom:4px; }
+  .org-card.c-azul  .org-sigla { color:var(--azul); }
+  .org-card.c-roxo  .org-sigla { color:var(--roxo); }
+  .org-card.c-amber .org-sigla { color:var(--laranja); }
+  .org-card.c-verm  .org-sigla { color:var(--vermelho); }
+  .org-periodo { font-size:0.68rem; color:var(--cinza); letter-spacing:1px; text-transform:uppercase; margin-bottom:10px; font-weight:500; }
+  .org-nome { font-size:0.88rem; font-weight:600; color:#1A1A1A; margin-bottom:8px; line-height:1.3; }
+  .org-desc { font-size:0.79rem; color:var(--cinza); line-height:1.6; font-weight:300; }
+
+  /* ── PRINCÍPIOS ── */
+  .principios-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:20px; }
+  .principio-legenda { display:flex; gap:28px; justify-content:center; margin-bottom:32px; flex-wrap:wrap; }
+  .legenda-item { display:flex; align-items:center; gap:8px; font-size:0.75rem; color:rgba(255,255,255,0.7); }
+  .legenda-dot  { width:12px; height:12px; border-radius:2px; flex-shrink:0; }
+  .principio-card { background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.13); border-radius:14px; padding:26px 22px; transition:background .25s, transform .25s; cursor:default; }
+  .principio-card:hover { background:rgba(255,255,255,0.14); transform:translateY(-4px); }
+  .principio-card.doutrinario { border-top:3px solid var(--amarelo); }
+  .principio-card.organizativo { border-top:3px solid #5DADE2; }
+  .principio-icon { font-size:1.9rem; margin-bottom:12px; display:block; }
+  .principio-tipo { font-size:0.6rem; letter-spacing:2px; text-transform:uppercase; font-weight:600; opacity:0.55; color:#fff; margin-bottom:6px; }
+  .principio-card h3 { color:var(--amarelo); font-size:1rem; font-weight:600; margin-bottom:8px; line-height:1.25; }
+  .principio-card.organizativo h3 { color:#5DADE2; }
+  .principio-card p { color:rgba(255,255,255,0.72); font-size:0.8rem; line-height:1.6; font-weight:300; }
+
+  /* ── LEIS ── */
+  .leis-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:22px; }
+  .lei-card { background:#fff; border-radius:14px; padding:26px 24px; box-shadow:0 3px 18px rgba(0,0,0,0.08); border-top:5px solid var(--verde); transition:transform .25s, box-shadow .25s; cursor:default; }
+  .lei-card:hover { transform:translateY(-4px); box-shadow:0 10px 32px rgba(0,0,0,0.13); }
+  .lei-card.c-azul  { border-top-color:var(--azul); }
+  .lei-card.c-amber { border-top-color:var(--amarelo); }
+  .lei-card.c-roxo  { border-top-color:var(--roxo); }
+  .lei-card.c-verm  { border-top-color:var(--vermelho); }
+  .lei-card.c-laranja { border-top-color:var(--laranja); }
+  .lei-numero { font-family:'Playfair Display',serif; font-size:1.5rem; font-weight:900; color:var(--verde-escuro); margin-bottom:2px; }
+  .lei-card.c-azul   .lei-numero { color:var(--azul); }
+  .lei-card.c-amber  .lei-numero { color:var(--laranja); }
+  .lei-card.c-roxo   .lei-numero { color:var(--roxo); }
+  .lei-card.c-verm   .lei-numero { color:var(--vermelho); }
+  .lei-card.c-laranja .lei-numero { color:var(--laranja); }
+  .lei-ano   { font-size:0.7rem; letter-spacing:1.5px; text-transform:uppercase; color:var(--cinza); font-weight:500; margin-bottom:10px; }
+  .lei-titulo { font-size:0.95rem; font-weight:600; color:#1A1A1A; margin-bottom:8px; line-height:1.3; }
+  .lei-desc  { font-size:0.82rem; color:var(--cinza); line-height:1.65; font-weight:300; }
+  .lei-pontos { margin-top:12px; padding-top:12px; border-top:1px solid #F0F0F0; }
+  .lei-pontos li { font-size:0.78rem; color:#444; line-height:1.5; padding-left:14px; position:relative; margin-bottom:5px; list-style:none; }
+  .lei-pontos li::before { content:'›'; position:absolute; left:0; font-weight:700; }
+  .lei-card            .lei-pontos li::before { color:var(--verde); }
+  .lei-card.c-azul   .lei-pontos li::before { color:var(--azul); }
+  .lei-card.c-roxo   .lei-pontos li::before { color:var(--roxo); }
+  .lei-card.c-verm   .lei-pontos li::before { color:var(--vermelho); }
+  .lei-card.c-laranja .lei-pontos li::before { color:var(--laranja); }
+
+  /* ── NORMAS TABLE ── */
+  .nobs-table { width:100%; border-collapse:separate; border-spacing:0; background:#fff; border-radius:14px; overflow:hidden; box-shadow:0 4px 24px rgba(0,0,0,0.09); }
+  .nobs-table thead tr { background:var(--azul); }
+  .nobs-table thead th { color:rgba(255,255,255,0.9); padding:14px 18px; font-size:0.72rem; letter-spacing:1.5px; text-transform:uppercase; font-weight:600; text-align:left; }
+  .nobs-table tbody tr { border-bottom:1px solid #F0F0F0; transition:background .15s; }
+  .nobs-table tbody tr:hover { background:#F7FBF9; }
+  .nobs-table tbody tr:last-child { border-bottom:none; }
+  .nobs-table td { padding:14px 18px; font-size:0.83rem; vertical-align:top; line-height:1.55; }
+  .nob-nome { font-weight:600; color:var(--azul); white-space:nowrap; }
+  .nob-ano  { color:var(--cinza); font-size:0.78rem; white-space:nowrap; }
+  .nob-rel  { display:inline-block; padding:3px 10px; border-radius:100px; font-size:0.65rem; letter-spacing:1px; text-transform:uppercase; font-weight:600; white-space:nowrap; }
+  .rel-alta  { background:#D4EFDF; color:#1D6A38; }
+  .rel-media { background:#D6EAF8; color:#1A4F72; }
+  .rel-marco { background:#FADBD8; color:#78281F; }
+
+  /* ── COMPLEMENTAR vs SUPLEMENTAR ── */
+  .comp-grid { display:grid; grid-template-columns:1fr 1fr; gap:28px; }
+  .comp-card { border-radius:16px; padding:34px 30px; transition:transform .25s; }
+  .comp-card:hover { transform:translateY(-4px); }
+  .comp-card.complementar { background:#fff; border:2px solid var(--verde); }
+  .comp-card.suplementar  { background:var(--azul); }
+  .comp-badge { display:inline-block; padding:5px 14px; border-radius:100px; font-size:0.65rem; letter-spacing:2px; text-transform:uppercase; font-weight:700; margin-bottom:18px; }
+  .comp-card.complementar .comp-badge { background:var(--verde); color:#fff; }
+  .comp-card.suplementar  .comp-badge { background:var(--amarelo); color:#1A1A1A; }
+  .comp-card h3 { font-family:'Playfair Display',serif; font-size:1.5rem; font-weight:900; margin-bottom:12px; line-height:1.15; }
+  .comp-card.complementar h3 { color:var(--verde-escuro); }
+  .comp-card.suplementar  h3 { color:#fff; }
+  .comp-card > p { font-size:0.84rem; line-height:1.7; margin-bottom:20px; font-weight:300; }
+  .comp-card.complementar > p { color:var(--cinza); }
+  .comp-card.suplementar  > p { color:rgba(255,255,255,0.72); }
+  .comp-list { list-style:none; }
+  .comp-list li { font-size:0.82rem; line-height:1.55; padding:9px 0; border-bottom:1px solid; display:flex; gap:10px; align-items:flex-start; }
+  .comp-card.complementar .comp-list li { border-color:#E8F5EE; color:#333; }
+  .comp-card.suplementar  .comp-list li { border-color:rgba(255,255,255,0.12); color:rgba(255,255,255,0.8); }
+  .comp-list li:last-child { border-bottom:none; }
+  .comp-list li span { flex-shrink:0; }
+  .comp-lei-ref { margin-top:18px; padding:11px 15px; border-radius:8px; font-size:0.75rem; font-weight:500; }
+  .comp-card.complementar .comp-lei-ref { background:#EDF7F2; color:var(--verde-escuro); }
+  .comp-card.suplementar  .comp-lei-ref { background:rgba(255,255,255,0.1); color:rgba(255,255,255,0.85); }
+  .comp-nota { background:#fff; border-radius:14px; padding:24px 26px; margin-top:24px; border-left:4px solid var(--amarelo); box-shadow:0 2px 14px rgba(0,0,0,0.06); }
+  .comp-nota strong { color:var(--azul); font-size:0.85rem; }
+  .comp-nota p { font-size:0.83rem; color:var(--cinza); line-height:1.7; margin-top:8px; }
+
+  /* ── ANS ── */
+  .ans-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:20px; }
+  .ans-card { background:rgba(255,255,255,0.09); border:1px solid rgba(255,255,255,0.15); border-radius:14px; padding:24px 20px; transition:background .2s, transform .2s; cursor:default; }
+  .ans-card:hover { background:rgba(255,255,255,0.15); transform:translateY(-3px); }
+  .ans-card-icon  { font-size:1.7rem; margin-bottom:12px; display:block; }
+  .ans-card-label { font-size:0.62rem; letter-spacing:2px; text-transform:uppercase; color:var(--amarelo); font-weight:600; margin-bottom:6px; }
+  .ans-card h3 { color:#fff; font-size:0.97rem; font-weight:600; margin-bottom:8px; line-height:1.3; }
+  .ans-card p  { color:rgba(255,255,255,0.7); font-size:0.8rem; line-height:1.6; font-weight:300; }
+  .rn531 { background:linear-gradient(135deg,#F5A623 0%,#E67E22 100%); border-radius:16px; padding:36px 32px; margin-top:40px; display:flex; align-items:flex-start; gap:24px; flex-wrap:wrap; }
+  .rn531-icon { font-size:3rem; flex-shrink:0; }
+  .rn531 h3 { font-family:'Playfair Display',serif; font-size:1.4rem; font-weight:900; color:#1A1A1A; margin-bottom:8px; }
+  .rn531 p { color:rgba(26,26,26,0.75); font-size:0.85rem; line-height:1.7; font-weight:300; }
+  .rn531-pills { display:flex; gap:10px; flex-wrap:wrap; margin-top:16px; }
+  .rn531-pill { background:rgba(0,0,0,0.12); color:#1A1A1A; padding:5px 14px; border-radius:100px; font-size:0.72rem; font-weight:600; }
+
+  /* FOOTER */
+  footer { background:var(--verde-escuro); color:rgba(255,255,255,0.6); text-align:center; padding:32px; font-size:0.78rem; letter-spacing:0.5px; line-height:1.9; }
+  footer strong { color:#fff; }
+
+  /* RESPONSIVE */
+  @media (max-width:720px) {
+    .comp-grid { grid-template-columns:1fr; }
+    .timeline-line { left:22px; }
+    .event.left, .event.right { flex-direction:row !important; }
+    .event-dot { width:44px; }
+    .event-content { width:calc(100% - 44px); }
+    .event.right .event-content { border-right:none; border-left:4px solid var(--amarelo); }
+    .spacer { display:none; }
+    .rn531 { flex-direction:column; }
+    .header-stats { gap:20px; }
+    .nobs-table { font-size:0.76rem; }
+    .nobs-table td, .nobs-table th { padding:10px 12px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-tag">Saúde Pública no Brasil</div>
+  <h1>Evolução do SUS</h1>
+  <p>Da previdência excludente dos IAPs ao maior sistema público de saúde do mundo — uma jornada de lutas, leis e conquistas que garante saúde a 215 milhões de brasileiros.</p>
+  <div class="header-stats">
+    <div class="stat"><span class="stat-number">1923</span><span class="stat-label">Origem (IAPs)</span></div>
+    <div class="stat"><span class="stat-number">1988</span><span class="stat-label">Constituição Federal</span></div>
+    <div class="stat"><span class="stat-number">7</span><span class="stat-label">Princípios</span></div>
+    <div class="stat"><span class="stat-number">215M</span><span class="stat-label">Brasileiros atendidos</span></div>
+  </div>
+</header>
+
+<!-- NAV -->
+<nav class="nav-index">
+  <ul>
+    <li><a onclick="document.getElementById('organizacoes').scrollIntoView({behavior:'smooth'})">Organizações</a></li>
+    <li><a onclick="document.getElementById('principios').scrollIntoView({behavior:'smooth'})">Princípios</a></li>
+    <li><a onclick="document.getElementById('marco-legal').scrollIntoView({behavior:'smooth'})">Marco Legal</a></li>
+    <li><a onclick="document.getElementById('normas').scrollIntoView({behavior:'smooth'})">Normas Operacionais</a></li>
+    <li><a onclick="document.getElementById('complementar').scrollIntoView({behavior:'smooth'})">Compl. e Suplementar</a></li>
+    <li><a onclick="document.getElementById('ans').scrollIntoView({behavior:'smooth'})">ANS</a></li>
+    <li><a onclick="document.getElementById('timeline').scrollIntoView({behavior:'smooth'})">Linha do Tempo</a></li>
+  </ul>
+</nav>
+
+<!-- ════════════════════════════════════
+     1. ORGANIZAÇÕES HISTÓRICAS
+════════════════════════════════════ -->
+<section id="organizacoes" class="panel-section bg-creme">
+  <div class="panel-max">
+    <div class="panel-header">
+      <div class="section-tag tag-dark">Pré-SUS e Pós-SUS</div>
+      <h2 class="dark">Organizações do Sistema de Saúde</h2>
+      <p class="dark">Antes do SUS, a saúde pública era fragmentada e excludente. Conhecer as organizações predecessoras é essencial para compreender as conquistas e os desafios do sistema atual.</p>
+    </div>
+    <div class="org-grid">
+      <div class="org-card">
+        <div class="org-sigla">IAPs</div>
+        <div class="org-periodo">1923 – 1966</div>
+        <div class="org-nome">Institutos de Aposentadoria e Pensões</div>
+        <div class="org-desc">Originados da Lei Eloy Chaves (1923). Vinculados a categorias profissionais (IAPM – marítimos, IAPI – industriários, IAPB – bancários, IAPTC – transportes). Modelo contributivo e excludente: só quem contribuía tinha acesso à saúde.</div>
+      </div>
+      <div class="org-card c-azul">
+        <div class="org-sigla">INPS</div>
+        <div class="org-periodo">1966 – 1978</div>
+        <div class="org-nome">Instituto Nacional de Previdência Social</div>
+        <div class="org-desc">Criado pelo governo militar com a fusão de todos os IAPs. Centralizou a previdência, mas manteve a lógica excludente. Trabalhadores rurais e informais continuavam sem cobertura. Antecessor direto do INAMPS.</div>
+      </div>
+      <div class="org-card c-roxo">
+        <div class="org-sigla">INAMPS</div>
+        <div class="org-periodo">1978 – 1993</div>
+        <div class="org-nome">Instituto Nacional de Assistência Médica da Previdência Social</div>
+        <div class="org-desc">Desmembrado do INPS (Decreto 83.060/78) para gerir a assistência médica dos segurados. Financiou amplamente o setor privado, consolidando o modelo hospitalocêntrico. Extinto pela Lei 8.689/1993, com funções absorvidas pelo SUS.</div>
+      </div>
+      <div class="org-card c-verm">
+        <div class="org-sigla">CAPS</div>
+        <div class="org-periodo">1987 – presente</div>
+        <div class="org-nome">Centro de Atenção Psicossocial</div>
+        <div class="org-desc">Primeiro CAPS criado em São Paulo em 1987 (Prof. Luiz da Rocha Cerqueira), marco da Reforma Psiquiátrica. Substitui o modelo manicomial por cuidado territorial e humanizado. Hoje mais de 2.800 CAPS funcionam no Brasil, regulamentados pela Portaria 336/2002.</div>
+      </div>
+    </div>
+
+    <!-- Linha evolutiva -->
+    <div style="background:#fff; border-radius:14px; padding:24px 28px; box-shadow:0 2px 14px rgba(0,0,0,0.07); overflow-x:auto;">
+      <div style="font-size:0.7rem; letter-spacing:2px; text-transform:uppercase; color:var(--cinza); font-weight:600; margin-bottom:16px;">Linha evolutiva das organizações</div>
+      <div style="display:flex; align-items:center; gap:0; min-width:600px;">
+        <div style="text-align:center; flex:1;">
+          <div style="background:var(--verde); color:#fff; border-radius:8px; padding:8px 12px; font-size:0.78rem; font-weight:600;">IAPs (1923)</div>
+          <div style="font-size:0.7rem; color:var(--cinza); margin-top:6px;">Categorias profissionais</div>
+        </div>
+        <div style="color:var(--cinza); font-size:1.2rem; padding:0 8px;">→</div>
+        <div style="text-align:center; flex:1;">
+          <div style="background:var(--azul); color:#fff; border-radius:8px; padding:8px 12px; font-size:0.78rem; font-weight:600;">INPS (1966)</div>
+          <div style="font-size:0.7rem; color:var(--cinza); margin-top:6px;">Fusão dos IAPs</div>
+        </div>
+        <div style="color:var(--cinza); font-size:1.2rem; padding:0 8px;">→</div>
+        <div style="text-align:center; flex:1;">
+          <div style="background:var(--roxo); color:#fff; border-radius:8px; padding:8px 12px; font-size:0.78rem; font-weight:600;">INAMPS (1978)</div>
+          <div style="font-size:0.7rem; color:var(--cinza); margin-top:6px;">Assistência médica</div>
+        </div>
+        <div style="color:var(--cinza); font-size:1.2rem; padding:0 8px;">→</div>
+        <div style="text-align:center; flex:1;">
+          <div style="background:var(--amarelo); color:#1A1A1A; border-radius:8px; padding:8px 12px; font-size:0.78rem; font-weight:600;">SUDS (1987)</div>
+          <div style="font-size:0.7rem; color:var(--cinza); margin-top:6px;">Transição</div>
+        </div>
+        <div style="color:var(--cinza); font-size:1.2rem; padding:0 8px;">→</div>
+        <div style="text-align:center; flex:1;">
+          <div style="background:var(--verde-escuro); color:#fff; border-radius:8px; padding:8px 12px; font-size:0.78rem; font-weight:700;">SUS (1988)</div>
+          <div style="font-size:0.7rem; color:var(--cinza); margin-top:6px;">Universal e gratuito</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ════════════════════════════════════
+     2. PRINCÍPIOS DO SUS
+════════════════════════════════════ -->
+<section id="principios" class="panel-section bg-green">
+  <div class="panel-max">
+    <div class="panel-header">
+      <div class="section-tag tag-light">Doutrina e Organização</div>
+      <h2 class="light">Princípios do SUS</h2>
+      <p class="light">O SUS está fundamentado em princípios doutrinários — o que o sistema deve ser — e princípios organizativos — como ele deve funcionar. Definidos pela Lei 8.080/1990.</p>
+    </div>
+    <div class="principio-legenda">
+      <div class="legenda-item"><div class="legenda-dot" style="background:var(--amarelo)"></div>Princípio Doutrinário (o quê)</div>
+      <div class="legenda-item"><div class="legenda-dot" style="background:#5DADE2"></div>Princípio Organizativo (como)</div>
+    </div>
+    <div class="principios-grid">
+      <div class="principio-card doutrinario">
+        <span class="principio-icon">🌍</span>
+        <div class="principio-tipo">Doutrinário</div>
+        <h3>Universalidade</h3>
+        <p>A saúde é direito de todos e dever do Estado. O SUS atende qualquer cidadão, independentemente de renda, raça, sexo, vínculo empregatício ou local de moradia.</p>
+      </div>
+      <div class="principio-card doutrinario">
+        <span class="principio-icon">🔄</span>
+        <div class="principio-tipo">Doutrinário</div>
+        <h3>Integralidade</h3>
+        <p>O indivíduo é um ser integral, biopsicossocial. O SUS deve oferecer atenção em todos os níveis — promoção, prevenção, tratamento e reabilitação — de forma contínua e articulada.</p>
+      </div>
+      <div class="principio-card doutrinario">
+        <span class="principio-icon">⚖️</span>
+        <div class="principio-tipo">Doutrinário</div>
+        <h3>Equidade</h3>
+        <p>Tratar desigualmente os desiguais. Priorizar quem mais precisa, reconhecendo que as necessidades de saúde variam. Equidade não é igualdade — é justiça distributiva.</p>
+      </div>
+      <div class="principio-card organizativo">
+        <span class="principio-icon">🏛️</span>
+        <div class="principio-tipo">Organizativo</div>
+        <h3>Descentralização</h3>
+        <p>Redistribuição de responsabilidades entre União, estados e municípios. O município é o principal executor, por estar mais próximo das necessidades reais da população.</p>
+      </div>
+      <div class="principio-card organizativo">
+        <span class="principio-icon">🗺️</span>
+        <div class="principio-tipo">Organizativo</div>
+        <h3>Regionalização e Hierarquização</h3>
+        <p>Serviços organizados em regiões de saúde e por níveis de complexidade crescente: atenção básica → média complexidade → alta complexidade. Garante acesso ordenado e eficiente.</p>
+      </div>
+      <div class="principio-card organizativo">
+        <span class="principio-icon">🎯</span>
+        <div class="principio-tipo">Organizativo</div>
+        <h3>Resolutividade</h3>
+        <p>O serviço deve resolver os problemas de saúde no nível adequado de complexidade, evitando encaminhamentos desnecessários e garantindo respostas efetivas aos usuários.</p>
+      </div>
+      <div class="principio-card organizativo">
+        <span class="principio-icon">👥</span>
+        <div class="principio-tipo">Organizativo</div>
+        <h3>Participação Social</h3>
+        <p>A comunidade participa das decisões via Conselhos de Saúde (permanentes) e Conferências de Saúde (periódicas), garantindo controle social democrático sobre o sistema.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ════════════════════════════════════
+     3. MARCO LEGAL
+════════════════════════════════════ -->
+<section id="marco-legal" class="panel-section bg-creme">
+  <div class="panel-max">
+    <div class="panel-header">
+      <div class="section-tag tag-dark">Legislação</div>
+      <h2 class="dark">Marco Legal do SUS</h2>
+      <p class="dark">As principais leis e emendas constitucionais que estruturam, financiam e regulam o Sistema Único de Saúde ao longo de mais de três décadas.</p>
+    </div>
+    <div class="leis-grid">
+
+      <div class="lei-card">
+        <div class="lei-numero">Lei 8.080</div>
+        <div class="lei-ano">1990 · Lei Orgânica da Saúde — Parte I</div>
+        <div class="lei-titulo">Condições para promoção, proteção e recuperação da saúde</div>
+        <div class="lei-desc">Regulamenta o SUS definindo organização, funcionamento, competências e princípios. Espinha dorsal do sistema público de saúde brasileiro.</div>
+        <ul class="lei-pontos">
+          <li>Define os 3 princípios doutrinários (universalidade, integralidade, equidade)</li>
+          <li>Estabelece competências da União, estados e municípios</li>
+          <li>Organiza a rede em níveis de complexidade crescente</li>
+          <li>Regulamenta a saúde complementar (arts. 24–26)</li>
+          <li>Define serviços de vigilância sanitária e epidemiológica</li>
+        </ul>
+      </div>
+
+      <div class="lei-card c-azul">
+        <div class="lei-numero">Lei 8.142</div>
+        <div class="lei-ano">1990 · Lei Orgânica da Saúde — Parte II</div>
+        <div class="lei-titulo">Participação da comunidade e transferências financeiras</div>
+        <div class="lei-desc">Complementa a Lei 8.080 disciplinando o controle social e as regras de repasse de recursos financeiros entre os entes federativos.</div>
+        <ul class="lei-pontos">
+          <li>Cria os Conselhos de Saúde (municipal, estadual e nacional)</li>
+          <li>Institui as Conferências de Saúde em cada esfera de governo</li>
+          <li>Define condições para repasse do Fundo Nacional de Saúde</li>
+          <li>Exige plano de saúde e relatório de gestão como requisitos</li>
+        </ul>
+      </div>
+
+      <div class="lei-card c-amber">
+        <div class="lei-numero">EC 29/2000</div>
+        <div class="lei-ano">Emenda Constitucional nº 29 · 2000</div>
+        <div class="lei-titulo">Vinculação de receitas mínimas para a saúde</div>
+        <div class="lei-desc">Altera a CF/88 para garantir piso mínimo de investimento em saúde pelos três entes, dando previsibilidade e estabilidade ao financiamento do SUS.</div>
+        <ul class="lei-pontos">
+          <li>União: crescimento mínimo pela variação nominal do PIB</li>
+          <li>Estados: mínimo de 12% da receita de impostos</li>
+          <li>Municípios: mínimo de 15% da receita de impostos</li>
+          <li>Regulamentada pela Lei Complementar 141/2012</li>
+        </ul>
+      </div>
+
+      <div class="lei-card c-roxo">
+        <div class="lei-numero">Decreto 7.508</div>
+        <div class="lei-ano">2011 · Decreto Federal</div>
+        <div class="lei-titulo">Regulamenta a Lei 8.080 — Redes e Contratos</div>
+        <div class="lei-desc">Marco regulatório que detalha a organização do SUS, o planejamento em saúde, a assistência e a articulação interfederativa por meio de contratos formais.</div>
+        <ul class="lei-pontos">
+          <li>Define Regiões de Saúde como base de organização</li>
+          <li>Institui o COAP — Contrato Organizativo de Ação Pública</li>
+          <li>Cria as Redes de Atenção à Saúde (RAS)</li>
+          <li>Estabelece RENAME e RENASES como instrumentos de planejamento</li>
+          <li>Vincula financiamento ao cumprimento de metas pactuadas</li>
+        </ul>
+      </div>
+
+      <div class="lei-card c-verm">
+        <div class="lei-numero">EC 95/2016</div>
+        <div class="lei-ano">Emenda Constitucional nº 95 · 2016</div>
+        <div class="lei-titulo">Novo Regime Fiscal — Teto de Gastos Públicos</div>
+        <div class="lei-desc">Congela os gastos primários federais por 20 anos em termos reais. Impacto direto no financiamento do SUS e das políticas sociais.</div>
+        <ul class="lei-pontos">
+          <li>Corrige despesas apenas pelo IPCA, não pela variação do PIB</li>
+          <li>Saúde: mínimo EC 29 corrigido pelo IPCA (congela expansão real)</li>
+          <li>Estimativa: R$ 22 bi de perda acumulada em saúde até 2030</li>
+          <li>Parcialmente substituída pela EC 126/2022 (Emenda da Transição)</li>
+        </ul>
+      </div>
+
+      <div class="lei-card c-laranja">
+        <div class="lei-numero">Lei 9.656</div>
+        <div class="lei-ano">1998 · Saúde Suplementar</div>
+        <div class="lei-titulo">Regulação dos planos privados de assistência à saúde</div>
+        <div class="lei-desc">Regulamenta o mercado de planos de saúde no Brasil, estabelecendo regras de cobertura, reajuste e obrigações das operadoras. Base para criação da ANS.</div>
+        <ul class="lei-pontos">
+          <li>Define coberturas mínimas obrigatórias dos planos</li>
+          <li>Proíbe exclusão de cobertura por doenças preexistentes após carências</li>
+          <li>Regula portabilidade de carências entre planos</li>
+          <li>Fundamenta o Rol de Procedimentos da ANS (RN 531/2022)</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ════════════════════════════════════
+     4. NORMAS OPERACIONAIS
+════════════════════════════════════ -->
+<section id="normas" class="panel-section bg-light">
+  <div class="panel-max">
+    <div class="panel-header">
+      <div class="section-tag tag-dark">Gestão e Regulação</div>
+      <h2 class="dark">Normas Operacionais do SUS</h2>
+      <p class="dark">As NOBs e NOAS são instrumentos normativos que definiram ao longo dos anos o processo de descentralização, os papéis dos entes federativos e os modelos de financiamento do SUS.</p>
+    </div>
+    <div style="overflow-x:auto;">
+    <table class="nobs-table">
+      <thead>
+        <tr>
+          <th>Norma</th>
+          <th>Ano</th>
+          <th>Principal Inovação / Conteúdo</th>
+          <th>Relevância</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="nob-nome">NOB 01/91</td>
+          <td class="nob-ano">1991</td>
+          <td>Institui pagamento por produção via AIH (Autorização de Internação Hospitalar). Municípios tornam-se prestadores de serviços, mas sem autonomia real de gestão. Financiamento por produção incentiva internações.</td>
+          <td><span class="nob-rel rel-media">Estruturante</span></td>
+        </tr>
+        <tr>
+          <td class="nob-nome">NOB 01/92</td>
+          <td class="nob-ano">1992</td>
+          <td>Revisão da NOB 91. Mantém o modelo de pagamento por produção. Estados intermediam relação entre Ministério da Saúde e municípios, sem avançar na descentralização efetiva.</td>
+          <td><span class="nob-rel rel-media">Complementar</span></td>
+        </tr>
+        <tr>
+          <td class="nob-nome">NOB 01/93</td>
+          <td class="nob-ano">1993</td>
+          <td>Cria condições de gestão municipal: Incipiente, Parcial e Semiplena. Municípios em gestão Semiplena recebem teto global e assumem responsabilidade integral pela saúde local. Primeira NOB que gera descentralização real.</td>
+          <td><span class="nob-rel rel-marco">Marco</span></td>
+        </tr>
+        <tr>
+          <td class="nob-nome">NOB 01/96</td>
+          <td class="nob-ano">1996</td>
+          <td>Cria o PAB (Piso de Atenção Básica) com componente fixo per capita e variável por programas (PSF, PACS, saúde bucal). Define gestões Plena de Atenção Básica e Plena do Sistema Municipal. Fortalece atenção primária.</td>
+          <td><span class="nob-rel rel-marco">Marco</span></td>
+        </tr>
+        <tr>
+          <td class="nob-nome">NOAS 01/2001</td>
+          <td class="nob-ano">2001</td>
+          <td>Norma Operacional de Assistência à Saúde. Institui o Plano Diretor de Regionalização (PDR) e módulos assistenciais. Cria a Gestão Plena da Atenção Básica Ampliada (GPAB-A) e organiza referências regionais para média complexidade.</td>
+          <td><span class="nob-rel rel-alta">Alta</span></td>
+        </tr>
+        <tr>
+          <td class="nob-nome">NOAS 01/2002</td>
+          <td class="nob-ano">2002</td>
+          <td>Complementa e atualiza a NOAS 2001. Regula o Plano Diretor de Investimentos (PDI) e a Programação Pactuada e Integrada (PPI). Amplia responsabilidades municipais na atenção básica.</td>
+          <td><span class="nob-rel rel-media">Complementar</span></td>
+        </tr>
+        <tr>
+          <td class="nob-nome">Pacto pela Saúde</td>
+          <td class="nob-ano">2006</td>
+          <td>Substitui as NOBs por pactuação tripartite. Três dimensões: Pacto pela Vida (prioridades assistenciais), Pacto em Defesa do SUS (compromisso político-financeiro) e Pacto de Gestão (descentralização e regionalização). Extingue habilitações anteriores.</td>
+          <td><span class="nob-rel rel-marco">Marco</span></td>
+        </tr>
+        <tr>
+          <td class="nob-nome">COAP / Dec. 7.508</td>
+          <td class="nob-ano">2011</td>
+          <td>Contrato Organizativo de Ação Pública da Saúde. Instrumento jurídico que formaliza compromissos entre entes nas Regiões de Saúde. Integra planejamento, financiamento, metas e responsabilidades sanitárias.</td>
+          <td><span class="nob-rel rel-alta">Alta</span></td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ════════════════════════════════════
+     5. COMPLEMENTAR vs SUPLEMENTAR
+════════════════════════════════════ -->
+<section id="complementar" class="panel-section bg-creme">
+  <div class="panel-max">
+    <div class="panel-header">
+      <div class="section-tag tag-green">Saúde Privada</div>
+      <h2 class="dark">Saúde Complementar e Suplementar</h2>
+      <p class="dark">Dois conceitos fundamentais e frequentemente confundidos, com significados e bases legais distintos dentro do sistema de saúde brasileiro.</p>
+    </div>
+
+    <div class="comp-grid">
+      <div class="comp-card complementar">
+        <span class="comp-badge">Complementar</span>
+        <h3>Saúde<br>Complementar</h3>
+        <p>O SUS contrata entidades privadas — preferencialmente filantrópicas e sem fins lucrativos — para complementar a capacidade pública quando insuficiente. O Estado paga e o controle é público.</p>
+        <ul class="comp-list">
+          <li><span>⚙️</span> Regulada pelos arts. 24–26 da Lei 8.080/1990</li>
+          <li><span>🏥</span> Prioridade para entidades filantrópicas (Santas Casas) e sem fins lucrativos</li>
+          <li><span>📋</span> Realizada via convênios e contratos de direito público</li>
+          <li><span>🔎</span> SUS fiscaliza e controla a execução dos serviços contratados</li>
+          <li><span>💰</span> Remuneração pela tabela SUS (financiamento 100% público)</li>
+          <li><span>🚫</span> Entidades com fins lucrativos só contratadas quando esgotada a capacidade pública e filantrópica</li>
+        </ul>
+        <div class="comp-lei-ref">📌 Base Legal: CF/88 art. 199 §1º · Lei 8.080/1990, arts. 24–26</div>
+      </div>
+
+      <div class="comp-card suplementar">
+        <span class="comp-badge">Suplementar</span>
+        <h3>Saúde<br>Suplementar</h3>
+        <p>Mercado privado de planos e seguros de saúde que opera em paralelo ao SUS. Caráter suplementar: complementa, mas não substitui o direito ao SUS. O usuário paga plano e ainda tem direito ao sistema público.</p>
+        <ul class="comp-list">
+          <li><span>📑</span> Regulada pela Lei 9.656/1998 e pela ANS (Lei 9.961/2000)</li>
+          <li><span>🏢</span> Operadoras privadas com ou sem fins lucrativos autorizadas pela ANS</li>
+          <li><span>📋</span> Coberturas mínimas definidas pelo Rol de Procedimentos (RN 531/2022)</li>
+          <li><span>🔎</span> Fiscalizada pela ANS — Agência Nacional de Saúde Suplementar</li>
+          <li><span>💰</span> Financiamento por mensalidades, copagamentos e coparticipações</li>
+          <li><span>🔁</span> SUS pode cobrar ressarcimento das operadoras quando atende seus beneficiários</li>
+        </ul>
+        <div class="comp-lei-ref">📌 Base Legal: CF/88 art. 199 · Lei 9.656/1998 · Lei 9.961/2000</div>
+      </div>
+    </div>
+
+    <div class="comp-nota">
+      <strong>⚠️ Distinção essencial — como não confundir:</strong>
+      <p><strong>Saúde Complementar</strong> = o SUS contrata o setor privado para executar ações públicas de saúde (ex: hospital filantrópico realiza cirurgias pelo SUS). O financiamento é público e o serviço integra o sistema.<br>
+      <strong>Saúde Suplementar</strong> = o cidadão contrata um plano privado por conta própria, em paralelo ao SUS (ex: plano Unimed, Amil, Bradesco Saúde). A CF/88 permite a iniciativa privada assistir à saúde, mas garante que quem tem plano ainda tem direito ao SUS — e que o SUS pode ressarcir-se das operadoras.</p>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ════════════════════════════════════
+     6. ANS
+════════════════════════════════════ -->
+<section id="ans" class="panel-section bg-dark">
+  <div class="panel-max">
+    <div class="panel-header">
+      <div class="section-tag tag-light">Agência Reguladora</div>
+      <h2 class="light">ANS — Agência Nacional de Saúde Suplementar</h2>
+      <p class="light">Criada pela Lei 9.961/2000, a ANS é a autarquia federal responsável por regular, normatizar, controlar e fiscalizar as atividades das operadoras de planos de saúde no Brasil.</p>
+    </div>
+
+    <div class="ans-grid">
+      <div class="ans-card">
+        <span class="ans-card-icon">🏛️</span>
+        <div class="ans-card-label">Criação</div>
+        <h3>Lei 9.961 · 2000</h3>
+        <p>Autarquia especial vinculada ao Ministério da Saúde, com sede no Rio de Janeiro. Autonomia administrativa, financeira e estabilidade de dirigentes. Vinculada à Lei 9.656/1998.</p>
+      </div>
+      <div class="ans-card">
+        <span class="ans-card-icon">🔎</span>
+        <div class="ans-card-label">Competências</div>
+        <h3>Regulação e Fiscalização</h3>
+        <p>Autoriza funcionamento de operadoras, regulamenta reajustes de anuidade, aplica penalidades, media conflitos entre beneficiários e operadoras e garante as coberturas mínimas.</p>
+      </div>
+      <div class="ans-card">
+        <span class="ans-card-icon">📊</span>
+        <div class="ans-card-label">Abrangência</div>
+        <h3>Mercado Suplementar</h3>
+        <p>Regula mais de 700 operadoras ativas e cerca de 50 milhões de beneficiários de planos de saúde no Brasil — um dos maiores mercados de saúde privada do mundo.</p>
+      </div>
+      <div class="ans-card">
+        <span class="ans-card-icon">💊</span>
+        <div class="ans-card-label">Instrumento Central</div>
+        <h3>Rol de Procedimentos</h3>
+        <p>Lista de procedimentos, exames e tratamentos de cobertura obrigatória. Atualizada periodicamente com base em evidências científicas. Base da RN 531/2022 e da Lei 14.454/2022.</p>
+      </div>
+      <div class="ans-card">
+        <span class="ans-card-icon">🔁</span>
+        <div class="ans-card-label">Mecanismo</div>
+        <h3>Ressarcimento ao SUS</h3>
+        <p>Quando um beneficiário de plano privado utiliza serviços do SUS, a ANS cobra ressarcimento da operadora. Mecanismo previsto na Lei 9.656/1998, art. 32.</p>
+      </div>
+      <div class="ans-card">
+        <span class="ans-card-icon">📋</span>
+        <div class="ans-card-label">Portabilidade</div>
+        <h3>Mobilidade entre Planos</h3>
+        <p>A ANS regula a portabilidade de carências, permitindo que beneficiários migrem entre planos sem cumprir novas carências para coberturas equivalentes.</p>
+      </div>
+    </div>
+
+    <!-- RN 531/2022 Destaque -->
+    <div class="rn531">
+      <div class="rn531-icon">⚖️</div>
+      <div style="flex:1;">
+        <h3>Resolução Normativa ANS nº 531/2022 — O Debate do Rol</h3>
+        <p>
+          A RN 531/2022 atualizou o Rol de Procedimentos e Eventos em Saúde em meio a um intenso debate judicial sobre sua natureza: <strong>taxativo</strong> (lista fechada — operadoras só cobrem o que está no Rol) ou <strong>exemplificativo</strong> (lista aberta — operadoras devem cobrir outros procedimentos mediante indicação médica).
+          <br><br>
+          Em agosto de 2022, STJ e STF divergiram historicamente. O Congresso Nacional editou a <strong>Lei 14.454/2022</strong> para pacificar: o Rol é <strong>taxativo</strong>, mas admite cobertura de procedimentos não listados quando houver recomendação médica com comprovação de eficácia por órgãos técnicos (CONITEC, protocolos internacionais). A RN 531 foi sucedida pela <strong>RN 558/2023</strong>, com nova atualização do Rol e incorporação de procedimentos baseados em evidências.
+        </p>
+        <div class="rn531-pills">
+          <span class="rn531-pill">Rol Taxativo</span>
+          <span class="rn531-pill">STJ · STF 2022</span>
+          <span class="rn531-pill">Lei 14.454/2022</span>
+          <span class="rn531-pill">CONITEC</span>
+          <span class="rn531-pill">RN 558/2023</span>
+          <span class="rn531-pill">Evidência Científica</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ════════════════════════════════════
+     7. LINHA DO TEMPO COMPLETA
+════════════════════════════════════ -->
+<div id="timeline" class="timeline-wrapper">
+  <div class="timeline-line"></div>
+
+  <div class="era-label"><span>Pré-SUS — Contexto Histórico</span></div>
+
+  <div class="event left">
+    <div class="event-content">
+      <div class="event-tag">Origem</div>
+      <div class="event-year">1923</div>
+      <div class="event-title">Lei Eloy Chaves — Caixas de Aposentadoria e Pensões</div>
+      <div class="event-desc">Marco inaugural da previdência social brasileira. Cria as CAPs vinculadas a empresas ferroviárias. Precursoras dos IAPs, cobrem apenas trabalhadores formais contribuintes, excluindo a maioria da população.</div>
+    </div>
+    <div class="event-dot"><div class="dot"></div></div>
+    <div class="spacer"></div>
+  </div>
+
+  <div class="event right">
+    <div class="spacer"></div>
+    <div class="event-dot"><div class="dot"></div></div>
+    <div class="event-content">
+      <div class="event-tag">Reforma Sanitária</div>
+      <div class="event-year">1970s</div>
+      <div class="event-title">Movimento da Reforma Sanitária Brasileira</div>
+      <div class="event-desc">Profissionais de saúde, intelectuais e movimentos sociais articulam-se contra o modelo médico-privatista. Defendem saúde como direito de cidadania e propõem sistema público, universal e democraticamente controlado.</div>
+    </div>
+  </div>
+
+  <div class="event left">
+    <div class="event-content">
+      <div class="event-tag">Marco histórico</div>
+      <div class="event-year">1986</div>
+      <div class="event-title">VIII Conferência Nacional de Saúde</div>
+      <div class="event-desc">O maior evento da saúde pública brasileira. Mais de 4.000 delegados aprovam o relatório que define os pilares do SUS: universalidade, integralidade e equidade. Relatório incorporado diretamente à Constituinte.</div>
+    </div>
+    <div class="event-dot"><div class="dot"></div></div>
+    <div class="spacer"></div>
+  </div>
+
+  <div class="era-label era-verde"><span>Criação e Marco Legal</span></div>
+
+  <div class="event right">
+    <div class="spacer"></div>
+    <div class="event-dot"><div class="dot"></div></div>
+    <div class="event-content">
+      <div class="event-tag">Fundação</div>
+      <div class="event-year">1988</div>
+      <div class="event-title">Constituição Federal — "Saúde é direito de todos"</div>
+      <div class="event-desc">O art. 196 da Constituição Cidadã consagra a saúde como direito fundamental e dever do Estado, criando o SUS nos arts. 196–200. Rompe com o modelo previdenciário excludente e universaliza o acesso à saúde.</div>
+    </div>
+  </div>
+
+  <div class="event left">
+    <div class="event-content">
+      <div class="event-tag">Lei Orgânica</div>
+      <div class="event-year">1990</div>
+      <div class="event-title">Lei 8.080 + Lei 8.142 — As Leis Orgânicas da Saúde</div>
+      <div class="event-desc">A Lei 8.080 organiza o SUS e define seus princípios, competências e estrutura. A Lei 8.142 institui Conselhos e Conferências de Saúde, garantindo controle social democrático. Juntas, formam a base jurídica do sistema.</div>
+    </div>
+    <div class="event-dot"><div class="dot"></div></div>
+    <div class="spacer"></div>
+  </div>
+
+  <div class="event right">
+    <div class="spacer"></div>
+    <div class="event-dot"><div class="dot"></div></div>
+    <div class="event-content">
+      <div class="event-tag">Extinção</div>
+      <div class="event-year">1993</div>
+      <div class="event-title">Lei 8.689 — Extinção do INAMPS</div>
+      <div class="event-desc">O INAMPS é extinto e suas estruturas, funções e servidores são absorvidos pelo Ministério da Saúde e pelo SUS. Marco da ruptura definitiva com o modelo previdenciário excludente de saúde.</div>
+    </div>
+  </div>
+
+  <div class="era-label"><span>Consolidação e Expansão</span></div>
+
+  <div class="event left">
+    <div class="event-content">
+      <div class="event-tag">Atenção básica</div>
+      <div class="event-year">1994</div>
+      <div class="event-title">Programa Saúde da Família (PSF)</div>
+      <div class="event-desc">Reorienta o modelo assistencial com equipes multiprofissionais nas comunidades. Hoje, como Estratégia Saúde da Família (ESF), cobre mais de 70% da população e é referência internacional de atenção primária.</div>
+    </div>
+    <div class="event-dot"><div class="dot"></div></div>
+    <div class="spacer"></div>
+  </div>
+
+  <div class="event right">
+    <div class="spacer"></div>
+    <div class="event-dot"><div class="dot"></div></div>
+    <div class="event-content">
+      <div class="event-tag">Pioneirismo</div>
+      <div class="event-year">1996</div>
+      <div class="event-title">Lei 9.313 — Acesso universal ao HIV/AIDS</div>
+      <div class="event-desc">Brasil torna-se o primeiro país em desenvolvimento a garantir distribuição gratuita de antirretrovirais pelo SUS. Salva centenas de milhares de vidas e inspira a política global de acesso a medicamentos da OMS.</div>
+    </div>
+  </div>
+
+  <div class="event left">
+    <div class="event-content">
+      <div class="event-tag">Regulação</div>
+      <div class="event-year">1998–2000</div>
+      <div class="event-title">Lei 9.656/98 + ANS criada pela Lei 9.961/2000</div>
+      <div class="event-desc">Regulamentação do mercado de planos de saúde e criação da Agência Nacional de Saúde Suplementar. O Brasil passa a ter marco regulatório robusto para o setor privado de saúde suplementar.</div>
+    </div>
+    <div class="event-dot"><div class="dot"></div></div>
+    <div class="spacer"></div>
+  </div>
+
+  <div class="event right">
+    <div class="spacer"></div>
+    <div class="event-dot"><div class="dot"></div></div>
+    <div class="event-content">
+      <div class="event-tag">Financiamento</div>
+      <div class="event-year">2000</div>
+      <div class="event-title">EC 29/2000 — Piso mínimo constitucional para saúde</div>
+      <div class="event-desc">Emenda que garante percentuais mínimos de investimento em saúde (União, estados 12%, municípios 15%). Regulamentada definitivamente pela Lei Complementar 141/2012.</div>
+    </div>
+  </div>
+
+  <div class="era-label era-verde"><span>Fortalecimento e Inovação</span></div>
+
+  <div class="event left">
+    <div class="event-content">
+      <div class="event-tag">Saúde mental</div>
+      <div class="event-year">2002</div>
+      <div class="event-title">Portaria 336 — Regulamentação dos CAPS</div>
+      <div class="event-desc">Regulamenta em nível nacional os Centros de Atenção Psicossocial (CAPS I, II, III, CAPSi e CAPSad), expandindo a Reforma Psiquiátrica e substituindo progressivamente o modelo manicomial.</div>
+    </div>
+    <div class="event-dot"><div class="dot"></div></div>
+    <div class="spacer"></div>
+  </div>
+
+  <div class="event right">
+    <div class="spacer"></div>
+    <div class="event-dot"><div class="dot"></div></div>
+    <div class="event-content">
+      <div class="event-tag">Pactuação</div>
+      <div class="event-year">2006</div>
+      <div class="event-title">Pacto pela Saúde — Vida, Defesa e Gestão</div>
+      <div class="event-desc">Substitui as NOBs por modelo de pactuação tripartite com metas e indicadores claros. Define prioridades assistenciais (Pacto pela Vida), compromisso político (Defesa do SUS) e descentralização (Gestão).</div>
+    </div>
+  </div>
+
+  <div class="event left">
+    <div class="event-content">
+      <div class="event-tag">Decreto</div>
+      <div class="event-year">2011</div>
+      <div class="event-title">Decreto 7.508 — Redes de Atenção à Saúde e COAP</div>
+      <div class="event-desc">Regulamenta a Lei 8.080, institui o COAP, define Regiões de Saúde e cria as Redes de Atenção integradas (básica → média → alta complexidade). RENAME e RENASES como instrumentos de planejamento.</div>
+    </div>
+    <div class="event-dot"><div class="dot"></div></div>
+    <div class="spacer"></div>
+  </div>
+
+  <div class="event right">
+    <div class="spacer"></div>
+    <div class="event-dot"><div class="dot"></div></div>
+    <div class="event-content">
+      <div class="event-tag">Acesso</div>
+      <div class="event-year">2013</div>
+      <div class="event-title">Programa Mais Médicos</div>
+      <div class="event-desc">Leva profissionais a municípios remotos e periferias desassistidas. No seu pico, mais de 18.000 médicos atuaram no programa. Amplia a cobertura da atenção primária historicamente excluída.</div>
+    </div>
+  </div>
+
+  <div class="era-label era-roxo"><span>Desafios e Reinvenção</span></div>
+
+  <div class="event left">
+    <div class="event-content">
+      <div class="event-tag">Financiamento</div>
+      <div class="event-year">2016</div>
+      <div class="event-title">EC 95/2016 — Teto de Gastos</div>
+      <div class="event-desc">Congela gastos primários federais por até 20 anos em termos reais. Intenso debate sobre impacto no SUS. Estimativa de perda de R$ 22 bilhões em investimentos em saúde até 2030.</div>
+    </div>
+    <div class="event-dot"><div class="dot"></div></div>
+    <div class="spacer"></div>
+  </div>
+
+  <div class="event right">
+    <div class="spacer"></div>
+    <div class="event-dot"><div class="dot"></div></div>
+    <div class="event-content">
+      <div class="event-tag">Pandemia</div>
+      <div class="event-year">2020–2021</div>
+      <div class="event-title">COVID-19 — O maior teste do SUS</div>
+      <div class="event-desc">O SUS coordena a maior resposta sanitária da história brasileira. Amplia leitos, UTIs e realiza mais de 500 milhões de doses de vacinas — o maior programa de vacinação da história do país.</div>
+    </div>
+  </div>
+
+  <div class="event left">
+    <div class="event-content">
+      <div class="event-tag">Regulação</div>
+      <div class="event-year">2022</div>
+      <div class="event-title">RN ANS 531/2022 + Lei 14.454/2022</div>
+      <div class="event-desc">Atualização do Rol de Procedimentos da ANS e resolução do debate taxativo × exemplificativo pelo Congresso. Lei 14.454 define: Rol taxativo com exceções baseadas em evidência científica.</div>
+    </div>
+    <div class="event-dot"><div class="dot"></div></div>
+    <div class="spacer"></div>
+  </div>
+
+  <div class="event right">
+    <div class="spacer"></div>
+    <div class="event-dot"><div class="dot"></div></div>
+    <div class="event-content">
+      <div class="event-tag">Transformação digital</div>
+      <div class="event-year">2023–hoje</div>
+      <div class="event-title">SUS Digital — RNDS e Prontuário Eletrônico Nacional</div>
+      <div class="event-desc">Implementação da Rede Nacional de Dados em Saúde (RNDS), prontuário eletrônico interoperável, telemedicina regulamentada, Carteira Nacional de Vacinação Digital e expansão do Conecte SUS.</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="section-divider"></div>
+
+<footer>
+  <strong>Sistema Único de Saúde (SUS)</strong> · Criado pela Constituição Federal de 1988<br>
+  Mais de 36 anos construindo saúde pública universal, equitativa e integral para todos os brasileiros<br>
+  <span style="opacity:0.45; font-size:0.7rem; margin-top:6px; display:block;">IAPs · INPS · INAMPS · CAPS · NOB 91/93/96 · NOAS 2001/02 · Pacto pela Saúde · Lei 8.080 · Lei 8.142 · EC 29/2000 · Decreto 7.508 · EC 95/2016 · Lei 9.656 · Lei 9.961 · ANS · RN 531/2022 · Lei 14.454/2022</span>
+</footer>
+
+</body>
+</html>

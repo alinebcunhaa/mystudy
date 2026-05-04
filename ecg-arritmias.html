@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Algoritmo de Arritmias — ECG</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f5f1ec;font-family:'DM Sans','Segoe UI',system-ui,sans-serif;min-height:100vh;padding-bottom:60px}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.fade{animation:fadeIn .3s ease}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:#f0ebe4}
+::-webkit-scrollbar-thumb{background:#d8d0c8;border-radius:4px}
+
+/* ── Header ── */
+#header{background:linear-gradient(160deg,#fdf6ee 0%,#f5ede2 100%);border-bottom:1.5px solid #e8e0d8;padding:28px 20px 24px;text-align:center}
+#header-badge{display:inline-block;font-size:10px;font-family:'DM Mono',monospace;letter-spacing:3px;color:#b0a090;background:#fff;border:1px solid #e0d8d0;border-radius:20px;padding:4px 14px;margin-bottom:14px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+#header h1{font-size:28px;font-weight:800;color:#2c2018;letter-spacing:-.5px;line-height:1.1}
+#header p{font-size:14px;color:#9a8878;margin-top:6px}
+
+/* ── Wrapper ── */
+#app{max-width:600px;margin:0 auto;padding:24px 16px 0}
+
+/* ── Tabs ── */
+#tabs{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:24px}
+.tab-btn{background:#fff;border:1.5px solid #e8e0d8;border-radius:12px;padding:14px 8px;cursor:pointer;text-align:center;transition:all .2s;box-shadow:0 1px 4px rgba(0,0,0,.05)}
+.tab-btn:hover{background:#faf6f2}
+.tab-icon{font-size:20px;margin-bottom:4px}
+.tab-label{font-size:13px;font-weight:700;color:#6a5e58}
+.tab-sub{font-size:11px;color:#b8b0a8;font-family:'DM Mono',monospace;margin-top:2px}
+
+/* ── Section label ── */
+.section-label{font-size:10px;font-family:'DM Mono',monospace;letter-spacing:2px;font-weight:700;margin-bottom:12px}
+
+/* ── Welcome ── */
+#welcome{text-align:center;padding:40px 20px}
+#welcome .heart{font-size:48px;opacity:.25;margin-bottom:16px}
+#welcome p{color:#9a8878;line-height:1.8;font-size:14px}
+
+/* ── Question card ── */
+.question-card{background:#fff;border:1.5px solid #ede8e2;border-radius:14px;padding:22px 20px;box-shadow:0 2px 12px rgba(0,0,0,.06)}
+.step-label{font-size:10px;color:#b8b0a8;font-family:'DM Mono',monospace;letter-spacing:2px;margin-bottom:8px;font-weight:700}
+.question-text{font-size:18px;font-weight:700;color:#2c2420;margin-bottom:6px;line-height:1.3}
+.hint-text{font-size:12.5px;color:#9a9088;margin-bottom:20px;line-height:1.5;font-style:italic}
+.options{display:flex;flex-direction:column;gap:8px}
+.opt-btn{background:#faf8f5;border:1.5px solid #ede8e2;border-radius:10px;padding:12px 16px;text-align:left;cursor:pointer;font-size:14px;color:#4a3e38;transition:all .2s;line-height:1.4;box-shadow:0 1px 3px rgba(0,0,0,.04);font-family:inherit}
+.opt-btn:hover{background:#f0ebe4;border-color:#c8c0b8;color:#2c2420}
+.restart-link{margin-top:16px;background:transparent;border:none;color:#b0a8a0;font-size:12px;cursor:pointer;font-family:'DM Mono',monospace;letter-spacing:1px;padding:0}
+.restart-link:hover{color:#5a4e48}
+
+/* ── Breadcrumb ── */
+.breadcrumb{margin-bottom:16px}
+.bread-item{background:#f9f6f3;border-radius:8px;padding:8px 12px;margin-bottom:6px;border-left:3px solid #d8cfc8}
+.bread-num{font-size:10px;color:#b0a8a0;font-family:'DM Mono',monospace;letter-spacing:1px;margin-bottom:2px}
+.bread-q{font-size:12px;color:#9a908a;margin-bottom:2px}
+.bread-a{font-size:13px;color:#5a4e48;font-weight:600}
+
+/* ── Result card ── */
+.result-card{border-radius:16px;padding:26px 24px 22px;margin-top:8px;box-shadow:0 2px 16px rgba(0,0,0,.08)}
+.result-header{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.result-icon{font-size:28px;line-height:1;background:#fff;border-radius:10px;padding:8px 13px;flex-shrink:0}
+.result-tag{font-size:10px;font-weight:700;letter-spacing:2px;font-family:'DM Mono',monospace;margin-bottom:3px}
+.result-name{font-size:19px;font-weight:800;color:#2c2420;letter-spacing:-.3px;line-height:1.2}
+.alert-box{border-radius:10px;padding:10px 14px;margin-bottom:16px;font-size:13px;font-weight:600;line-height:1.5;background:#fde8e8;border:1px solid #e8a0a0;color:#8b2020}
+.criteria-label{font-size:10px;letter-spacing:2px;color:#a09890;font-family:'DM Mono',monospace;margin-bottom:8px;font-weight:700}
+.criterion{display:flex;gap:8px;margin-bottom:6px;align-items:flex-start}
+.crit-dot{font-size:10px;flex-shrink:0;margin-top:4px}
+.crit-text{font-size:13.5px;color:#4a3f38;line-height:1.55}
+.conduta-box{background:#fff;border-radius:10px;padding:10px 14px;margin-bottom:20px;font-size:13px;color:#6b5e58;line-height:1.55;border:1px solid #ede8e4}
+.conduta-label{color:#a09890;font-weight:700;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1.5px}
+.restart-btn{background:#fff;border:1.5px solid #ddd8d2;color:#8a7e78;padding:8px 18px;border-radius:8px;cursor:pointer;font-size:12px;font-family:'DM Mono',monospace;letter-spacing:1px;transition:all .2s;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.restart-btn:hover{border-color:#bbb5b0;color:#3a2e28}
+
+/* ── ECG Strip ── */
+.ecg-wrap{background:#fff8f8;border:1px solid #f0d8d8;border-radius:10px;overflow:hidden;margin-bottom:14px}
+.ecg-label{padding:5px 10px 3px;font-size:10px;font-family:'DM Mono',monospace;letter-spacing:1.5px;color:#c08080;font-weight:700}
+.ecg-wrap svg{display:block;width:100%}
+
+/* ── Morphology accordion ── */
+.morph-item{border-radius:12px;overflow:hidden;transition:all .2s;margin-bottom:10px;background:#fff;border:1.5px solid #ede8e2;box-shadow:0 1px 4px rgba(0,0,0,.05)}
+.morph-btn{width:100%;background:transparent;border:none;padding:14px 18px;display:flex;align-items:center;gap:12px;cursor:pointer;text-align:left;font-family:inherit}
+.morph-icon-wrap{font-size:18px;background:rgba(0,0,0,.05);border-radius:8px;padding:5px 11px;flex-shrink:0;border:1.5px solid rgba(0,0,0,.08)}
+.morph-name{font-size:14px;font-weight:700;color:#2c2420}
+.morph-toggle{margin-left:auto;color:#b8b0a8;font-size:18px}
+.morph-body{padding:0 18px 16px}
+.morph-criterion{display:flex;gap:8px;margin-bottom:6px;align-items:flex-start}
+.morph-dot{font-size:10px;flex-shrink:0;margin-top:4px}
+.morph-text{font-size:13.5px;color:#5a4e48;line-height:1.55}
+.morph-pearl{margin-top:12px;background:#faf8f5;border-radius:8px;padding:8px 12px;font-size:12.5px;color:#7a6e68}
+.morph-pearl-label{font-weight:700}
+
+/* ── Footer ── */
+#footer{margin-top:32px;padding:12px 16px;background:#fff;border-radius:10px;border:1px solid #e8e0d8;font-size:11px;color:#b0a898;line-height:1.6;text-align:center;font-family:'DM Mono',monospace;box-shadow:0 1px 4px rgba(0,0,0,.04)}
+</style>
+</head>
+<body>
+
+<div id="header">
+  <div id="header-badge">GUIA DE DIAGNÓSTICO ECG</div>
+  <h1>Algoritmo de Arritmias</h1>
+  <p>Fluxograma interativo · Traçados esquemáticos por diagnóstico</p>
+</div>
+
+<div id="app">
+  <div id="tabs">
+    <button class="tab-btn" id="tab-taquicardia" onclick="setMode('taquicardia')">
+      <div class="tab-icon">↑</div>
+      <div class="tab-label" style="color:#d47878">Taquicardia</div>
+      <div class="tab-sub">FC &gt; 100 bpm</div>
+    </button>
+    <button class="tab-btn" id="tab-bradicardia" onclick="setMode('bradicardia')">
+      <div class="tab-icon">↓</div>
+      <div class="tab-label" style="color:#7899cc">Bradicardia</div>
+      <div class="tab-sub">FC &lt; 60 bpm</div>
+    </button>
+    <button class="tab-btn" id="tab-morfologia" onclick="setMode('morfologia')">
+      <div class="tab-icon">⌇</div>
+      <div class="tab-label" style="color:#9b8fd4">Morfologias</div>
+      <div class="tab-sub">BRE, BRD, WPW…</div>
+    </button>
+  </div>
+  <div id="content"></div>
+  <div id="footer">Traçados esquemáticos — fins didáticos · Não substitui avaliação clínica</div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// ECG DRAWING
+// ═══════════════════════════════════════════════════════
+const BL = 52, EW = 520, EH = 80;
+
+function pStr(arr){return arr.map(([x,y])=>`${(+x).toFixed(1)},${(+y).toFixed(1)}`).join(' ')}
+
+function noise(x,seed){const s=((Math.imul(x,2654435761))^seed)|0;return((s^(s>>>16))&0xff)/255}
+
+function normalBeat(x0,sp=90){const b=BL;return[[x0,b],[x0+18,b],[x0+21,b-7],[x0+26,b],[x0+35,b],[x0+37,b+4],[x0+40,b-30],[x0+44,b+5],[x0+47,b],[x0+56,b],[x0+61,b-12],[x0+72,b],[x0+sp,b]]}
+function longPRBeat(x0,sp=130){const b=BL;return[[x0,b],[x0+8,b],[x0+11,b-7],[x0+16,b],[x0+44,b],[x0+46,b+4],[x0+49,b-30],[x0+53,b+5],[x0+56,b],[x0+64,b],[x0+69,b-11],[x0+79,b],[x0+sp,b]]}
+function wideBeat(x0,sp=90,dir=1){const b=BL,h=26*dir;return[[x0,b],[x0+12,b],[x0+15,b+3],[x0+21,b-h],[x0+31,b+7*dir],[x0+39,b],[x0+48,b+5*dir],[x0+56,b+10*dir],[x0+68,b],[x0+sp,b]]}
+function deltaBeat(x0,sp=120){const b=BL;return[[x0,b],[x0+10,b],[x0+12,b-6],[x0+15,b],[x0+17,b],[x0+21,b-5],[x0+28,b-29],[x0+35,b+4],[x0+39,b],[x0+48,b],[x0+53,b-13],[x0+63,b],[x0+sp,b]]}
+function noPBeat(x0,sp=120){const b=BL;return[[x0,b],[x0+28,b],[x0+30,b+4],[x0+33,b-28],[x0+37,b+5],[x0+40,b],[x0+49,b],[x0+54,b-11],[x0+64,b],[x0+sp,b]]}
+function invertedPBeat(x0,sp=90){const b=BL;return[[x0,b],[x0+14,b],[x0+17,b+8],[x0+23,b],[x0+30,b],[x0+32,b+4],[x0+35,b-28],[x0+39,b+5],[x0+42,b],[x0+51,b],[x0+56,b-11],[x0+66,b],[x0+sp,b]]}
+function trnavBeat(x0,sp=110){const b=BL;return[[x0,b],[x0+38,b],[x0+40,b+4],[x0+43,b-29],[x0+47,b+5],[x0+50,b],[x0+53,b+6],[x0+58,b],[x0+65,b-10],[x0+75,b],[x0+sp,b]]}
+function travBeat(x0,sp=110){const b=BL;return[[x0,b],[x0+36,b],[x0+38,b+4],[x0+41,b-29],[x0+45,b+5],[x0+48,b],[x0+56,b],[x0+59,b-8],[x0+65,b],[x0+69,b-9],[x0+80,b],[x0+sp,b]]}
+function breBeat(x0,sp=140){const b=BL;return[[x0,b],[x0+18,b],[x0+21,b-7],[x0+26,b],[x0+35,b],[x0+37,b-5],[x0+43,b-22],[x0+49,b-16],[x0+55,b-27],[x0+61,b],[x0+71,b+11],[x0+83,b],[x0+sp,b]]}
+function brdBeat(x0,sp=140){const b=BL;return[[x0,b],[x0+18,b],[x0+21,b-7],[x0+26,b],[x0+35,b],[x0+37,b-12],[x0+41,b],[x0+43,b+10],[x0+47,b],[x0+50,b-28],[x0+56,b],[x0+64,b+10],[x0+75,b],[x0+sp,b]]}
+
+function buildECG(type){
+  const b=BL;
+  let pts=[],extras=[];
+
+  if(type==='fa'){
+    const at=[30,100,155,230,295,385,450];let c=5;
+    at.forEach(qx=>{while(c<qx){pts.push([c,b+(noise(c,3)-.5)*7]);c+=3;}pts.push([qx,b],[qx+2,b+3],[qx+5,b-24],[qx+8,b+4],[qx+10,b]);c=qx+10;});
+    while(c<EW-5){pts.push([c,b+(noise(c,3)-.5)*7]);c+=3;}
+
+  }else if(type==='flutter'){
+    const at=[80,160,240,320,400,480];let c=5,qi=0;
+    while(c<EW-5){
+      if(qi<at.length&&c>=at[qi]-1){const qx=at[qi];pts.push([qx,b],[qx+2,b+3],[qx+5,b-26],[qx+8,b+4],[qx+10,b]);c=qx+12;qi++;}
+      else{const ph=((c-5)%20)/20;const y=ph<.55?b-ph*(1/.55)*10:b-10+(ph-.55)*(1/.45)*13;pts.push([c,y]);c+=2;}
+    }
+
+  }else if(type==='trnav'){[30,140,250,360,470].forEach(x=>pts.push(...trnavBeat(x)));}
+  else if(type==='trav'){[30,140,250,360,470].forEach(x=>pts.push(...travBeat(x)));}
+  else if(type==='wpw'){[20,150,280,410].forEach(x=>pts.push(...deltaBeat(x,130)));}
+  else if(type==='ta'){[20,118,216,314,412].forEach(x=>pts.push(...invertedPBeat(x,98)));}
+  else if(type==='tv'){[10,82,154,226,298,370,442].forEach(x=>pts.push(...wideBeat(x,72,1)));}
+  else if(type==='wpw_anti'){
+    [10,98,186,274,362,450].forEach(x0=>{pts.push([x0,b],[x0+5,b],[x0+8,b-3],[x0+18,b-30],[x0+27,b+8],[x0+35,b],[x0+43,b+8],[x0+53,b],[x0+86,b]);});
+
+  }else if(type==='torsades'){
+    [{x:10,a:18,d:1},{x:68,a:24,d:1},{x:128,a:27,d:1},{x:190,a:24,d:-1},{x:250,a:27,d:-1},{x:310,a:24,d:-1},{x:370,a:20,d:1},{x:428,a:16,d:1}]
+    .forEach(({x,a,d})=>pts.push([x,b],[x+5,b],[x+10,b-5*d],[x+18,b-a*d],[x+26,b+8*d],[x+33,b],[x+42,b+5*d],[x+52,b],[x+58,b]));
+
+  }else if(type==='fa_wpw'){
+    const beats=[{x:5,w:1},{x:44,w:0},{x:76,w:1},{x:108,w:1},{x:146,w:0},{x:176,w:1},{x:206,w:0},{x:240,w:1},{x:272,w:1},{x:302,w:0},{x:337,w:1},{x:369,w:1},{x:405,w:0},{x:437,w:1},{x:470,w:1}];
+    let c=0;
+    beats.forEach(({x,w})=>{
+      while(c<x){pts.push([c,b+(noise(c,7)-.5)*5]);c+=2;}
+      if(w){pts.push([x,b],[x+4,b-4],[x+12,b-24],[x+21,b+7],[x+27,b],[x+33,b]);c=x+33;}
+      else{pts.push([x,b],[x+2,b+3],[x+5,b-22],[x+8,b+4],[x+10,b],[x+17,b]);c=x+17;}
+    });
+
+  }else if(type==='sinus_brady'){[10,148,286,424].forEach(x=>pts.push(...normalBeat(x,138)));}
+  else if(type==='bav1'){[10,142,274,406].forEach(x=>pts.push(...longPRBeat(x,132)));}
+  else if(type==='mobitz1'){
+    const prs=[18,30,44];let x=10;
+    prs.forEach(pr=>{
+      pts.push([x,b],[x+8,b],[x+11,b-7],[x+16,b],[x+16+pr,b]);
+      pts.push([x+16+pr+2,b+4],[x+16+pr+5,b-28],[x+16+pr+9,b+5],[x+16+pr+12,b]);
+      pts.push([x+16+pr+20,b],[x+16+pr+25,b-10],[x+16+pr+35,b]);
+      x+=16+pr+35+10;
+    });
+    pts.push([x,b],[x+8,b],[x+11,b-7],[x+20,b],[x+80,b]);x+=80;
+    pts.push([x,b],[x+8,b],[x+11,b-7],[x+16,b],[x+36,b],[x+38,b+4],[x+41,b-28],[x+45,b+5],[x+48,b],[x+56,b],[x+61,b-10],[x+71,b]);
+
+  }else if(type==='mobitz2'){
+    const pr=26;let x=10;
+    [0,1,2].forEach(()=>{pts.push([x,b],[x+8,b],[x+11,b-7],[x+16,b],[x+16+pr,b],[x+16+pr+2,b+4],[x+16+pr+5,b-28],[x+16+pr+9,b+5],[x+16+pr+12,b],[x+16+pr+20,b],[x+16+pr+25,b-10],[x+16+pr+35,b]);x+=118;});
+    pts.push([x,b],[x+8,b],[x+11,b-7],[x+20,b],[x+78,b]);x+=78;
+    pts.push([x,b],[x+8,b],[x+11,b-7],[x+16,b],[x+16+pr,b],[x+16+pr+2,b+4],[x+16+pr+5,b-28],[x+16+pr+9,b+5],[x+16+pr+12,b],[x+16+pr+20,b],[x+16+pr+25,b-10],[x+16+pr+35,b]);
+
+  }else if(type==='bav21'){
+    const pr=22;let x=8;
+    for(let ci=0;ci<4;ci++){
+      pts.push([x,b],[x+8,b],[x+11,b-7],[x+16,b],[x+16+pr,b],[x+16+pr+2,b+4],[x+16+pr+5,b-28],[x+16+pr+9,b+5],[x+16+pr+12,b],[x+16+pr+20,b],[x+16+pr+25,b-10],[x+16+pr+35,b]);
+      const bx2=x+65;pts.push([bx2,b],[bx2+8,b],[bx2+11,b-7],[bx2+20,b]);x+=128;
+    }
+
+  }else if(type==='bavt'){
+    pts=[[0,b],[EW,b]];
+    [12,74,136,198,260,322,384,446,508].forEach(px=>{if(px<EW-5)extras.push({pts:[[px,b],[px+5,b],[px+8,b-7],[px+14,b],[px+22,b]],stroke:'#c04848',sw:1.8});});
+    [42,188,334,480].forEach(qx=>{if(qx<EW-5)extras.push({pts:[[qx,b],[qx+18,b],[qx+20,b+4],[qx+23,b-28],[qx+27,b+5],[qx+30,b],[qx+38,b],[qx+43,b-11],[qx+53,b],[qx+68,b]],stroke:'#3a7abf',sw:2.2});});
+
+  }else if(type==='junctional'){[15,143,271,399].forEach(x=>pts.push(...noPBeat(x,128)));}
+  else if(type==='ventricular'){
+    [10,190,370].forEach(x0=>pts.push([x0,b],[x0+14,b],[x0+17,b+4],[x0+24,b-25],[x0+36,b+9],[x0+46,b],[x0+58,b+8],[x0+70,b+13],[x0+84,b],[x0+170,b]));
+
+  }else if(type==='fa_slow'){
+    const at=[55,185,330,468];let c=5;
+    at.forEach(qx=>{while(c<qx){pts.push([c,b+(noise(c,5)-.5)*7]);c+=3;}pts.push([qx,b],[qx+2,b+3],[qx+5,b-24],[qx+8,b+4],[qx+10,b]);c=qx+10;});
+    while(c<EW-5){pts.push([c,b+(noise(c,5)-.5)*7]);c+=3;}
+
+  }else if(type==='bre'){[10,153,296,440].forEach(x=>pts.push(...breBeat(x,143)));}
+  else if(type==='brd'){[10,153,296,440].forEach(x=>pts.push(...brdBeat(x,143)));}
+  else{[10,148,286,424].forEach(x=>pts.push(...normalBeat(x,138)));}
+
+  return {pts,extras};
+}
+
+function gridSVG(){
+  let h='';
+  for(let x=0;x<=EW;x+=10)h+=`<line x1="${x}" y1="0" x2="${x}" y2="${EH}" stroke="#f5cece" stroke-width="${x%50===0?.8:.3}"/>`;
+  for(let y=0;y<=EH;y+=10)h+=`<line x1="0" y1="${y}" x2="${EW}" y2="${y}" stroke="#f5cece" stroke-width="${y%50===0?.8:.3}"/>`;
+  return h;
+}
+
+function ecgHTML(type,label){
+  if(!type) return '';
+  const {pts,extras}=buildECG(type);
+  let paths='';
+  if(pts.length>0) paths+=`<polyline points="${pStr(pts)}" fill="none" stroke="#c03030" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"/>`;
+  extras.forEach(e=>{paths+=`<polyline points="${pStr(e.pts)}" fill="none" stroke="${e.stroke}" stroke-width="${e.sw}" stroke-linejoin="round" stroke-linecap="round"/>`;});
+  return `<div class="ecg-wrap">${label?`<div class="ecg-label">${label}</div>`:''}
+    <svg viewBox="0 0 ${EW} ${EH}" xmlns="http://www.w3.org/2000/svg">${gridSVG()}${paths}</svg></div>`;
+}
+
+// ═══════════════════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════════════════
+const RISK={
+  low:   {bg:'#edf7f2',border:'#86c9a4',badge:'#3a8f5e',text:'BAIXO RISCO'},
+  medium:{bg:'#fef6e4',border:'#f0c97a',badge:'#b07720',text:'RISCO MODERADO'},
+  high:  {bg:'#fff0e8',border:'#f0a882',badge:'#c05520',text:'ALTO RISCO'},
+  critical:{bg:'#fdeaea',border:'#e89898',badge:'#b82828',text:'EMERGÊNCIA'},
+};
+
+const TREES={
+  taquicardia:{
+    question:'QRS largo (>120ms)?',hint:'Medir duração do QRS nas derivações dos membros',
+    options:[
+      {label:'Não — QRS estreito (<120ms)',next:{
+        question:'Ritmo regular?',hint:'Comparar intervalos RR — se irregular, pensar em FA',
+        options:[
+          {label:'Não — Irregular',result:{name:'Fibrilação Atrial (FA)',tag:'TAQUICARDIA',risk:'medium',icon:'〰',ecgType:'fa',ecgLabel:'DII — FA: linha de base fibrilatória, QRS estreito irregular',criteria:['Ritmo irregularmente irregular — sem padrão fixo','Ausência de ondas P definidas — linha de base oscilante','FC ventricular variável (geralmente 100–180 bpm sem tto)','QRS estreito (se sem aberrância)'],treatment:'Controle de FC (BB, BCC), anticoagulação, cardioversão se indicado',alert:null}},
+          {label:'Sim — Regular',next:{
+            question:'Como se apresentam as ondas P?',hint:'Procurar em DII, V1 e aVR. Padrão dente de serra? Delta? P invertida?',
+            options:[
+              {label:'Padrão dente de serra (~300 bpm), FC ~150 bpm',result:{name:'Flutter Atrial',tag:'TAQUICARDIA',risk:'medium',icon:'⌇',ecgType:'flutter',ecgLabel:'DII — ondas F em dente de serra, QRS regular (bloqueio ~4:1)',criteria:['Ondas F em dente de serra — melhor em DII, DIII, aVF e V1','Taxa atrial ~300 bpm, bloqueio 2:1 → FC ~150 bpm','Ritmo ventricular regular (bloqueio fixo) ou irregular','Massagem do seio carotídeo evidencia ondas F ao aumentar o bloqueio'],treatment:'Controle de FC, anticoagulação, cardioversão, ablação por cateter',alert:null}},
+              {label:'P ausente / embutida no QRS / pseudo-S em DII',result:{name:'TRNAV — Taquicardia por Reentrada Nodal AV (Típica)',tag:'TAQUICARDIA',risk:'low',icon:'⟳',ecgType:'trnav',ecgLabel:'DII — QRS estreito rápido, pseudo-S após QRS (P retrógrada embutida)',criteria:['Mais comum das taquicardias supraventriculares paroxísticas','Reentrada dentro do nó AV (via lenta → via rápida)','P retrógrada: embutida no QRS ou pseudo-S em DII / pseudo-r\' em V1','Início e fim súbitos — paroxística','RP muito curto (<70 ms)'],treatment:'Manobra vagal → Adenosina → Verapamil/Diltiazem → Betabloqueador',alert:null}},
+              {label:'P após QRS (RP curto 70–150 ms), P retrógrada visível',result:{name:'TRAV — Taquicardia por Reentrada AV (via acessória oculta)',tag:'TAQUICARDIA',risk:'low',icon:'↻',ecgType:'trav',ecgLabel:'DII — P retrógrada visível no segmento ST (RP curto: 70–150ms)',criteria:['Condução anterógrada pelo nó AV, retrógrada pela via acessória','P retrógrada visível após QRS, no segmento ST (RP curto: 70–150 ms)','QRS estreito (forma ortodrômica)','Verificar ECG basal: pode haver delta wave (WPW manifesto)'],treatment:'Igual TRNAV. ⚠️ Se WPW: evitar digitálicos e verapamil',alert:'Checar ECG basal para delta wave!'}},
+              {label:'PR curto + onda delta (alargamento inicial do QRS)',result:{name:'WPW — Síndrome de Wolff-Parkinson-White',tag:'TAQUICARDIA',risk:'high',icon:'△',ecgType:'wpw',ecgLabel:'DII — PR curto, onda delta (alargamento inicial lento do QRS)',criteria:['Tríade clássica: PR curto (<120 ms) + onda delta + QRS alargado','Via acessória manifesta com pré-excitação ventricular','Em taquicardia: geralmente TRAV ortodrômica (QRS estreito)','Risco de FA com condução pela via acessória → FV!'],treatment:'Ablação por cateter (definitivo). Evitar digoxina e verapamil.',alert:'NUNCA usar adenosina, digoxina ou verapamil na FA com WPW!'}},
+              {label:'P antes do QRS com morfologia diferente do sinusal',result:{name:'Taquicardia Atrial (TA)',tag:'TAQUICARDIA',risk:'low',icon:'⌆',ecgType:'ta',ecgLabel:'DII — P invertida (foco ectópico inferior), ritmo regular',criteria:['Foco ectópico atrial com disparo rápido','Morfologia da onda P diferente do sinusal (depende do foco)','PR pode ser prolongado; início gradual (warm-up)','Se ≥3 morfologias de P + ritmo irregular → TAM (DPOC)'],treatment:'Betabloqueador, BCC não-DHP, ablação se refratária',alert:null}},
+            ]
+          }},
+        ]
+      }},
+      {label:'Sim — QRS largo (>120ms)',next:{
+        question:'Ritmo regular?',hint:'Avaliar intervalos RR em fita longa',
+        options:[
+          {label:'Sim — Regular',next:{
+            question:'Há dissociação AV, batimentos de fusão ou de captura?',hint:'Dissociação AV = P independente do QRS. Fusão = QRS híbrido entre condução normal e ventricular.',
+            options:[
+              {label:'Sim — Dissociação AV ou fusão/captura presentes',result:{name:'Taquicardia Ventricular (TV)',tag:'TAQUICARDIA',risk:'critical',icon:'⚡',ecgType:'tv',ecgLabel:'DII — TV: QRS largo, rápido e regular (Brugada positivo)',criteria:['Dissociação AV é patognomônico de TV (Critério de Brugada)','Batimento de fusão = QRS híbrido (parcial condução normal + ventricular)','Batimento de captura = QRS estreito isolado em meio aos largos','FC: 100–250 bpm, QRS >120ms com morfologia aberrante'],treatment:'Amiodarona IV, cardioversão elétrica se instável',alert:'EMERGÊNCIA — pode degenerar em Fibrilação Ventricular!'}},
+              {label:'Não tenho certeza / não visível',next:{
+                question:'Concordância precordial (V1 a V6 todos + ou todos −)?',hint:'Ver todos os precordiais: se QRS predominantemente positivo em todos = concordância positiva.',
+                options:[
+                  {label:'Sim — Concordância presente',result:{name:'Taquicardia Ventricular (TV)',tag:'TAQUICARDIA',risk:'critical',icon:'⚡',ecgType:'tv',ecgLabel:'Precordiais — concordância positiva: todos QRS positivos (critério de Brugada)',criteria:['Concordância precordial = critério de Brugada para TV','Concordância positiva (todos +): TV com origem septal anterior','Concordância negativa (todos −): TV com origem posterior'],treatment:'Amiodarona IV, cardioversão elétrica se instável',alert:'EMERGÊNCIA — trate como TV!'}},
+                  {label:'Não / Inconclusivo',next:{
+                    question:'Eixo elétrico no quadrante noroeste (DI− e aVF−)?',hint:'DI negativo E aVF negativo = eixo noroeste. Praticamente impossível em TSV com aberrância.',
+                    options:[
+                      {label:'Sim — Eixo noroeste',result:{name:'Taquicardia Ventricular (TV)',tag:'TAQUICARDIA',risk:'critical',icon:'⚡',ecgType:'tv',ecgLabel:'DII — TV: QRS largo com eixo noroeste (critério de Brugada)',criteria:['Eixo noroeste raramente ocorre em TSV com aberrância','DI negativo + aVF negativo = eixo extremo (-90° a ±180°)','Critério de Brugada para TV'],treatment:'Amiodarona IV, cardioversão elétrica se instável',alert:'EMERGÊNCIA — trate como TV!'}},
+                      {label:'Não — Eixo normal ou desviado',next:{
+                        question:'Morfologia do QRS sugere pré-excitação?',hint:'Delta wave + PR curto no basal = WPW antidrômico',
+                        options:[
+                          {label:'Sim — Delta wave + PR curto no basal',result:{name:'WPW — Taquicardia Antidrômica',tag:'TAQUICARDIA',risk:'high',icon:'△',ecgType:'wpw_anti',ecgLabel:'DII — WPW antidrômico: QRS largo com delta, condução pela via acessória',criteria:['Condução anterógrada pela via acessória (antidrômica)','QRS largo com delta wave evidente','PR curto (<120ms) observado no ritmo sinusal basal','Morfologia pode simular TV'],treatment:'Cardioversão elétrica ou Procainamida IV',alert:'CONTRAINDICADO: Adenosina, Digoxina, Verapamil, Betabloqueador!'}},
+                          {label:'Não — BRE ou BRD típico sem pré-excitação',result:{name:'TSV com Aberrância — Tratar como TV!',tag:'TAQUICARDIA',risk:'high',icon:'?',ecgType:'tv',ecgLabel:'DII — QRS largo sem critérios definitivos: tratar como TV por segurança',criteria:['Diagnóstico de exclusão — raramente há certeza pelo ECG','Pode ser TSV com BRE/BRD pré-existente ou funcional (rate-related)','Sem critérios positivos para TV pelos algoritmos de Brugada/Vereckei','Adenosina pode auxiliar diagnóstico se alta suspeita de TSV'],treatment:'Na dúvida, tratar como TV. Amiodarona é opção mais segura.',alert:'Na dúvida, TV é sempre a hipótese mais segura a tratar!'}},
+                        ]
+                      }},
+                    ]
+                  }},
+                ]
+              }},
+            ]
+          }},
+          {label:'Não — Irregular',next:{
+            question:'QT basal prolongado + QRS que gira em torno da linha de base?',hint:'Torsades: QRS muda de amplitude e polaridade ciclicamente. Verificar QT no ritmo sinusal.',
+            options:[
+              {label:'Sim — QRS gira / QT longo no basal',result:{name:'Torsades de Pointes',tag:'TAQUICARDIA',risk:'critical',icon:'∿',ecgType:'torsades',ecgLabel:'DII — Torsades: QRS largo que gira em torno da linha de base',criteria:['TV polimórfica associada a QT longo','QRS gira em torno da linha de base — alternância de amplitude e polaridade','Frequentemente autolimitada, mas pode degenerar em FV','Causas: fármacos (antiarrítmicos Ia/III, haloperidol, macrolídeos), hipocalemia, hipomagnesemia, SQTL congênito'],treatment:'MgSO4 IV (2g), corrigir eletrólitos, suspender fármacos causadores, overdrive pacing',alert:'NUNCA usar antiarrítmicos que prolonguem o QT (Amiodarona, Sotalol)!'}},
+              {label:'Não — Irregular, rápido, QRS variável/largo',result:{name:'FA com WPW (Via Acessória + Fibrilação Atrial)',tag:'TAQUICARDIA',risk:'critical',icon:'⚡△',ecgType:'fa_wpw',ecgLabel:'DII — FA com WPW: QRS variável (estreito/largo), muito rápido e irregular',criteria:['FA conduzida pela via acessória: QRS largo, irregular, FC >200 bpm','Intervalos RR irregulares com QRS variáveis (fusão entre condução normal e acessória)','Morfologia do QRS muda batimento a batimento','FC podendo ultrapassar 250–300 bpm → risco de FV'],treatment:'Cardioversão elétrica (instável) ou Procainamida IV (estável)',alert:'EMERGÊNCIA ABSOLUTA! CONTRAINDICADO: Adenosina, Digoxina, Verapamil, Betabloqueador → podem causar FV!'}},
+            ]
+          }},
+        ]
+      }},
+    ]
+  },
+
+  bradicardia:{
+    question:'Ondas P visíveis?',hint:'Analisar DII (melhor derivação para P). FC < 60 bpm.',
+    options:[
+      {label:'Não / Ausentes',next:{
+        question:'Como é o QRS?',hint:'Estreito (<120ms) = origem juncional. Largo (>120ms) = origem ventricular.',
+        options:[
+          {label:'Estreito, FC 40–60 bpm',result:{name:'Ritmo de Escape Juncional',tag:'BRADICARDIA',risk:'medium',icon:'⌛',ecgType:'junctional',ecgLabel:'DII — escape juncional: QRS estreito lento, sem onda P',criteria:['Marcapasso subsidiário do nó AV assume o controle','FC: 40–60 bpm, QRS estreito','P ausente ou retrógrada (após o QRS)','Ocorre quando o nó sinusal falha ou há bloqueio AV'],treatment:'Tratar causa. Atropina se sintomático. Marca-passo se refratário.',alert:null}},
+          {label:'Largo (>120ms), FC <40 bpm',result:{name:'Ritmo de Escape Ventricular (Idioventricular)',tag:'BRADICARDIA',risk:'critical',icon:'⚡',ecgType:'ventricular',ecgLabel:'DII — escape ventricular: QRS largo muito lento, sem onda P',criteria:['Marcapasso ventricular de emergência — último recurso','FC: 20–40 bpm, QRS largo e aberrante','Ocorre em BAV total com falha de escapes superiores','Paciente geralmente hemodinamicamente instável'],treatment:'Atropina IV, Marca-passo transcutâneo imediato, depois transvenoso',alert:'EMERGÊNCIA — instabilidade hemodinâmica esperada!'}},
+          {label:'Irregular, sem P, QRS variável',result:{name:'FA com Resposta Ventricular Lenta',tag:'BRADICARDIA',risk:'medium',icon:'〰',ecgType:'fa_slow',ecgLabel:'DII — FA com resposta lenta: fibrilação + poucos QRS',criteria:['FA com bloqueio AV significativo ou drogas cronotrópicas negativas','Ritmo irregularmente irregular, ausência de ondas P definidas','FC ventricular lenta (<60 bpm)','Causas: digital, betabloqueador, BCC, BAV concomitante, hipotireoidismo'],treatment:'Suspender fármaco causador se aplicável. Atropina. Marca-passo se necessário.',alert:null}},
+        ]
+      }},
+      {label:'Sim — P visível',next:{
+        question:'Qual a relação entre ondas P e complexos QRS?',hint:'Contar P e QRS separadamente. Todo P conduz? O PR é constante ou progressivo?',
+        options:[
+          {label:'1P : 1QRS, PR normal (<200ms)',result:{name:'Bradicardia Sinusal',tag:'BRADICARDIA',risk:'low',icon:'♡',ecgType:'sinus_brady',ecgLabel:'DII — bradicardia sinusal: ritmo normal lento, P positiva',criteria:['Ritmo sinusal normal com FC < 60 bpm','P positiva em DI, DII, aVF — morfologia normal','PR normal (<200ms), QRS estreito','Fisiológica em atletas e durante o sono'],treatment:'Tratar se sintomática. Atropina aguda. Marca-passo permanente se necessário.',alert:null}},
+          {label:'1P : 1QRS, PR fixo longo (>200ms)',result:{name:'Bloqueio AV de 1º Grau',tag:'BRADICARDIA',risk:'low',icon:'→',ecgType:'bav1',ecgLabel:'DII — PR prolongado e constante (>200ms), todo P conduz',criteria:['Retardo na condução pelo nó AV — todo P conduz','PR > 200 ms (5 quadradinhos), mas constante','QRS geralmente estreito','Causas: vagotonia, miocardite, Lyme, drogas (BB, BCC, digital)'],treatment:'Geralmente não requer tratamento. Monitorar progressão.',alert:null}},
+          {label:'PR aumenta progressivamente → pausa (P sem QRS) → reinicia',result:{name:'BAV 2º Grau — Mobitz I (Wenckebach)',tag:'BRADICARDIA',risk:'low',icon:'↗',ecgType:'mobitz1',ecgLabel:'DII — PR progressivo → batimento bloqueado (pausa) → reset',criteria:['Prolongamento progressivo do PR até bloqueio de uma P (sem QRS seguinte)','O ciclo RR encurta progressivamente até a pausa','QRS geralmente estreito (bloqueio no nó AV)','Causas: IAM inferior, miocardite, drogas vagotônicas, atletas bem treinados'],treatment:'Geralmente não requer MP se assintomático. Atropina se sintomático.',alert:null}},
+          {label:'PR constante → bloqueio súbito de P (sem progressão do PR)',result:{name:'BAV 2º Grau — Mobitz II',tag:'BRADICARDIA',risk:'high',icon:'✕',ecgType:'mobitz2',ecgLabel:'DII — PR constante, bloqueio súbito de P sem aviso prévio',criteria:['Bloqueio súbito de P sem progressão prévia do PR','PR constante nos batimentos conduzidos','QRS geralmente largo (bloqueio infranodal — His-Purkinje)','Risco elevado de progressão para BAV total'],treatment:'Indicação de marca-passo permanente na maioria dos casos',alert:'Risco de progressão para BAV total — considerar MP preventivo!'}},
+          {label:'2P para cada QRS (bloqueio 2:1)',result:{name:'BAV 2º Grau 2:1 — Mobitz I ou II (indeterminado)',tag:'BRADICARDIA',risk:'medium',icon:'÷',ecgType:'bav21',ecgLabel:'DII — 2:1: uma P conduz QRS, a próxima é bloqueada',criteria:['2 ondas P para cada QRS — impossível distinguir Mobitz I de II pelo ECG','QRS estreito sugere Mobitz I (nodal); QRS largo sugere Mobitz II (infranodal)','Atropina/exercício: melhora o bloqueio = Mobitz I; piora = Mobitz II'],treatment:'Se QRS largo → tratar como Mobitz II → considerar MP permanente',alert:'QRS largo com 2:1 = presumir Mobitz II até prova em contrário'}},
+          {label:'P e QRS sem relação (frequências independentes)',result:{name:'BAV 3º Grau — Bloqueio AV Total (BAVT)',tag:'BRADICARDIA',risk:'critical',icon:'✖',ecgType:'bavt',ecgLabel:'DII — BAVT: P (vermelho) dissociadas dos QRS (azul)',criteria:['Dissociação AV completa — nenhum impulso atrial conduz aos ventrículos','FC atrial > FC ventricular, sem relação entre si','Escape juncional: QRS estreito, FC ~40–60 bpm','Escape ventricular: QRS largo, FC ~20–40 bpm (mais grave)','Causas: IAM, Lyme, cirurgia cardíaca, doença degenerativa'],treatment:'Atropina IV → Marca-passo transcutâneo → Marca-passo transvenoso urgente',alert:'EMERGÊNCIA se sintomático — síncope, hipotensão, ICC!'}},
+        ]
+      }},
+    ]
+  }
+};
+
+const MORPHOLOGY=[
+  {name:'BRE — Bloqueio de Ramo Esquerdo',color:'#9b8fd4',icon:'←',ecgType:'bre',ecgLabel:'V5 — BRE: R alargado e entalhado (padrão M), discordância ST-T',criteria:['QRS > 120ms','V1: QS ou rS (ausência de R inicial)','V5/V6: R alargado e entalhado (padrão M), sem q, sem S terminal','DI e aVL: R alargado sem q','Eixo: normal ou desvio à esquerda','Discordância ST-T (opostos ao QRS principal)'],pearl:'BRE novo + dor torácica = equivalente de STEMI (critérios de Sgarbossa).'},
+  {name:'BRD — Bloqueio de Ramo Direito',color:'#5bb89a',icon:'→',ecgType:'brd',ecgLabel:'V1 — BRD: padrão RSR\' (orelhas de coelho), T invertida',criteria:['QRS > 120ms','V1: RSR\' (orelhas de coelho) ou R alargado e entalhado','V5/V6: S largo e entalhado','aVR: R largo'],pearl:'BRD isolado geralmente benigno. BRD + BDAS = bloqueio bifascicular → risco de BAVT.'},
+  {name:'BDAS — Bloqueio Divisional Anterossuperior',color:'#d4a84b',icon:'↖',ecgType:null,ecgLabel:null,criteria:['QRS: 80–110ms (não necessariamente >120ms)','Desvio do eixo para esquerda: −45° a −90°','DI: qR (q pequeno, R dominante)','aVF: rS (r pequeno, S profundo)','Diagnóstico de exclusão (afastar HVE, IAM inferior)'],pearl:'BRD + BDAS = bloqueio bifascicular → monitorar para progressão para BAVT.'},
+  {name:'BDPS — Bloqueio Divisional Posteroinferior',color:'#d47878',icon:'↘',ecgType:null,ecgLabel:null,criteria:['Desvio do eixo para direita: +90° a +180°','DI: rS','aVF: qR','Diagnóstico de exclusão (descartar HVD, cor pulmonale, dextrocardia)'],pearl:'Raro isolado. Associado a doença grave do sistema His-Purkinje.'},
+  {name:'QT Longo — Critério para Torsades',color:'#b87dbf',icon:'∿',ecgType:'torsades',ecgLabel:'DII — Torsades de Pointes: QRS largo que gira em torno da baseline',criteria:['QTc (Bazett): QT / √RR','QTc prolongado: ♂ >440ms | ♀ >460ms','QTc >500ms = risco muito elevado de Torsades','Medir QT em DII ou V5, excluindo onda U'],pearl:'Fármacos que prolongam QT: Haloperidol, Amiodarona, Sotalol, Azitromicina, Cipro, Metadona.'},
+  {name:'WPW — Achados no Ritmo Sinusal',color:'#d4885a',icon:'△',ecgType:'wpw',ecgLabel:'DII — WPW: PR curto, onda delta (alargamento inicial lento do QRS)',criteria:['PR curto (<120ms)','Onda delta: alargamento inicial e lento do QRS','QRS > 120ms (por pré-excitação)','Alterações secundárias de ST-T (opostas à delta)'],pearl:'WPW + FA = emergência! Condução rápida pela via acessória → risco de FV.'},
+];
+
+// ═══════════════════════════════════════════════════════
+// STATE & RENDER
+// ═══════════════════════════════════════════════════════
+let currentMode=null;
+let flowState={path:[],current:null};
+let openMorph=null;
+
+function setMode(m){
+  currentMode=m;
+  openMorph=null;
+  // update tab styles
+  ['taquicardia','bradicardia','morfologia'].forEach(id=>{
+    const tab=document.getElementById('tab-'+id);
+    const colors={taquicardia:'#d47878',bradicardia:'#7899cc',morfologia:'#9b8fd4'};
+    const bgs={taquicardia:'#fdeaea',bradicardia:'#e8f0fc',morfologia:'#f0edf9'};
+    if(id===m){
+      tab.style.background=bgs[id];
+      tab.style.borderColor=colors[id]+'99';
+      tab.style.boxShadow=`0 2px 12px ${colors[id]}22`;
+    } else {
+      tab.style.background='#fff';
+      tab.style.borderColor='#e8e0d8';
+      tab.style.boxShadow='0 1px 4px rgba(0,0,0,.05)';
+    }
+  });
+  if(m==='morfologia'){renderMorphology();return;}
+  flowState={path:[],current:TREES[m]};
+  renderFlow();
+}
+
+function choose(optIdx){
+  const opt=flowState.current.options[optIdx];
+  flowState.path.push({question:flowState.current.question,label:opt.label});
+  if(opt.result){flowState.result=opt.result;renderResult();}
+  else{flowState.current=opt.next;renderFlow();}
+}
+
+function restart(){
+  flowState={path:[],current:TREES[currentMode]};
+  renderFlow();
+}
+
+function renderFlow(){
+  const content=document.getElementById('content');
+  const colors={taquicardia:'#d47878',bradicardia:'#7899cc'};
+  const labels={taquicardia:'FC &gt; 100 BPM — DIAGNÓSTICO DIFERENCIAL',bradicardia:'FC &lt; 60 BPM — DIAGNÓSTICO DIFERENCIAL'};
+  let html=`<div class="section-label fade" style="color:${colors[currentMode]}">${labels[currentMode]}</div>`;
+
+  // breadcrumb
+  if(flowState.path.length>0){
+    html+='<div class="breadcrumb fade">';
+    flowState.path.forEach((step,i)=>{
+      html+=`<div class="bread-item"><div class="bread-num">PASSO ${i+1}</div><div class="bread-q">${step.question}</div><div class="bread-a">→ ${step.label}</div></div>`;
+    });
+    html+='</div>';
+  }
+
+  // question
+  const cur=flowState.current;
+  html+=`<div class="question-card fade">
+    <div class="step-label">PASSO ${flowState.path.length+1}</div>
+    <div class="question-text">${cur.question}</div>
+    ${cur.hint?`<div class="hint-text">💡 ${cur.hint}</div>`:''}
+    <div class="options">`;
+  cur.options.forEach((opt,i)=>{
+    html+=`<button class="opt-btn" onclick="choose(${i})">${opt.label}</button>`;
+  });
+  html+='</div>';
+  if(flowState.path.length>0) html+='<button class="restart-link" onclick="restart()">↩ recomeçar</button>';
+  html+='</div>';
+  content.innerHTML=html;
+}
+
+function renderResult(){
+  const r=flowState.result;
+  const rs=RISK[r.risk];
+  const content=document.getElementById('content');
+  const colors={taquicardia:'#d47878',bradicardia:'#7899cc'};
+  const labels={taquicardia:'FC &gt; 100 BPM — DIAGNÓSTICO DIFERENCIAL',bradicardia:'FC &lt; 60 BPM — DIAGNÓSTICO DIFERENCIAL'};
+  let html=`<div class="section-label fade" style="color:${colors[currentMode]}">${labels[currentMode]}</div>`;
+
+  // breadcrumb
+  html+='<div class="breadcrumb">';
+  flowState.path.forEach((step,i)=>{
+    html+=`<div class="bread-item"><div class="bread-num">PASSO ${i+1}</div><div class="bread-q">${step.question}</div><div class="bread-a">→ ${step.label}</div></div>`;
+  });
+  html+='</div>';
+
+  // result card
+  html+=`<div class="result-card fade" style="background:${rs.bg};border:1.5px solid ${rs.border};box-shadow:0 2px 16px ${rs.border}30">
+    <div class="result-header">
+      <span class="result-icon" style="border:1.5px solid ${rs.border};box-shadow:0 1px 4px ${rs.border}30">${r.icon}</span>
+      <div>
+        <div class="result-tag" style="color:${rs.badge}">${r.tag} · ${rs.text}</div>
+        <div class="result-name">${r.name}</div>
+      </div>
+    </div>
+    ${ecgHTML(r.ecgType,r.ecgLabel)}
+    ${r.alert?`<div class="alert-box">⚠️ ${r.alert}</div>`:''}
+    <div class="criteria-label">CRITÉRIOS DIAGNÓSTICOS</div>
+    ${r.criteria.map(c=>`<div class="criterion"><span class="crit-dot" style="color:${rs.badge}">◆</span><span class="crit-text">${c}</span></div>`).join('')}
+    <div class="conduta-box"><span class="conduta-label">CONDUTA&nbsp;&nbsp;</span>${r.treatment}</div>
+    <button class="restart-btn" onclick="restart()">↩ RECOMEÇAR</button>
+  </div>`;
+  content.innerHTML=html;
+}
+
+function renderMorphology(){
+  const content=document.getElementById('content');
+  let html='<div class="section-label fade" style="color:#9b8fd4">REFERÊNCIA RÁPIDA — PADRÕES MORFOLÓGICOS</div>';
+  MORPHOLOGY.forEach((m,i)=>{
+    const isOpen=openMorph===i;
+    html+=`<div class="morph-item" id="morph-${i}" style="border-color:${isOpen?m.color+'99':'#ede8e2'};background:${isOpen?m.color+'10':'#fff'};box-shadow:${isOpen?`0 2px 12px ${m.color}20`:'0 1px 4px rgba(0,0,0,.05)'}">
+      <button class="morph-btn" onclick="toggleMorph(${i})">
+        <span class="morph-icon-wrap" style="background:${m.color}18;border-color:${m.color}44;color:${m.color}">${m.icon}</span>
+        <span class="morph-name">${m.name}</span>
+        <span class="morph-toggle">${isOpen?'−':'+'}</span>
+      </button>`;
+    if(isOpen){
+      html+=`<div class="morph-body fade">
+        ${ecgHTML(m.ecgType,m.ecgLabel)}
+        ${m.criteria.map(cr=>`<div class="morph-criterion"><span class="morph-dot" style="color:${m.color}">◆</span><span class="morph-text">${cr}</span></div>`).join('')}
+        <div class="morph-pearl" style="border-left:3px solid ${m.color}88"><span class="morph-pearl-label" style="color:${m.color}">Pearl: </span>${m.pearl}</div>
+      </div>`;
+    }
+    html+='</div>';
+  });
+  content.innerHTML=html;
+}
+
+function toggleMorph(i){
+  openMorph=openMorph===i?null:i;
+  renderMorphology();
+}
+
+// ── Initial render ──
+(function(){
+  const content=document.getElementById('content');
+  content.innerHTML=`<div id="welcome" class="fade">
+    <div class="heart">♡</div>
+    <p>Selecione uma categoria acima para iniciar o fluxograma diagnóstico.<br/>O algoritmo guiará você por perguntas passo a passo.</p>
+  </div>`;
+})();
+</script>
+</body>
+</html>
