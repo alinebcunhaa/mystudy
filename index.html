@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MedStudy</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --lavender:       #c4b5d4;
+    --lavender-light: #ede8f5;
+    --lavender-soft:  #f5f1fb;
+    --olive:          #a8b89a;
+    --olive-light:    #e8edd5;
+    --rose:           #d4a5a5;
+    --rose-light:     #f5e8e8;
+    --cream:          #faf8f4;
+    --clinica:        #e8935a;
+    --clinica-bg:     #fdf3ea;
+    --cirurgia:       #6a9e60;
+    --cirurgia-bg:    #eaf3e8;
+    --preventiva:     #4a7fa0;
+    --preventiva-bg:  #e5f0f8;
+    --gineco:         #c26b80;
+    --gineco-bg:      #faeaee;
+    --pediatria:      #7a5fa0;
+    --pediatria-bg:   #f0eaf8;
+    --psa:            #c4b5d4;
+    --psa-bg:         #f5f1fb;
+    --pos:            #a8b89a;
+    --pos-bg:         #e8edd5;
+    --geral:          #b0a898;
+    --geral-bg:       #f5f3f0;
+    --text-dark:      #2d2d35;
+    --text-mid:       #5a5a68;
+    --text-light:     #9a9aaa;
+    --border:         rgba(196,181,212,0.3);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--text-dark);
+    min-height: 100vh;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top:0; left:0; right:0; z-index:100;
+    background: rgba(255,255,255,0.88);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 48px; height: 60px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+
+  .nav-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px; font-weight: 600; color: var(--text-dark);
+  }
+  .nav-logo span { color: var(--lavender); font-style: italic; }
+
+  .nav-links { display:flex; align-items:center; gap:6px; }
+
+  .nav-link {
+    font-size: 13px; color: var(--text-mid);
+    padding: 6px 14px; border-radius: 50px;
+    cursor: pointer; border: none; background: none;
+    font-family: 'DM Sans', sans-serif;
+    transition: background 0.15s, color 0.15s;
+  }
+  .nav-link:hover { background: var(--lavender-light); color: var(--text-dark); }
+  .nav-link.active { background: var(--lavender-light); color: var(--text-dark); font-weight: 500; }
+
+  /* HERO */
+  #home {
+    min-height: 100vh; padding-top: 60px;
+    display: flex; flex-direction: column;
+  }
+
+  .hero {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center; padding: 60px 40px 40px;
+    position: relative; overflow: hidden;
+  }
+
+  .hero::before {
+    content: ''; position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 700px 500px at 20% 30%, rgba(196,181,212,0.2) 0%, transparent 65%),
+      radial-gradient(ellipse 500px 400px at 80% 70%, rgba(168,184,154,0.15) 0%, transparent 60%),
+      radial-gradient(ellipse 400px 300px at 60% 10%, rgba(212,165,165,0.12) 0%, transparent 55%);
+    pointer-events: none;
+  }
+
+  .datetime-pill {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: white; border: 1px solid var(--border);
+    border-radius: 50px; padding: 8px 20px;
+    font-size: 13px; color: var(--text-mid);
+    margin-bottom: 32px; position: relative; z-index: 1;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  .datetime-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--olive);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%,100% { opacity:1; transform:scale(1); }
+    50% { opacity:0.6; transform:scale(0.85); }
+  }
+
+  .hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(42px, 6vw, 72px);
+    font-weight: 300; line-height: 1.1;
+    color: var(--text-dark); margin-bottom: 20px;
+    position: relative; z-index: 1;
+    animation: fadeUp 0.5s ease 0.1s both;
+  }
+  .hero-title em { font-style: italic; color: var(--lavender); }
+
+  .hero-sub {
+    font-size: 15px; color: var(--text-light);
+    max-width: 440px; line-height: 1.7; margin-bottom: 40px;
+    position: relative; z-index: 1;
+    animation: fadeUp 0.5s ease 0.2s both;
+  }
+
+  .hero-cta {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--text-dark); color: white;
+    padding: 12px 28px; border-radius: 50px;
+    font-size: 13px; font-family: 'DM Sans', sans-serif;
+    border: none; cursor: pointer;
+    transition: transform 0.2s, opacity 0.2s;
+    position: relative; z-index: 1;
+    animation: fadeUp 0.5s ease 0.3s both;
+  }
+  .hero-cta:hover { transform: translateY(-2px); opacity: 0.88; }
+
+  /* QUICK ACCESS */
+  .quick-access {
+    padding: 0 48px 60px;
+    position: relative; z-index: 1;
+    animation: fadeUp 0.5s ease 0.35s both;
+  }
+
+  .quick-label {
+    font-size: 11px; letter-spacing: 0.15em;
+    text-transform: uppercase; color: var(--text-light);
+    text-align: center; margin-bottom: 20px;
+  }
+
+  .subjects-row {
+    display: flex; gap: 12px;
+    justify-content: center; flex-wrap: wrap;
+  }
+
+  .subject-chip {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 20px; border-radius: 50px;
+    border: 1.5px solid transparent; cursor: pointer;
+    font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500;
+    transition: transform 0.2s cubic-bezier(.34,1.56,.64,1), box-shadow 0.2s;
+    background: none;
+  }
+  .subject-chip:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+
+  .chip-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+  /* DIVIDER */
+  .section-divider {
+    display: flex; align-items: center; gap: 16px;
+    padding: 0 48px; margin-bottom: 32px;
+  }
+  .section-divider::before, .section-divider::after {
+    content: ''; flex: 1; height: 1px; background: var(--border);
+  }
+  .divider-label {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px; font-weight: 400; color: var(--text-dark); white-space: nowrap;
+  }
+  .divider-label span { font-style: italic; color: var(--lavender); }
+
+  /* LIBRARY */
+  #library { padding: 0 48px 80px; }
+
+  .filter-bar {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 24px; flex-wrap: wrap;
+  }
+
+  .filter-btn {
+    display: flex; align-items: center; gap: 6px;
+    padding: 7px 14px; border-radius: 50px;
+    border: 1px solid var(--border); background: white;
+    font-family: 'DM Sans', sans-serif; font-size: 12px; color: var(--text-mid);
+    cursor: pointer; transition: all 0.15s;
+  }
+  .filter-btn:hover { background: var(--lavender-soft); }
+  .filter-btn.active { background: var(--lavender-light); border-color: var(--lavender); color: var(--text-dark); font-weight: 500; }
+
+  .filter-dot { width: 7px; height: 7px; border-radius: 50%; }
+  .filter-spacer { flex: 1; }
+
+  .search-box {
+    display: flex; align-items: center; gap: 8px;
+    background: white; border: 1px solid var(--border);
+    border-radius: 50px; padding: 7px 16px;
+  }
+  .search-box input {
+    border: none; background: none;
+    font-family: 'DM Sans', sans-serif; font-size: 13px;
+    color: var(--text-dark); outline: none; width: 180px;
+  }
+  .search-box input::placeholder { color: var(--text-light); }
+
+  /* CARDS */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+  }
+
+  .file-card {
+    background: white; border: 1px solid var(--border);
+    border-radius: 16px; overflow: hidden; cursor: pointer;
+    transition: transform 0.22s cubic-bezier(.34,1.56,.64,1), box-shadow 0.22s;
+    animation: fadeUp 0.35s ease both;
+  }
+  .file-card:hover { transform: translateY(-4px); box-shadow: 0 12px 28px rgba(0,0,0,0.08); }
+
+  .card-color-bar { height: 4px; }
+  .card-body { padding: 18px; }
+
+  .card-category {
+    font-size: 10px; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--text-light); margin-bottom: 8px;
+  }
+
+  .card-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px; font-weight: 600; color: var(--text-dark);
+    margin-bottom: 6px; line-height: 1.2;
+  }
+
+  .card-desc {
+    font-size: 11px; color: var(--text-mid);
+    line-height: 1.5; margin-bottom: 14px;
+  }
+
+  .card-open-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 11px; color: var(--text-light);
+    padding: 5px 12px; border-radius: 8px;
+    border: 1px solid var(--border); background: var(--cream);
+    cursor: pointer; font-family: 'DM Sans', sans-serif;
+    transition: background 0.15s, color 0.15s;
+  }
+  .card-open-btn:hover { background: var(--lavender-light); color: var(--text-dark); }
+
+  /* LOADING */
+  .loading-state {
+    grid-column: 1/-1;
+    display: flex; flex-direction: column;
+    align-items: center; padding: 60px 0; gap: 14px;
+  }
+
+  .loading-spinner {
+    width: 36px; height: 36px;
+    border: 3px solid var(--lavender-light);
+    border-top-color: var(--lavender);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .loading-text { font-size: 13px; color: var(--text-light); }
+
+  /* EMPTY */
+  .empty-state {
+    grid-column: 1/-1;
+    display: flex; flex-direction: column;
+    align-items: center; padding: 60px 0; text-align: center; gap: 10px;
+  }
+  .empty-icon { font-size: 40px; opacity: 0.3; }
+  .empty-title { font-family: 'Cormorant Garamond', serif; font-size: 22px; color: var(--text-mid); }
+  .empty-sub { font-size: 13px; color: var(--text-light); }
+
+  /* TOTAL COUNT */
+  .library-meta {
+    display: flex; align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+
+  .total-count {
+    font-size: 12px; color: var(--text-light);
+  }
+
+  .total-count strong { color: var(--text-mid); }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity:0; transform:translateY(14px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--lavender); border-radius: 10px; }
+
+  .toast {
+    position: fixed; bottom: 24px; right: 24px;
+    background: var(--text-dark); color: white;
+    padding: 12px 20px; border-radius: 12px;
+    font-size: 13px; z-index: 300;
+    transform: translateY(80px); opacity: 0;
+    transition: all 0.3s cubic-bezier(.34,1.56,.64,1);
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+
+  @media (max-width: 700px) {
+    nav { padding: 0 20px; }
+    .hero { padding: 80px 24px 40px; }
+    .quick-access { padding: 0 24px 48px; }
+    .section-divider { padding: 0 24px; }
+    #library { padding: 0 24px 60px; }
+    .subjects-row { gap: 8px; }
+    .subject-chip { font-size: 12px; padding: 8px 14px; }
+    .filter-bar { gap: 6px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Med<span>Study</span></div>
+  <div class="nav-links">
+    <button class="nav-link active" onclick="scrollToSection('home', this)">Início</button>
+    <button class="nav-link" onclick="scrollToSection('library', this)">Biblioteca</button>
+  </div>
+</nav>
+
+<!-- HOME -->
+<section id="home">
+  <div class="hero">
+    <div class="datetime-pill">
+      <div class="datetime-dot"></div>
+      <span id="datetimeDisplay">carregando...</span>
+    </div>
+    <h1 class="hero-title">
+      Seu espaço para<br><em>estudar, crescer</em><br>e conquistar.
+    </h1>
+    <p class="hero-sub">
+      Todos os seus templates, organizados por matéria e prontos para abrir em qualquer dispositivo.
+    </p>
+    <button class="hero-cta" onclick="scrollToSection('library', null)">
+      Ver biblioteca →
+    </button>
+  </div>
+
+  <div class="quick-access">
+    <div class="quick-label">Acesso rápido por matéria</div>
+    <div class="subjects-row">
+      <button class="subject-chip" style="background:var(--clinica-bg);border-color:var(--clinica);color:var(--clinica);" onclick="goToLibrary('clinica')">
+        <div class="chip-dot" style="background:var(--clinica)"></div>Clínica Médica
+      </button>
+      <button class="subject-chip" style="background:var(--cirurgia-bg);border-color:var(--cirurgia);color:var(--cirurgia);" onclick="goToLibrary('cirurgia')">
+        <div class="chip-dot" style="background:var(--cirurgia)"></div>Cirurgia
+      </button>
+      <button class="subject-chip" style="background:var(--preventiva-bg);border-color:var(--preventiva);color:var(--preventiva);" onclick="goToLibrary('preventiva')">
+        <div class="chip-dot" style="background:var(--preventiva)"></div>Preventiva
+      </button>
+      <button class="subject-chip" style="background:var(--gineco-bg);border-color:var(--gineco);color:var(--gineco);" onclick="goToLibrary('gineco')">
+        <div class="chip-dot" style="background:var(--gineco)"></div>GO
+      </button>
+      <button class="subject-chip" style="background:var(--pediatria-bg);border-color:var(--pediatria);color:var(--pediatria);" onclick="goToLibrary('pediatria')">
+        <div class="chip-dot" style="background:var(--pediatria)"></div>Pediatria
+      </button>
+      <button class="subject-chip" style="background:var(--pos-bg);border-color:var(--pos);color:var(--pos);" onclick="goToLibrary('pos')">
+        <div class="chip-dot" style="background:var(--pos)"></div>PÓS
+      </button>
+      <button class="subject-chip" style="background:var(--psa-bg);border-color:var(--psa);color:var(--psa);" onclick="goToLibrary('psa')">
+        <div class="chip-dot" style="background:var(--psa)"></div>PSA
+      </button>
+      <button class="subject-chip" style="background:var(--geral-bg);border-color:var(--geral);color:var(--geral);" onclick="goToLibrary('geral')">
+        <div class="chip-dot" style="background:var(--geral)"></div>Geral
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- DIVIDER -->
+<div class="section-divider">
+  <div class="divider-label">Minha <span>Biblioteca</span></div>
+</div>
+
+<!-- LIBRARY -->
+<section id="library">
+  <div class="filter-bar">
+    <button class="filter-btn active" data-cat="all" onclick="filterCategory('all', this)">Todos</button>
+    <button class="filter-btn" data-cat="pos" onclick="filterCategory('pos', this)"><div class="filter-dot" style="background:var(--pos)"></div>PÓS</button>
+    <button class="filter-btn" data-cat="psa" onclick="filterCategory('psa', this)"><div class="filter-dot" style="background:var(--psa)"></div>PSA</button>
+    <button class="filter-btn" data-cat="clinica" onclick="filterCategory('clinica', this)"><div class="filter-dot" style="background:var(--clinica)"></div>Clínica</button>
+    <button class="filter-btn" data-cat="cirurgia" onclick="filterCategory('cirurgia', this)"><div class="filter-dot" style="background:var(--cirurgia)"></div>Cirurgia</button>
+    <button class="filter-btn" data-cat="preventiva" onclick="filterCategory('preventiva', this)"><div class="filter-dot" style="background:var(--preventiva)"></div>Preventiva</button>
+    <button class="filter-btn" data-cat="gineco" onclick="filterCategory('gineco', this)"><div class="filter-dot" style="background:var(--gineco)"></div>GO</button>
+    <button class="filter-btn" data-cat="pediatria" onclick="filterCategory('pediatria', this)"><div class="filter-dot" style="background:var(--pediatria)"></div>Pediatria</button>
+    <button class="filter-btn" data-cat="geral" onclick="filterCategory('geral', this)"><div class="filter-dot" style="background:var(--geral)"></div>Geral</button>
+    <div class="filter-spacer"></div>
+    <div class="search-box">
+      <span style="color:var(--text-light);font-size:13px">🔍</span>
+      <input type="text" placeholder="Buscar..." id="searchInput" oninput="renderCards()">
+    </div>
+  </div>
+
+  <div class="library-meta">
+    <div class="total-count" id="totalCount"></div>
+  </div>
+
+  <div class="cards-grid" id="cardsGrid">
+    <div class="loading-state">
+      <div class="loading-spinner"></div>
+      <div class="loading-text">Carregando templates...</div>
+    </div>
+  </div>
+</section>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const categoryMeta = {
+    clinica:    { label: 'Clínica Médica',  color: '#e8935a' },
+    cirurgia:   { label: 'Cirurgia',        color: '#6a9e60' },
+    preventiva: { label: 'Preventiva',      color: '#4a7fa0' },
+    gineco:     { label: 'GO',              color: '#c26b80' },
+    pediatria:  { label: 'Pediatria',       color: '#7a5fa0' },
+    psa:        { label: 'PSA',             color: '#c4b5d4' },
+    pos:        { label: 'PÓS',             color: '#a8b89a' },
+    geral:      { label: 'Geral',           color: '#b0a898' },
+  };
+
+  let ALL_FILES = [];
+  let currentFilter = 'all';
+
+  // ── LOAD files.json ──
+  async function loadFiles() {
+    try {
+      const res = await fetch('files.json?v=' + Date.now());
+      if (!res.ok) throw new Error('not found');
+      ALL_FILES = await res.json();
+      renderCards();
+    } catch (e) {
+      document.getElementById('cardsGrid').innerHTML = `
+        <div class="empty-state">
+          <div class="empty-icon">⚠️</div>
+          <div class="empty-title">files.json não encontrado</div>
+          <div class="empty-sub">Certifique-se que o arquivo files.json está na mesma pasta que o index.html</div>
+        </div>`;
+    }
+  }
+
+  // ── DATE TIME ──
+  function updateDateTime() {
+    const now = new Date();
+    const dias   = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
+    const meses  = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+    const dia    = dias[now.getDay()];
+    const data   = `${now.getDate()} ${meses[now.getMonth()]}`;
+    const hora   = now.toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' });
+    document.getElementById('datetimeDisplay').textContent = `${dia}, ${data} · ${hora}`;
+  }
+  updateDateTime();
+  setInterval(updateDateTime, 1000);
+
+  // ── SCROLL ──
+  function scrollToSection(id, btn) {
+    document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+    if (btn) {
+      document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
+      btn.classList.add('active');
+    }
+  }
+
+  // ── GO TO LIBRARY WITH FILTER ──
+  function goToLibrary(cat) {
+    document.getElementById('library').scrollIntoView({ behavior: 'smooth' });
+    setTimeout(() => {
+      filterCategory(cat, null);
+      document.querySelectorAll('.filter-btn').forEach(el => {
+        el.classList.toggle('active', el.dataset.cat === cat);
+      });
+    }, 400);
+  }
+
+  // ── FILTER ──
+  function filterCategory(cat, btn) {
+    currentFilter = cat;
+    if (btn) {
+      document.querySelectorAll('.filter-btn').forEach(el => el.classList.remove('active'));
+      btn.classList.add('active');
+    }
+    renderCards();
+  }
+
+  // ── RENDER ──
+  function renderCards() {
+    const query = document.getElementById('searchInput').value.toLowerCase();
+    const grid  = document.getElementById('cardsGrid');
+    const count = document.getElementById('totalCount');
+
+    let filtered = ALL_FILES;
+    if (currentFilter !== 'all') filtered = filtered.filter(f => f.category === currentFilter);
+    if (query) filtered = filtered.filter(f =>
+      f.name.toLowerCase().includes(query) ||
+      (f.desc || '').toLowerCase().includes(query)
+    );
+
+    count.innerHTML = `<strong>${filtered.length}</strong> template${filtered.length !== 1 ? 's' : ''} encontrado${filtered.length !== 1 ? 's' : ''}`;
+
+    if (filtered.length === 0) {
+      grid.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-icon">🔍</div>
+          <div class="empty-title">Nenhum resultado</div>
+          <div class="empty-sub">Tente buscar por outro termo ou categoria.</div>
+        </div>`;
+      return;
+    }
+
+    grid.innerHTML = filtered.map((f, i) => {
+      const meta = categoryMeta[f.category] || { label: f.category, color: '#b0a898' };
+      const safe = f.file.replace(/'/g, "\\'");
+      return `
+        <div class="file-card" style="animation-delay:${i*0.05}s" onclick="openFile('${safe}')">
+          <div class="card-color-bar" style="background:${meta.color}"></div>
+          <div class="card-body">
+            <div class="card-category">${meta.label}</div>
+            <div class="card-name">${f.name}</div>
+            <div class="card-desc">${f.desc || ''}</div>
+            <button class="card-open-btn" onclick="event.stopPropagation();openFile('${safe}')">
+              Abrir ↗
+            </button>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  function openFile(filename) { window.open(filename, '_blank'); }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+  // Nav highlight on scroll
+  window.addEventListener('scroll', () => {
+    const lib = document.getElementById('library').getBoundingClientRect().top;
+    const links = document.querySelectorAll('.nav-link');
+    if (lib <= 80) {
+      links[0].classList.remove('active');
+      links[1].classList.add('active');
+    } else {
+      links[0].classList.add('active');
+      links[1].classList.remove('active');
+    }
+  });
+
+  // Init
+  loadFiles();
+</script>
+</body>
+</html>
