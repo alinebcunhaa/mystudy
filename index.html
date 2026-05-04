@@ -58,6 +58,7 @@
   .divider-label{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:400;color:var(--text-dark);white-space:nowrap;}
   .divider-label span{font-style:italic;color:var(--lavender);}
 
+  /* LIBRARY */
   #library{padding:0 48px 60px;}
   .filter-bar{display:flex;align-items:center;gap:8px;margin-bottom:24px;flex-wrap:wrap;}
   .filter-btn{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:50px;border:1px solid var(--border);background:white;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--text-mid);cursor:pointer;transition:all 0.15s;}
@@ -99,53 +100,98 @@
   .btn-action{display:flex;align-items:center;gap:6px;background:white;border:1px solid var(--border);color:var(--text-mid);padding:8px 14px;border-radius:50px;font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;transition:background 0.2s;}
   .btn-action:hover{background:var(--olive-light);color:var(--text-dark);}
 
-  .mapas-filter-bar{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;align-items:center;}
+  .mapas-filter-bar{display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap;align-items:center;}
   .mapas-search{display:flex;align-items:center;gap:8px;background:white;border:1px solid var(--border);border-radius:50px;padding:7px 16px;flex:1;max-width:320px;}
   .mapas-search input{border:none;background:none;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text-dark);outline:none;width:100%;}
   .mapas-search input::placeholder{color:var(--text-light);}
   .area-filter{padding:7px 14px;border-radius:50px;border:1px solid var(--border);background:white;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--text-mid);outline:none;cursor:pointer;}
 
-  .mapas-group{margin-bottom:28px;}
-  .mapas-group-title{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+  /* GROUP HEADER */
+  .mapas-group{margin-bottom:36px;}
+  .mapas-group-header{display:flex;align-items:center;gap:12px;margin-bottom:16px;}
   .mapas-group-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
   .mapas-group-name{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:var(--text-dark);}
   .mapas-group-count{font-size:11px;color:var(--text-light);background:var(--lavender-light);padding:2px 10px;border-radius:20px;}
 
-  .mapas-list{display:flex;flex-direction:column;gap:8px;}
+  .subarea-label{font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-light);margin-bottom:12px;padding-left:4px;}
 
-  /* MAPA ITEM — clicável */
-  .mapa-item{
-    background:white;border:1px solid var(--border);border-radius:12px;
-    padding:14px 18px;display:flex;align-items:center;gap:14px;
-    animation:fadeUp 0.3s ease both;transition:box-shadow 0.2s,transform 0.18s;
+  /* MAPA GRID */
+  .mapas-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;margin-bottom:20px;}
+
+  .mapa-card{
+    background:white;border:1px solid var(--border);border-radius:14px;
+    overflow:hidden;cursor:pointer;
+    transition:transform 0.22s cubic-bezier(.34,1.56,.64,1),box-shadow 0.22s;
+    animation:fadeUp 0.3s ease both;
+    position:relative;
   }
-  .mapa-item.has-link{cursor:pointer;}
-  .mapa-item.has-link:hover{box-shadow:0 6px 20px rgba(196,181,212,0.25);transform:translateY(-2px);}
-  .mapa-item.no-link{cursor:default;}
-  .mapa-item.no-link:hover{box-shadow:0 3px 10px rgba(196,181,212,0.15);}
+  .mapa-card.has-link:hover{transform:translateY(-4px);box-shadow:0 10px 24px rgba(0,0,0,0.1);}
+  .mapa-card.no-link{cursor:default;opacity:0.85;}
+  .mapa-card.no-link:hover{transform:none;box-shadow:none;}
 
-  .mapa-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
-  .mapa-info{flex:1;min-width:0;}
-  .mapa-nome{font-size:14px;font-weight:500;color:var(--text-dark);margin-bottom:3px;line-height:1.3;}
-  .mapa-nota{font-size:11px;color:var(--text-mid);margin-top:4px;font-style:italic;}
-
-  .mapa-link-hint{
-    font-size:10px;color:var(--text-light);
-    display:flex;align-items:center;gap:4px;margin-top:3px;
-  }
-
-  .mapa-no-link-hint{
-    font-size:10px;color:#d0c8c0;margin-top:3px;
+  /* THUMBNAIL */
+  .mapa-thumb{
+    width:100%;height:120px;
+    position:relative;overflow:hidden;
+    display:flex;align-items:center;justify-content:center;
   }
 
-  .mapa-actions{display:flex;gap:4px;flex-shrink:0;align-items:center;}
-  .mapa-btn{
-    width:28px;height:28px;border-radius:8px;border:1px solid var(--border);
+  .mapa-thumb img{
+    width:100%;height:100%;
+    object-fit:cover;
+    transition:transform 0.3s ease;
+  }
+  .mapa-card.has-link:hover .mapa-thumb img{transform:scale(1.05);}
+
+  .mapa-thumb-placeholder{
+    width:100%;height:100%;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:6px;
+  }
+  .placeholder-icon{font-size:28px;opacity:0.5;}
+  .placeholder-text{font-size:10px;color:var(--text-light);text-align:center;line-height:1.4;padding:0 8px;}
+
+  /* OPEN OVERLAY */
+  .mapa-thumb-overlay{
+    position:absolute;inset:0;
+    background:rgba(45,45,53,0);
+    display:flex;align-items:center;justify-content:center;
+    transition:background 0.2s;
+  }
+  .mapa-card.has-link:hover .mapa-thumb-overlay{background:rgba(45,45,53,0.25);}
+  .thumb-open-btn{
+    background:white;color:var(--text-dark);
+    border-radius:50px;padding:5px 14px;font-size:11px;
+    font-family:'DM Sans',sans-serif;font-weight:500;
+    opacity:0;transform:translateY(6px);
+    transition:opacity 0.2s,transform 0.2s;
+    border:none;cursor:pointer;
+  }
+  .mapa-card.has-link:hover .thumb-open-btn{opacity:1;transform:translateY(0);}
+
+  /* CARD FOOTER */
+  .mapa-card-body{padding:10px 12px 10px;}
+  .mapa-card-name{
+    font-size:12px;font-weight:500;color:var(--text-dark);
+    line-height:1.3;margin-bottom:4px;
+  }
+  .mapa-card-meta{display:flex;align-items:center;justify-content:space-between;}
+  .mapa-card-nota{font-size:10px;color:var(--text-light);font-style:italic;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;flex:1;}
+
+  .mapa-edit-btn{
+    width:22px;height:22px;border-radius:6px;border:1px solid var(--border);
     background:var(--cream);display:flex;align-items:center;justify-content:center;
-    font-size:12px;cursor:pointer;transition:background 0.15s;flex-shrink:0;
+    font-size:10px;cursor:pointer;transition:background 0.15s;flex-shrink:0;margin-left:6px;
   }
-  .mapa-btn:hover{background:var(--lavender-light);}
-  .mapa-btn.del:hover{background:var(--rose-light);}
+  .mapa-edit-btn:hover{background:var(--lavender-light);}
+
+  /* BADGES */
+  .mapa-badge{
+    position:absolute;top:6px;right:6px;
+    font-size:9px;padding:2px 7px;border-radius:20px;font-weight:600;
+  }
+  .badge-edited{background:var(--lavender-light);color:var(--lavender);}
+  .badge-new{background:var(--rose-light);color:var(--gineco);}
 
   .mapas-empty{text-align:center;padding:48px;color:var(--text-light);font-family:'Cormorant Garamond',serif;font-size:20px;}
 
@@ -162,7 +208,7 @@
   .form-label{display:block;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-mid);margin-bottom:6px;}
   .form-input,.form-select,.form-textarea{width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text-dark);background:var(--cream);outline:none;transition:border-color 0.2s;}
   .form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--lavender);background:white;}
-  .form-textarea{resize:vertical;min-height:80px;}
+  .form-textarea{resize:vertical;min-height:70px;}
   .form-hint{font-size:11px;color:var(--text-light);margin-top:5px;line-height:1.5;}
   .modal-actions{display:flex;gap:10px;margin-top:24px;}
   .btn-primary{flex:1;padding:11px;background:var(--lavender);color:white;border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;transition:opacity 0.2s,transform 0.15s;}
@@ -172,14 +218,22 @@
   .btn-danger{padding:11px 16px;background:var(--rose-light);color:var(--gineco);border:1px solid var(--rose);border-radius:12px;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;transition:background 0.2s;}
   .btn-danger:hover{background:var(--rose);color:white;}
 
+  /* PREVIEW in modal */
+  .link-preview{
+    width:100%;height:120px;border-radius:10px;overflow:hidden;
+    border:1px solid var(--border);margin-top:8px;
+    display:none;background:var(--cream);
+    align-items:center;justify-content:center;
+  }
+  .link-preview.show{display:flex;}
+  .link-preview img{width:100%;height:100%;object-fit:cover;}
+
   .empty-state{grid-column:1/-1;display:flex;flex-direction:column;align-items:center;padding:60px 0;text-align:center;gap:10px;}
   .empty-icon{font-size:40px;opacity:0.3;}
   .empty-title{font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--text-mid);}
 
   @keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
-  ::-webkit-scrollbar{width:4px;}
-  ::-webkit-scrollbar-track{background:transparent;}
-  ::-webkit-scrollbar-thumb{background:var(--lavender);border-radius:10px;}
+  ::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:var(--lavender);border-radius:10px;}
   .toast{position:fixed;bottom:24px;right:24px;background:var(--text-dark);color:white;padding:12px 20px;border-radius:12px;font-size:13px;z-index:300;transform:translateY(80px);opacity:0;transition:all 0.3s cubic-bezier(.34,1.56,.64,1);}
   .toast.show{transform:translateY(0);opacity:1;}
 
@@ -189,6 +243,7 @@
     .quick-access{padding:0 24px 48px;}
     .section-divider{padding:0 24px;}
     #library,#mapas{padding:0 24px 60px;}
+    .mapas-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));}
   }
 </style>
 </head>
@@ -256,7 +311,7 @@
     </div>
     <div class="mapas-actions">
       <button class="btn-action" onclick="exportEdits()">💾 Exportar edições</button>
-      <button class="btn-action" onclick="document.getElementById('importInput').click()">📂 Importar edições</button>
+      <button class="btn-action" onclick="document.getElementById('importInput').click()">📂 Importar</button>
       <button class="btn-add-mapa" onclick="openMapaModal(null,'new')">＋ Adicionar mapa</button>
       <input type="file" id="importInput" accept=".json" style="display:none" onchange="importEdits(event)">
     </div>
@@ -285,10 +340,9 @@
   <div class="modal">
     <button class="modal-close" onclick="closeMapaModal()">✕</button>
     <div class="modal-title" id="mapaModalTitle">Editar Mapa Mental</div>
-    <div class="modal-sub" id="mapaModalSub">Adicione o link do Drive e ajuste as informações</div>
+    <div class="modal-sub">Cole o link e ajuste as informações</div>
     <input type="hidden" id="mapaEditId">
     <input type="hidden" id="mapaEditType">
-
     <div class="form-group">
       <label class="form-label">Nome do mapa mental</label>
       <input type="text" class="form-input" id="mapaNome" placeholder="Ex: Ciclo Cardíaco">
@@ -311,9 +365,12 @@
       <input type="text" class="form-input" id="mapaSubarea" placeholder="Ex: Cardiologia">
     </div>
     <div class="form-group">
-      <label class="form-label">Link do Google Drive</label>
-      <input type="text" class="form-input" id="mapaLink" placeholder="https://drive.google.com/...">
-      <div class="form-hint">📌 Ao clicar no mapa, este link será aberto automaticamente</div>
+      <label class="form-label">Link</label>
+      <input type="text" class="form-input" id="mapaLink" placeholder="https://drive.google.com/... ou OneDrive..." oninput="previewLink()">
+      <div class="form-hint">✅ Google Drive · OneDrive · qualquer link de imagem</div>
+      <div class="link-preview" id="linkPreview">
+        <img id="linkPreviewImg" src="" alt="preview" onerror="this.parentElement.classList.remove('show')">
+      </div>
     </div>
     <div class="form-group">
       <label class="form-label">Anotações (opcional)</label>
@@ -331,7 +388,7 @@
 
 <script>
   // ── TEMPLATES ──
-  const ALL_FILES = [
+  const ALL_FILES=[
     {name:'ECG & Arritmias',category:'clinica',file:'ecg-arritmias.html',desc:'Eletrocardiograma e principais arritmias',type:'local'},
     {name:'Revisão VM & Gasometria',category:'clinica',file:'revisao_vm_gasometria.html',desc:'Ventilação mecânica e interpretação de gasometria',type:'local'},
     {name:'Hipertensão',category:'clinica',file:'https://draaline-hipertensaosec.lovable.app',desc:'Hipertensão arterial sistêmica e causas secundárias',type:'lovable'},
@@ -350,69 +407,83 @@
     pos:{label:'PÓS',color:'#a8b89a'},geral:{label:'Geral',color:'#b0a898'},
   };
 
-  // ── MAPAS FIXOS ──
-  const DEFAULT_MAPAS = [
-    {id:'d1',area:'Pediatria',subarea:'Neonatologia',nome:'Período Neonatal — Metabólico'},
-    {id:'d2',area:'Pediatria',subarea:'Neonatologia',nome:'Período Neonatal — Infecções'},
-    {id:'d3',area:'Pediatria',subarea:'Neonatologia',nome:'Doença Hematológica do RN'},
-    {id:'d4',area:'Pediatria',subarea:'Neonatologia',nome:'Distúrbio Metabólico do RN'},
-    {id:'d5',area:'Pediatria',subarea:'Neonatologia',nome:'Distúrbio Respiratório do RN'},
-    {id:'d6',area:'Pediatria',subarea:'Neonatologia',nome:'Sala de Parto'},
-    {id:'d7',area:'Pediatria',subarea:'Triagem Neonatal',nome:'Mapa Visual Triagem Neo'},
-    {id:'d8',area:'Pediatria',subarea:'Triagem Neonatal',nome:'Teste do Pezinho'},
+  // ── MAPAS FIXOS — links do Google Drive ──
+  const DEFAULT_MAPAS=[
+    // PEDIATRIA — Neonatologia
+    {id:'d1',area:'Pediatria',subarea:'Neonatologia',nome:'Período Neonatal — Metabólico',link:'https://drive.google.com/file/d/1J2lS3Jo2bU79rxSJoyuPCWx0sR6b7TyS/view'},
+    {id:'d2',area:'Pediatria',subarea:'Neonatologia',nome:'Período Neonatal — Infecções',link:'https://drive.google.com/file/d/1C--LIR6AH0ICdhUldjCZtYGABIArOo78/view'},
+    {id:'d3',area:'Pediatria',subarea:'Neonatologia',nome:'Doença Hematológica do RN',link:'https://drive.google.com/file/d/1ROmBLUUTyVjK_S8OV4iZjb5SUk2G71bj/view'},
+    {id:'d4',area:'Pediatria',subarea:'Neonatologia',nome:'Distúrbio Metabólico do RN',link:'https://drive.google.com/file/d/1aLjDWOHV3Y06Q_p6jjJdvR1NSclNH7pb/view'},
+    {id:'d5',area:'Pediatria',subarea:'Neonatologia',nome:'Distúrbio Respiratório do RN',link:'https://drive.google.com/file/d/1d5dCldcxS1ZYgQMWDC_hANuaAOEm6JvY/view'},
+    {id:'d6',area:'Pediatria',subarea:'Neonatologia',nome:'Sala de Parto',link:'https://drive.google.com/file/d/1r16Oh6xEU2hcebRpZF8f2gYMBNNj485Q/view'},
+    // PEDIATRIA — Triagem Neonatal
+    {id:'d7',area:'Pediatria',subarea:'Triagem Neonatal',nome:'Mapa Visual Triagem Neo',link:'https://drive.google.com/file/d/1wc9twIqf4twc0IiB-6kQZV7WamJknwAI/view'},
+    {id:'d8',area:'Pediatria',subarea:'Triagem Neonatal',nome:'Teste do Pezinho',link:'https://drive.google.com/file/d/1Tvz3NOWptNVbGgZsic1-hJHtycZUUQGx/view'},
     {id:'d9',area:'Pediatria',subarea:'Triagem Neonatal',nome:'Teste da Orelhinha (1)'},
-    {id:'d10',area:'Pediatria',subarea:'Triagem Neonatal',nome:'Teste da Orelhinha (2)'},
-    {id:'d11',area:'Pediatria',subarea:'Triagem Neonatal',nome:'Triagem Neonatal (1)'},
-    {id:'d12',area:'Pediatria',subarea:'Triagem Neonatal',nome:'Triagem Neonatal (2)'},
+    {id:'d10',area:'Pediatria',subarea:'Triagem Neonatal',nome:'Teste da Orelhinha (2)',link:'https://drive.google.com/file/d/1JciRgmnspci5h2l3humXq1vXXow6SjS9/view'},
+    {id:'d11',area:'Pediatria',subarea:'Triagem Neonatal',nome:'Triagem Neonatal (1)',link:'https://drive.google.com/file/d/1LGxb4Z78FWjUYslSdtSYLXILr_s-q2We/view'},
+    {id:'d12',area:'Pediatria',subarea:'Triagem Neonatal',nome:'Triagem Neonatal (2)',link:'https://drive.google.com/file/d/1drzjw3VjXlY8RSPfp-cZrwUU8cs5sFxd/view'},
     {id:'d13',area:'Pediatria',subarea:'Triagem Neonatal',nome:'Triagem Neonatal (3)'},
-    {id:'d14',area:'Clínica Médica',subarea:'Cardiologia',nome:'Sopro Cardíaco'},
-    {id:'d15',area:'Clínica Médica',subarea:'Cardiologia',nome:'Bulhas Cardíacas'},
-    {id:'d16',area:'Clínica Médica',subarea:'Cardiologia',nome:'Síndrome Coronariana Aguda'},
-    {id:'d17',area:'Clínica Médica',subarea:'Cardiologia',nome:'Insuficiência Cardíaca'},
-    {id:'d18',area:'Clínica Médica',subarea:'Cardiologia',nome:'Valvopatias e Cardiomiopatias'},
-    {id:'d19',area:'Clínica Médica',subarea:'Cardiologia',nome:'Emergência Hipertensiva'},
-    {id:'d20',area:'Clínica Médica',subarea:'Cardiologia',nome:'HAS Secundária'},
-    {id:'d21',area:'Clínica Médica',subarea:'Cardiologia',nome:'Farmacoterapia HAS (1)'},
-    {id:'d22',area:'Clínica Médica',subarea:'Cardiologia',nome:'Farmacoterapia HAS (2)'},
-    {id:'d23',area:'Clínica Médica',subarea:'Cardiologia',nome:'HAS — Mapa Mental'},
-    {id:'d24',area:'Clínica Médica',subarea:'Cardiologia',nome:'Diagnóstico de HAS'},
-    {id:'d25',area:'Clínica Médica',subarea:'Cardiologia',nome:'Arritmia, Bradi, PCR'},
-    {id:'d26',area:'Clínica Médica',subarea:'Cardiologia',nome:'Arritmia — Conduta (1)'},
-    {id:'d27',area:'Clínica Médica',subarea:'Cardiologia',nome:'Arritmias'},
-    {id:'d28',area:'Clínica Médica',subarea:'Cardiologia',nome:'Taquiarritmias (2)'},
-    {id:'d29',area:'Clínica Médica',subarea:'Cardiologia',nome:'Guia Visual de ECG'},
-    {id:'d30',area:'Clínica Médica',subarea:'Gastroenterologia',nome:'Pancreatite'},
-    {id:'d31',area:'Clínica Médica',subarea:'Onco-Hematologia',nome:'Onco-Hemato'},
-    {id:'d32',area:'Cirurgia',subarea:'Trauma',nome:'Uso de Hemocomponentes no Trauma'},
-    {id:'d33',area:'Cirurgia',subarea:'Trauma',nome:'ATLS 11 — Atualizações'},
-    {id:'d34',area:'Cirurgia',subarea:'Trauma',nome:'News ATLS'},
-    {id:'d35',area:'Cirurgia',subarea:'Trauma',nome:'Tromboelastograma'},
-    {id:'d36',area:'Cirurgia',subarea:'Trauma',nome:'Trauma Torácico'},
-    {id:'d37',area:'Cirurgia',subarea:'Trauma',nome:'Trauma de Face e Pescoço'},
-    {id:'d38',area:'Cirurgia',subarea:'Abdome',nome:'Abdome Agudo'},
-    {id:'d39',area:'Cirurgia',subarea:'TGI',nome:'Sd. Disfágica e Dispéptica'},
-    {id:'d40',area:'Cirurgia',subarea:'TGI',nome:'Disfagia e Dispepsia'},
-    {id:'d41',area:'Cirurgia',subarea:'TGI',nome:'Mapa Mental TGI'},
-    {id:'d42',area:'Cirurgia',subarea:'TGI',nome:'Tumores TGI'},
-    {id:'d43',area:'Cirurgia',subarea:'Oncologia',nome:'Tumores Estômago e Esôfago (1)'},
-    {id:'d44',area:'Cirurgia',subarea:'Oncologia',nome:'CA Gástrico'},
-    {id:'d45',area:'Cirurgia',subarea:'Oncologia',nome:'Tumores Hepáticos'},
-    {id:'d46',area:'Cirurgia',subarea:'Oncologia',nome:'Tumor Pancreático'},
-    {id:'d47',area:'Cirurgia',subarea:'Oncologia',nome:'CA Colorretal'},
-    {id:'d48',area:'Cirurgia',subarea:'Oncologia',nome:'Check-list Pólipos Colorretais'},
-    {id:'d49',area:'Cirurgia',subarea:'Técnica Cirúrgica',nome:'Técnica Cirúrgica (1)'},
-    {id:'d50',area:'Preventiva',subarea:'SUS',nome:'Financiamento do SUS (1)'},
-    {id:'d51',area:'Preventiva',subarea:'SUS',nome:'Financiamento do SUS (2)'},
+    // CLÍNICA MÉDICA — Cardiologia
+    {id:'d14',area:'Clínica Médica',subarea:'Cardiologia',nome:'Sopro Cardíaco',link:'https://drive.google.com/file/d/1d57avFfxnwb1D-Sv5YKusifuwtTrNrA-/view'},
+    {id:'d15',area:'Clínica Médica',subarea:'Cardiologia',nome:'Bulhas Cardíacas',link:'https://drive.google.com/file/d/1Y44owE617fskd0Y4wgPmFKwTzr48LK5c/view'},
+    {id:'d16',area:'Clínica Médica',subarea:'Cardiologia',nome:'Síndrome Coronariana Aguda',link:'https://drive.google.com/file/d/1aDA7eMGnkCbSl8pTjBWAItYqMF6jqPYq/view'},
+    {id:'d17',area:'Clínica Médica',subarea:'Cardiologia',nome:'Insuficiência Cardíaca',link:'https://drive.google.com/file/d/1mxDu1PGQ0MF_rmkpmgtvfWkippSeIlWy/view'},
+    {id:'d18',area:'Clínica Médica',subarea:'Cardiologia',nome:'Valvopatias e Cardiomiopatias',link:'https://drive.google.com/file/d/1FlxfCtselyzn3JAA0CP6MyUXQdbKBaJf/view'},
+    {id:'d19',area:'Clínica Médica',subarea:'Cardiologia',nome:'Emergência Hipertensiva',link:'https://drive.google.com/file/d/1cKHpVY4bXJmw9RUMapJ9XT1qu-7ZrAZ3/view'},
+    {id:'d20',area:'Clínica Médica',subarea:'Cardiologia',nome:'HAS Secundária',link:'https://drive.google.com/file/d/1SZ5cfrTI2JiFPHmuLmB4OziSQsTNrhBw/view'},
+    {id:'d21',area:'Clínica Médica',subarea:'Cardiologia',nome:'Farmacoterapia HAS (1)',link:'https://drive.google.com/file/d/1YDy6mpB7SWmbkLSLez0237DXldfvGm8s/view'},
+    {id:'d22',area:'Clínica Médica',subarea:'Cardiologia',nome:'Farmacoterapia HAS (2)',link:'https://drive.google.com/file/d/19YulAAGhoVPycftksLuFtrxQDFV4_Zwp/view'},
+    {id:'d23',area:'Clínica Médica',subarea:'Cardiologia',nome:'HAS — Mapa Mental',link:'https://drive.google.com/file/d/1fqYC2N9kjfpw4hIiKxrECdefytn1mGuY/view'},
+    {id:'d24',area:'Clínica Médica',subarea:'Cardiologia',nome:'Diagnóstico de HAS',link:'https://drive.google.com/file/d/1h1lA5oHyj6WjGqjWUyMy_TNkt2QSGela/view'},
+    {id:'d25',area:'Clínica Médica',subarea:'Cardiologia',nome:'Arritmia, Bradi, PCR',link:'https://drive.google.com/file/d/1-70YU4Fr5A7A04sAhp2Tc2w7MTDlDmzY/view'},
+    {id:'d26',area:'Clínica Médica',subarea:'Cardiologia',nome:'Arritmia — Conduta (1)',link:'https://drive.google.com/file/d/1N1S3PO2AXSpfHxwjFhysxO0Pw2_tTD3m/view'},
+    {id:'d27',area:'Clínica Médica',subarea:'Cardiologia',nome:'Arritmias',link:'https://drive.google.com/file/d/14fgI3GkGOwSMikzsVNdzSTdUOa5XexoN/view'},
+    {id:'d28',area:'Clínica Médica',subarea:'Cardiologia',nome:'Taquiarritmias (2)',link:'https://drive.google.com/file/d/1T-cHF2oTjqUZHUemNteJ75pzY2RkSW_k/view'},
+    {id:'d29',area:'Clínica Médica',subarea:'Cardiologia',nome:'Guia Visual de ECG',link:'https://drive.google.com/file/d/1a8qiG5wv4pgHRgvGQlqL2gNFtrvU3-GO/view'},
+    // CLÍNICA MÉDICA — Gastroenterologia
+    {id:'d30',area:'Clínica Médica',subarea:'Gastroenterologia',nome:'Pancreatite',link:'https://drive.google.com/file/d/1FiHegqrm-IPDACS_1X6Fnyi2f4LMO3mj/view'},
+    // CLÍNICA MÉDICA — Onco-Hematologia
+    {id:'d31',area:'Clínica Médica',subarea:'Onco-Hematologia',nome:'Onco-Hemato',link:'https://drive.google.com/file/d/1T4l5K1xxJcnewpjUSOu9LYtnFCPBjiYh/view'},
+    // CIRURGIA — Trauma
+    {id:'d32',area:'Cirurgia',subarea:'Trauma',nome:'Uso de Hemocomponentes no Trauma',link:'https://drive.google.com/file/d/1XVtFeFcnQSJij91h_jz7boj5DlJT80Jv/view'},
+    {id:'d33',area:'Cirurgia',subarea:'Trauma',nome:'ATLS 11 — Atualizações',link:'https://drive.google.com/file/d/12T_DkweY5hVXrj-mG1Vm9Z1CCtqRzWYR/view'},
+    {id:'d34',area:'Cirurgia',subarea:'Trauma',nome:'News ATLS',link:'https://drive.google.com/file/d/1Amu3GQ-9kCBeNLjo6MPGOLtZlpjCTAMc/view'},
+    {id:'d35',area:'Cirurgia',subarea:'Trauma',nome:'Tromboelastograma',link:'https://drive.google.com/file/d/171gT0uh9pcvYpW-c_m3HKPw0Y_BDrlvY/view'},
+    {id:'d36',area:'Cirurgia',subarea:'Trauma',nome:'Trauma Torácico',link:'https://drive.google.com/file/d/1JYmk362NZroD2LZ7rGjeAYd0brBJVZNs/view'},
+    {id:'d37',area:'Cirurgia',subarea:'Trauma',nome:'Trauma de Face e Pescoço',link:'https://drive.google.com/file/d/1LuE56AjjRx34zyucNFNOy14hklCspXxZ/view'},
+    // CIRURGIA — Abdome
+    {id:'d38',area:'Cirurgia',subarea:'Abdome',nome:'Abdome Agudo',link:'https://drive.google.com/file/d/1UB5-YNTbfjLAbIL3-5PDCoPkXy4gbn-F/view'},
+    // CIRURGIA — TGI
+    {id:'d39',area:'Cirurgia',subarea:'TGI',nome:'Sd. Disfágica e Dispéptica',link:'https://drive.google.com/file/d/12nMs6XtrDSBnhVOSbCdayaKwl24C_0o1/view'},
+    {id:'d40',area:'Cirurgia',subarea:'TGI',nome:'Disfagia e Dispepsia',link:'https://drive.google.com/file/d/1kzTaZUXwTc9l_b5Nq1gweCHLKuNWH-81/view'},
+    {id:'d41',area:'Cirurgia',subarea:'TGI',nome:'Mapa Mental TGI',link:'https://drive.google.com/file/d/1r6FeBiVLdP9BeGS3ncTp0PP_dRIFFaiX/view'},
+    {id:'d42',area:'Cirurgia',subarea:'TGI',nome:'Tumores TGI',link:'https://drive.google.com/file/d/19FF9cILJYAMaHXWe5BPa3tpuW6TVtm6E/view'},
+    // CIRURGIA — Oncologia
+    {id:'d43',area:'Cirurgia',subarea:'Oncologia',nome:'Tumores Estômago e Esôfago (1)',link:'https://drive.google.com/file/d/1uOfkiS2nZi4MK5WwSHyFxZUmkMgHuNxa/view'},
+    {id:'d44',area:'Cirurgia',subarea:'Oncologia',nome:'CA Gástrico',link:'https://drive.google.com/file/d/1QH-mCszhDSoA35YJAUSq74xQdgfkOKwx/view'},
+    {id:'d45',area:'Cirurgia',subarea:'Oncologia',nome:'Tumores Hepáticos',link:'https://drive.google.com/file/d/1xpNDRfEV8RD5IPW2pNociFiQwQSb_6KP/view'},
+    {id:'d46',area:'Cirurgia',subarea:'Oncologia',nome:'Tumor Pancreático',link:'https://drive.google.com/file/d/1PgNLdWr2wSE7HNjim7D0vjKjWBPGgcy5/view'},
+    {id:'d47',area:'Cirurgia',subarea:'Oncologia',nome:'CA Colorretal',link:'https://drive.google.com/file/d/1Z6Gy4L3e2T2nXIghZW3A8K2rN_7XI2ol/view'},
+    {id:'d48',area:'Cirurgia',subarea:'Oncologia',nome:'Check-list Pólipos Colorretais',link:'https://drive.google.com/file/d/1265Z9iJLQ5wZgzYKubAtqo4m9sKjZrkc/view'},
+    // CIRURGIA — Técnica
+    {id:'d49',area:'Cirurgia',subarea:'Técnica Cirúrgica',nome:'Técnica Cirúrgica (1)',link:'https://drive.google.com/file/d/1qwF9cGyNN7FA8C9yzf8BJ5sWJj7vl3fr/view'},
+    // PREVENTIVA — SUS
+    {id:'d50',area:'Preventiva',subarea:'SUS',nome:'Financiamento do SUS (1)',link:'https://drive.google.com/file/d/1qyR3Z47qC2iOuwHoAU070H1TvodrsyDp/view'},
+    {id:'d51',area:'Preventiva',subarea:'SUS',nome:'Financiamento do SUS (2)',link:'https://drive.google.com/file/d/1K89PaYR8gE0Sr9sa-4E2tlZZDjMJwHmx/view'},
     {id:'d52',area:'Preventiva',subarea:'SUS',nome:'Mapa Mental SUS'},
-    {id:'d53',area:'Preventiva',subarea:'SUS',nome:'Evolução do SUS'},
-    {id:'d54',area:'Preventiva',subarea:'SUS',nome:'Aspectos Históricos do SUS (1)'},
-    {id:'d55',area:'Preventiva',subarea:'SUS',nome:'Aspectos Históricos do SUS (2)'},
-    {id:'d56',area:'Preventiva',subarea:'SUS',nome:'Princípios Básicos do SUS'},
-    {id:'d57',area:'Preventiva',subarea:'SUS',nome:'Revisão — SUS e Suas Bases (1)'},
+    {id:'d53',area:'Preventiva',subarea:'SUS',nome:'Evolução do SUS',link:'https://drive.google.com/file/d/12DCJPvI4CGydoylueH7SnBoPKupc120x/view'},
+    {id:'d54',area:'Preventiva',subarea:'SUS',nome:'Aspectos Históricos do SUS (1)',link:'https://drive.google.com/file/d/1nC3HVGsJj-u1CdrFNtJkDnPIndzIU9J3/view'},
+    {id:'d55',area:'Preventiva',subarea:'SUS',nome:'Aspectos Históricos do SUS (2)',link:'https://drive.google.com/file/d/1l8QlrVBNR31ZWVgx6yHuUxdP4B4jcB48/view'},
+    {id:'d56',area:'Preventiva',subarea:'SUS',nome:'Princípios Básicos do SUS',link:'https://drive.google.com/file/d/1Rz5lsPGhArJN11hGfUwUg73xNiA4U0gE/view'},
+    {id:'d57',area:'Preventiva',subarea:'SUS',nome:'Revisão — SUS e Suas Bases (1)',link:'https://drive.google.com/file/d/1jILfg31ZZ8MjiLr9-UCjQ1FnLX3JOW_q/view'},
+    // PREVENTIVA — Questões
     {id:'d58',area:'Preventiva',subarea:'Questões',nome:'Preventiva — Questões'},
-    {id:'d59',area:'GO',subarea:'Ginecologia',nome:'Ciclo Menstrual'},
-    {id:'d60',area:'GO',subarea:'Ginecologia',nome:'Gráfico Fluxo Menstrual (1)'},
-    {id:'d61',area:'GO',subarea:'Anatomia',nome:'Anatomia Pélvica'},
+    // GO — Ginecologia
+    {id:'d59',area:'GO',subarea:'Ginecologia',nome:'Ciclo Menstrual',link:'https://drive.google.com/file/d/1KUNcB_jLKNoYhmcz8vty8syR31FnjS1m/view'},
+    {id:'d60',area:'GO',subarea:'Ginecologia',nome:'Gráfico Fluxo Menstrual (1)',link:'https://drive.google.com/file/d/1LBNLaTDwk8TuYm6NdQO3vymz9-OQZjTT/view'},
+    // GO — Anatomia
+    {id:'d61',area:'GO',subarea:'Anatomia',nome:'Anatomia Pélvica',link:'https://drive.google.com/file/d/1Ta65GLWg0p2YLxUAEhJGbgjTzmuM7DzR/view'},
   ];
 
   const areaColors={
@@ -426,14 +497,51 @@
     'Geral':{dot:'#b0a898',bg:'#f5f3f0',text:'#706858',border:'#d8d0c8'},
   };
 
-  // ── EDIÇÕES LOCAIS (sobreescrevem os fixos + novos) ──
   const EDITS_KEY='medstudy_mapas_edits';
   const NEW_KEY='medstudy_mapas_new';
-
   function loadEdits(){try{return JSON.parse(localStorage.getItem(EDITS_KEY))||{};}catch{return{};}}
   function saveEdits(obj){localStorage.setItem(EDITS_KEY,JSON.stringify(obj));}
   function loadNew(){try{return JSON.parse(localStorage.getItem(NEW_KEY))||[];}catch{return[];}}
   function saveNew(arr){localStorage.setItem(NEW_KEY,JSON.stringify(arr));}
+
+  // ── THUMBNAIL LOGIC ──
+  function getThumbnailUrl(link){
+    if(!link||!link.trim())return null;
+
+    // Google Drive — extract file ID
+    const driveMatch=link.match(/\/d\/([a-zA-Z0-9_-]+)/);
+    if(driveMatch){
+      return`https://drive.google.com/thumbnail?id=${driveMatch[1]}&sz=w400`;
+    }
+
+    // Google Drive open?id= format
+    const openMatch=link.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+    if(link.includes('drive.google.com')&&openMatch){
+      return`https://drive.google.com/thumbnail?id=${openMatch[1]}&sz=w400`;
+    }
+
+    // Direct image URL
+    if(/\.(jpg|jpeg|png|gif|webp|bmp)(\?.*)?$/i.test(link)){
+      return link;
+    }
+
+    // OneDrive / other — return null (placeholder)
+    return null;
+  }
+
+  // Preview in modal
+  function previewLink(){
+    const link=document.getElementById('mapaLink').value.trim();
+    const preview=document.getElementById('linkPreview');
+    const img=document.getElementById('linkPreviewImg');
+    const thumb=getThumbnailUrl(link);
+    if(thumb){
+      img.src=thumb;
+      preview.classList.add('show');
+    } else {
+      preview.classList.remove('show');
+    }
+  }
 
   // DATETIME
   function updateDateTime(){
@@ -479,43 +587,34 @@
   }
   function openFile(url){window.open(url,'_blank');}
 
-  // ── MAPAS ──
-  function getMergedMapas(){
+  // ── RENDER MAPAS ──
+  function getMerged(){
     const edits=loadEdits();
-    const newMapas=loadNew();
-    // Apply edits to defaults
-    const merged=DEFAULT_MAPAS.map(m=>{
-      const e=edits[m.id];
-      return e?{...m,...e}:m;
-    });
-    return [...merged,...newMapas];
+    const newM=loadNew();
+    const merged=DEFAULT_MAPAS.map(m=>{const e=edits[m.id];return e?{...m,...e}:m;});
+    return[...merged,...newM];
   }
 
   function renderMapas(){
     const query=document.getElementById('mapasSearch').value.toLowerCase();
     const areaF=document.getElementById('mapasArea').value;
     const edits=loadEdits();
-    const newMapas=loadNew();
+    const newM=loadNew();
     const container=document.getElementById('mapasList');
 
-    let allMapas=getMergedMapas();
-    if(areaF)allMapas=allMapas.filter(m=>m.area===areaF);
-    if(query)allMapas=allMapas.filter(m=>
-      m.nome.toLowerCase().includes(query)||
-      (m.subarea||'').toLowerCase().includes(query)||
-      (m.nota||'').toLowerCase().includes(query)
-    );
+    let all=getMerged();
+    if(areaF)all=all.filter(m=>m.area===areaF);
+    if(query)all=all.filter(m=>m.nome.toLowerCase().includes(query)||(m.subarea||'').toLowerCase().includes(query)||(m.nota||'').toLowerCase().includes(query));
 
-    const totalEdited=Object.keys(edits).length;
+    const withLink=all.filter(m=>m.link&&m.link.trim()).length;
     document.getElementById('mapasCount').innerHTML=
-      `<strong>${allMapas.length}</strong> mapas mentais` +
-      (totalEdited?` · <span style="color:var(--lavender)">${totalEdited} editado${totalEdited!==1?'s':''}</span>`:'') +
-      (newMapas.length?` · <span style="color:var(--rose)">${newMapas.length} adicionado${newMapas.length!==1?'s':''}</span>`:'');
+      `<strong>${all.length}</strong> mapas mentais · `+
+      `<span style="color:var(--olive)">${withLink} com imagem</span>`;
 
-    if(!allMapas.length){container.innerHTML=`<div class="mapas-empty">✏️ Nenhum mapa encontrado.</div>`;return;}
+    if(!all.length){container.innerHTML=`<div class="mapas-empty">✏️ Nenhum mapa encontrado.</div>`;return;}
 
     const grouped={};
-    allMapas.forEach(m=>{
+    all.forEach(m=>{
       if(!grouped[m.area])grouped[m.area]={};
       const sub=m.subarea||'Geral';
       if(!grouped[m.area][sub])grouped[m.area][sub]=[];
@@ -530,7 +629,7 @@
       const ac=areaColors[area]||areaColors['Geral'];
       const totalArea=Object.values(grouped[area]).flat().length;
       html+=`<div class="mapas-group">
-        <div class="mapas-group-title">
+        <div class="mapas-group-header">
           <div class="mapas-group-dot" style="background:${ac.dot}"></div>
           <div class="mapas-group-name">${area}</div>
           <span class="mapas-group-count">${totalArea}</span>
@@ -538,41 +637,51 @@
 
       Object.keys(grouped[area]).forEach(sub=>{
         const items=grouped[area][sub];
-        html+=`<div style="margin-bottom:14px">
-          <div style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-light);margin-bottom:8px;padding-left:22px">${sub}</div>
-          <div class="mapas-list">`;
+        html+=`<div style="margin-bottom:20px">
+          <div class="subarea-label">${sub}</div>
+          <div class="mapas-grid">`;
 
         items.forEach((m,i)=>{
           const hasLink=!!(m.link&&m.link.trim());
-          const isNew=!!newMapas.find(x=>x.id===m.id);
-          const isEdited=!!edits[m.id];
+          const isNew=!!newM.find(x=>x.id===m.id);
+          const isEdited=!!(edits[m.id]);
+          const thumb=hasLink?getThumbnailUrl(m.link):null;
+          const safeLink=hasLink?(m.link).replace(/'/g,"\\'"):'';
 
-          const clickFn=hasLink?`openMapa('${(m.link).replace(/'/g,"\\'")}')`:'' ;
-          const nota=m.nota?`<div class="mapa-nota">📝 ${m.nota}</div>`:'';
+          // Badge
+          const badge=isNew
+            ?`<span class="mapa-badge badge-new">novo</span>`
+            :isEdited
+              ?`<span class="mapa-badge badge-edited">editado</span>`
+              :'';
 
-          const hint=hasLink
-            ? `<div class="mapa-link-hint">🔗 Toque para abrir no Drive</div>`
-            : `<div class="mapa-no-link-hint">Sem link — clique em ✏️ para adicionar</div>`;
+          // Thumbnail or placeholder
+          let thumbHtml='';
+          if(thumb){
+            thumbHtml=`<img src="${thumb}" alt="${m.nome}" onerror="this.parentElement.innerHTML='<div class=\\'mapa-thumb-placeholder\\'><div class=\\'placeholder-icon\\'>🗺️</div><div class=\\'placeholder-text\\'>Prévia indisponível</div></div>'">`;
+          } else {
+            thumbHtml=`<div class="mapa-thumb-placeholder" style="background:${ac.bg}">
+              <div class="placeholder-icon">🗺️</div>
+              <div class="placeholder-text">${hasLink?'OneDrive / outro':'Sem link — clique em ✏️'}</div>
+            </div>`;
+          }
 
-          const badges=[
-            isNew?`<span style="font-size:10px;background:var(--rose-light);color:var(--gineco);padding:2px 8px;border-radius:20px;margin-left:4px">novo</span>`:'',
-            isEdited&&!isNew?`<span style="font-size:10px;background:var(--lavender-light);color:var(--lavender);padding:2px 8px;border-radius:20px;margin-left:4px">editado</span>`:'',
-          ].join('');
+          const type=isNew?'new':'default';
 
-          const delBtn=isNew?`<button class="mapa-btn del" onclick="event.stopPropagation();delNew('${m.id}')" title="Excluir">🗑</button>`:'';
-
-          html+=`<div class="mapa-item ${hasLink?'has-link':'no-link'}"
-            style="animation-delay:${i*0.03}s"
-            onclick="${clickFn}">
-            <div class="mapa-dot" style="background:${ac.dot}"></div>
-            <div class="mapa-info">
-              <div class="mapa-nome">${m.nome}${badges}</div>
-              ${hint}
-              ${nota}
+          html+=`<div class="mapa-card ${hasLink?'has-link':'no-link'}"
+            style="animation-delay:${i*0.04}s"
+            onclick="${hasLink?`openFile('${safeLink}')`:''}" >
+            <div class="mapa-thumb">
+              ${thumbHtml}
+              ${hasLink?`<div class="mapa-thumb-overlay"><button class="thumb-open-btn">Abrir ↗</button></div>`:''}
             </div>
-            <div class="mapa-actions">
-              <button class="mapa-btn" onclick="event.stopPropagation();openMapaModal('${m.id}','${isNew?'new':'default'}')" title="Editar">✏️</button>
-              ${delBtn}
+            ${badge}
+            <div class="mapa-card-body">
+              <div class="mapa-card-name">${m.nome}</div>
+              <div class="mapa-card-meta">
+                <div class="mapa-card-nota">${m.nota||'&nbsp;'}</div>
+                <button class="mapa-edit-btn" onclick="event.stopPropagation();openMapaModal('${m.id}','${type}')" title="Editar">✏️</button>
+              </div>
             </div>
           </div>`;
         });
@@ -585,41 +694,27 @@
     container.innerHTML=html;
   }
 
-  function openMapa(url){window.open(url,'_blank');}
-
   // MODAL
-  let currentEditId=null;
-  let currentEditType=null;
+  let currentEditId=null,currentEditType=null;
 
   function openMapaModal(id,type){
-    currentEditId=id;
-    currentEditType=type;
-
+    currentEditId=id; currentEditType=type;
     const edits=loadEdits();
-    const newMapas=loadNew();
-
+    const newM=loadNew();
     let m=null;
-    if(type==='new'){
-      m=newMapas.find(x=>x.id===id)||null;
-    } else if(type==='default'){
-      const base=DEFAULT_MAPAS.find(x=>x.id===id)||{};
-      const edit=edits[id]||{};
-      m={...base,...edit};
-    }
-
-    const isNew=(type==='new'&&!!id);
-
+    if(!id){m=null;}
+    else if(type==='new'){m=newM.find(x=>x.id===id)||null;}
+    else{const base=DEFAULT_MAPAS.find(x=>x.id===id)||{};const e=edits[id]||{};m={...base,...e};}
     document.getElementById('mapaModalTitle').textContent=id?'Editar Mapa Mental':'Adicionar Mapa Mental';
-    document.getElementById('mapaModalSub').textContent=id?'Edite o nome, link do Drive ou anotações':'Preencha as informações do novo mapa';
     document.getElementById('mapaNome').value=m?m.nome:'';
     document.getElementById('mapaArea').value=m?m.area:'Clínica Médica';
     document.getElementById('mapaSubarea').value=m?m.subarea||'':'';
     document.getElementById('mapaLink').value=m?m.link||'':'';
     document.getElementById('mapaNote').value=m?m.nota||'':'';
-
-    // Show delete only for new (user-added) mapas
-    document.getElementById('btnDel').style.display=isNew?'block':'none';
-
+    document.getElementById('btnDel').style.display=(type==='new'&&id)?'block':'none';
+    document.getElementById('linkPreview').classList.remove('show');
+    // Show preview if link exists
+    if(m&&m.link){previewLink();}
     document.getElementById('mapaOverlay').classList.add('active');
   }
 
@@ -629,84 +724,48 @@
   function saveMapa(){
     const nome=document.getElementById('mapaNome').value.trim();
     if(!nome){showToast('⚠️ Nome obrigatório!');return;}
-
-    const data={
-      nome,
-      area:document.getElementById('mapaArea').value,
-      subarea:document.getElementById('mapaSubarea').value.trim(),
-      link:document.getElementById('mapaLink').value.trim(),
-      nota:document.getElementById('mapaNote').value.trim(),
-    };
-
+    const data={nome,area:document.getElementById('mapaArea').value,subarea:document.getElementById('mapaSubarea').value.trim(),link:document.getElementById('mapaLink').value.trim(),nota:document.getElementById('mapaNote').value.trim()};
     if(!currentEditId){
-      // Novo mapa
-      const newMapas=loadNew();
-      newMapas.unshift({...data,id:'n'+Date.now()});
-      saveNew(newMapas);
-      showToast('✅ Mapa adicionado!');
+      const newM=loadNew();
+      newM.unshift({...data,id:'n'+Date.now()});
+      saveNew(newM); showToast('✅ Mapa adicionado!');
     } else if(currentEditType==='default'){
-      // Editar fixo — salva edição local
-      const edits=loadEdits();
-      edits[currentEditId]=data;
-      saveEdits(edits);
-      showToast('✏️ Edição salva!');
-    } else if(currentEditType==='new'){
-      // Editar novo
-      const newMapas=loadNew().map(m=>m.id===currentEditId?{...m,...data}:m);
-      saveNew(newMapas);
-      showToast('✏️ Atualizado!');
+      const edits=loadEdits(); edits[currentEditId]=data; saveEdits(edits); showToast('✏️ Editado!');
+    } else {
+      const newM=loadNew().map(m=>m.id===currentEditId?{...m,...data}:m);
+      saveNew(newM); showToast('✏️ Atualizado!');
     }
-
-    closeMapaModal();
-    renderMapas();
+    closeMapaModal(); renderMapas();
   }
 
   function delMapa(){
-    // Called from modal delete button — only for 'new' type
     if(!confirm('Remover este mapa?'))return;
     saveNew(loadNew().filter(m=>m.id!==currentEditId));
-    closeMapaModal();
-    renderMapas();
-    showToast('🗑 Removido.');
-  }
-
-  function delNew(id){
-    if(!confirm('Remover este mapa?'))return;
-    saveNew(loadNew().filter(m=>m.id!==id));
-    renderMapas();
-    showToast('🗑 Removido.');
+    closeMapaModal(); renderMapas(); showToast('🗑 Removido.');
   }
 
   function exportEdits(){
-    const edits=loadEdits();
-    const newMapas=loadNew();
-    const data={edits,newMapas};
-    if(!Object.keys(edits).length&&!newMapas.length){showToast('⚠️ Nenhuma edição para exportar.');return;}
-    const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+    const edits=loadEdits();const newM=loadNew();
+    if(!Object.keys(edits).length&&!newM.length){showToast('⚠️ Nenhuma edição ainda.');return;}
+    const blob=new Blob([JSON.stringify({edits,newMapas:newM},null,2)],{type:'application/json'});
     const url=URL.createObjectURL(blob);
     const a=document.createElement('a');
-    a.href=url; a.download=`mapas-edits-${new Date().toLocaleDateString('pt-BR').replace(/\//g,'-')}.json`; a.click();
-    URL.revokeObjectURL(url);
-    showToast('💾 Edições exportadas!');
+    a.href=url;a.download=`mapas-edits-${new Date().toLocaleDateString('pt-BR').replace(/\//g,'-')}.json`;a.click();
+    URL.revokeObjectURL(url);showToast('💾 Exportado!');
   }
 
   function importEdits(event){
-    const file=event.target.files[0]; if(!file)return;
+    const file=event.target.files[0];if(!file)return;
     const reader=new FileReader();
     reader.onload=function(e){
       try{
         const data=JSON.parse(e.target.result);
         if(data.edits)saveEdits({...loadEdits(),...data.edits});
-        if(data.newMapas){
-          const existing=loadNew();
-          const ids=new Set(existing.map(m=>m.id));
-          saveNew([...data.newMapas.filter(m=>!ids.has(m.id)),...existing]);
-        }
-        renderMapas();
-        showToast('✅ Edições importadas!');
+        if(data.newMapas){const ex=loadNew();const ids=new Set(ex.map(m=>m.id));saveNew([...data.newMapas.filter(m=>!ids.has(m.id)),...ex]);}
+        renderMapas();showToast('✅ Importado!');
       }catch{showToast('❌ Arquivo inválido.');}
     };
-    reader.readAsText(file); event.target.value='';
+    reader.readAsText(file);event.target.value='';
   }
 
   function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
