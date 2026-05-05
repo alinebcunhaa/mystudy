@@ -54,7 +54,6 @@
     border-radius:10px;
   }
   nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(255,255,255,0.88);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 48px;height:60px;display:flex;align-items:center;justify-content:space-between;}
-  nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(255,255,255,0.88);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 48px;height:60px;display:flex;align-items:center;justify-content:space-between;}
   .nav-links{display:flex;align-items:center;gap:6px;}
   .nav-link{font-size:13px;color:var(--text-mid);padding:6px 14px;border-radius:50px;cursor:pointer;border:none;background:none;font-family:'DM Sans',sans-serif;transition:background 0.15s,color 0.15s;}
   .nav-link:hover{background:var(--lavender-light);color:var(--text-dark);}
@@ -256,8 +255,43 @@
   .empty-icon{font-size:40px;opacity:0.3;}
   .empty-title{font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--text-mid);}
 
-  @keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
-  ::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:var(--lavender);border-radius:10px;}
+  /* LINKS & RECURSOS */
+  #links{padding:0 48px 80px;}
+  .links-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;}
+  .links-main-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:400;color:var(--text-dark);}
+  .links-main-title span{font-style:italic;color:var(--olive);}
+  .links-count{font-size:12px;color:var(--text-light);margin-top:4px;}
+  .links-count strong{color:var(--text-mid);}
+  .links-actions{display:flex;gap:8px;flex-wrap:wrap;}
+  .btn-add-link{display:flex;align-items:center;gap:6px;background:var(--olive-light);border:1.5px solid var(--olive);color:#4a7040;padding:8px 16px;border-radius:50px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;transition:background 0.2s,transform 0.15s;}
+  .btn-add-link:hover{background:var(--olive);color:white;transform:scale(1.02);}
+  .links-filter-bar{display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap;align-items:center;}
+  .links-search{display:flex;align-items:center;gap:8px;background:white;border:1px solid var(--border);border-radius:50px;padding:7px 16px;flex:1;max-width:320px;}
+  .links-search input{border:none;background:none;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text-dark);outline:none;width:100%;}
+  .links-search input::placeholder{color:var(--text-light);}
+  .links-group{margin-bottom:32px;}
+  .links-group-header{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+  .links-group-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+  .links-group-name{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:var(--text-dark);}
+  .links-group-count{font-size:11px;color:var(--text-light);background:var(--lavender-light);padding:2px 10px;border-radius:20px;}
+  .links-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;}
+  .link-card{background:white;border:1px solid var(--border);border-radius:16px;overflow:hidden;cursor:pointer;transition:transform 0.22s cubic-bezier(.34,1.56,.64,1),box-shadow 0.22s;animation:fadeUp 0.3s ease both;}
+  .link-card:hover{transform:translateY(-4px);box-shadow:0 10px 24px rgba(0,0,0,0.08);}
+  .link-card-top{padding:12px 14px;display:flex;align-items:center;justify-content:space-between;}
+  .link-type-badge{font-size:11px;padding:3px 10px;border-radius:20px;font-weight:500;border:1px solid rgba(0,0,0,0.06);}
+  .link-card-edit-btn{width:26px;height:26px;border-radius:8px;border:1px solid rgba(0,0,0,0.08);background:white;display:flex;align-items:center;justify-content:center;font-size:11px;cursor:pointer;transition:background 0.15s;flex-shrink:0;}
+  .link-card-edit-btn:hover{background:var(--lavender-light);}
+  .link-card-body{padding:12px 14px 16px;}
+  .link-card-name{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:600;color:var(--text-dark);margin-bottom:5px;line-height:1.2;}
+  .link-card-desc{font-size:11px;color:var(--text-mid);line-height:1.5;margin-bottom:8px;}
+  .link-card-url{font-size:10px;color:var(--text-light);letter-spacing:0.03em;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
+  .links-empty{text-align:center;padding:60px 0;}
+
+  @media(max-width:700px){
+    #links{padding:0 24px 60px;}
+    .links-grid{grid-template-columns:1fr;}
+  }
+  @keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:var(--lavender);border-radius:10px;}
   .toast{position:fixed;bottom:24px;right:24px;background:var(--text-dark);color:white;padding:12px 20px;border-radius:12px;font-size:13px;z-index:300;transform:translateY(80px);opacity:0;transition:all 0.3s cubic-bezier(.34,1.56,.64,1);}
   .toast.show{transform:translateY(0);opacity:1;}
 
@@ -288,6 +322,7 @@
     <button class="nav-link active" onclick="scrollToSection('home',this)">Início</button>
     <button class="nav-link" onclick="scrollToSection('library',this)">Biblioteca</button>
     <button class="nav-link" onclick="scrollToSection('mapas',this)">Mapas Mentais</button>
+    <button class="nav-link" onclick="scrollToSection('links',this)">Links</button>
   </div>
 </nav>
 
@@ -313,6 +348,7 @@
       <button class="subject-chip" style="background:var(--psa-bg);border-color:var(--psa);color:var(--psa);" onclick="goToLibrary('psa')"><div class="chip-dot" style="background:var(--psa)"></div>PSA</button>
       <button class="subject-chip" style="background:var(--geral-bg);border-color:var(--geral);color:var(--geral);" onclick="goToLibrary('geral')"><div class="chip-dot" style="background:var(--geral)"></div>Geral</button>
       <button class="subject-chip" style="background:#f5e8e8;border-color:#d4a5a5;color:var(--gineco);" onclick="scrollToSection('mapas',null)"><div class="chip-dot" style="background:#d4a5a5"></div>Mapas Mentais</button>
+      <button class="subject-chip" style="background:#e8f0e8;border-color:#6a9e60;color:#4a7040;" onclick="scrollToSection('links',null)"><div class="chip-dot" style="background:#6a9e60"></div>Links & Recursos</button>
     </div>
   </div>
 </section>
@@ -416,6 +452,104 @@
       <button class="btn-danger" id="btnDel" onclick="delMapa()" style="display:none">🗑 Excluir</button>
       <button class="btn-secondary" onclick="closeMapaModal()">Cancelar</button>
       <button class="btn-primary" onclick="saveMapa()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<div class="section-divider"><div class="divider-label">Links & <span>Recursos</span></div></div>
+
+<section id="links">
+  <div class="links-header">
+    <div>
+      <div class="links-main-title">Minha biblioteca de <span>Links</span></div>
+      <div class="links-count" id="linksCount"></div>
+    </div>
+    <div class="links-actions">
+      <button class="btn-action" onclick="exportLinks()">💾 Exportar</button>
+      <button class="btn-action" onclick="document.getElementById('importLinksInput').click()">📂 Importar</button>
+      <button class="btn-add-link" onclick="openLinkModal(null)">＋ Adicionar link</button>
+      <input type="file" id="importLinksInput" accept=".json" style="display:none" onchange="importLinks(event)">
+    </div>
+  </div>
+
+  <div class="links-filter-bar">
+    <div class="links-search">
+      <span style="color:var(--text-light);font-size:13px">🔍</span>
+      <input type="text" placeholder="Buscar links..." id="linksSearch" oninput="renderLinks()">
+    </div>
+    <select class="area-filter" id="linksCatFilter" onchange="renderLinks()">
+      <option value="">Todas as categorias</option>
+      <option value="Clínica Médica">Clínica Médica</option>
+      <option value="Cirurgia">Cirurgia</option>
+      <option value="Preventiva">Preventiva</option>
+      <option value="GO">GO</option>
+      <option value="Pediatria">Pediatria</option>
+      <option value="PÓS">PÓS</option>
+      <option value="PSA">PSA</option>
+      <option value="Geral">Geral</option>
+    </select>
+    <select class="area-filter" id="linksTypeFilter" onchange="renderLinks()">
+      <option value="">Todos os tipos</option>
+      <option value="Artigo">📄 Artigo</option>
+      <option value="Site">🌐 Site</option>
+      <option value="Protocolo">📋 Protocolo</option>
+      <option value="Vídeo">▶️ Vídeo</option>
+      <option value="Podcast">🎙️ Podcast</option>
+      <option value="Livro">📚 Livro</option>
+      <option value="Outro">🔗 Outro</option>
+    </select>
+  </div>
+
+  <div id="linksList"></div>
+</section>
+
+<!-- MODAL LINK -->
+<div class="overlay" id="linkOverlay" onclick="closeLinkOnOverlay(event)">
+  <div class="modal">
+    <button class="modal-close" onclick="closeLinkModal()">✕</button>
+    <div class="modal-title" id="linkModalTitle">Adicionar Link</div>
+    <div class="modal-sub">Salve um site, artigo ou recurso útil</div>
+    <div class="form-group">
+      <label class="form-label">Nome / Título</label>
+      <input type="text" class="form-input" id="linkNome" placeholder="Ex: UpToDate, Artigo sobre HAS...">
+    </div>
+    <div class="form-group">
+      <label class="form-label">URL</label>
+      <input type="text" class="form-input" id="linkUrl" placeholder="https://...">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Categoria</label>
+      <select class="form-select" id="linkCat">
+        <option value="Geral">Geral</option>
+        <option value="Clínica Médica">Clínica Médica</option>
+        <option value="Cirurgia">Cirurgia</option>
+        <option value="Preventiva">Preventiva</option>
+        <option value="GO">GO</option>
+        <option value="Pediatria">Pediatria</option>
+        <option value="PÓS">PÓS</option>
+        <option value="PSA">PSA</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Tipo</label>
+      <select class="form-select" id="linkTipo">
+        <option value="Site">🌐 Site</option>
+        <option value="Artigo">📄 Artigo</option>
+        <option value="Protocolo">📋 Protocolo</option>
+        <option value="Vídeo">▶️ Vídeo</option>
+        <option value="Podcast">🎙️ Podcast</option>
+        <option value="Livro">📚 Livro</option>
+        <option value="Outro">🔗 Outro</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Descrição curta (opcional)</label>
+      <textarea class="form-textarea" id="linkDesc" placeholder="Por que esse link é útil?"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-danger" id="linkDelBtn" onclick="deleteLink()" style="display:none">🗑 Excluir</button>
+      <button class="btn-secondary" onclick="closeLinkModal()">Cancelar</button>
+      <button class="btn-primary" onclick="saveLink()">Salvar</button>
     </div>
   </div>
 </div>
@@ -801,17 +935,185 @@
 
   function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
 
+  // ── LINKS & RECURSOS ──
+  const LINKS_KEY='medstudy_links';
+  let editLinkId=null;
+
+  function loadLinks(){try{return JSON.parse(localStorage.getItem(LINKS_KEY))||[];}catch{return[];}}
+  function saveLinks(arr){localStorage.setItem(LINKS_KEY,JSON.stringify(arr));}
+
+  const linkCatColors={
+    'Clínica Médica':{color:'#e8935a',bg:'#fdf3ea'},
+    'Cirurgia':{color:'#6a9e60',bg:'#eaf3e8'},
+    'Preventiva':{color:'#4a7fa0',bg:'#e5f0f8'},
+    'GO':{color:'#c26b80',bg:'#faeaee'},
+    'Pediatria':{color:'#7a5fa0',bg:'#f0eaf8'},
+    'PÓS':{color:'#a8b89a',bg:'#e8edd5'},
+    'PSA':{color:'#c4b5d4',bg:'#f5f1fb'},
+    'Geral':{color:'#b0a898',bg:'#f5f3f0'},
+  };
+
+  const linkTypeIcons={
+    'Artigo':'📄','Site':'🌐','Protocolo':'📋','Vídeo':'▶️','Podcast':'🎙️','Livro':'📚','Outro':'🔗',
+  };
+
+  function renderLinks(){
+    const query=document.getElementById('linksSearch').value.toLowerCase();
+    const catF=document.getElementById('linksCatFilter').value;
+    const typeF=document.getElementById('linksTypeFilter').value;
+    const container=document.getElementById('linksList');
+    const countEl=document.getElementById('linksCount');
+
+    let links=loadLinks();
+    if(catF)links=links.filter(l=>l.categoria===catF);
+    if(typeF)links=links.filter(l=>l.tipo===typeF);
+    if(query)links=links.filter(l=>
+      l.nome.toLowerCase().includes(query)||
+      (l.desc||'').toLowerCase().includes(query)||
+      (l.url||'').toLowerCase().includes(query)
+    );
+
+    countEl.innerHTML=`<strong>${links.length}</strong> recurso${links.length!==1?'s':''}`;
+
+    if(!links.length){
+      container.innerHTML=`
+        <div class="links-empty">
+          <div style="font-size:40px;margin-bottom:12px;opacity:0.35">🔗</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--text-mid);margin-bottom:8px">Nenhum link ainda</div>
+          <div style="font-size:13px;color:var(--text-light)">Clique em "+ Adicionar link" para começar</div>
+        </div>`;
+      return;
+    }
+
+    // Group by categoria
+    const grouped={};
+    links.forEach(l=>{
+      const cat=l.categoria||'Geral';
+      if(!grouped[cat])grouped[cat]=[];
+      grouped[cat].push(l);
+    });
+
+    const order=['Clínica Médica','Cirurgia','Preventiva','GO','Pediatria','PÓS','PSA','Geral'];
+    let html='';
+
+    order.forEach(cat=>{
+      if(!grouped[cat])return;
+      const ac=linkCatColors[cat]||linkCatColors['Geral'];
+      html+=`<div class="links-group">
+        <div class="links-group-header">
+          <div class="links-group-dot" style="background:${ac.color}"></div>
+          <div class="links-group-name">${cat}</div>
+          <span class="links-group-count">${grouped[cat].length}</span>
+        </div>
+        <div class="links-grid">`;
+
+      grouped[cat].forEach((l,i)=>{
+        const icon=linkTypeIcons[l.tipo]||'🔗';
+        const domain=l.url?new URL(l.url.startsWith('http')?l.url:'https://'+l.url).hostname.replace('www.',''):'';
+        html+=`<div class="link-card" style="animation-delay:${i*0.04}s" onclick="openLink('${(l.url||'').replace(/'/g,"\\'")}')">
+          <div class="link-card-top" style="background:${ac.bg}">
+            <div class="link-type-badge" style="background:white;color:${ac.color}">${icon} ${l.tipo||'Link'}</div>
+            <div class="link-card-edit-btn" onclick="event.stopPropagation();openLinkModal('${l.id}')">✏️</div>
+          </div>
+          <div class="link-card-body">
+            <div class="link-card-name">${l.nome}</div>
+            ${l.desc?`<div class="link-card-desc">${l.desc}</div>`:''}
+            <div class="link-card-url">${domain||l.url||''}</div>
+          </div>
+        </div>`;
+      });
+
+      html+=`</div></div>`;
+    });
+
+    container.innerHTML=html;
+  }
+
+  function openLink(url){
+    if(!url)return;
+    const full=url.startsWith('http')?url:'https://'+url;
+    window.open(full,'_blank');
+  }
+
+  function openLinkModal(id){
+    editLinkId=id||null;
+    const links=loadLinks();
+    const l=id?links.find(x=>x.id===id):null;
+    document.getElementById('linkModalTitle').textContent=id?'Editar Link':'Adicionar Link';
+    document.getElementById('linkNome').value=l?l.nome:'';
+    document.getElementById('linkUrl').value=l?l.url:'';
+    document.getElementById('linkCat').value=l?l.categoria:'Geral';
+    document.getElementById('linkTipo').value=l?l.tipo:'Site';
+    document.getElementById('linkDesc').value=l?l.desc||'':'';
+    document.getElementById('linkDelBtn').style.display=id?'block':'none';
+    document.getElementById('linkOverlay').classList.add('active');
+  }
+
+  function closeLinkModal(){document.getElementById('linkOverlay').classList.remove('active');}
+  function closeLinkOnOverlay(e){if(e.target===document.getElementById('linkOverlay'))closeLinkModal();}
+
+  function saveLink(){
+    const nome=document.getElementById('linkNome').value.trim();
+    const url=document.getElementById('linkUrl').value.trim();
+    if(!nome){showToast('⚠️ Nome obrigatório!');return;}
+    const obj={
+      id:editLinkId||'l'+Date.now(),
+      nome,url,
+      categoria:document.getElementById('linkCat').value,
+      tipo:document.getElementById('linkTipo').value,
+      desc:document.getElementById('linkDesc').value.trim(),
+    };
+    let links=loadLinks();
+    if(editLinkId){links=links.map(l=>l.id===editLinkId?obj:l);showToast('✏️ Link atualizado!');}
+    else{links.unshift(obj);showToast('✅ Link adicionado!');}
+    saveLinks(links);closeLinkModal();renderLinks();
+  }
+
+  function deleteLink(){
+    if(!confirm('Remover este link?'))return;
+    saveLinks(loadLinks().filter(l=>l.id!==editLinkId));
+    closeLinkModal();renderLinks();showToast('🗑 Removido.');
+  }
+
+  function exportLinks(){
+    const links=loadLinks();
+    if(!links.length){showToast('⚠️ Nenhum link para exportar.');return;}
+    const blob=new Blob([JSON.stringify(links,null,2)],{type:'application/json'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;a.download=`meus-links-${new Date().toLocaleDateString('pt-BR').replace(/\//g,'-')}.json`;a.click();
+    URL.revokeObjectURL(url);showToast('💾 Links exportados!');
+  }
+
+  function importLinks(event){
+    const file=event.target.files[0];if(!file)return;
+    const reader=new FileReader();
+    reader.onload=function(e){
+      try{
+        const imported=JSON.parse(e.target.result);
+        if(!Array.isArray(imported))throw new Error();
+        const ex=loadLinks();const ids=new Set(ex.map(l=>l.id));
+        saveLinks([...imported.filter(l=>!ids.has(l.id)),...ex]);
+        renderLinks();showToast(`✅ Links importados!`);
+      }catch{showToast('❌ Arquivo inválido.');}
+    };
+    reader.readAsText(file);event.target.value='';
+  }
+
   window.addEventListener('scroll',()=>{
-    const links=document.querySelectorAll('.nav-link');
+    const navLinks=document.querySelectorAll('.nav-link');
     const lib=document.getElementById('library').getBoundingClientRect().top;
     const map=document.getElementById('mapas').getBoundingClientRect().top;
-    if(map<=80){links.forEach(l=>l.classList.remove('active'));links[2].classList.add('active');}
-    else if(lib<=80){links.forEach(l=>l.classList.remove('active'));links[1].classList.add('active');}
-    else{links.forEach(l=>l.classList.remove('active'));links[0].classList.add('active');}
+    const lnk=document.getElementById('links').getBoundingClientRect().top;
+    if(lnk<=80){navLinks.forEach(l=>l.classList.remove('active'));navLinks[3].classList.add('active');}
+    else if(map<=80){navLinks.forEach(l=>l.classList.remove('active'));navLinks[2].classList.add('active');}
+    else if(lib<=80){navLinks.forEach(l=>l.classList.remove('active'));navLinks[1].classList.add('active');}
+    else{navLinks.forEach(l=>l.classList.remove('active'));navLinks[0].classList.add('active');}
   });
 
   renderCards();
   renderMapas();
+  renderLinks();
 </script>
 </body>
 </html>
