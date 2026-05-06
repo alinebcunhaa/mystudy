@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SUS · Referência Clínica</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f7f2ea;
+  --surface: #ffffff;
+  --surface2: #f0e9de;
+  --border: #ddd0bc;
+  --border2: #ccc0a8;
+  --terra: #b5521e;
+  --terra-light: #f5ede6;
+  --terra-mid: #e8c4ae;
+  --olive: #5c6e35;
+  --olive-light: #edf0e3;
+  --olive-mid: #c4d09e;
+  --honey: #c47e1a;
+  --honey-light: #fdf3e0;
+  --honey-mid: #f0cfa0;
+  --brown: #6b4a2a;
+  --sand: #c8b49a;
+  --text: #28190a;
+  --text2: #4a3520;
+  --muted: #8a7260;
+  --muted2: #a89078;
+  --navy: #2a4a7a;
+  --navy-light: #e8eef8;
+  --navy-mid: #b0c4e0;
+  --purple: #6b3a8a;
+  --purple-light: #f0e8f8;
+  --purple-mid: #c8a8e0;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: var(--bg); color: var(--text); font-family: 'Lora', Georgia, serif; min-height: 100vh; }
+
+/* ── HEADER ── */
+header { background: var(--surface); border-bottom: 2px solid var(--border); padding: 28px 32px 22px; }
+.header-inner { max-width: 1280px; margin: 0 auto; display: flex; align-items: flex-end; gap: 16px; flex-wrap: wrap; }
+.logo-mark { width: 36px; height: 36px; background: var(--terra); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; font-weight: 500; letter-spacing: 1px; }
+.site-logo { display: flex; align-items: center; gap: 10px; }
+.site-title { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700; letter-spacing: -0.5px; }
+.site-sub { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase; margin-left: auto; }
+
+/* ── NAV ── */
+.section-nav { background: var(--surface); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(107,74,42,0.07); }
+.section-nav-inner { max-width: 1280px; margin: 0 auto; display: flex; padding: 0 32px; overflow-x: auto; }
+.nav-btn { background: none; border: none; border-bottom: 3px solid transparent; padding: 16px 28px 13px; font-family: 'Lora', serif; font-size: 0.88rem; font-weight: 500; color: var(--muted); cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+.nav-btn:hover { color: var(--text2); }
+.nav-btn.active { color: var(--terra); border-bottom-color: var(--terra); font-weight: 600; }
+
+/* ── MAIN ── */
+.main { max-width: 1280px; margin: 0 auto; padding: 36px 32px 80px; }
+.panel { display: none; }
+.panel.active { display: block; animation: fadeIn 0.25s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── SECTION INTRO ── */
+.section-intro { margin-bottom: 24px; }
+.section-intro h2 { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 700; letter-spacing: -0.5px; line-height: 1.1; }
+.section-intro h2 span { font-style: italic; color: var(--terra); }
+.section-meta { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-top: 6px; line-height: 1.6; }
+
+/* ── INFO BOX ── */
+.info-box { background: var(--surface2); border: 1px solid var(--border); border-left: 4px solid var(--terra); border-radius: 8px; padding: 14px 18px; margin-bottom: 20px; font-size: 0.79rem; color: var(--text2); line-height: 1.7; }
+.info-box strong { color: var(--terra); font-weight: 600; }
+
+/* ── RULE CARDS ── */
+.rule-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; margin-bottom: 22px; }
+.rule-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 13px 16px; }
+.rule-card-title { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+.rule-card-body { font-size: 0.78rem; color: var(--text2); line-height: 1.6; }
+.rule-card-body li { margin-left: 14px; margin-bottom: 3px; }
+
+/* ── FILTER BAR ── */
+.filter-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+.filter-label { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: var(--muted2); letter-spacing: 1px; text-transform: uppercase; }
+.filter-btn { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 5px 13px; font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; color: var(--muted); cursor: pointer; transition: all 0.18s; font-weight: 500; }
+.filter-btn:hover { border-color: var(--sand); color: var(--text2); }
+.filter-btn.active { background: var(--text2); border-color: var(--text2); color: white; }
+.filter-btn.f-imediata.active { background: var(--terra); border-color: var(--terra); }
+.filter-btn.f-semanal.active  { background: var(--honey); border-color: var(--honey); }
+.filter-btn.f-suspeita.active { background: var(--navy); border-color: var(--navy); }
+.filter-btn.f-confirmacao.active { background: var(--olive); border-color: var(--olive); }
+.search-input { margin-left: auto; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 6px 13px; font-family: 'Lora', serif; font-size: 0.78rem; color: var(--text); outline: none; transition: border-color 0.18s; width: 210px; }
+.search-input:focus { border-color: var(--terra); }
+.search-input::placeholder { color: var(--muted2); }
+
+/* ── TABLE ── */
+.table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; box-shadow: 0 2px 12px rgba(107,74,42,0.06); overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; min-width: 820px; }
+thead th { background: var(--surface2); padding: 11px 14px; text-align: left; font-family: 'JetBrains Mono', monospace; font-size: 0.64rem; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); font-weight: 500; border-bottom: 1px solid var(--border); }
+tbody tr { border-bottom: 1px solid #f0e9de; transition: background 0.15s; }
+tbody tr:hover { background: #fdf9f5; }
+tbody tr:last-child { border-bottom: none; }
+tbody tr.hidden { display: none; }
+tbody td { padding: 10px 14px; font-size: 0.82rem; color: var(--text2); vertical-align: middle; line-height: 1.4; }
+td.disease-name { font-weight: 600; color: var(--text); font-size: 0.83rem; }
+td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrains Mono', monospace; line-height: 1.5; max-width: 260px; }
+
+/* ── BADGES ── */
+.badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 9px; border-radius: 20px; font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; font-weight: 500; letter-spacing: 0.3px; white-space: nowrap; }
+.badge::before { content: ''; width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+.badge-imediata { background: var(--terra-light); color: var(--terra); border: 1px solid var(--terra-mid); }
+.badge-imediata::before { background: var(--terra); }
+.badge-semanal  { background: var(--honey-light); color: var(--honey); border: 1px solid var(--honey-mid); }
+.badge-semanal::before  { background: var(--honey); }
+.badge-suspeita { background: var(--navy-light); color: var(--navy); border: 1px solid var(--navy-mid); }
+.badge-suspeita::before { background: var(--navy); }
+.badge-confirmacao { background: var(--olive-light); color: var(--olive); border: 1px solid var(--olive-mid); }
+.badge-confirmacao::before { background: var(--olive); }
+
+/* ── TYPE TAGS ── */
+.tag { display: inline-block; font-family: 'JetBrains Mono', monospace; font-size: 0.58rem; padding: 2px 6px; border-radius: 3px; margin: 2px 2px 0 0; font-weight: 500; letter-spacing: 0.3px; border: 1px solid; }
+.tag-grave   { background: #fdecea; color: #b52020; border-color: #f0b0b0; }
+.tag-rara    { background: var(--honey-light); color: #8a5010; border-color: var(--honey-mid); }
+.tag-fc      { background: var(--navy-light); color: var(--navy); border-color: var(--navy-mid); }
+.tag-pp      { background: var(--purple-light); color: var(--purple); border-color: var(--purple-mid); }
+.tag-cronico { background: var(--olive-light); color: var(--olive); border-color: var(--olive-mid); }
+.tag-comum   { background: var(--surface2); color: var(--muted); border-color: var(--border); }
+.tag-ocup    { background: #f0ede8; color: var(--brown); border-color: var(--terra-mid); }
+
+/* ── INSTÂNCIAS CHECKBOXES ── */
+.inst-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.inst-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.inst-cb {
+  width: 15px; height: 15px;
+  border-radius: 3px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 0.6rem;
+  font-weight: 700;
+}
+.inst-on  { background: var(--terra);  color: white; }
+.inst-ses { background: var(--honey);  color: white; }
+.inst-ms  { background: var(--olive);  color: white; }
+.inst-off { background: var(--surface2); color: var(--border2); border: 1px solid var(--border); }
+.inst-label-on  { color: var(--text2); }
+.inst-label-off { color: var(--border2); }
+
+/* ── RESULT COUNT ── */
+.result-count { font-family: 'JetBrains Mono', monospace; font-size: 0.67rem; color: var(--muted2); margin-bottom: 8px; letter-spacing: 0.3px; }
+
+/* ── LEGEND ── */
+.legend { display: flex; gap: 16px; margin-top: 14px; flex-wrap: wrap; }
+.legend-item { display: flex; align-items: center; gap: 6px; font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: var(--muted); }
+
+/* ── RASTREAMENTO ── */
+.rast-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
+.rast-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(107,74,42,0.05); transition: transform 0.2s, box-shadow 0.2s; }
+.rast-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(107,74,42,0.1); }
+.rast-card-header { padding: 16px 20px 14px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; background: var(--surface2); }
+.rast-card-body { padding: 16px 20px; }
+.rast-card h3 { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--text); }
+.rast-card .rast-sub { font-size: 0.7rem; color: var(--muted); font-family: 'JetBrains Mono', monospace; margin-top: 2px; }
+.rast-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid var(--surface2); font-size: 0.8rem; gap: 10px; }
+.rast-row:last-child { border-bottom: none; }
+.rast-key { color: var(--muted); font-family: 'JetBrains Mono', monospace; font-size: 0.67rem; min-width: 90px; padding-top: 1px; }
+.rast-val { color: var(--text2); font-size: 0.79rem; text-align: right; flex: 1; line-height: 1.4; }
+
+/* ── VACCINE TABLE ── */
+.vac-table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow-x: auto; box-shadow: 0 2px 12px rgba(107,74,42,0.06); }
+.vac-table { width: 100%; min-width: 700px; border-collapse: collapse; }
+.vac-table thead th { padding: 14px 20px; text-align: left; }
+.vac-table .th-age { min-width: 130px; background: var(--surface2); border-right: 2px solid var(--border); border-bottom: 1px solid var(--border); }
+.vac-table .th-sus { background: #edf5e8; color: var(--olive); border-right: 1px solid var(--olive-mid); border-bottom: 1px solid var(--border); }
+.vac-table .th-priv { background: var(--honey-light); color: var(--honey); border-bottom: 1px solid var(--border); }
+.vac-table tbody tr { border-bottom: 1px solid #f0e9de; transition: background 0.15s; }
+.vac-table tbody tr:hover { background: #fdf9f5; }
+.vac-table tbody tr:last-child { border-bottom: none; }
+.vac-table .td-age { padding: 14px 18px; background: var(--surface2); border-right: 2px solid var(--border); vertical-align: top; }
+.age-label { font-family: 'Playfair Display', serif; font-size: 0.95rem; font-weight: 700; color: var(--text); display: block; line-height: 1.2; }
+.age-sub { font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; color: var(--muted2); display: block; margin-top: 3px; }
+.vac-table .td-sus { padding: 14px 18px; border-right: 1px solid #d4e8c0; vertical-align: top; }
+.vac-table .td-priv { padding: 14px 18px; vertical-align: top; }
+.vac-pill { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; font-weight: 500; margin: 3px 3px 3px 0; line-height: 1.3; }
+.vp-sus  { background: #e8f4e0; color: #3d5c1f; border: 1px solid #b8d89a; }
+.vp-priv { background: #fdf0d8; color: #8a5a10; border: 1px solid #e8c07a; }
+.vp-crie { background: var(--terra-light); color: var(--terra); border: 1px solid var(--terra-mid); }
+.vac-note { display: block; font-size: 0.68rem; color: var(--muted); font-family: 'JetBrains Mono', monospace; margin-top: 2px; line-height: 1.5; }
+.vac-none { color: var(--muted2); font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; font-style: italic; }
+.vac-legend { display: flex; gap: 20px; margin-bottom: 16px; flex-wrap: wrap; }
+.vac-legend-item { display: flex; align-items: center; gap: 8px; font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--muted); }
+.vl-dot { width: 10px; height: 10px; border-radius: 3px; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 640px) {
+  header, .section-nav-inner, .main { padding-left: 16px; padding-right: 16px; }
+  .section-intro h2 { font-size: 1.5rem; }
+  .nav-btn { padding: 14px 16px; font-size: 0.8rem; }
+  .search-input { width: 100%; margin-left: 0; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="site-logo">
+      <div class="logo-mark">SUS</div>
+      <div><div class="site-title">Referência Clínica</div></div>
+    </div>
+    <div class="site-sub">Portaria SVS/MS 264/2020 · PNI 2025 · INCA · Medway</div>
+  </div>
+</header>
+
+<nav class="section-nav">
+  <div class="section-nav-inner">
+    <button class="nav-btn active" onclick="showPanel('notificacoes', this)">Notificações Compulsórias</button>
+    <button class="nav-btn" onclick="showPanel('rastreamento', this)">Rastreamento</button>
+    <button class="nav-btn" onclick="showPanel('vacinal', this)">Calendário Vacinal</button>
+  </div>
+</nav>
+
+<main class="main">
+
+<!-- ══════════════════════ NOTIFICAÇÕES ══════════════════════ -->
+<div class="panel active" id="panel-notificacoes">
+
+  <div class="section-intro">
+    <h2>Notificações <span>Compulsórias</span></h2>
+    <p class="section-meta">SINAN · Lista Nacional · Portaria SVS/MS 264/2020 · Portaria GM/MS 10.175/2026</p>
+  </div>
+
+  <div class="rule-grid">
+    <div class="rule-card">
+      <div class="rule-card-title">⚡ Imediata → 24 horas</div>
+      <div class="rule-card-body">Situações <strong>graves</strong>, <strong>raras</strong>, fora de circulação ou com potencial pandêmico. Quase sempre notificada na <strong>suspeita</strong>. Acidentes: sempre na <strong>confirmação</strong>.</div>
+    </div>
+    <div class="rule-card">
+      <div class="rule-card-title">📅 Semanal → SMS apenas</div>
+      <div class="rule-card-body">Todos vão apenas à SMS. Agravos <strong>comuns, crônicos ou latentes</strong>. Os 9 notificados na <strong>confirmação</strong> são por serem comuns ou crônicos. O resto: na <strong>suspeita</strong>.</div>
+    </div>
+    <div class="rule-card">
+      <div class="rule-card-title">🏛️ Instâncias (imediata)</div>
+      <div class="rule-card-body">
+        <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:var(--terra);vertical-align:middle;margin-right:3px"></span>SMS · <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:var(--honey);vertical-align:middle;margin-right:3px"></span>SES · <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:var(--olive);vertical-align:middle;margin-right:3px"></span>MS<br>
+        Fora de circulação / Potencial pandêmico → <strong>3 instâncias</strong><br>
+        Graves agudos locais → <strong>SMS</strong> ou <strong>SMS+SES</strong>
+      </div>
+    </div>
+    <div class="rule-card">
+      <div class="rule-card-title">⚠️ Regras-chave para prova</div>
+      <div class="rule-card-body">Violências → sempre na suspeita · Acidentes → sempre na confirmação · Óbitos evitáveis → imediata (exceto óbito infantil/materno → semanal!) · Crônicos → confirmação</div>
+    </div>
+  </div>
+
+  <!-- FILTROS -->
+  <div class="filter-bar">
+    <span class="filter-label">Prazo:</span>
+    <button class="filter-btn active" onclick="applyFilter('prazo','todas',this)">Todos</button>
+    <button class="filter-btn f-imediata" onclick="applyFilter('prazo','imediata',this)">⚡ Imediata</button>
+    <button class="filter-btn f-semanal"  onclick="applyFilter('prazo','semanal',this)">📅 Semanal</button>
+    <span class="filter-label" style="margin-left:10px">Notificar:</span>
+    <button class="filter-btn f-suspeita"   onclick="applyFilter('quando','suspeita',this)">Suspeita</button>
+    <button class="filter-btn f-confirmacao" onclick="applyFilter('quando','confirmacao',this)">Confirmação</button>
+    <input class="search-input" type="text" placeholder="🔍 Buscar agravo..." oninput="searchNotif(this.value)">
+  </div>
+  <div class="result-count" id="notifCount"></div>
+
+  <div class="table-wrap">
+    <table id="notifTable">
+      <thead>
+        <tr>
+          <th style="width:30%">Agravo / Doença</th>
+          <th style="width:9%; text-align:center">Prazo</th>
+          <th style="width:14%">Notificar<br><span style="font-size:0.56rem;letter-spacing:0px;opacity:0.7">☑ SMS · ☑ SES · ☑ MS</span></th>
+          <th style="width:11%; text-align:center">Notificar na</th>
+          <th style="width:37%">Tipo / Observação</th>
+        </tr>
+      </thead>
+      <tbody id="notifBody">
+
+        <!-- ════ SEMANAL — CONFIRMAÇÃO ════ -->
+        <tr data-prazo="semanal" data-quando="confirmacao">
+          <td class="disease-name">Acidente de trabalho com exposição a material biológico</td>
+          <td style="text-align:center"><span class="badge badge-semanal">SEMANAL</span></td>
+          <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
+          <td style="text-align:center"><span class="badge badge-confirmacao">CONFIRM.</span></td>
+          <td class="disease-note">Pode ser grave, mas ações individuais são eficazes e o risco não é imediato como nos demais acidentes</td>
+        </tr>
+        <tr data-prazo="semanal" data-quando="confirmacao">
+          <td class="disease-name">Hanseníase</td>
+          <td style="text-align:center"><span class="badge badge-semanal">SEMANAL</span></td>
+          <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
+          <td style="text-align:center"><span class="badge badge-confirmacao">CONFIRM.</span></td>
+          <td class="disease-note"><span class="tag tag-cronico">LATENTE / CRÔNICA</span><br>Anestesia em mancha + espessamento de nervo periférico</td>
+        </tr>
+        <tr data-prazo="semanal" data-quando="confirmacao">
+          <td class="disease-name">HIV / AIDS (inclusive gestante, parturiente, puérpera e criança exposta à transmissão vertical)</td>
+          <td style="text-align:center"><span class="badge badge-semanal">SEMANAL</span></td>
+          <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
+          <td style="text-align:center"><span class="badge badge-confirmacao">CONFIRM.</span></td>
+          <td class="disease-note"><span class="tag tag-cronico">LATENTE / CRÔNICA</span><br>Crianças expostas: seguimento até 18 meses para definição diagnóstica</td>
+        </tr>
+        <tr data-prazo="semanal" data-quando="confirmacao">
+          <td class="disease-name">Hepatites virais (A, B, C, D, E)</td>
+          <td style="text-align:center"><span class="badge badge-semanal">SEMANAL</span></td>
+          <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
+          <td style="text-align:center"><span class="badge badge-confirmacao">CONFIRM.</span></td>
+          <td class="disease-note"><span class="tag tag-comum">COMUM</span><span class="tag tag-cronico">CRÔNICA (HCV)</span><br>Surto de hepatite A ou E → notificar imediatamente</td>
+        </tr>
+        <tr data-prazo="semanal" data-quando="confirmacao">
+          <td class="disease-name">Hepatite B em gestante, parturiente ou puérpera e criança exposta</td>
+          <td style="text-align:center"><span class="badge badge-semanal">SEMANAL</span></td>
+          <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
+          <td style="text-align:center"><span class="badge badge-confirmacao">CONFIRM.</span></td>
+          <td class="disease-note"><span class="tag tag-comum">COMUM</span><br>Agravo separado do item genérico de hepatites virais</td>
+        </tr>
+        <tr data-prazo="semanal" data-quando="confirmacao">
+          <td class="disease-name">HTLV (gestante, parturiente, puérpera) e criança exposta à transmissão vertical</td>
+          <td style="text-align:center"><span class="badge badge-semanal">SEMANAL</span></td>
+          <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
+          <td style="text-align:center"><span class="badge badge-confirmacao">CONFIRM.</span></td>
+          <td class="disease-note"><span class="tag tag-cronico">LATENTE / CRÔNICA</span><br>HTLV-1 → leucemia/linfoma de células T, mielopatia tropical espástica</td>
+        </tr>
+        <tr data-prazo="semanal" data-quando="confirmacao">
+          <td class="disease-name">Esquistossomose</td>
+          <td style="text-align:center"><span class="badge badge-semanal">SEMANAL</span></td>
+          <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
+          <td style="text-align:center"><span class="badge badge-confirmacao">CONFIRM.</span></td>
+          <td class="disease-note"><span class="tag tag-cronico">LATENTE / CRÔNICA</span><br>Schistosoma mansoni — forma hepatoesplênica; endêmico NE e MG</td>
+        </tr>
+        <tr data-prazo="semanal" data-quando="confirmacao">
+          <td class="disease-name">Leishmaniose tegumentar americana</td>
+          <td style="text-align:center"><span class="badge badge-semanal">SEMANAL</span></td>
+          <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
+          <td style="text-align:center"><span class="badge badge-confirmacao">CONFIRM.</span></td>
+          <td class="disease-note"><span class="tag tag-cronico">LATENTE / CRÔNICA</span><br>Úlcera com borda em moldura — nexo com área de desmatamento</td>
+        </tr>
+        <tr data-prazo="semanal" data-quando="confirmacao">
+          <td class="disease-name">Sífilis adquirida, congênita ou em gestante</td>
+          <td style="text-align:center"><span class="badge badge-semanal">SEMANAL</span></td>
+          <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
+          <td style="text-align:center"><span class="badge badge-confirmacao">CONFIRM.</span></td>
+          <td class="disease-note"><span class="tag tag-comum">COMUM</span><span class="tag tag-cronico">FASE LATENTE</span><br>Sífilis congênita: RN de mãe com sífilis não tratada ou inadequadamente tratada</td>
+        </tr>
+        <tr data-prazo="semanal" data-quando="confirmacao">
+          <td class="disease-name">Tuberculose (todas as formas)</td>
+          <td style="text-align:center"><span class="badge badge-semanal">SEMANAL</span></td>
+          <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
+          <td style="text-align:center"><span class="badge badge-confirmacao">CONFIRM.</span></td>
+          <td class="disease-note"><span class="tag tag-cronico">LATENTE / CRÔNICA</span><br>Pulmonar, extrapulmonar, TB-RR/MDR, coinfecção TB-HIV</td>
+        </tr>
+        <tr data-prazo="semanal" data-quando="confirmacao">
+          <td class="disease-name">Óbito infantil ou materno</td>
+          <td style="text-align:center"><span class="badge badge-semanal">SEMANAL</span></td>
+          <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
+          <td style="text-align:center"><span class="badge badge-confirmacao">CONFIRM.</span></td>
+          <td class="disease-note"><span class="tag tag-rara">EXCEÇÃO ⚠️</span><br>Único óbito da lista de notificação semanal. Óbitos por doenças infecciosas ou vacinas → imediata</td>
+        </tr>
+
+        <!-- ════ SEMANAL — SUSPEITA ════ -->
+        <tr data-prazo="semanal" data-quando="suspeita">
+          <td class="disease-name">Dengue</td>
+          <td style="text-align:center"><span class="badge badge-semanal">SEMANAL</span></td>
+          <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
+          <td style="text-align:center"><span class="badge badge-suspeita">SUSPEITA</span></td>
+          <td class="disease-note"><span class="tag tag-comum">COMUM</span><br>Município SEM transmissão: notificação imediata. Com transmissão: semanal na suspeita</td>
+        </tr>
+        <tr data-prazo="semanal" data-quando="suspeita">
+          <td class="disease-name">Doença aguda pelo vírus Zika</td>
+          <td style="text-align:center"><span class="badge badge-semanal">SEMANAL</span></td>
+          <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
+          <td style="text-align:center"><span class="badge badge-suspeita">SUSPEITA</span></td>
+          <td class="disease-note"><span class="tag tag-comum">COMUM</span><br>Zika em gestante → imediata SMS+SES. Síndrome congênita Zika → semanal (suspeita)</td>
+        </tr>
+        <tr data-prazo="semanal" data-quando="suspeita">
+          <td class="disease-name">Síndrome congênita associada ao vírus Zika</td>
+          <td style="text-align:center"><span class="badge badge-semanal">SEMANAL</span></td>
+          <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
+          <td style="text-align:center"><span class="badge badge-suspeita">SUSPEITA</span></td>
+          <td class="disease-note"><span class="tag tag-rara">EXCEÇÃO ⚠️</span><br>Grave, mas não agiliza vigilância. Notificar gestante com Zika (imediata) é mais relevante para prever microcefalia</td>
+        </tr>
+        <tr data-prazo="semanal" data-quando="suspeita">
+          <td class="disease-name">Doença de Chagas crônica</td>
+          <td style="text-align:center"><span class="badge badge-semanal">SEMANAL</span></td>
+          <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
+          <td style="text-align:center"><span class="badge badge-suspeita">SUSPEITA</span></td>
+          <td class="disease-note"><span class="tag tag-cronico">CRÔNICA</span><br>Fase crônica → semanal. Fase aguda → imediata SMS+SES</td>
+        </tr>
+        <tr data-prazo="semanal" data-quando="suspeita">
+          <td class="disease-name">Intoxicação exógena (substâncias químicas)</td>
+          <td style="text-align:center"><span class="badge badge-semanal">SEMANAL</span></td>
+          <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
+          <td style="text-align:center"><span class="badge badge-suspeita">SUSPEITA</span></td>
+          <td class="disease-note"><span class="tag tag-cronico">LATENTE / CRÔNICA</span><br>Agrotóxicos, medicamentos, metais pesados — inclui tentativas de envenenamento</td>
+        </tr>
+        <tr data-prazo="semanal" data-quando="suspeita">
+          <td class="disease-name">Leishmaniose visceral</td>
+          <td style="text-align:center"><span class="badge badge-semanal">SEMANAL</span></td>
+          <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
+          <td style="text-align:center"><span class="badge badge-suspeita">SUSPEITA</span></td>
+          <td class="disease-note"><span class="tag tag-cronico">LATENTE / CRÔNICA</span><br>Febre + hepatoesplenomegalia + pancitopenia · Leishmania chagasi; reservatório canino</td>
+        </tr>
+        <tr data-prazo="semanal" data-quando="suspeita">
+          <td class="disease-name">Toxoplasmose gestacional e congênita</td>
+          <td style="text-align:center"><span class="badge badge-semanal">SEMANAL</span></td>
+          <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
+          <td style="text-align:center"><span class="badge badge-suspeita">SUSPEITA</span></td>
+          <td class="disease-note"><span class="tag tag-cronico">LATENTE / CRÔNICA</span><br>IgM reagente em gestante ou RN com coriorretinite, calcificações, hidrocefalia</td>
+        </tr>
+        <tr data-prazo="semanal" data-quando="suspeita">
+          <td class="disease-name">Doença falciforme</td>
+          <td style="text-align:center"><span class="badge badge-semanal">SEMANAL</span></td>
+          <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
+          <td style="text-align:center"><span class="badge badge-suspeita">SUSPEITA</span></td>
+          <td class="disease-note"><span class="tag tag-cronico">CRÔNICA</span><br>Inclui HbSS, HbSC, HbSD e hemoglobinas falciformes variantes</td>
+        </tr>
+        <tr data-prazo="semanal" data-quando="suspeita">
+          <td class="disease-name">Violência doméstica e/ou outras violências</td>
+          <td style="text-align:center"><span class="badge badge-semanal">SEMANAL</span></td>
+          <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
+          <td style="text-align:center"><span class="badge badge-suspeita">SUSPEITA</span></td>
+          <td class="disease-note"><span class="tag tag-comum">COMUM</span><span class="tag tag-cronico">CRÔNICA</span><br>Violências sempre na suspeita — confirmação dificulta e leva à subnotificação</td>
+        </tr>
+        <tr data-prazo="semanal" data-quando="suspeita">
+          <td class="disease-name">Febre de Chikungunya (área com transmissão ativa)</td>
+          <td style="text-align:center"><span class="badge badge-semanal">SEMANAL</span></td>
+          <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
+          <td style="text-align:center"><span class="badge badge-suspeita">SUSPEITA</span></td>
+          <td class="disease-note"><span class="tag tag-comum">COMUM</span><br>Em áreas SEM transmissão → imediata SMS+SES+MS. Artralgia pode cronificar</td>
+        </tr>
+        <tr data-prazo="semanal" data-quando="suspeita">
+          <td class="disease-name">Malária na Região Amazônica</td>
+          <td style="text-align:center"><span class="badge badge-semanal">SEMANAL</span></td>
+          <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
+          <td style="text-align:center"><span class="badge badge-suspeita">SUSPEITA</span></td>
+          <td class="disease-note"><span class="tag tag-comum">COMUM</span><br>Endêmico na Amazônia. Região extra-amazônica → imediata SMS+SES+MS</td>
+        </tr>
+        <tr data-prazo="semanal" data-quando="suspeita">
+          <td class="disease-name">Doença de Creutzfeldt-Jakob (DCJ)</td>
+          <td style="text-align:center"><span class="badge badge-semanal">SEMANAL</span></td>
+          <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
+          <td style="text-align:center"><span class="badge badge-suspeita">SUSPEITA</span></td>
+          <td class="disease-note"><span class="tag tag-rara">EXCEÇÃO ⚠️</span><br>Rara, grave, 90% vão a óbito em 1 ano — mas é semanal. Demência rapidamente progressiva + mioclonias</td>
+        </tr>
+        <tr data-prazo="semanal" data-quando="suspeita">
+          <td class="disease-name">Doenças ocupacionais</td>
+          <td style="text-align:center"><span class="badge badge-semanal">SEMANAL</span></td>
+          <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
+          <td style="text-align:center"><span class="badge badge-suspeita">SUSPEITA</span></td>
+          <td class="disease-note"><span class="tag tag-ocup">OCUPACIONAL</span><br>Câncer · Dermatoses · Distúrbio de voz · LER/DORT · Perda auditiva · Pneumoconioses · Transtornos mentais</td>
+        </tr>
+
+        <!-- ════ IMEDIATA — SMS APENAS ════ -->
+        <tr data-prazo="imediata" data-quando="confirmacao">
+          <td class="disease-name">Acidente de trabalho (grave)</td>
+          <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
+          <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
+          <td style="text-align:center"><span class="badge badge-confirmacao">CONFIRM.</span></td>
+          <td class="disease-note"><span class="tag tag-grave">GRAVE</span><br>Alteração 2023: manteve imediata para todos (antes era grave, fatal e em crianças/adolescentes)</td>
+        </tr>
+        <tr data-prazo="imediata" data-quando="confirmacao">
+          <td class="disease-name">Acidente por animal peçonhento</td>
+          <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
+          <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
+          <td style="text-align:center"><span class="badge badge-confirmacao">CONFIRM.</span></td>
+          <td class="disease-note"><span class="tag tag-grave">GRAVE</span><br>Serpentes, escorpiões, aranhas, abelhas. Soro antipeçonhento precoce</td>
+        </tr>
+        <tr data-prazo="imediata" data-quando="confirmacao">
+          <td class="disease-name">Acidente por animal potencialmente transmissor de raiva</td>
+          <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
+          <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
+          <td style="text-align:center"><span class="badge badge-confirmacao">CONFIRM.</span></td>
+          <td class="disease-note"><span class="tag tag-grave">GRAVE</span><br>Cão, gato, morcego, raposa, sagui. Iniciar profilaxia pós-exposição (PEP) conforme categoria</td>
+        </tr>
+        <tr data-prazo="imediata" data-quando="suspeita">
+          <td class="disease-name">Leptospirose</td>
+          <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
+          <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
+          <td style="text-align:center"><span class="badge badge-suspeita">SUSPEITA</span></td>
+          <td class="disease-note"><span class="tag tag-grave">GRAVE</span><br>Letalidade média. Síndrome de Weil: icterícia + IRA + hemorragia. Nexo com enchentes</td>
+        </tr>
+        <tr data-prazo="imediata" data-quando="suspeita">
+          <td class="disease-name">Tétano: acidental ou neonatal</td>
+          <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
+          <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
+          <td style="text-align:center"><span class="badge badge-suspeita">SUSPEITA</span></td>
+          <td class="disease-note"><span class="tag tag-grave">GRAVE</span><br>Letalidade alta. Neonatal: choro/sucção normais nos primeiros 2 dias → espasmos após 3º dia</td>
+        </tr>
+        <tr data-prazo="imediata" data-quando="suspeita">
+          <td class="disease-name">Violência sexual e tentativa de suicídio</td>
+          <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
+          <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
+          <td style="text-align:center"><span class="badge badge-suspeita">SUSPEITA</span></td>
+          <td class="disease-note"><span class="tag tag-grave">GRAVE</span><br>Violências sempre na suspeita. Acionar rede de proteção, serviço especializado, PEP se indicado</td>
+        </tr>
+
+        <!-- ════ IMEDIATA — SMS + SES ════ -->
+        <tr data-prazo="imediata" data-quando="suspeita">
+          <td class="disease-name">Coqueluche</td>
+          <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
+          <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-ses">✓</span><span class="inst-label-on">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
+          <td style="text-align:center"><span class="badge badge-suspeita">SUSPEITA</span></td>
+          <td class="disease-note"><span class="tag tag-grave">GRAVE</span><span class="tag tag-rara">RARA</span><br>Grave e letal em &lt;6 meses. Tosse paroxística + guincho inspiratório</td>
+        </tr>
+        <tr data-prazo="imediata" data-quando="suspeita">
+          <td class="disease-name">Difteria</td>
+          <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
+          <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-ses">✓</span><span class="inst-label-on">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
+          <td style="text-align:center"><span class="badge badge-suspeita">SUSPEITA</span></td>
+          <td class="disease-note"><span class="tag tag-grave">GRAVE</span><span class="tag tag-rara">RARA</span><br>Pseudomembrana em faringe/laringe. Notificar antes de aguardar cultura</td>
+        </tr>
+        <tr data-prazo="imediata" data-quando="suspeita">
+          <td class="disease-name">Doença de Chagas aguda</td>
+          <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
+          <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-ses">✓</span><span class="inst-label-on">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
+          <td style="text-align:center"><span class="badge badge-suspeita">SUSPEITA</span></td>
+          <td class="disease-note"><span class="tag tag-rara">RARA</span><br>Letalidade média. Sinal de Romaña, chagoma de inoculação ou síndrome aguda com soroconversão</td>
+        </tr>
+        <tr data-prazo="imediata" data-quando="suspeita">
+          <td class="disease-name">Doença invasiva por Haemophilus influenzae</td>
+          <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
+          <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-ses">✓</span><span class="inst-label-on">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
+          <td style="text-align:center"><span class="badge badge-suspeita">SUSPEITA</span></td>
+          <td class="disease-note"><span class="tag tag-grave">GRAVE</span><br>Letalidade alta. Meningite, epiglotite, pneumonia bacterêmica — principalmente em não vacinados</td>
+        </tr>
+        <tr data-prazo="imediata" data-quando="suspeita">
+          <td class="disease-name">Doença meningocócica e outras meningites</td>
+          <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
+          <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-ses">✓</span><span class="inst-label-on">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
+          <td style="text-align:center"><span class="badge badge-suspeita">SUSPEITA</span></td>
+          <td class="disease-note"><span class="tag tag-grave">GRAVE</span><br>Letalidade alta. Neisseria meningitidis: investigar contatos e quimioprofilaxia em &lt;24h</td>
+        </tr>
+        <tr data-prazo="imediata" data-quando="suspeita">
+          <td class="disease-name">Febre tifoide</td>
+          <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
+          <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-ses">✓</span><span class="inst-label-on">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
+          <td style="text-align:center"><span class="badge badge-suspeita">SUSPEITA</span></td>
+          <td class="disease-note"><span class="tag tag-grave">GRAVE</span><span class="tag tag-rara">RARA</span><br>Letalidade média. Salmonella typhi. Febre em platô + dissociação pulso-temperatura + roséola</td>
+        </tr>
+        <tr data-prazo="imediata" data-quando="suspeita">
+          <td class="disease-name">Varicela — caso grave internado ou óbito</td>
+          <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
+          <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-ses">✓</span><span class="inst-label-on">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
+          <td style="text-align:center"><span class="badge badge-suspeita">SUSPEITA</span></td>
+          <td class="disease-note"><span class="tag tag-grave">GRAVE</span><br>Óbito evitável. Varicela leve → não notificar. Apenas casos graves hospitalizados ou óbitos</td>
+        </tr>
+        <tr data-prazo="imediata" data-quando="suspeita">
+          <td class="disease-name">Doença aguda pelo vírus Zika em gestante</td>
+          <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
+          <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-ses">✓</span><span class="inst-label-on">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
+          <td style="text-align:center"><span class="badge badge-suspeita">SUSPEITA</span></td>
+          <td class="disease-note"><span class="tag tag-grave">GRAVE</span><br>Marcado "G" (urgente). Permite prever futuros casos de síndrome congênita pelo Zika</td>
+        </tr>
+
+        <!-- ════ IMEDIATA — SMS + SES + MS ════ -->
+        <tr data-prazo="imediata" data-quando="suspeita">
+          <td class="disease-name">Botulismo</td>
+          <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
+          <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-ses">✓</span><span class="inst-label-on">SES</span></div><div class="inst-item"><span class="inst-cb inst-ms">✓</span><span class="inst-label-on">MS</span></div></div></td>
+          <td style="text-align:center"><span class="badge badge-suspeita">SUSPEITA</span></td>
+          <td class="disease-note"><span class="tag tag-grave">GRAVE</span><span class="tag tag-rara">RARA</span><br>Letalidade média. Alimentar, por ferida ou intestinal. Iniciar investigação de surto</td>
+        </tr>
+        <tr data-prazo="imediata" data-quando="suspeita">
+          <td class="disease-name">Chikungunya em áreas sem transmissão</td>
+          <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
+          <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-ses">✓</span><span class="inst-label-on">SES</span></div><div class="inst-item"><span class="inst-cb inst-ms">✓</span><span class="inst-label-on">MS</span></div></div></td>
+          <td style="text-align:center"><span class="badge badge-suspeita">SUSPEITA</span></td>
+          <td class="disease-note"><span class="tag tag-rara">RARA</span><br>Área com transmissão → semanal. Fora da área de circulação → imediata 3 instâncias</td>
+        </tr>
+        <tr data-prazo="imediata" data-quando="suspeita">
+          <td class="disease-name">Cólera</td>
+          <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
+          <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-ses">✓</span><span class="inst-label-on">SES</span></div><div class="inst-item"><span class="inst-cb inst-ms">✓</span><span class="inst-label-on">MS</span></div></div></td>
+          <td style="text-align:center"><span class="badge badge-suspeita">SUSPEITA</span></td>
+          <td class="disease-note"><span class="tag tag-rara">RARA</span><br>Vibrio cholerae O1/O139 — emergência internacional (RSI). Diarreia aquosa volumosa</td>
+        </tr>
+        <tr data-prazo="imediata" data-quando="suspeita">
+          <td class="disease-name">Covid-19</td>
+          <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
+          <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-ses">✓</span><span class="inst-label-on">SES</span></div><div class="inst-item"><span class="inst-cb inst-ms">✓</span><span class="inst-label-on">MS</span></div></div></td>
+          <td style="text-align:center"><span class="badge badge-suspeita">SUSPEITA</span></td>
+          <td class="disease-note"><span class="tag tag-pp">POTENCIAL PANDÊMICO</span><br>Mantido na lista após ESPIN 2020. Inclui Síndrome Gripal suspeita de covid-19</td>
+        </tr>
+        <tr data-prazo="imediata" data-quando="suspeita">
+          <td class="disease-name">Síndrome Inflamatória Multissistêmica em Adultos (SIM-A) e pediátrica (SIM-P) — covid-19</td>
+          <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
+          <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-ses">✓</span><span class="inst-label-on">SES</span></div><div class="inst-item"><span class="inst-cb inst-ms">✓</span><span class="inst-label-on">MS</span></div></div></td>
+          <td style="text-align:center"><span class="badge badge-suspeita">SUSPEITA</span></td>
+          <td class="disease-note"><span class="tag tag-grave">GRAVE</span><span class="tag tag-rara">RARA</span><br>Febre + inflamação multissistêmica + nexo com covid-19. Kawasaki-like no pediátrico</td>
+        </tr>
+        <tr data-prazo="imediata" data-quando="suspeita">
+          <td class="disease-name">SRAG associada a coronavírus</td>
+          <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
+          <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-ses">✓</span><span class="inst-label-on">SES</span></div><div class="inst-item"><span class="inst-cb inst-ms">✓</span><span class="inst-label-on">MS</span></div></div></td>
+          <td style="text-align:center"><span class="badge badge-suspeita">SUSPEITA</span></td>
+          <td class="disease-note"><span class="tag tag-grave">GRAVE</span><span class="tag tag-pp">POTENCIAL PANDÊMICO</span><br>Internação em UTI por insuficiência respiratória aguda + nexo com coronavírus</td>
+        </tr>
+        <tr data-prazo="imediata" data-quando="suspeita">
+          <td class="disease-name">Doenças exantemáticas: sarampo e rubéola</td>
+          <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
+          <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-ses">✓</span><span class="inst-label-on">SES</span></div><div class="inst-item"><span class="inst-cb inst-ms">✓</span><span class="inst-label-on">MS</span></div></div></td>
+          <td style="text-align:center"><span class="badge badge-suspeita">SUSPEITA</span></td>
+          <td class="disease-note"><span class="tag tag-grave">GRAVE</span><br>Metas de eliminação. Sarampo: exantema maculopapular + febre + tosse/coriza/conjuntivite</td>
+        </tr>
+        <tr data-prazo="imediata" data-quando="suspeita">
+          <td class="disease-name">Síndrome da Rubéola Congênita (SRC)</td>
+          <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
+          <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-ses">✓</span><span class="inst-label-on">SES</span></div><div class="inst-item"><span class="inst-cb inst-ms">✓</span><span class="inst-label-on">MS</span></div></div></td>
+          <td style="text-align:center"><span class="badge badge-suspeita">SUSPEITA</span></td>
+          <td class="disease-note"><span class="tag tag-grave">GRAVE</span><br>Cataratas + cardiopatia congênita + surdez em RN de mãe não vacinada</td>
+        </tr>
+        <tr data-prazo="imediata" data-quando="suspeita">
+          <td class="disease-name">Disseminação intencional: antraz pneumônico, tularemia, varíola</td>
+          <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
+          <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-ses">✓</span><span class="inst-label-on">SES</span></div><div class="inst-item"><span class="inst-cb inst-ms">✓</span><span class="inst-label-on">MS</span></div></div></td>
+          <td style="text-align:center"><span class="badge badge-suspeita">SUSPEITA</span></td>
+          <td class="disease-note"><span class="tag tag-fc">FORA DE CIRCULAÇÃO</span><br>Bioterrorismo. Varíola erradicada em 1980 → qualquer caso é emergência internacional</td>
+        </tr>
+        <tr data-prazo="imediata" data-quando="suspeita">
+          <td class="disease-name">Doenças febris hemorrágicas emergentes / reemergentes</td>
+          <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
+          <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-ses">✓</span><span class="inst-label-on">SES</span></div><div class="inst-item"><span class="inst-cb inst-ms">✓</span><span class="inst-label-on">MS</span></div></div></td>
+          <td style="text-align:center"><span class="badge badge-suspeita">SUSPEITA</span></td>
+          <td class="disease-note"><span class="tag tag-fc">FORA DE CIRCULAÇÃO</span><br>Arenavírus · Ebola · Marburg · Lassa · Febre purpúrica brasileira. Nexo epidemiológico + síndrome hemorrágica</td>
+        </tr>
+        <tr data-prazo="imediata" data-quando="suspeita">
+          <td class="disease-name">Eventos adversos graves ou óbitos pós-vacinação</td>
+          <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
+          <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-ses">✓</span><span class="inst-label-on">SES</span></div><div class="inst-item"><span class="inst-cb inst-ms">✓</span><span class="inst-label-on">MS</span></div></div></td>
+          <td style="text-align:center"><span class="badge badge-suspeita">SUSPEITA</span></td>
+          <td class="disease-note"><span class="tag tag-grave">GRAVE</span><span class="tag tag-rara">RARA</span><br>Óbito evitável. SINAN-EAPV. Anafilaxia, encefalite, eventos neurológicos pós-vacina</td>
+        </tr>
+        <tr data-prazo="imediata" data-quando="suspeita">
+          <td class="disease-name">Evento de Saúde Pública que constitua ameaça à saúde pública</td>
+          <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
+          <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-ses">✓</span><span class="inst-label-on">SES</span></div><div class="inst-item"><span class="inst-cb inst-ms">✓</span><span class="inst-label-on">MS</span></div></div></td>
+          <td style="text-align:center"><span class="badge badge-suspeita">SUSPEITA</span></td>
+          <td class="disease-note"><span class="tag tag-grave">GRAVE</span><br>Cláusula genérica do RSI/OMS — abrange surtos, epidemias e agravos inusitados não listados</td>
+        </tr>
+        <tr data-prazo="imediata" data-quando="suspeita">
+          <td class="disease-name">Febre amarela</td>
+          <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
+          <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-ses">✓</span><span class="inst-label-on">SES</span></div><div class="inst-item"><span class="inst-cb inst-ms">✓</span><span class="inst-label-on">MS</span></div></div></td>
+          <td style="text-align:center"><span class="badge badge-suspeita">SUSPEITA</span></td>
+          <td class="disease-note"><span class="tag tag-grave">GRAVE</span><span class="tag tag-fc">FORA DE CIRCULAÇÃO</span><br>Síndrome ictérico-hemorrágica + nexo com área de risco. Epizootia em primatas → sinal de alerta</td>
+        </tr>
+        <tr data-prazo="imediata" data-quando="suspeita">
+          <td class="disease-name">Febre do Nilo Ocidental e outras arboviroses de importância</td>
+          <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
+          <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-ses">✓</span><span class="inst-label-on">SES</span></div><div class="inst-item"><span class="inst-cb inst-ms">✓</span><span class="inst-label-on">MS</span></div></div></td>
+          <td style="text-align:center"><span class="badge badge-suspeita">SUSPEITA</span></td>
+          <td class="disease-note"><span class="tag tag-fc">FORA DE CIRCULAÇÃO</span><span class="tag tag-rara">RARA</span><br>Vetor Culex sp. Síndrome neuroinvasiva em imunocomprometidos</td>
+        </tr>
+        <tr data-prazo="imediata" data-quando="suspeita">
+          <td class="disease-name">Febre maculosa e outras riquetsioses</td>
+          <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
+          <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-ses">✓</span><span class="inst-label-on">SES</span></div><div class="inst-item"><span class="inst-cb inst-ms">✓</span><span class="inst-label-on">MS</span></div></div></td>
+          <td style="text-align:center"><span class="badge badge-suspeita">SUSPEITA</span></td>
+          <td class="disease-note"><span class="tag tag-grave">GRAVE</span><span class="tag tag-rara">RARA</span><br>Letalidade média. Rickettsia rickettsii · exantema petequial · carrapato. Doxiciclina empírica</td>
+        </tr>
+        <tr data-prazo="imediata" data-quando="suspeita">
+          <td class="disease-name">Hantavirose</td>
+          <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
+          <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-ses">✓</span><span class="inst-label-on">SES</span></div><div class="inst-item"><span class="inst-cb inst-ms">✓</span><span class="inst-label-on">MS</span></div></div></td>
+          <td style="text-align:center"><span class="badge badge-suspeita">SUSPEITA</span></td>
+          <td class="disease-note"><span class="tag tag-grave">GRAVE</span><span class="tag tag-rara">RARA</span><br>Letalidade 40–50%. Síndrome cardiopulmonar: edema pulmonar não cardiogênico + mialgia + febre</td>
+        </tr>
+        <tr data-prazo="imediata" data-quando="suspeita">
+          <td class="disease-name">Influenza humana produzida por novo subtipo viral</td>
+          <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
+          <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-ses">✓</span><span class="inst-label-on">SES</span></div><div class="inst-item"><span class="inst-cb inst-ms">✓</span><span class="inst-label-on">MS</span></div></div></td>
+          <td style="text-align:center"><span class="badge badge-suspeita">SUSPEITA</span></td>
+          <td class="disease-note"><span class="tag tag-rara">RARA</span><span class="tag tag-pp">POTENCIAL PANDÊMICO</span><br>Subtipo não circulante previamente na população humana (ex: H5N1, H7N9)</td>
+        </tr>
+        <tr data-prazo="imediata" data-quando="suspeita">
+          <td class="disease-name">Malária na Região Extra-Amazônica</td>
+          <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
+          <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-ses">✓</span><span class="inst-label-on">SES</span></div><div class="inst-item"><span class="inst-cb inst-ms">✓</span><span class="inst-label-on">MS</span></div></div></td>
+          <td style="text-align:center"><span class="badge badge-suspeita">SUSPEITA</span></td>
+          <td class="disease-note"><span class="tag tag-rara">RARA</span><br>Caso importado ou autóctone fora da área de transmissão habitual. Amazônica → semanal</td>
+        </tr>
+        <tr data-prazo="imediata" data-quando="suspeita">
+          <td class="disease-name">Monkeypox (Mpox)</td>
+          <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
+          <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-ses">✓</span><span class="inst-label-on">SES</span></div><div class="inst-item"><span class="inst-cb inst-ms">✓</span><span class="inst-label-on">MS</span></div></div></td>
+          <td style="text-align:center"><span class="badge badge-suspeita">SUSPEITA</span></td>
+          <td class="disease-note"><span class="tag tag-rara">RARA</span><span class="tag tag-pp">POTENCIAL PANDÊMICO</span><br>Transmissão expandindo + receio de ativação do ciclo urbano. ESPIN 2022 mantido na lista</td>
+        </tr>
+        <tr data-prazo="imediata" data-quando="suspeita">
+          <td class="disease-name">Óbito por dengue</td>
+          <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
+          <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-ses">✓</span><span class="inst-label-on">SES</span></div><div class="inst-item"><span class="inst-cb inst-ms">✓</span><span class="inst-label-on">MS</span></div></div></td>
+          <td style="text-align:center"><span class="badge badge-suspeita">SUSPEITA</span></td>
+          <td class="disease-note"><span class="tag tag-grave">GRAVE</span><br>Óbito evitável — notificar na suspeita para investigação imediata. Dengue grave critérios: choque, hemorragia, disfunção orgânica</td>
+        </tr>
+        <tr data-prazo="imediata" data-quando="suspeita">
+          <td class="disease-name">Óbito com suspeita de Zika</td>
+          <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
+          <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-ses">✓</span><span class="inst-label-on">SES</span></div><div class="inst-item"><span class="inst-cb inst-ms">✓</span><span class="inst-label-on">MS</span></div></div></td>
+          <td style="text-align:center"><span class="badge badge-suspeita">SUSPEITA</span></td>
+          <td class="disease-note"><span class="tag tag-grave">GRAVE</span><br>Óbito evitável. Síndrome de Guillain-Barré pós-Zika pode ser fatal</td>
+        </tr>
+        <tr data-prazo="imediata" data-quando="suspeita">
+          <td class="disease-name">Óbito com suspeita de Chikungunya</td>
+          <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
+          <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-ses">✓</span><span class="inst-label-on">SES</span></div><div class="inst-item"><span class="inst-cb inst-ms">✓</span><span class="inst-label-on">MS</span></div></div></td>
+          <td style="text-align:center"><span class="badge badge-suspeita">SUSPEITA</span></td>
+          <td class="disease-note"><span class="tag tag-grave">GRAVE</span><br>Óbito evitável. Formas graves: encefalite, miocardite, hepatite fulminante</td>
+        </tr>
+        <tr data-prazo="imediata" data-quando="suspeita">
+          <td class="disease-name">Peste (Yersinia pestis)</td>
+          <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
+          <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-ses">✓</span><span class="inst-label-on">SES</span></div><div class="inst-item"><span class="inst-cb inst-ms">✓</span><span class="inst-label-on">MS</span></div></div></td>
+          <td style="text-align:center"><span class="badge badge-suspeita">SUSPEITA</span></td>
+          <td class="disease-note"><span class="tag tag-fc">FORA DE CIRCULAÇÃO</span><br>Formas bubônica, septicêmica e pneumônica. Foco residual no NE brasileiro (CE, RN, PB)</td>
+        </tr>
+        <tr data-prazo="imediata" data-quando="suspeita">
+          <td class="disease-name">Poliomielite por poliovírus selvagem / Síndrome da Paralisia Flácida Aguda</td>
+          <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
+          <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-ses">✓</span><span class="inst-label-on">SES</span></div><div class="inst-item"><span class="inst-cb inst-ms">✓</span><span class="inst-label-on">MS</span></div></div></td>
+          <td style="text-align:center"><span class="badge badge-suspeita">SUSPEITA</span></td>
+          <td class="disease-note"><span class="tag tag-grave">GRAVE</span><span class="tag tag-fc">FORA DE CIRCULAÇÃO</span><span class="tag tag-rara">RARA</span><br>PFA em &lt;15 anos deve ser investigada para poliovírus. Brasil erradicou em 1994</td>
+        </tr>
+        <tr data-prazo="imediata" data-quando="suspeita">
+          <td class="disease-name">Raiva humana</td>
+          <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
+          <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-ses">✓</span><span class="inst-label-on">SES</span></div><div class="inst-item"><span class="inst-cb inst-ms">✓</span><span class="inst-label-on">MS</span></div></div></td>
+          <td style="text-align:center"><span class="badge badge-suspeita">SUSPEITA</span></td>
+          <td class="disease-note"><span class="tag tag-grave">GRAVE</span><span class="tag tag-rara">RARA</span><br>Letalidade ~100% após início dos sintomas. Hidrofobia, aerofobia, delirium</td>
+        </tr>
+
+        <tr data-prazo="semanal" data-quando="suspeita">
+          <td class="disease-name">Anomalias congênitas <span style="font-family:'JetBrains Mono',monospace;font-size:0.58rem;background:#fff3e0;color:#b5521e;border:1px solid #e8c4ae;border-radius:3px;padding:1px 5px;margin-left:4px;vertical-align:middle;">NOVO 2026</span></td>
+          <td style="text-align:center"><span class="badge badge-semanal">SEMANAL</span></td>
+          <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
+          <td style="text-align:center"><span class="badge badge-suspeita">SUSPEITA</span></td>
+          <td class="disease-note"><span class="tag tag-cronico">CRÔNICA</span><br>Portaria GM/MS 10.175/2026 · todo caso identificado deve ser notificado, independente do nível de complexidade · amplia monitoramento via SINASC</td>
+        </tr>
+
+        <!-- empty row -->
+        <tr class="empty-row hidden" id="emptyRow">
+          <td colspan="5" style="text-align:center; padding:30px; color:var(--muted2); font-family:'JetBrains Mono',monospace; font-size:0.78rem; font-style:italic;">Nenhum agravo encontrado para essa busca.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><span class="badge badge-imediata">IMEDIATA</span> 24 horas</div>
+    <div class="legend-item"><span class="badge badge-semanal">SEMANAL</span> 7 dias · apenas SMS</div>
+    <div class="legend-item"><span class="badge badge-suspeita">SUSPEITA</span> sem confirmação laboratorial</div>
+    <div class="legend-item"><span class="badge badge-confirmacao">CONFIRM.</span> exige diagnóstico confirmado</div>
+  </div>
+
+  <div style="margin-top:16px; display:flex; gap:20px; flex-wrap:wrap; align-items:center;">
+    <div style="display:flex;align-items:center;gap:6px;font-family:'JetBrains Mono',monospace;font-size:0.67rem;color:var(--muted2)">
+      <span style="width:14px;height:14px;border-radius:3px;background:var(--terra);display:inline-flex;align-items:center;justify-content:center;color:white;font-size:0.55rem;font-weight:700">✓</span> SMS — Secretaria Municipal de Saúde
+    </div>
+    <div style="display:flex;align-items:center;gap:6px;font-family:'JetBrains Mono',monospace;font-size:0.67rem;color:var(--muted2)">
+      <span style="width:14px;height:14px;border-radius:3px;background:var(--honey);display:inline-flex;align-items:center;justify-content:center;color:white;font-size:0.55rem;font-weight:700">✓</span> SES — Secretaria Estadual de Saúde
+    </div>
+    <div style="display:flex;align-items:center;gap:6px;font-family:'JetBrains Mono',monospace;font-size:0.67rem;color:var(--muted2)">
+      <span style="width:14px;height:14px;border-radius:3px;background:var(--olive);display:inline-flex;align-items:center;justify-content:center;color:white;font-size:0.55rem;font-weight:700">✓</span> MS — Ministério da Saúde
+    </div>
+    <div style="display:flex;align-items:center;gap:6px;font-family:'JetBrains Mono',monospace;font-size:0.67rem;color:var(--muted2)">
+      <span style="width:14px;height:14px;border-radius:3px;background:var(--surface2);border:1px solid var(--border);display:inline-flex;align-items:center;justify-content:center;color:var(--border2);font-size:0.55rem;">–</span> Não notifica essa instância
+    </div>
+  </div>
+  <div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+    <span class="tag tag-grave">GRAVE</span>
+    <span class="tag tag-rara">RARA</span>
+    <span class="tag tag-fc">FORA DE CIRCULAÇÃO</span>
+    <span class="tag tag-pp">POTENCIAL PANDÊMICO</span>
+    <span class="tag tag-cronico">CRÔNICA / LATENTE</span>
+    <span class="tag tag-comum">COMUM</span>
+    <span class="tag tag-rara" style="background:#fffbe8">⚠️ EXCEÇÃO</span>
+  </div>
+</div>
+
+<!-- ══════════════════════ RASTREAMENTO ══════════════════════ -->
+<div class="panel" id="panel-rastreamento">
+  <div class="section-intro">
+    <h2>Rastreamento <span>Oncológico e Metabólico</span></h2>
+    <p class="section-meta">INCA · Ministério da Saúde · Diretrizes Nacionais 2024</p>
+  </div>
+  <div class="info-box">
+    <strong>Rastreamento ≠ Diagnóstico:</strong> Testes aplicados em indivíduos <em>assintomáticos</em> de risco moderado ou alto. O SUS disponibiliza os exames nas UBS e unidades de saúde da mulher. Encaminhamentos para confirmação seguem fluxo regulado pelo SISREG.
+  </div>
+  <div class="rast-grid">
+    <div class="rast-card">
+      <div class="rast-card-header"><div style="font-size:1.4rem">🔬</div><div><h3>Colo do Útero</h3><div class="rast-sub">Papanicolau · SUS</div></div></div>
+      <div class="rast-card-body">
+        <div class="rast-row"><span class="rast-key">Início</span><span class="rast-val">25 anos (início de atividade sexual)</span></div>
+        <div class="rast-row"><span class="rast-key">Intervalo</span><span class="rast-val">Anual por 2 anos → a cada 3 anos se normais</span></div>
+        <div class="rast-row"><span class="rast-key">Encerra</span><span class="rast-val">64 anos (2 negativos nos últimos 5 anos)</span></div>
+        <div class="rast-row"><span class="rast-key">Alto risco</span><span class="rast-val">HIV+, imunossuprimidas: anual indefinidamente</span></div>
+        <div class="rast-row"><span class="rast-key">Colposcopia</span><span class="rast-val">ASC-US + HPV 16/18 ou LSIL+</span></div>
+      </div>
+    </div>
+    <div class="rast-card">
+      <div class="rast-card-header"><div style="font-size:1.4rem">🩻</div><div><h3>Câncer de Mama</h3><div class="rast-sub">Mamografia · SUS vs Privado</div></div></div>
+      <div class="rast-card-body">
+        <div class="rast-row"><span class="rast-key">SUS (MS)</span><span class="rast-val">50–69 anos · a cada 2 anos</span></div>
+        <div class="rast-row"><span class="rast-key">SBM / privado</span><span class="rast-val">A partir dos 40 anos · anual</span></div>
+        <div class="rast-row"><span class="rast-key">Alto risco</span><span class="rast-val">BRCA1/2 ou familiar 1º grau &lt;50a: a partir dos 30 anos + RM de mama</span></div>
+        <div class="rast-row"><span class="rast-key">Obs.</span><span class="rast-val">Autoexame não substitui a mamografia como método de rastreio</span></div>
+      </div>
+    </div>
+    <div class="rast-card">
+      <div class="rast-card-header"><div style="font-size:1.4rem">🫁</div><div><h3>Câncer de Pulmão</h3><div class="rast-sub">LDCT · Alto risco</div></div></div>
+      <div class="rast-card-body">
+        <div class="rast-row"><span class="rast-key">Critérios</span><span class="rast-val">50–80 anos + ≥20 maços-ano + fumante ou parou há &lt;15 anos</span></div>
+        <div class="rast-row"><span class="rast-key">Exame</span><span class="rast-val">TC de tórax de baixa dose (LDCT) · anual</span></div>
+        <div class="rast-row"><span class="rast-key">Suspender</span><span class="rast-val">Parou há &gt;15 anos ou comorbidades que impeçam cirurgia</span></div>
+        <div class="rast-row"><span class="rast-key">SUS</span><span class="rast-val">Ainda não incorporado — protocolos INCA em avaliação</span></div>
+      </div>
+    </div>
+    <div class="rast-card">
+      <div class="rast-card-header"><div style="font-size:1.4rem">🫀</div><div><h3>Câncer Colorretal</h3><div class="rast-sub">SOF e Colonoscopia · SUS</div></div></div>
+      <div class="rast-card-body">
+        <div class="rast-row"><span class="rast-key">Risco médio</span><span class="rast-val">50–75 anos · SOF anual ou colonoscopia a cada 10 anos</span></div>
+        <div class="rast-row"><span class="rast-key">Pólipo adeno.</span><span class="rast-val">Colonoscopia a cada 5 anos</span></div>
+        <div class="rast-row"><span class="rast-key">PAF / HNPCC</span><span class="rast-val">Colonoscopia a partir dos 20–25 anos</span></div>
+        <div class="rast-row"><span class="rast-key">DII</span><span class="rast-val">RCU ou Crohn: colonoscopia anual após 8 anos de doença</span></div>
+      </div>
+    </div>
+    <div class="rast-card">
+      <div class="rast-card-header"><div style="font-size:1.4rem">⚕️</div><div><h3>Câncer de Próstata</h3><div class="rast-sub">PSA · Decisão compartilhada</div></div></div>
+      <div class="rast-card-body">
+        <div class="rast-row"><span class="rast-key">SUS</span><span class="rast-val">Não recomenda rastreamento universal — oferta via decisão compartilhada</span></div>
+        <div class="rast-row"><span class="rast-key">SBU</span><span class="rast-val">50–75 anos (risco médio); negro ou familiar 1º grau &lt;65a: a partir dos 45 anos</span></div>
+        <div class="rast-row"><span class="rast-key">Exame</span><span class="rast-val">PSA total + toque retal · anual (se PSA &lt;1 ng/mL: a cada 2 anos)</span></div>
+        <div class="rast-row"><span class="rast-key">Encerra</span><span class="rast-val">75 anos ou expectativa de vida &lt;10 anos</span></div>
+      </div>
+    </div>
+    <div class="rast-card">
+      <div class="rast-card-header"><div style="font-size:1.4rem">🩸</div><div><h3>DM e HAS</h3><div class="rast-sub">Vigilância metabólica · APS</div></div></div>
+      <div class="rast-card-body">
+        <div class="rast-row"><span class="rast-key">DM — quem</span><span class="rast-val">≥45 anos; ou qualquer adulto com IMC ≥25 + 1 FR</span></div>
+        <div class="rast-row"><span class="rast-key">DM — exame</span><span class="rast-val">Glicemia jejum ou HbA1c · a cada 3 anos (anual se pré-DM)</span></div>
+        <div class="rast-row"><span class="rast-key">HAS</span><span class="rast-val">Aferição de PA em toda consulta de adultos ≥18 anos</span></div>
+        <div class="rast-row"><span class="rast-key">HAS — intervalo</span><span class="rast-val">PA normal sem FR: 2 anos. PA normal-alta: anual</span></div>
+      </div>
+    </div>
+    <div class="rast-card">
+      <div class="rast-card-header"><div style="font-size:1.4rem">🧬</div><div><h3>HIV e Hepatites B e C</h3><div class="rast-sub">IST · APS e Pré-natal</div></div></div>
+      <div class="rast-card-body">
+        <div class="rast-row"><span class="rast-key">HIV</span><span class="rast-val">Oferta universal na APS + obrigatório no pré-natal (1º, 3º trim. e parto)</span></div>
+        <div class="rast-row"><span class="rast-key">Hep. B</span><span class="rast-val">HBsAg + anti-HBs: gestantes, prof. saúde, PVHIV, usuários de drogas</span></div>
+        <div class="rast-row"><span class="rast-key">Hep. C</span><span class="rast-val">Anti-HCV: nascidos 1945–1975, ex-usuários de drogas IV, hemofílicos</span></div>
+        <div class="rast-row"><span class="rast-key">Sífilis</span><span class="rast-val">VDRL/RPR: 1º, 2º, 3º trim. e parto. Grupos de risco: anual</span></div>
+      </div>
+    </div>
+    <div class="rast-card">
+      <div class="rast-card-header"><div style="font-size:1.4rem">👶</div><div><h3>Triagem Neonatal</h3><div class="rast-sub">Programa Nacional · Obrigatório</div></div></div>
+      <div class="rast-card-body">
+        <div class="rast-row"><span class="rast-key">Pezinho</span><span class="rast-val">3º–5º dia de vida: PKU, hipotireoidismo, hemoglobinopatias, FC, CAH, biotinidase</span></div>
+        <div class="rast-row"><span class="rast-key">Fase ampliada</span><span class="rast-val">+50 erros inatos do metabolismo por espectrometria de massa em tandem</span></div>
+        <div class="rast-row"><span class="rast-key">Olhinho</span><span class="rast-val">Reflexo vermelho antes da alta hospitalar</span></div>
+        <div class="rast-row"><span class="rast-key">Coraçãozinho</span><span class="rast-val">Oximetria em MSD e MI antes da alta (24–48h)</span></div>
+        <div class="rast-row"><span class="rast-key">Orelhinha</span><span class="rast-val">EOA ou PEATE — triagem auditiva universal até 1 mês</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════ CALENDÁRIO VACINAL ══════════════════════ -->
+<div class="panel" id="panel-vacinal">
+  <div class="section-intro">
+    <h2>Calendário <span>Vacinal</span></h2>
+    <p class="section-meta">PNI 2025 · Ministério da Saúde · Vacinas SUS e Rede Privada</p>
+  </div>
+  <div class="info-box">
+    <strong>SUS (PNI):</strong> Vacinas disponíveis gratuitamente em UBS. <strong>CRIE:</strong> Centro de Referência para Imunobiológicos Especiais — grupos com contraindicação ou risco aumentado. <strong>Privado:</strong> disponível em clínicas particulares, não coberto pelo SUS convencional.
+  </div>
+  <div class="vac-legend">
+    <div class="vac-legend-item"><span class="vl-dot" style="background:#b8d89a; border-radius:3px"></span> Disponível no SUS (PNI)</div>
+    <div class="vac-legend-item"><span class="vl-dot" style="background:var(--terra-mid); border-radius:3px"></span> Via CRIE (grupos especiais)</div>
+    <div class="vac-legend-item"><span class="vl-dot" style="background:#e8c07a; border-radius:3px"></span> Apenas rede privada</div>
+  </div>
+  <div class="vac-table-wrap">
+    <table class="vac-table">
+      <thead>
+        <tr>
+          <th class="th-age">Faixa etária</th>
+          <th class="th-sus">🏥 SUS · Programa Nacional de Imunizações</th>
+          <th class="th-priv">💊 Apenas Rede Privada</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="td-age"><span class="age-label">Ao nascer</span><span class="age-sub">maternidade</span></td>
+          <td class="td-sus">
+            <span class="vac-pill vp-sus">BCG</span>
+            <span class="vac-note">Tuberculose miliar e meníngea · dose única intradérmica · 0,1 mL · deltóide D</span>
+            <span class="vac-pill vp-sus">Hepatite B (1ª dose)</span>
+            <span class="vac-note">Nas primeiras 12–24h de vida</span>
+          </td>
+          <td class="td-priv"><span class="vac-none">—</span></td>
+        </tr>
+        <tr>
+          <td class="td-age"><span class="age-label">2 meses</span></td>
+          <td class="td-sus">
+            <span class="vac-pill vp-sus">Penta 1ª dose</span><span class="vac-note">DTPw + Hib + Hepatite B</span>
+            <span class="vac-pill vp-sus">VIP 1ª dose</span><span class="vac-note">Poliomielite inativada</span>
+            <span class="vac-pill vp-sus">Pneumo10 1ª dose</span>
+            <span class="vac-pill vp-sus">Rotavírus 1ª dose</span><span class="vac-note">RV1 (Rotarix) monovalente · dose máx. até 3m15d</span>
+          </td>
+          <td class="td-priv">
+            <span class="vac-pill vp-priv">Pneumo13 ou 15V 1ª dose</span><span class="vac-note">Maior cobertura de sorotipos</span>
+            <span class="vac-pill vp-priv">RotaTeq 1ª dose</span><span class="vac-note">Pentavalente (RV5) · 3 doses</span>
+            <span class="vac-pill vp-priv">Meningocócica B 1ª dose</span><span class="vac-note">Bexsero (4CMenB)</span>
+            <span class="vac-pill vp-priv">DTPa 1ª dose</span><span class="vac-note">Acelular — menos reatogênica</span>
+          </td>
+        </tr>
+        <tr>
+          <td class="td-age"><span class="age-label">3 meses</span></td>
+          <td class="td-sus"><span class="vac-pill vp-sus">Meningocócica C 1ª dose</span></td>
+          <td class="td-priv"><span class="vac-pill vp-priv">Meningocócica B 2ª dose</span></td>
+        </tr>
+        <tr>
+          <td class="td-age"><span class="age-label">4 meses</span></td>
+          <td class="td-sus">
+            <span class="vac-pill vp-sus">Penta 2ª</span>
+            <span class="vac-pill vp-sus">VIP 2ª</span>
+            <span class="vac-pill vp-sus">Pneumo10 2ª</span>
+            <span class="vac-pill vp-sus">Rotavírus 2ª</span><span class="vac-note">Dose máx. até 5m15d</span>
+            <span class="vac-pill vp-sus">Meningocócica C 2ª</span>
+          </td>
+          <td class="td-priv">
+            <span class="vac-pill vp-priv">Pneumo13/15V 2ª</span>
+            <span class="vac-pill vp-priv">RotaTeq 2ª</span>
+            <span class="vac-pill vp-priv">Meningocócica B 3ª</span>
+            <span class="vac-pill vp-priv">DTPa 2ª</span>
+          </td>
+        </tr>
+        <tr>
+          <td class="td-age"><span class="age-label">6 meses</span></td>
+          <td class="td-sus">
+            <span class="vac-pill vp-sus">Penta 3ª</span>
+            <span class="vac-pill vp-sus">VIP 3ª</span>
+            <span class="vac-pill vp-sus">Influenza (anual)</span><span class="vac-note">Grupos prioritários: &lt;5a, ≥60a, gestantes, prof. saúde, indígenas, puérperas</span>
+          </td>
+          <td class="td-priv">
+            <span class="vac-pill vp-priv">RotaTeq 3ª</span>
+            <span class="vac-pill vp-priv">Meningocócica B reforço</span>
+            <span class="vac-pill vp-priv">Influenza (qualquer pessoa)</span>
+          </td>
+        </tr>
+        <tr>
+          <td class="td-age"><span class="age-label">9 meses</span></td>
+          <td class="td-sus"><span class="vac-pill vp-sus">Febre Amarela 1ª dose</span><span class="vac-note">2ª dose aos 4 anos · dose única a partir dos 5 anos</span></td>
+          <td class="td-priv"><span class="vac-none">—</span></td>
+        </tr>
+        <tr>
+          <td class="td-age"><span class="age-label">12 meses</span><span class="age-sub">1 ano</span></td>
+          <td class="td-sus">
+            <span class="vac-pill vp-sus">Pneumo10 — reforço</span>
+            <span class="vac-pill vp-sus">Meningocócica C — reforço</span>
+            <span class="vac-pill vp-sus">Tríplice Viral 1ª dose</span><span class="vac-note">SCR: Sarampo, Caxumba, Rubéola</span>
+            <span class="vac-pill vp-sus">Hepatite A (dose única)</span>
+          </td>
+          <td class="td-priv">
+            <span class="vac-pill vp-priv">Pneumo13/15V — reforço</span>
+            <span class="vac-pill vp-priv">Meningocócica ACWY</span>
+            <span class="vac-pill vp-priv">Varicela 1ª dose</span><span class="vac-note">SUS: 1 dose aos 15 meses. Privado: 2 doses (12m e 15m)</span>
+          </td>
+        </tr>
+        <tr>
+          <td class="td-age"><span class="age-label">15 meses</span></td>
+          <td class="td-sus">
+            <span class="vac-pill vp-sus">Tríplice Viral 2ª dose</span>
+            <span class="vac-pill vp-sus">DTP — 1º reforço</span><span class="vac-note">4ª dose total de DTPw</span>
+            <span class="vac-pill vp-sus">VOP — 1º reforço</span>
+            <span class="vac-pill vp-sus">Varicela (dose única)</span><span class="vac-note">No SUS = 1 dose apenas</span>
+          </td>
+          <td class="td-priv">
+            <span class="vac-pill vp-priv">Tetraviral MMRV (Proquad)</span><span class="vac-note">SCR + Varicela em dose combinada</span>
+            <span class="vac-pill vp-priv">Varicela 2ª dose</span><span class="vac-note">Intervalo mínimo 3 meses após 1ª</span>
+          </td>
+        </tr>
+        <tr>
+          <td class="td-age"><span class="age-label">4–6 anos</span><span class="age-sub">pré-escolar</span></td>
+          <td class="td-sus">
+            <span class="vac-pill vp-sus">DTP — 2º reforço</span><span class="vac-note">5ª dose · última da série pediátrica</span>
+            <span class="vac-pill vp-sus">VOP — 2º reforço</span>
+            <span class="vac-pill vp-sus">Febre Amarela 2ª dose</span>
+            <span class="vac-pill vp-sus">Influenza (anual)</span>
+          </td>
+          <td class="td-priv">
+            <span class="vac-pill vp-priv">DTPa — reforço</span>
+            <span class="vac-pill vp-priv">Varicela 2ª dose</span><span class="vac-note">Se não recebeu aos 15m</span>
+          </td>
+        </tr>
+        <tr>
+          <td class="td-age"><span class="age-label">9–14 anos</span><span class="age-sub">pré-adolescente</span></td>
+          <td class="td-sus">
+            <span class="vac-pill vp-sus">HPV quadrivalente</span><span class="vac-note">Meninas 9–14a · meninos 11–14a · 2 doses (intervalo 6m) · via Programa Escolar</span>
+          </td>
+          <td class="td-priv">
+            <span class="vac-pill vp-priv">HPV 9V (Gardasil 9)</span><span class="vac-note">Nonavalente · HPV 6,11,16,18,31,33,45,52,58 · 2 doses (9–14a) ou 3 doses (≥15a)</span>
+            <span class="vac-pill vp-priv">Meningocócica ACWY — reforço</span>
+            <span class="vac-pill vp-priv">Dengue QDenga</span><span class="vac-note">Takeda · 10–16a · 2 doses · independe de sorologia · SUS em municípios prioritários</span>
+          </td>
+        </tr>
+        <tr>
+          <td class="td-age"><span class="age-label">Adultos</span><span class="age-sub">20–59 anos</span></td>
+          <td class="td-sus">
+            <span class="vac-pill vp-sus">dT (reforço a cada 10 anos)</span>
+            <span class="vac-pill vp-sus">dTpa (1 dose)</span><span class="vac-note">Substitui 1 dose de dT para quem nunca recebeu pertussis acelular</span>
+            <span class="vac-pill vp-sus">Hepatite B (série completa)</span><span class="vac-note">0, 1, 6 meses se não vacinado</span>
+            <span class="vac-pill vp-sus">Tríplice Viral (SCR)</span><span class="vac-note">Até 29a: 2 doses · 30–59a: 1 dose (se não comprovada imunização)</span>
+            <span class="vac-pill vp-sus">Febre Amarela (dose única)</span>
+            <span class="vac-pill vp-sus">Influenza (grupos prioritários)</span>
+          </td>
+          <td class="td-priv">
+            <span class="vac-pill vp-priv">HPV 9V (até 45 anos)</span>
+            <span class="vac-pill vp-priv">Meningocócica ACWY + B</span>
+            <span class="vac-pill vp-priv">Pneumo13V</span><span class="vac-note">FR: DPOC, cardiopatia, DM, tabagismo</span>
+            <span class="vac-pill vp-priv">Dengue QDenga</span>
+            <span class="vac-pill vp-priv">Influenza anual (todos)</span>
+            <span class="vac-pill vp-priv">Hepatite A (2 doses)</span><span class="vac-note">Viajantes, MSM, doença hepática crônica</span>
+          </td>
+        </tr>
+        <tr>
+          <td class="td-age"><span class="age-label">Gestantes</span><span class="age-sub">qualquer trimestre</span></td>
+          <td class="td-sus">
+            <span class="vac-pill vp-sus">dTpa (a cada gestação)</span><span class="vac-note">Idealmente 20–36 semanas · proteção precoce do RN contra coqueluche</span>
+            <span class="vac-pill vp-sus">Influenza (qualquer trimestre)</span>
+            <span class="vac-pill vp-sus">Hepatite B (se não vacinada)</span>
+            <span class="vac-note">⚠️ Febre Amarela: contraindicada no 1º trimestre · Tríplice Viral: contraindicada na gestação</span>
+          </td>
+          <td class="td-priv">
+            <span class="vac-pill vp-priv">RSV maternal (Abrysvo)</span><span class="vac-note">32–36 semanas · protege RN nos primeiros 6 meses · recomendado SBP/FEBRASGO 2024</span>
+          </td>
+        </tr>
+        <tr>
+          <td class="td-age"><span class="age-label">Idosos</span><span class="age-sub">≥ 60 anos</span></td>
+          <td class="td-sus">
+            <span class="vac-pill vp-sus">Influenza (anual)</span>
+            <span class="vac-pill vp-sus">Pneumocócica 23V</span><span class="vac-note">Dose única · reforço em 5 anos se imunossuprimido</span>
+            <span class="vac-pill vp-sus">dT (a cada 10 anos)</span>
+            <span class="vac-pill vp-sus">Hepatite B (série completa)</span>
+            <span class="vac-note">⚠️ Febre Amarela ≥60a: avaliar risco-benefício (imunossenescência aumenta risco de EAPV)</span>
+          </td>
+          <td class="td-priv">
+            <span class="vac-pill vp-priv">Herpes Zoster (Shingrix)</span><span class="vac-note">≥50a · 2 doses (0 e 2–6m) · eficácia ~97% · recomendado mesmo pós-varicela</span>
+            <span class="vac-pill vp-priv">Pneumo13V + Pneumo23V</span><span class="vac-note">Sequencial: Pneumo13 → Pneumo23 (≥8 sem. se imunossuprimido)</span>
+            <span class="vac-pill vp-priv">RSV (Abrysvo)</span><span class="vac-note">≥60a com comorbidades cardiopulmonares · dose única</span>
+            <span class="vac-pill vp-priv">Meningocócica ACWY</span>
+          </td>
+        </tr>
+        <tr>
+          <td class="td-age"><span class="age-label">CRIE</span><span class="age-sub">imunossuprimidos e grupos especiais</span></td>
+          <td class="td-sus">
+            <span class="vac-pill vp-crie">Pneumo23V (dose extra)</span>
+            <span class="vac-pill vp-crie">Pneumo13V</span>
+            <span class="vac-pill vp-crie">Meningocócica ACWY</span>
+            <span class="vac-pill vp-crie">Hepatite B (dose dupla 40mcg)</span><span class="vac-note">Esquema 0, 1, 2, 6 meses + anti-HBs pós-vacinação</span>
+            <span class="vac-pill vp-crie">dTpa</span>
+            <span class="vac-pill vp-crie">Influenza (dose extra)</span><span class="vac-note">Avaliar 2ª dose na mesma temporada em imunossuprimidos graves</span>
+            <span class="vac-note">⚠️ Febre Amarela, Tríplice Viral, Varicela: CONTRAINDICADAS em imunossupressão grave</span>
+          </td>
+          <td class="td-priv">
+            <span class="vac-pill vp-priv">Meningocócica B</span>
+            <span class="vac-pill vp-priv">HPV 9V (3 doses em imunossuprimidos)</span>
+            <span class="vac-pill vp-priv">Shingrix (Zoster)</span><span class="vac-note">Recomendado para imunossuprimidos ≥18a — vacina inativada (segura)</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div style="margin-top:14px; padding:12px 16px; background:var(--surface2); border:1px solid var(--border); border-radius:8px; font-family:'JetBrains Mono',monospace; font-size:0.67rem; color:var(--muted); line-height:1.7;">
+    <strong style="color:var(--brown)">Siglas:</strong> BCG · DTPw/DTPa: coqueluche célula inteira/acelular · Hib · VIP/VOP · SCR: Sarampo-Caxumba-Rubéola · PNI · RSV: Vírus Sincicial Respiratório · EAPV: Evento Adverso Pós-Vacinação · MSM · CRIE: Centro de Referência para Imunobiológicos Especiais
+  </div>
+</div>
+
+</main>
+
+<script>
+  // ── PANEL NAV ──
+  function showPanel(id, btn) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('panel-' + id).classList.add('active');
+    btn.classList.add('active');
+  }
+
+  // ── FILTER STATE ──
+  let activeFilters = { prazo: 'todas', quando: null };
+
+  function applyFilter(type, val, btn) {
+    // Toggle logic
+    if (activeFilters[type] === val) {
+      activeFilters[type] = type === 'prazo' ? 'todas' : null;
+    } else {
+      activeFilters[type] = val;
+    }
+
+    // Update button styles
+    if (type === 'prazo') {
+      document.querySelectorAll('.filter-btn.active').forEach(b => {
+        if (['Todos','⚡ Imediata','📅 Semanal'].includes(b.textContent)) b.classList.remove('active');
+      });
+    }
+
+    // Rerender all buttons
+    document.querySelectorAll('.filter-btn').forEach(b => {
+      const txt = b.textContent.trim();
+      if (txt === 'Todos' && activeFilters.prazo === 'todas') b.classList.add('active');
+      else if (txt === '⚡ Imediata' && activeFilters.prazo === 'imediata') b.classList.add('active');
+      else if (txt === '📅 Semanal' && activeFilters.prazo === 'semanal') b.classList.add('active');
+      else if (txt === 'Suspeita' && activeFilters.quando === 'suspeita') b.classList.add('active');
+      else if (txt === 'Confirmação' && activeFilters.quando === 'confirmacao') b.classList.add('active');
+      else if (!['Todos','⚡ Imediata','📅 Semanal','Suspeita','Confirmação'].includes(txt)) {}
+      else b.classList.remove('active');
+    });
+
+    applyAllFilters();
+  }
+
+  function searchNotif(q) {
+    window._searchQ = q.toLowerCase().trim();
+    applyAllFilters();
+  }
+
+  function applyAllFilters() {
+    const q = window._searchQ || '';
+    const rows = document.querySelectorAll('#notifBody tr[data-prazo]');
+    let visible = 0;
+
+    rows.forEach(r => {
+      const prazoMatch = activeFilters.prazo === 'todas' || r.dataset.prazo === activeFilters.prazo;
+      const quandoMatch = !activeFilters.quando || r.dataset.quando === activeFilters.quando;
+      const textMatch = !q || r.textContent.toLowerCase().includes(q);
+      const show = prazoMatch && quandoMatch && textMatch;
+      r.classList.toggle('hidden', !show);
+      if (show) visible++;
+    });
+
+    document.getElementById('notifCount').textContent = visible + ' agravo' + (visible !== 1 ? 's' : '') + ' listado' + (visible !== 1 ? 's' : '');
+    const empty = document.getElementById('emptyRow');
+    if (empty) empty.classList.toggle('hidden', visible > 0);
+  }
+
+  // Init
+  window._searchQ = '';
+  applyAllFilters();
+</script>
+</body>
+</html>
