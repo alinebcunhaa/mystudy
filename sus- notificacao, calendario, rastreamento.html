@@ -155,6 +155,145 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
 .inst-label-on  { color: var(--text2); }
 .inst-label-off { color: var(--border2); }
 
+
+/* ── RASTREAMENTO EDIT MODE ── */
+.rast-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+.btn-edit-toggle {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 18px;
+  font-family: 'Lora', serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-edit-toggle:hover { border-color: var(--honey); color: var(--honey); }
+.btn-edit-toggle.editing { background: var(--honey-light); border-color: var(--honey); color: var(--honey); }
+.edit-hint {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.67rem;
+  color: var(--muted2);
+  display: none;
+}
+.edit-hint.visible { display: block; }
+
+.btn-add-card {
+  margin-left: auto;
+  display: none;
+  align-items: center;
+  gap: 6px;
+  background: var(--surface);
+  border: 1.5px dashed var(--border2);
+  border-radius: 8px;
+  padding: 7px 16px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--muted2);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-add-card:hover { border-color: var(--terra); color: var(--terra); }
+.btn-add-card.visible { display: flex; }
+
+/* card controls in edit mode */
+.rast-card-controls {
+  display: none;
+  gap: 6px;
+  padding: 0 20px 12px;
+}
+.rast-card-controls.visible { display: flex; }
+
+.btn-card-ctrl {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  padding: 4px 10px;
+  border-radius: 5px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--muted2);
+  cursor: pointer;
+  transition: all 0.18s;
+}
+.btn-card-ctrl:hover { border-color: var(--terra); color: var(--terra); }
+.btn-card-ctrl.delete:hover { background: #fdecea; border-color: #f0b0b0; color: #b52020; }
+
+/* editable fields */
+.edit-mode [contenteditable] {
+  outline: none;
+  border-radius: 3px;
+  padding: 1px 3px;
+  margin: -1px -3px;
+  transition: background 0.15s;
+  min-width: 20px;
+  display: inline-block;
+}
+.edit-mode [contenteditable]:hover {
+  background: var(--honey-light);
+}
+.edit-mode [contenteditable]:focus {
+  background: #fffbe6;
+  box-shadow: 0 0 0 2px var(--honey-mid);
+}
+.edit-mode .rast-row {
+  position: relative;
+}
+.btn-del-row {
+  display: none;
+  position: absolute;
+  right: -10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: #fdecea;
+  border: 1px solid #f0b0b0;
+  color: #b52020;
+  font-size: 0.65rem;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  line-height: 1;
+}
+.edit-mode .rast-row:hover .btn-del-row { display: flex; }
+.rast-card-body { position: relative; }
+.btn-add-row {
+  display: none;
+  width: 100%;
+  margin-top: 8px;
+  padding: 6px;
+  background: none;
+  border: 1px dashed var(--border2);
+  border-radius: 5px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--muted2);
+  cursor: pointer;
+  transition: all 0.18s;
+  text-align: center;
+}
+.btn-add-row:hover { border-color: var(--olive); color: var(--olive); }
+.edit-mode .btn-add-row { display: block; }
+.edit-mode .rast-row { padding-right: 24px; }
+
+/* save flash */
+@keyframes flashSave {
+  0%   { background: var(--olive-light); }
+  100% { background: var(--surface); }
+}
+.save-flash { animation: flashSave 1s ease; }
+
 /* ── RESULT COUNT ── */
 .result-count { font-family: 'JetBrains Mono', monospace; font-size: 0.67rem; color: var(--muted2); margin-bottom: 8px; letter-spacing: 0.3px; }
 
@@ -254,7 +393,13 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:var(--terra);vertical-align:middle;margin-right:3px"></span>SMS · <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:var(--honey);vertical-align:middle;margin-right:3px"></span>SES · <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:var(--olive);vertical-align:middle;margin-right:3px"></span>MS<br>
         Fora de circulação / Potencial pandêmico → <strong>3 instâncias</strong><br>
         Graves agudos locais → <strong>SMS</strong> ou <strong>SMS+SES</strong>
+      <button class="btn-add-row" onclick="addRow(this)">+ adicionar linha</button</button>
       </div>
+    <div class="rast-card-controls" id="ctrl">
+      <button class="btn-card-ctrl" onclick="moveCard(this,-1)">↑ mover</button>
+      <button class="btn-card-ctrl" onclick="moveCard(this,1)">↓ mover</button>
+      <button class="btn-card-ctrl delete" onclick="deleteCard(this)">✕ excluir card</button>
+    </div>
     </div>
     <div class="rule-card">
       <div class="rule-card-title">⚠️ Regras-chave para prova</div>
@@ -796,7 +941,17 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
   <div class="info-box">
     <strong>Rastreamento ≠ Diagnóstico:</strong> Testes aplicados em indivíduos <em>assintomáticos</em> de risco moderado ou alto. O SUS disponibiliza os exames nas UBS e unidades de saúde da mulher. Encaminhamentos para confirmação seguem fluxo regulado pelo SISREG.
   </div>
-  <div class="rast-grid">
+
+  <!-- TOOLBAR -->
+  <div class="rast-toolbar">
+    <button class="btn-edit-toggle" id="editToggle" onclick="toggleEditMode()">
+      ✏️ Editar cards
+    </button>
+    <span class="edit-hint" id="editHint">Clique em qualquer texto para editar · Alterações salvas automaticamente</span>
+    <button class="btn-add-card" id="btnAddCard" onclick="addCard()">+ Novo card</button>
+  </div>
+
+  <div class="rast-grid" id="rastGrid">
     <div class="rast-card">
       <div class="rast-card-header"><div style="font-size:1.4rem">🔬</div><div><h3>Colo do Útero</h3><div class="rast-sub">Papanicolau · SUS</div></div></div>
       <div class="rast-card-body">
@@ -805,7 +960,13 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         <div class="rast-row"><span class="rast-key">Encerra</span><span class="rast-val">64 anos (2 negativos nos últimos 5 anos)</span></div>
         <div class="rast-row"><span class="rast-key">Alto risco</span><span class="rast-val">HIV+, imunossuprimidas: anual indefinidamente</span></div>
         <div class="rast-row"><span class="rast-key">Colposcopia</span><span class="rast-val">ASC-US + HPV 16/18 ou LSIL+</span></div>
+      <button class="btn-add-row" onclick="addRow(this)">+ adicionar linha</button</button>
       </div>
+    <div class="rast-card-controls" id="ctrl">
+      <button class="btn-card-ctrl" onclick="moveCard(this,-1)">↑ mover</button>
+      <button class="btn-card-ctrl" onclick="moveCard(this,1)">↓ mover</button>
+      <button class="btn-card-ctrl delete" onclick="deleteCard(this)">✕ excluir card</button>
+    </div>
     </div>
     <div class="rast-card">
       <div class="rast-card-header"><div style="font-size:1.4rem">🩻</div><div><h3>Câncer de Mama</h3><div class="rast-sub">Mamografia · SUS vs Privado</div></div></div>
@@ -814,7 +975,13 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         <div class="rast-row"><span class="rast-key">SBM / privado</span><span class="rast-val">A partir dos 40 anos · anual</span></div>
         <div class="rast-row"><span class="rast-key">Alto risco</span><span class="rast-val">BRCA1/2 ou familiar 1º grau &lt;50a: a partir dos 30 anos + RM de mama</span></div>
         <div class="rast-row"><span class="rast-key">Obs.</span><span class="rast-val">Autoexame não substitui a mamografia como método de rastreio</span></div>
+      <button class="btn-add-row" onclick="addRow(this)">+ adicionar linha</button</button>
       </div>
+    <div class="rast-card-controls" id="ctrl">
+      <button class="btn-card-ctrl" onclick="moveCard(this,-1)">↑ mover</button>
+      <button class="btn-card-ctrl" onclick="moveCard(this,1)">↓ mover</button>
+      <button class="btn-card-ctrl delete" onclick="deleteCard(this)">✕ excluir card</button>
+    </div>
     </div>
     <div class="rast-card">
       <div class="rast-card-header"><div style="font-size:1.4rem">🫁</div><div><h3>Câncer de Pulmão</h3><div class="rast-sub">LDCT · Alto risco</div></div></div>
@@ -823,7 +990,13 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         <div class="rast-row"><span class="rast-key">Exame</span><span class="rast-val">TC de tórax de baixa dose (LDCT) · anual</span></div>
         <div class="rast-row"><span class="rast-key">Suspender</span><span class="rast-val">Parou há &gt;15 anos ou comorbidades que impeçam cirurgia</span></div>
         <div class="rast-row"><span class="rast-key">SUS</span><span class="rast-val">Ainda não incorporado — protocolos INCA em avaliação</span></div>
+      <button class="btn-add-row" onclick="addRow(this)">+ adicionar linha</button</button>
       </div>
+    <div class="rast-card-controls" id="ctrl">
+      <button class="btn-card-ctrl" onclick="moveCard(this,-1)">↑ mover</button>
+      <button class="btn-card-ctrl" onclick="moveCard(this,1)">↓ mover</button>
+      <button class="btn-card-ctrl delete" onclick="deleteCard(this)">✕ excluir card</button>
+    </div>
     </div>
     <div class="rast-card">
       <div class="rast-card-header"><div style="font-size:1.4rem">🫀</div><div><h3>Câncer Colorretal</h3><div class="rast-sub">SOF e Colonoscopia · SUS</div></div></div>
@@ -832,7 +1005,13 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         <div class="rast-row"><span class="rast-key">Pólipo adeno.</span><span class="rast-val">Colonoscopia a cada 5 anos</span></div>
         <div class="rast-row"><span class="rast-key">PAF / HNPCC</span><span class="rast-val">Colonoscopia a partir dos 20–25 anos</span></div>
         <div class="rast-row"><span class="rast-key">DII</span><span class="rast-val">RCU ou Crohn: colonoscopia anual após 8 anos de doença</span></div>
+      <button class="btn-add-row" onclick="addRow(this)">+ adicionar linha</button</button>
       </div>
+    <div class="rast-card-controls" id="ctrl">
+      <button class="btn-card-ctrl" onclick="moveCard(this,-1)">↑ mover</button>
+      <button class="btn-card-ctrl" onclick="moveCard(this,1)">↓ mover</button>
+      <button class="btn-card-ctrl delete" onclick="deleteCard(this)">✕ excluir card</button>
+    </div>
     </div>
     <div class="rast-card">
       <div class="rast-card-header"><div style="font-size:1.4rem">⚕️</div><div><h3>Câncer de Próstata</h3><div class="rast-sub">PSA · Decisão compartilhada</div></div></div>
@@ -841,7 +1020,13 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         <div class="rast-row"><span class="rast-key">SBU</span><span class="rast-val">50–75 anos (risco médio); negro ou familiar 1º grau &lt;65a: a partir dos 45 anos</span></div>
         <div class="rast-row"><span class="rast-key">Exame</span><span class="rast-val">PSA total + toque retal · anual (se PSA &lt;1 ng/mL: a cada 2 anos)</span></div>
         <div class="rast-row"><span class="rast-key">Encerra</span><span class="rast-val">75 anos ou expectativa de vida &lt;10 anos</span></div>
+      <button class="btn-add-row" onclick="addRow(this)">+ adicionar linha</button</button>
       </div>
+    <div class="rast-card-controls" id="ctrl">
+      <button class="btn-card-ctrl" onclick="moveCard(this,-1)">↑ mover</button>
+      <button class="btn-card-ctrl" onclick="moveCard(this,1)">↓ mover</button>
+      <button class="btn-card-ctrl delete" onclick="deleteCard(this)">✕ excluir card</button>
+    </div>
     </div>
     <div class="rast-card">
       <div class="rast-card-header"><div style="font-size:1.4rem">🩸</div><div><h3>DM e HAS</h3><div class="rast-sub">Vigilância metabólica · APS</div></div></div>
@@ -850,7 +1035,13 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         <div class="rast-row"><span class="rast-key">DM — exame</span><span class="rast-val">Glicemia jejum ou HbA1c · a cada 3 anos (anual se pré-DM)</span></div>
         <div class="rast-row"><span class="rast-key">HAS</span><span class="rast-val">Aferição de PA em toda consulta de adultos ≥18 anos</span></div>
         <div class="rast-row"><span class="rast-key">HAS — intervalo</span><span class="rast-val">PA normal sem FR: 2 anos. PA normal-alta: anual</span></div>
+      <button class="btn-add-row" onclick="addRow(this)">+ adicionar linha</button</button>
       </div>
+    <div class="rast-card-controls" id="ctrl">
+      <button class="btn-card-ctrl" onclick="moveCard(this,-1)">↑ mover</button>
+      <button class="btn-card-ctrl" onclick="moveCard(this,1)">↓ mover</button>
+      <button class="btn-card-ctrl delete" onclick="deleteCard(this)">✕ excluir card</button>
+    </div>
     </div>
     <div class="rast-card">
       <div class="rast-card-header"><div style="font-size:1.4rem">🧬</div><div><h3>HIV e Hepatites B e C</h3><div class="rast-sub">IST · APS e Pré-natal</div></div></div>
@@ -859,7 +1050,13 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         <div class="rast-row"><span class="rast-key">Hep. B</span><span class="rast-val">HBsAg + anti-HBs: gestantes, prof. saúde, PVHIV, usuários de drogas</span></div>
         <div class="rast-row"><span class="rast-key">Hep. C</span><span class="rast-val">Anti-HCV: nascidos 1945–1975, ex-usuários de drogas IV, hemofílicos</span></div>
         <div class="rast-row"><span class="rast-key">Sífilis</span><span class="rast-val">VDRL/RPR: 1º, 2º, 3º trim. e parto. Grupos de risco: anual</span></div>
+      <button class="btn-add-row" onclick="addRow(this)">+ adicionar linha</button</button>
       </div>
+    <div class="rast-card-controls" id="ctrl">
+      <button class="btn-card-ctrl" onclick="moveCard(this,-1)">↑ mover</button>
+      <button class="btn-card-ctrl" onclick="moveCard(this,1)">↓ mover</button>
+      <button class="btn-card-ctrl delete" onclick="deleteCard(this)">✕ excluir card</button>
+    </div>
     </div>
     <div class="rast-card">
       <div class="rast-card-header"><div style="font-size:1.4rem">👶</div><div><h3>Triagem Neonatal</h3><div class="rast-sub">Programa Nacional · Obrigatório</div></div></div>
@@ -869,7 +1066,13 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         <div class="rast-row"><span class="rast-key">Olhinho</span><span class="rast-val">Reflexo vermelho antes da alta hospitalar</span></div>
         <div class="rast-row"><span class="rast-key">Coraçãozinho</span><span class="rast-val">Oximetria em MSD e MI antes da alta (24–48h)</span></div>
         <div class="rast-row"><span class="rast-key">Orelhinha</span><span class="rast-val">EOA ou PEATE — triagem auditiva universal até 1 mês</span></div>
+      <button class="btn-add-row" onclick="addRow(this)">+ adicionar linha</button</button>
       </div>
+    <div class="rast-card-controls" id="ctrl">
+      <button class="btn-card-ctrl" onclick="moveCard(this,-1)">↑ mover</button>
+      <button class="btn-card-ctrl" onclick="moveCard(this,1)">↓ mover</button>
+      <button class="btn-card-ctrl delete" onclick="deleteCard(this)">✕ excluir card</button>
+    </div>
     </div>
   </div>
 </div>
@@ -1152,6 +1355,114 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
     const empty = document.getElementById('emptyRow');
     if (empty) empty.classList.toggle('hidden', visible > 0);
   }
+
+
+  // ── RASTREAMENTO EDIT MODE ──
+  const RAST_KEY = 'sus_rast_v1';
+  let isEditing = false;
+
+  function toggleEditMode() {
+    isEditing = !isEditing;
+    const grid = document.getElementById('rastGrid');
+    const btn  = document.getElementById('editToggle');
+    const hint = document.getElementById('editHint');
+    const addBtn = document.getElementById('btnAddCard');
+
+    grid.classList.toggle('edit-mode', isEditing);
+    btn.classList.toggle('editing', isEditing);
+    btn.innerHTML = isEditing ? '💾 Sair da edição' : '✏️ Editar cards';
+    hint.classList.toggle('visible', isEditing);
+    addBtn.classList.toggle('visible', isEditing);
+
+    grid.querySelectorAll('.rast-card h3, .rast-sub, .rast-key, .rast-val').forEach(el => {
+      el.contentEditable = isEditing ? 'true' : 'false';
+    });
+
+    grid.querySelectorAll('.rast-card-controls').forEach(el => {
+      el.classList.toggle('visible', isEditing);
+    });
+
+    if (!isEditing) { saveRast(); flashSave(); }
+  }
+
+  function saveRast() {
+    try { localStorage.setItem(RAST_KEY, document.getElementById('rastGrid').innerHTML); } catch(e) {}
+  }
+
+  function loadRast() {
+    try {
+      const saved = localStorage.getItem(RAST_KEY);
+      if (saved) document.getElementById('rastGrid').innerHTML = saved;
+    } catch(e) {}
+  }
+
+  function flashSave() {
+    document.querySelectorAll('.rast-card').forEach(c => {
+      c.classList.remove('save-flash');
+      void c.offsetWidth;
+      c.classList.add('save-flash');
+    });
+  }
+
+  function addRow(btn) {
+    const body = btn.closest('.rast-card-body');
+    const row = document.createElement('div');
+    row.className = 'rast-row';
+    row.innerHTML = '<span class="rast-key" contenteditable="true">Campo</span><span class="rast-val" contenteditable="true">Valor</span><button class="btn-del-row" onclick="this.closest(\'.rast-row\').remove();saveRast()">✕</button>';
+    body.insertBefore(row, btn);
+    row.querySelector('.rast-key').focus();
+    saveRast();
+  }
+
+  function deleteCard(btn) {
+    if (!confirm('Excluir este card?')) return;
+    btn.closest('.rast-card').remove();
+    saveRast();
+  }
+
+  function moveCard(btn, dir) {
+    const card = btn.closest('.rast-card');
+    const grid = document.getElementById('rastGrid');
+    const cards = [...grid.querySelectorAll(':scope > .rast-card')];
+    const idx = cards.indexOf(card);
+    const target = cards[idx + dir];
+    if (!target) return;
+    if (dir === -1) grid.insertBefore(card, target);
+    else grid.insertBefore(target, card);
+    saveRast();
+  }
+
+  function addCard() {
+    const grid = document.getElementById('rastGrid');
+    const card = document.createElement('div');
+    card.className = 'rast-card';
+    card.innerHTML = `
+      <div class="rast-card-header">
+        <div style="font-size:1.4rem">📋</div>
+        <div><h3 contenteditable="true">Novo rastreamento</h3><div class="rast-sub" contenteditable="true">Subtítulo</div></div>
+      </div>
+      <div class="rast-card-body">
+        <div class="rast-row">
+          <span class="rast-key" contenteditable="true">Campo</span>
+          <span class="rast-val" contenteditable="true">Valor</span>
+          <button class="btn-del-row" onclick="this.closest('.rast-row').remove();saveRast()">✕</button>
+        </div>
+        <button class="btn-add-row" onclick="addRow(this)">+ adicionar linha</button>
+      </div>
+      <div class="rast-card-controls visible">
+        <button class="btn-card-ctrl" onclick="moveCard(this,-1)">↑ mover</button>
+        <button class="btn-card-ctrl" onclick="moveCard(this,1)">↓ mover</button>
+        <button class="btn-card-ctrl delete" onclick="deleteCard(this)">✕ excluir card</button>
+      </div>`;
+    grid.appendChild(card);
+    card.querySelector('h3').focus();
+    saveRast();
+  }
+
+  // Load saved rastreamento and wire auto-save
+  loadRast();
+  const _rGrid = document.getElementById('rastGrid');
+  if (_rGrid) _rGrid.addEventListener('input', () => { if (isEditing) saveRast(); });
 
   // Init
   window._searchQ = '';
