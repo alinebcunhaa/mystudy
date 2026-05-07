@@ -3,851 +3,1034 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Revisão CLM — VM & Gasometria</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<title>VM & Gasometria — Revisão Médica</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,300&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #0d1117;
-    --surface: #161b22;
-    --surface2: #1c2333;
-    --border: #30363d;
-    --accent: #58a6ff;
-    --accent2: #f78166;
-    --accent3: #3fb950;
-    --accent4: #d2a8ff;
-    --accent5: #ffa657;
-    --text: #e6edf3;
-    --text-muted: #8b949e;
-    --text-dim: #6e7681;
-    --danger: #f85149;
-    --warning: #e3b341;
-    --success: #3fb950;
-  }
+:root {
+  --cream:      #f5ede0;
+  --parchment:  #faf4ea;
+  --sand:       #d4b896;
+  --clay:       #b8855a;
+  --sienna:     #9a5230;
+  --umber:      #5c3418;
+  --bark:       #2e1a0a;
+  --sage:       #6e8758;
+  --sage-dk:    #3d5228;
+  --moss:       #2d4a1e;
+  --rust:       #b54028;
+  --steel:      #4a6070;
+  --border:     #c8a070;
+  --text:       #2a1608;
+  --text-lt:    #6b4520;
+  --mon-bg:     #080f04;
+  --mon-flow:   #30d870;
+  --mon-pres:   #e09830;
+  --mon-vol:    #38c0e0;
+  --mon-grid:   #131f0a;
+  --mon-zero:   #1c2e10;
+  --mon-label:  #4a7030;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Source Serif 4',Georgia,serif;background:var(--cream);color:var(--text);line-height:1.65;min-height:100vh}
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+/* ── HEADER ── */
+.pg-header{background:var(--bark);padding:1.2rem 2rem;display:flex;align-items:center;gap:1.2rem;position:sticky;top:0;z-index:100;box-shadow:0 3px 15px rgba(0,0,0,.4)}
+.pg-icon{width:44px;height:44px;border-radius:8px;background:var(--clay);display:flex;align-items:center;justify-content:center;font-size:1.4rem}
+.pg-title{font-family:'Playfair Display',serif;color:var(--cream);font-size:1.5rem;font-weight:700}
+.pg-sub{color:var(--sand);font-size:0.78rem;margin-top:.15rem;letter-spacing:.04em;font-family:'JetBrains Mono',monospace}
 
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    line-height: 1.6;
-  }
+/* ── TABS ── */
+.tabs{background:var(--umber);display:flex;border-bottom:3px solid var(--clay);position:sticky;top:70px;z-index:99}
+.tab-btn{padding:.8rem 2rem;background:transparent;border:none;color:var(--sand);font-family:'Source Serif 4',serif;font-size:.95rem;cursor:pointer;transition:.2s;letter-spacing:.02em;border-bottom:3px solid transparent;margin-bottom:-3px}
+.tab-btn.active{background:rgba(184,133,90,.15);color:var(--cream);border-bottom-color:var(--clay);font-weight:600}
+.tab-btn:hover:not(.active){color:var(--cream)}
 
-  /* NAV */
-  nav {
-    position: sticky; top: 0; z-index: 100;
-    background: rgba(13,17,23,0.92);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--border);
-    padding: 0 2rem;
-    display: flex; align-items: center; gap: 0;
-    height: 52px;
-    overflow-x: auto;
-  }
-  nav a {
-    color: var(--text-muted);
-    text-decoration: none;
-    font-size: 0.78rem;
-    font-weight: 500;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    padding: 0 1.2rem;
-    height: 52px;
-    display: flex; align-items: center;
-    border-bottom: 2px solid transparent;
-    white-space: nowrap;
-    transition: all 0.2s;
-  }
-  nav a:hover { color: var(--text); border-color: var(--border); }
-  nav a.active { color: var(--accent); border-color: var(--accent); }
+/* ── LAYOUT ── */
+.tab-pane{display:none;padding:2rem;max-width:1080px;margin:0 auto}
+.tab-pane.active{display:block}
 
-  /* LAYOUT */
-  .container { max-width: 960px; margin: 0 auto; padding: 3rem 2rem 6rem; }
+/* ── SECTIONS ── */
+.section{margin-bottom:2.8rem}
+.section-hd{display:flex;align-items:center;gap:.8rem;margin-bottom:1.2rem;padding-bottom:.5rem;border-bottom:2px solid var(--clay)}
+.sec-num{background:var(--clay);color:#fff;font-family:'Playfair Display',serif;font-size:.78rem;font-weight:700;padding:.2rem .55rem;border-radius:3px;letter-spacing:.04em}
+.sec-title{font-family:'Playfair Display',serif;font-size:1.25rem;color:var(--umber);font-weight:700}
 
-  /* HERO */
-  .hero {
-    text-align: center;
-    padding: 3rem 0 4rem;
-  }
-  .hero .tag {
-    display: inline-block;
-    font-family: 'DM Mono', monospace;
-    font-size: 0.7rem;
-    letter-spacing: 0.15em;
-    color: var(--accent);
-    text-transform: uppercase;
-    border: 1px solid rgba(88,166,255,0.3);
-    padding: 0.25rem 0.8rem;
-    border-radius: 2rem;
-    margin-bottom: 1.5rem;
-    background: rgba(88,166,255,0.05);
-  }
-  .hero h1 {
-    font-family: 'DM Serif Display', serif;
-    font-size: clamp(2.2rem, 5vw, 3.5rem);
-    line-height: 1.1;
-    color: var(--text);
-    margin-bottom: 0.8rem;
-  }
-  .hero h1 em {
-    font-style: italic;
-    color: var(--accent);
-  }
-  .hero p {
-    color: var(--text-muted);
-    font-size: 1rem;
-    max-width: 500px;
-    margin: 0 auto;
-  }
+/* ── CARDS ── */
+.card{background:var(--parchment);border:1px solid var(--border);border-radius:8px;padding:1.2rem 1.4rem;margin-bottom:.9rem;box-shadow:0 2px 10px rgba(60,30,10,.07)}
+.card-title{font-family:'Playfair Display',serif;font-size:1rem;color:var(--umber);font-weight:600;margin-bottom:.75rem}
 
-  /* SECTION */
-  section { margin-bottom: 5rem; scroll-margin-top: 70px; }
-  .section-header {
-    display: flex; align-items: center; gap: 1rem;
-    margin-bottom: 2rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid var(--border);
-  }
-  .section-num {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.7rem;
-    color: var(--text-dim);
-    letter-spacing: 0.1em;
-  }
-  .section-title {
-    font-family: 'DM Serif Display', serif;
-    font-size: 1.8rem;
-    color: var(--text);
-  }
+/* ── GRIDS ── */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem}
 
-  /* CARD */
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 1.5rem;
-    margin-bottom: 1.2rem;
-    transition: border-color 0.2s;
-  }
-  .card:hover { border-color: #484f58; }
+/* ── MONITOR ── */
+.monitor{background:var(--mon-bg);border-radius:6px;border:1.5px solid #1c3010;overflow:hidden;font-family:'JetBrains Mono',monospace}
+.mon-hdr{background:#0c180a;padding:.3rem .6rem;font-size:.65rem;color:var(--mon-label);letter-spacing:.1em;text-transform:uppercase;border-bottom:1px solid #1c3010}
+canvas{display:block;width:100%}
 
-  .card-header {
-    display: flex; align-items: flex-start; justify-content: space-between;
-    gap: 1rem;
-    margin-bottom: 1rem;
-  }
-  .card-title {
-    font-family: 'DM Serif Display', serif;
-    font-size: 1.2rem;
-    color: var(--text);
-  }
-  .badge {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.68rem;
-    padding: 0.2rem 0.6rem;
-    border-radius: 4px;
-    white-space: nowrap;
-    font-weight: 500;
-    letter-spacing: 0.05em;
-  }
-  .badge-blue { background: rgba(88,166,255,0.15); color: var(--accent); border: 1px solid rgba(88,166,255,0.3); }
-  .badge-orange { background: rgba(255,166,87,0.15); color: var(--accent5); border: 1px solid rgba(255,166,87,0.3); }
-  .badge-green { background: rgba(63,185,80,0.15); color: var(--accent3); border: 1px solid rgba(63,185,80,0.3); }
-  .badge-purple { background: rgba(210,168,255,0.15); color: var(--accent4); border: 1px solid rgba(210,168,255,0.3); }
-  .badge-red { background: rgba(248,81,73,0.15); color: var(--danger); border: 1px solid rgba(248,81,73,0.3); }
+/* ── MODE CARDS ── */
+.mode-card{background:var(--parchment);border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:1.1rem;box-shadow:0 2px 10px rgba(60,30,10,.07)}
+.mode-hdr{padding:.85rem 1.3rem;color:#fff;display:flex;align-items:center;justify-content:space-between}
+.mode-name{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700}
+.mode-badge{background:rgba(255,255,255,.18);border-radius:20px;padding:.2rem .7rem;font-size:.7rem;font-family:'JetBrains Mono',monospace}
+.mode-body{padding:1.2rem 1.4rem;display:grid;grid-template-columns:1.1fr 1fr;gap:1.4rem;align-items:start}
 
-  /* PROPS LIST */
-  .props { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.8rem; margin-bottom: 1rem; }
-  .prop {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 0.6rem 0.8rem;
-  }
-  .prop-label {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.65rem;
-    color: var(--text-dim);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    margin-bottom: 0.2rem;
-  }
-  .prop-value { font-size: 0.9rem; font-weight: 500; color: var(--text); }
+/* ── CONCEITO CARDS ── */
+.conc-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.9rem;margin-bottom:.5rem}
+.conc{background:var(--parchment);border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.conc-hdr{padding:.65rem 1rem;color:#fff;font-family:'Playfair Display',serif;font-size:.95rem;font-weight:700}
+.conc-body{padding:.9rem 1rem}
 
-  /* ALERT BOX */
-  .alert {
-    border-radius: 6px;
-    padding: 0.8rem 1rem;
-    font-size: 0.88rem;
-    display: flex; gap: 0.6rem; align-items: flex-start;
-    margin-top: 0.8rem;
-  }
-  .alert-blue { background: rgba(88,166,255,0.08); border: 1px solid rgba(88,166,255,0.2); color: #93c5fd; }
-  .alert-orange { background: rgba(255,166,87,0.08); border: 1px solid rgba(255,166,87,0.2); color: #fbbf24; }
-  .alert-red { background: rgba(248,81,73,0.08); border: 1px solid rgba(248,81,73,0.2); color: #fca5a5; }
-  .alert-green { background: rgba(63,185,80,0.08); border: 1px solid rgba(63,185,80,0.2); color: #86efac; }
-  .alert-icon { font-size: 1rem; flex-shrink: 0; margin-top: 0.05rem; }
+/* ── ALERTS ── */
+.alert{display:flex;gap:.6rem;padding:.65rem .9rem;border-radius:5px;margin-top:.7rem;font-size:.84rem;align-items:flex-start}
+.al-grn{background:#eaf0e5;border-left:3px solid var(--sage)}
+.al-org{background:#f5ece0;border-left:3px solid var(--clay)}
+.al-red{background:#f5e4e0;border-left:3px solid var(--rust)}
+.al-blu{background:#e0eaf2;border-left:3px solid var(--steel)}
 
-  /* TABLE */
-  .table-wrap { overflow-x: auto; margin: 1rem 0; }
-  table {
-    width: 100%; border-collapse: collapse;
-    font-size: 0.88rem;
-  }
-  th {
-    background: var(--surface2);
-    color: var(--text-muted);
-    font-family: 'DM Mono', monospace;
-    font-size: 0.68rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    padding: 0.7rem 1rem;
-    text-align: left;
-    border-bottom: 1px solid var(--border);
-  }
-  td {
-    padding: 0.7rem 1rem;
-    border-bottom: 1px solid rgba(48,54,61,0.6);
-    color: var(--text);
-    vertical-align: top;
-  }
-  tr:last-child td { border-bottom: none; }
-  tr:hover td { background: rgba(255,255,255,0.02); }
-  td.mono { font-family: 'DM Mono', monospace; font-size: 0.82rem; }
+/* ── TABLE ── */
+table{width:100%;border-collapse:collapse;font-size:.87rem}
+th{background:var(--clay);color:#fff;padding:.55rem .75rem;text-align:left;font-weight:600}
+td{padding:.5rem .75rem;border-bottom:1px solid #e4d4b8;vertical-align:top}
+tr:nth-child(even) td{background:rgba(212,184,150,.12)}
 
-  /* FORMULA */
-  .formula-box {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-left: 3px solid var(--accent);
-    border-radius: 0 8px 8px 0;
-    padding: 1rem 1.2rem;
-    margin: 1rem 0;
-    font-family: 'DM Mono', monospace;
-    font-size: 0.95rem;
-    color: var(--accent);
-  }
-  .formula-box span { color: var(--text-muted); font-size: 0.78rem; display: block; margin-top: 0.3rem; font-family: 'DM Sans', sans-serif; }
+/* ── PROPS ── */
+.prop{display:flex;justify-content:space-between;align-items:center;padding:.32rem 0;border-bottom:1px solid #e8d8c0;font-size:.87rem}
+.prop-k{color:var(--text-lt)}
+.prop-v{font-family:'JetBrains Mono',monospace;font-weight:600;color:var(--umber)}
 
-  /* STEP FLOW */
-  .steps { counter-reset: step; }
-  .step {
-    display: flex; gap: 1rem;
-    margin-bottom: 1rem;
-    align-items: flex-start;
-  }
-  .step::before {
-    counter-increment: step;
-    content: counter(step);
-    flex-shrink: 0;
-    width: 28px; height: 28px;
-    background: var(--accent);
-    color: #0d1117;
-    border-radius: 50%;
-    font-family: 'DM Mono', monospace;
-    font-size: 0.78rem;
-    font-weight: 600;
-    display: flex; align-items: center; justify-content: center;
-    margin-top: 0.1rem;
-  }
-  .step-content { flex: 1; }
-  .step-title { font-weight: 600; color: var(--text); margin-bottom: 0.2rem; }
-  .step-desc { font-size: 0.88rem; color: var(--text-muted); }
+/* ── FORMULA ── */
+.fbox{background:var(--bark);color:var(--cream);border-radius:6px;padding:.75rem 1.1rem;font-family:'JetBrains Mono',monospace;font-size:.88rem;margin:.55rem 0;line-height:1.5}
+.fbox small{display:block;font-family:'Source Serif 4',serif;font-size:.78rem;color:var(--sand);margin-top:.3rem;font-style:italic}
 
-  /* HIGHLIGHT */
-  .hl-blue { color: var(--accent); font-weight: 600; }
-  .hl-orange { color: var(--accent5); font-weight: 600; }
-  .hl-green { color: var(--accent3); font-weight: 600; }
-  .hl-red { color: var(--danger); font-weight: 600; }
-  .hl-purple { color: var(--accent4); font-weight: 600; }
+/* ── HIGHLIGHTS ── */
+.hl{padding:0 4px;border-radius:3px;font-weight:600}
+.hl-r{background:#f5dcd5;color:var(--rust)}
+.hl-b{background:#dde8f0;color:#2a5888}
+.hl-g{background:#dff0d8;color:var(--moss)}
+.hl-o{background:#f5ead5;color:var(--sienna)}
 
-  /* GRID 2 */
-  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-  @media(max-width:600px) { .grid2 { grid-template-columns: 1fr; } }
+/* ── TAGS ── */
+.tag{display:inline-block;padding:.12rem .45rem;border-radius:3px;font-size:.72rem;font-weight:600;font-family:'JetBrains Mono',monospace;margin-right:.25rem}
+.tg-cl{background:var(--clay);color:#fff}
+.tg-sg{background:var(--sage-dk);color:#fff}
+.tg-rs{background:var(--rust);color:#fff}
+.tg-um{background:var(--umber);color:#fff}
+.tg-st{background:var(--steel);color:#fff}
 
-  /* DIVIDER */
-  .divider { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+/* ── STEPS ── */
+.steps{} 
+.step{display:flex;gap:.9rem;padding:.8rem 0;border-bottom:1px solid #e4d4b8}
+.step:last-child{border:none}
+.step-n{background:var(--clay);color:#fff;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.82rem;font-weight:700;flex-shrink:0;margin-top:.1rem;font-family:'JetBrains Mono',monospace}
+.step-title{font-weight:600;color:var(--umber);margin-bottom:.2rem;font-size:.95rem}
+.step-desc{font-size:.85rem;color:var(--text-lt);line-height:1.6}
 
-  /* CURVE DIAGRAM */
-  .curve-diagram {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 1.2rem;
-    margin: 0.8rem 0;
-  }
-  .curve-diagram h4 {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.7rem;
-    color: var(--text-dim);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    margin-bottom: 0.8rem;
-  }
-  .curve-row {
-    display: flex; align-items: center; gap: 0.8rem;
-    margin-bottom: 0.5rem;
-    font-size: 0.83rem;
-  }
-  .curve-label { width: 60px; color: var(--text-muted); font-family: 'DM Mono', monospace; font-size: 0.72rem; flex-shrink: 0; }
-  .curve-bar { height: 20px; border-radius: 3px; display: flex; align-items: center; padding: 0 0.5rem; font-size: 0.72rem; color: rgba(255,255,255,0.7); }
-  .bar-square { background: rgba(88,166,255,0.4); border: 1px solid rgba(88,166,255,0.5); min-width: 120px; }
-  .bar-ramp { background: linear-gradient(to right, rgba(255,166,87,0.2), rgba(255,166,87,0.5)); border: 1px solid rgba(255,166,87,0.4); min-width: 100px; }
-  .bar-sine { background: rgba(63,185,80,0.3); border: 1px solid rgba(63,185,80,0.4); min-width: 110px; }
+/* ── TUTORIAL STEPS ── */
+.tut{display:flex;gap:1rem;padding:1rem 1.2rem;background:var(--parchment);border:1px solid var(--border);border-radius:7px;margin-bottom:.65rem}
+.tut-icon{min-width:38px;height:38px;border-radius:7px;background:var(--clay);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.95rem;font-weight:700;font-family:'JetBrains Mono',monospace}
+.tut-title{font-weight:600;color:var(--umber);margin-bottom:.2rem;font-size:.95rem}
+.tut-body{font-size:.85rem;color:var(--text-lt);line-height:1.6}
 
-  /* MNEMONIC */
-  .mnemonic {
-    background: linear-gradient(135deg, rgba(210,168,255,0.05), rgba(88,166,255,0.05));
-    border: 1px solid rgba(210,168,255,0.2);
-    border-radius: 8px;
-    padding: 1.2rem;
-    margin-top: 1rem;
-  }
-  .mnemonic-title {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.7rem;
-    color: var(--accent4);
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    margin-bottom: 0.5rem;
-  }
-  .mnemonic-text { font-size: 0.92rem; color: var(--text-muted); }
-  .mnemonic-text strong { color: var(--text); }
+/* ── LUNG CARDS ── */
+.lung-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem}
+.lung{border-radius:8px;overflow:hidden;border:2px solid}
+.lung.ob{border-color:var(--rust)}.lung.re{border-color:var(--steel)}
+.lung-hdr{padding:.7rem 1rem;color:#fff;font-size:.9rem}
+.lung.ob .lung-hdr{background:var(--rust)}.lung.re .lung-hdr{background:var(--steel)}
+.lung-body{padding:1rem 1.1rem;background:var(--parchment)}
 
-  /* SCROLL PROGRESS */
-  #progress {
-    position: fixed; top: 0; left: 0;
-    height: 2px; background: var(--accent);
-    z-index: 200; transition: width 0.1s;
-    width: 0%;
-  }
+/* ── RESPONSIVE ── */
+@media(max-width:780px){
+  .g2,.g3,.conc-grid,.lung-grid,.mode-body{grid-template-columns:1fr}
+  .tab-pane{padding:1rem}
+  .tabs{position:relative;top:0}
+  .pg-header{position:relative}
+}
 </style>
 </head>
 <body>
 
-<div id="progress"></div>
+<header class="pg-header">
+  <div class="pg-icon">🫁</div>
+  <div>
+    <div class="pg-title">Ventilação Mecânica &amp; Gasometria</div>
+    <div class="pg-sub">REVISÃO CLÍNICA · RESIDÊNCIA MÉDICA</div>
+  </div>
+</header>
 
-<nav>
-  <a href="#vm" class="active" onclick="setActive(this)">Modos Ventilatórios</a>
-  <a href="#gaso" onclick="setActive(this)">Gasometria</a>
-  <a href="#passo-a-passo" onclick="setActive(this)">Passo a Passo</a>
-  <a href="#compensacoes" onclick="setActive(this)">Compensações</a>
-  <a href="#ag" onclick="setActive(this)">Ânion Gap</a>
-  <a href="#macetes" onclick="setActive(this)">Macetes</a>
-</nav>
+<div class="tabs">
+  <button class="tab-btn active" onclick="goTab('vm',this)">🌬️ &nbsp;Ventilação Mecânica</button>
+  <button class="tab-btn" onclick="goTab('gaso',this)">🩸 &nbsp;Gasometria</button>
+</div>
 
-<div class="container">
+<!-- ══════════════════════════════════════════════════
+     TAB: VENTILAÇÃO MECÂNICA
+══════════════════════════════════════════════════ -->
+<div id="vm" class="tab-pane active">
 
-  <div class="hero">
-    <div class="tag">CLM · Revisão Rápida</div>
-    <h1>Ventilação Mecânica<br><em>&</em> Gasometria</h1>
-    <p>Tudo que você precisa dominar para não errar mais essas questões.</p>
+  <!-- 01 · CONCEITOS -->
+  <div class="section">
+    <div class="section-hd">
+      <span class="sec-num">01</span>
+      <h2 class="sec-title">Conceitos Fundamentais — Disparo · Limite · Ciclagem</h2>
+    </div>
+    <div class="conc-grid">
+
+      <div class="conc">
+        <div class="conc-hdr" style="background:var(--moss)">⚡ Disparo (Trigger)</div>
+        <div class="conc-body">
+          <p style="font-size:.85rem;margin-bottom:.7rem"><strong>O que inicia a inspiração?</strong></p>
+          <div class="prop"><span class="prop-k">Por pressão</span><span class="prop-v">−1 a −2 cmH₂O</span></div>
+          <div class="prop"><span class="prop-k">Por fluxo</span><span class="prop-v">1–2 L/min abaixo</span></div>
+          <div class="prop"><span class="prop-k">Por tempo</span><span class="prop-v">f ajustada pelo vent.</span></div>
+          <div class="alert al-grn">💡 Fluxo → menor trabalho para o paciente. Preferir se esforço espontâneo presente.</div>
+          <div class="alert al-red">⚠️ <strong>Auto-PEEP</strong> pode impedir disparo → trabalho oculto ↑↑. Suspeitar se f real &gt;&gt; f ajustada.</div>
+        </div>
+      </div>
+
+      <div class="conc">
+        <div class="conc-hdr" style="background:var(--sienna)">📏 Limite (Limit)</div>
+        <div class="conc-body">
+          <p style="font-size:.85rem;margin-bottom:.7rem"><strong>O que controla a fase inspiratória?</strong></p>
+          <div class="prop"><span class="prop-k">Limite de volume</span><span class="prop-v">VCV → Vt fixo</span></div>
+          <div class="prop"><span class="prop-k">Limite de pressão</span><span class="prop-v">PCV → Paw fixa</span></div>
+          <div class="prop"><span class="prop-k">Limite de fluxo</span><span class="prop-v">PSV → fluxo inicial</span></div>
+          <div class="alert al-org">💡 O limite <strong>NÃO termina</strong> a inspiração — apenas controla o valor máximo atingível durante a fase ins.</div>
+        </div>
+      </div>
+
+      <div class="conc">
+        <div class="conc-hdr" style="background:var(--umber)">🔄 Ciclagem (Cycling)</div>
+        <div class="conc-body">
+          <p style="font-size:.85rem;margin-bottom:.7rem"><strong>O que termina a inspiração?</strong></p>
+          <div class="prop"><span class="prop-k">Ciclagem a volume</span><span class="prop-v">VCV — Vt atingido</span></div>
+          <div class="prop"><span class="prop-k">Ciclagem a tempo</span><span class="prop-v">PCV — Ti fixo</span></div>
+          <div class="prop"><span class="prop-k">Ciclagem a fluxo</span><span class="prop-v">PSV — 25% fluxo pico</span></div>
+          <div class="prop"><span class="prop-k">Ciclagem a pressão</span><span class="prop-v">Limite de pressão</span></div>
+          <div class="alert al-blu">💡 PSV: ciclagem prematura → curta demais. Ciclagem tardia → dyssincronias de fim de inspiração.</div>
+        </div>
+      </div>
+
+    </div>
   </div>
 
-  <!-- ======================== MODOS VENTILATÓRIOS ======================== -->
-  <section id="vm">
-    <div class="section-header">
-      <span class="section-num">01</span>
-      <h2 class="section-title">Modos Ventilatórios</h2>
+  <!-- 02 · MODOS -->
+  <div class="section">
+    <div class="section-hd">
+      <span class="sec-num">02</span>
+      <h2 class="sec-title">Modos Ventilatórios e Curvas</h2>
     </div>
 
-    <!-- CONCEITOS BASE -->
-    <div class="card">
-      <div class="card-header">
-        <div class="card-title">As 3 variáveis de qualquer ciclo respiratório</div>
+    <!-- VCV -->
+    <div class="mode-card">
+      <div class="mode-hdr" style="background:var(--clay)">
+        <span class="mode-name">VCV — Volume Controlado</span>
+        <span class="mode-badge">Volume-Limited · Time-Cycled</span>
       </div>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Variável</th>
-              <th>O que define?</th>
-              <th>Opções</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><span class="hl-blue">Trigger (gatilho)</span></td>
-              <td>O que <strong>inicia</strong> o ciclo</td>
-              <td>Tempo (ventilador) ou esforço do paciente (fluxo/pressão)</td>
-            </tr>
-            <tr>
-              <td><span class="hl-orange">Limite</span></td>
-              <td>O que é <strong>controlado/mantido</strong> durante a inspiração</td>
-              <td>Pressão (PCV) ou Volume/Fluxo (VCV)</td>
-            </tr>
-            <tr>
-              <td><span class="hl-green">Cycling (ciclagem)</span></td>
-              <td>O que <strong>termina</strong> a inspiração</td>
-              <td>Tempo, volume, fluxo ou pressão</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <div class="alert alert-blue">
-        <span class="alert-icon">💡</span>
-        <span><strong>Macete:</strong> Para identificar o modo, analise as curvas nessa ordem: (1) a curva de pressão é quadrada? → limitado a pressão. (2) A curva de volume é quadrada? → limitado a volume. (3) Há esforço do paciente? → assistido.</span>
-      </div>
-    </div>
-
-    <!-- MODOS PRINCIPAIS -->
-    <div class="card">
-      <div class="card-header">
-        <div class="card-title">VCV — Volume Controlled Ventilation</div>
-        <span class="badge badge-blue">VOLUME CONTROLADO</span>
-      </div>
-      <div class="props">
-        <div class="prop"><div class="prop-label">Limite</div><div class="prop-value">Volume / Fluxo</div></div>
-        <div class="prop"><div class="prop-label">Ciclagem</div><div class="prop-value">Volume (ou tempo)</div></div>
-        <div class="prop"><div class="prop-label">Trigger</div><div class="prop-value">Tempo (controlado)</div></div>
-        <div class="prop"><div class="prop-label">Curva de pressão</div><div class="prop-value">Rampa crescente</div></div>
-        <div class="prop"><div class="prop-label">Curva de volume</div><div class="prop-value">Rampa linear → platô</div></div>
-      </div>
-      <div class="curve-diagram">
-        <h4>Curvas típicas — VCV</h4>
-        <div class="curve-row"><span class="curve-label">Pressão</span><div class="curve-bar bar-ramp">▲ rampa</div><span style="color:var(--text-dim);font-size:0.78rem">sobe progressivamente</span></div>
-        <div class="curve-row"><span class="curve-label">Volume</span><div class="curve-bar bar-ramp" style="min-width:90px">▲ linear</div><span style="color:var(--text-dim);font-size:0.78rem">sobe e para no VT programado</span></div>
-        <div class="curve-row"><span class="curve-label">Fluxo</span><div class="curve-bar bar-square">■ quadrado</div><span style="color:var(--text-dim);font-size:0.78rem">constante (onda quadrada)</span></div>
-      </div>
-      <div class="alert alert-orange">
-        <span class="alert-icon">⚠️</span>
-        <span>Garante o <strong>volume corrente</strong> mas não controla a pressão → risco de barotrauma se complacência cair.</span>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-header">
-        <div class="card-title">PCV — Pressure Controlled Ventilation</div>
-        <span class="badge badge-orange">PRESSÃO CONTROLADA</span>
-      </div>
-      <div class="props">
-        <div class="prop"><div class="prop-label">Limite</div><div class="prop-value">Pressão</div></div>
-        <div class="prop"><div class="prop-label">Ciclagem</div><div class="prop-value">Tempo</div></div>
-        <div class="prop"><div class="prop-label">Trigger</div><div class="prop-value">Tempo (controlado)</div></div>
-        <div class="prop"><div class="prop-label">Curva de pressão</div><div class="prop-value"><strong>QUADRADA</strong> ← chave!</div></div>
-        <div class="prop"><div class="prop-label">Curva de fluxo</div><div class="prop-value">Desacelerante</div></div>
-      </div>
-      <div class="curve-diagram">
-        <h4>Curvas típicas — PCV</h4>
-        <div class="curve-row"><span class="curve-label">Pressão</span><div class="curve-bar bar-square">■ quadrada</div><span style="color:var(--text-dim);font-size:0.78rem">mantida constante — LIMITADO A PRESSÃO</span></div>
-        <div class="curve-row"><span class="curve-label">Volume</span><div class="curve-bar bar-ramp" style="min-width:80px">▲ variável</div><span style="color:var(--text-dim);font-size:0.78rem">depende da complacência</span></div>
-        <div class="curve-row"><span class="curve-label">Fluxo</span><div class="curve-bar bar-ramp" style="background:linear-gradient(to right,rgba(63,185,80,0.5),rgba(63,185,80,0.1));border-color:rgba(63,185,80,0.4)">▼ desacelera</div><span style="color:var(--text-dim);font-size:0.78rem">começa alto, cai</span></div>
-      </div>
-      <div class="alert alert-green">
-        <span class="alert-icon">✅</span>
-        <span>Questão 4 da sua prova: pressão quadrada + ciclagem por tempo + sem esforço = <strong>PCV = Controlado, limitado a pressão, ciclado a tempo</strong>.</span>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-header">
-        <div class="card-title">PSV — Pressure Support Ventilation</div>
-        <span class="badge badge-purple">ESPONTÂNEO / SUPORTE</span>
-      </div>
-      <div class="props">
-        <div class="prop"><div class="prop-label">Limite</div><div class="prop-value">Pressão</div></div>
-        <div class="prop"><div class="prop-label">Ciclagem</div><div class="prop-value">Fluxo (queda a 25%)</div></div>
-        <div class="prop"><div class="prop-label">Trigger</div><div class="prop-value">Esforço do paciente</div></div>
-      </div>
-      <div class="alert alert-blue">
-        <span class="alert-icon">💡</span>
-        <span>O paciente controla a <strong>frequência e o tempo inspiratório</strong>. Ventilador apenas "empurra" uma pressão de suporte. Usado no desmame.</span>
-      </div>
-    </div>
-
-    <!-- TABELA RESUMO -->
-    <div class="card">
-      <div class="card-header">
-        <div class="card-title">Tabela-Resumo dos Modos</div>
-      </div>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Modo</th>
-              <th>Trigger</th>
-              <th>Limite</th>
-              <th>Ciclagem</th>
-              <th>Curva pressão</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>VCV (controlado)</strong></td>
-              <td class="mono">Tempo</td>
-              <td class="mono">Volume/Fluxo</td>
-              <td class="mono">Volume</td>
-              <td>Rampa ▲</td>
-            </tr>
-            <tr>
-              <td><strong>PCV (controlado)</strong></td>
-              <td class="mono">Tempo</td>
-              <td class="mono"><span class="hl-orange">Pressão</span></td>
-              <td class="mono"><span class="hl-orange">Tempo</span></td>
-              <td><span class="hl-orange">Quadrada ■</span></td>
-            </tr>
-            <tr>
-              <td><strong>A/C (assist.-control.)</strong></td>
-              <td class="mono"><span class="hl-green">Paciente ou tempo</span></td>
-              <td class="mono">Volume ou pressão</td>
-              <td class="mono">Volume ou tempo</td>
-              <td>Depende do limite</td>
-            </tr>
-            <tr>
-              <td><strong>PSV (suporte)</strong></td>
-              <td class="mono"><span class="hl-blue">Paciente</span></td>
-              <td class="mono">Pressão</td>
-              <td class="mono"><span class="hl-blue">Fluxo</span></td>
-              <td>Quadrada ■</td>
-            </tr>
-            <tr>
-              <td><strong>SIMV</strong></td>
-              <td class="mono">Misto</td>
-              <td class="mono">Volume ou pressão</td>
-              <td class="mono">Volume ou tempo</td>
-              <td>Mista</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <div class="mnemonic">
-      <div class="mnemonic-title">🧠 Macete definitivo — Identificar modo pelo ECG ventilatório</div>
-      <div class="mnemonic-text">
-        <strong>1.</strong> Curva de pressão <strong>quadrada</strong>? → <strong>limitado a pressão (PCV)</strong><br>
-        <strong>2.</strong> Curva de fluxo <strong>quadrada</strong>? → <strong>limitado a volume (VCV)</strong><br>
-        <strong>3.</strong> O ciclo <strong>começa no mesmo tempo sempre</strong>? → <strong>controlado</strong><br>
-        <strong>4.</strong> O ciclo <strong>varia com esforço</strong>? → <strong>assistido ou espontâneo</strong><br>
-        <strong>5.</strong> O que <strong>termina</strong> a inspiração? Olhe onde a curva cai: volume? fluxo? pressão? tempo?
-      </div>
-    </div>
-  </section>
-
-  <!-- ======================== GASOMETRIA ======================== -->
-  <section id="gaso">
-    <div class="section-header">
-      <span class="section-num">02</span>
-      <h2 class="section-title">Gasometria — Valores Normais</h2>
-    </div>
-
-    <div class="card">
-      <div class="grid2">
+      <div class="mode-body">
         <div>
-          <div class="prop" style="margin-bottom:0.6rem"><div class="prop-label">pH</div><div class="prop-value">7,35 – 7,45</div></div>
-          <div class="prop" style="margin-bottom:0.6rem"><div class="prop-label">pCO₂</div><div class="prop-value">35 – 45 mmHg</div></div>
-          <div class="prop"><div class="prop-label">HCO₃⁻</div><div class="prop-value">22 – 26 mEq/L</div></div>
+          <p style="font-size:.87rem;margin-bottom:.9rem">Entrega <strong>volume corrente fixo</strong> (Vt) com <strong>fluxo constante (quadrado)</strong>. A pressão varia conforme a mecânica pulmonar — curva triangular.</p>
+          <table style="margin-bottom:.8rem">
+            <tr><th colspan="2">Parâmetros Ajustados</th></tr>
+            <tr><td>Volume Corrente (Vt)</td><td><span class="hl hl-o">6 mL/kg PBW</span></td></tr>
+            <tr><td>Frequência (f)</td><td>14–18 rpm</td></tr>
+            <tr><td>Fluxo Ins.</td><td>40–60 L/min</td></tr>
+            <tr><td>PEEP</td><td>5–8 cmH₂O</td></tr>
+            <tr><td>FiO₂</td><td>Titular por SpO₂</td></tr>
+          </table>
+          <div class="alert al-grn">✅ <strong>Vantagem:</strong> Vt garantido. Monitore Pplatô (&lt;30) e Driving P (&lt;15 cmH₂O).</div>
+          <div class="alert al-org">⚠️ Ppico ↑: cheque resistência vs compliance. Ppico−Pplatô &gt;10 → resistência (secreção, broncoespasmo).</div>
         </div>
         <div>
-          <div class="prop" style="margin-bottom:0.6rem"><div class="prop-label">BE (base excess)</div><div class="prop-value">−2 a +2</div></div>
-          <div class="prop" style="margin-bottom:0.6rem"><div class="prop-label">SatO₂</div><div class="prop-value">≥ 95%</div></div>
-          <div class="prop"><div class="prop-label">pO₂</div><div class="prop-value">80 – 100 mmHg</div></div>
+          <div class="monitor">
+            <div class="mon-hdr">VCV — Fluxo · Pressão · Volume</div>
+            <canvas id="cvVCV" height="195"></canvas>
+          </div>
         </div>
       </div>
-      <div class="alert alert-blue" style="margin-top:1rem">
-        <span class="alert-icon">💡</span>
-        <span><strong>Regra simples de orientação:</strong> pH &lt; 7,35 = acidose · pH &gt; 7,45 = alcalose · pCO₂ ↑ = componente respiratório · HCO₃ ↓ = componente metabólico</span>
+    </div>
+
+    <!-- PCV -->
+    <div class="mode-card">
+      <div class="mode-hdr" style="background:var(--umber)">
+        <span class="mode-name">PCV — Pressão Controlada</span>
+        <span class="mode-badge">Pressure-Limited · Time-Cycled</span>
+      </div>
+      <div class="mode-body">
+        <div>
+          <p style="font-size:.87rem;margin-bottom:.9rem">Mantém <strong>pressão inspiratória constante</strong> por Ti fixo. Fluxo é <strong>decelerado</strong>; Vt varia com mecânica pulmonar.</p>
+          <table style="margin-bottom:.8rem">
+            <tr><th colspan="2">Parâmetros Ajustados</th></tr>
+            <tr><td>ΔP (acima da PEEP)</td><td><span class="hl hl-o">10–20 cmH₂O</span></td></tr>
+            <tr><td>Frequência (f)</td><td>14–18 rpm</td></tr>
+            <tr><td>Tempo Ins. (Ti)</td><td>0,8–1,2 s</td></tr>
+            <tr><td>PEEP</td><td>5–10 cmH₂O</td></tr>
+            <tr><td>FiO₂</td><td>Titular por SpO₂</td></tr>
+          </table>
+          <div class="alert al-grn">✅ Melhor distribuição do fluxo. Preferido em SDRA e pulmão heterogêneo.</div>
+          <div class="alert al-red">⚠️ Vte não garantido. Se cai → piora compliance/resistência. Se sobe → melhora ou esforço do paciente.</div>
+        </div>
+        <div>
+          <div class="monitor">
+            <div class="mon-hdr">PCV — Fluxo · Pressão · Volume</div>
+            <canvas id="cvPCV" height="195"></canvas>
+          </div>
+        </div>
       </div>
     </div>
-  </section>
 
-  <!-- ======================== PASSO A PASSO ======================== -->
-  <section id="passo-a-passo">
-    <div class="section-header">
-      <span class="section-num">03</span>
-      <h2 class="section-title">Passo a Passo de Interpretação</h2>
+    <!-- A/C -->
+    <div class="mode-card">
+      <div class="mode-hdr" style="background:var(--sage-dk)">
+        <span class="mode-name">Assistido-Controlado (A/C)</span>
+        <span class="mode-badge">Patient-Triggered + Backup</span>
+      </div>
+      <div class="mode-body">
+        <div>
+          <p style="font-size:.87rem;margin-bottom:.9rem">Paciente pode <strong>disparar</strong> o ventilador (assistido) com <strong>frequência mínima de backup</strong> (controlado). Cada ciclo disparado recebe suporte completo.</p>
+          <div class="prop"><span class="prop-k">Disparo pelo paciente</span><span class="prop-v">pressão ou fluxo</span></div>
+          <div class="prop"><span class="prop-k">Frequência de backup</span><span class="prop-v">12–14 rpm</span></div>
+          <div class="prop"><span class="prop-k">Modo base</span><span class="prop-v">VCV ou PCV</span></div>
+          <div class="prop"><span class="prop-k">Sensibilidade</span><span class="prop-v">−1 a −2 cmH₂O</span></div>
+          <div class="alert al-org">⚠️ <strong>Hiperventilação:</strong> f real muito acima da programada → alcalose resp. + Auto-PEEP. Avaliar sedoanalgesia.</div>
+          <div class="alert al-blu">💡 Nas curvas: observe a <strong>deflexão negativa de pressão</strong> antes de cada ciclo — é o esforço do paciente.</div>
+        </div>
+        <div>
+          <div class="monitor">
+            <div class="mon-hdr">A/C — Trigger visível nas curvas</div>
+            <canvas id="cvAC" height="195"></canvas>
+          </div>
+        </div>
+      </div>
     </div>
 
+    <!-- PSV -->
+    <div class="mode-card">
+      <div class="mode-hdr" style="background:var(--steel)">
+        <span class="mode-name">Espontâneo — PSV / CPAP</span>
+        <span class="mode-badge">Flow-Cycled · Patient-Triggered</span>
+      </div>
+      <div class="mode-body">
+        <div>
+          <p style="font-size:.87rem;margin-bottom:.9rem"><strong>PSV:</strong> cada respiração disparada pelo paciente, limitada por pressão, ciclada quando fluxo cai a ~25% do pico. Paciente controla f e Ti.</p>
+          <div class="prop"><span class="prop-k">Pressão de Suporte</span><span class="prop-v">7–20 cmH₂O</span></div>
+          <div class="prop"><span class="prop-k">PEEP (= CPAP)</span><span class="prop-v">5–8 cmH₂O</span></div>
+          <div class="prop"><span class="prop-k">Ciclagem</span><span class="prop-v">25% do fluxo pico</span></div>
+          <div class="prop"><span class="prop-k">FiO₂</span><span class="prop-v">mínima para SpO₂ ≥ 95%</span></div>
+          <div class="alert al-grn">✅ <strong>Desmame:</strong> ↓ PS progressiva (2 cmH₂O/vez). PS ≤ 8 + PEEP ≤ 5 → avaliar TRE.</div>
+          <div class="alert al-blu">💡 <strong>CPAP puro</strong> = PSV 0 + PEEP. Paciente respira espontaneamente com stent de VA apenas.</div>
+        </div>
+        <div>
+          <div class="monitor">
+            <div class="mon-hdr">PSV — Respiração espontânea variável</div>
+            <canvas id="cvPSV" height="195"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 03 · PEEP -->
+  <div class="section">
+    <div class="section-hd">
+      <span class="sec-num">03</span>
+      <h2 class="sec-title">PEEP — Indicações e Estratégias</h2>
+    </div>
+    <div class="g2" style="margin-bottom:.9rem">
+      <div class="card">
+        <div class="card-title">Por que usar PEEP?</div>
+        <div class="prop"><span class="prop-k">Recrutamento alveolar</span><span class="prop-v">↑ área de troca</span></div>
+        <div class="prop"><span class="prop-k">Previne colapso expiratório</span><span class="prop-v">anti-atelectasia</span></div>
+        <div class="prop"><span class="prop-k">↓ shunt intrapulmonar</span><span class="prop-v">↑ PaO₂/FiO₂</span></div>
+        <div class="prop"><span class="prop-k">Reduz edema alveolar</span><span class="prop-v">efeito hidrostático</span></div>
+        <div class="alert al-org">⚠️ PEEP excessiva → hiperinsuflação → ↓ retorno venoso → ↓ DC → hipotensão.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Estratégias de Titulação</div>
+        <table>
+          <tr><th>Estratégia</th><th>Como</th></tr>
+          <tr><td>ARDSnet (tabela)</td><td>Stepwise por FiO₂</td></tr>
+          <tr><td>Melhor compliance</td><td>Vt fixo → ↑ PEEP → obs Cst</td></tr>
+          <tr><td>Recrutamento stepwise</td><td>40 cmH₂O × 40s → SpO₂</td></tr>
+          <tr><td>Driving P guiada</td><td>Pplatô − PEEP &lt; 15 cmH₂O</td></tr>
+        </table>
+        <div class="alert al-blu" style="margin-top:.6rem">💡 Meta: menor FiO₂ para SpO₂ ≥ 92–95% com menor Driving P possível.</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Tabela ARDSnet — FiO₂ × PEEP (baixo PEEP)</div>
+      <div style="overflow-x:auto">
+        <table style="min-width:600px">
+          <tr>
+            <th>FiO₂ (%)</th>
+            <td>30</td><td>40</td><td>40</td><td>50</td><td>50</td><td>60</td><td>70</td><td>70</td><td>70</td><td>80</td><td>90</td><td>90</td><td>90</td><td>100</td>
+          </tr>
+          <tr>
+            <th>PEEP</th>
+            <td>5</td><td>5</td><td>8</td><td>8</td><td>10</td><td>10</td><td>10</td><td>12</td><td>14</td><td>14</td><td>14</td><td>16</td><td>18</td><td>18–24</td>
+          </tr>
+        </table>
+      </div>
+      <p style="font-size:.77rem;color:var(--text-lt);margin-top:.5rem">* Tabela PEEP baixo. Existe tabela PEEP alto para SDRA grave com recrutabilidade confirmada.</p>
+    </div>
+  </div>
+
+  <!-- 04 · PADRÕES -->
+  <div class="section">
+    <div class="section-hd">
+      <span class="sec-num">04</span>
+      <h2 class="sec-title">Padrões de Mecânica — Obstrutivo vs Restritivo</h2>
+    </div>
+    <div class="lung-grid">
+
+      <div class="lung ob">
+        <div class="lung-hdr">
+          <strong>🌬️ Pulmão Obstrutivo</strong><br>
+          <small>DPOC · Asma · Broncoespasmo</small>
+        </div>
+        <div class="lung-body">
+          <div class="prop"><span class="prop-k">Resistência (Rva)</span><span class="prop-v hl hl-r">↑↑ &gt;15 cmH₂O/L/s</span></div>
+          <div class="prop"><span class="prop-k">Compliance (Cst)</span><span class="prop-v">Normal ou ↑</span></div>
+          <div class="prop"><span class="prop-k">Ppico</span><span class="prop-v hl hl-r">↑↑</span></div>
+          <div class="prop"><span class="prop-k">Pplatô</span><span class="prop-v">Normal ou baixo</span></div>
+          <div class="prop"><span class="prop-k">Ppico − Pplatô</span><span class="prop-v hl hl-r">&gt;10 cmH₂O</span></div>
+          <div class="prop"><span class="prop-k">Auto-PEEP</span><span class="prop-v hl hl-r">Frequente!</span></div>
+          <div style="margin-top:.8rem;font-size:.83rem">
+            <strong style="color:var(--umber)">Estratégia Ventilatória</strong><br>
+            • ↓ f (10–12 rpm) e ↑ Te para esvaziar<br>
+            • Fluxo alto (60–80 L/min) → maior Te<br>
+            • PEEP extrínseca 80% da Auto-PEEP<br>
+            • Vt 6–8 mL/kg · Tolerar hipercapnia<br>
+            • Broncodilatadores inalatórios + corticoide
+          </div>
+          <div class="alert al-red">⚠️ Curvas: <strong>fluxo expiratório que não retorna ao zero</strong> antes do próximo ciclo = Auto-PEEP confirmado.</div>
+        </div>
+      </div>
+
+      <div class="lung re">
+        <div class="lung-hdr" style="background:var(--steel)">
+          <strong>🫁 Pulmão Restritivo</strong><br>
+          <small>SDRA · Fibrose · Edema Pulmonar</small>
+        </div>
+        <div class="lung-body">
+          <div class="prop"><span class="prop-k">Compliance (Cst)</span><span class="prop-v hl hl-b">↓↓ &lt;40 mL/cmH₂O</span></div>
+          <div class="prop"><span class="prop-k">Resistência (Rva)</span><span class="prop-v">Normal</span></div>
+          <div class="prop"><span class="prop-k">Ppico</span><span class="prop-v hl hl-b">↑</span></div>
+          <div class="prop"><span class="prop-k">Pplatô</span><span class="prop-v hl hl-b">↑↑</span></div>
+          <div class="prop"><span class="prop-k">Ppico − Pplatô</span><span class="prop-v">Normal (&lt;10)</span></div>
+          <div class="prop"><span class="prop-k">Driving P (Pplatô−PEEP)</span><span class="prop-v hl hl-b">↑ &gt;15 cmH₂O</span></div>
+          <div style="margin-top:.8rem;font-size:.83rem">
+            <strong style="color:var(--umber)">Estratégia SDRA</strong><br>
+            • Vt 4–6 mL/kg PBW (<span class="hl hl-b">6 obrigatório</span>)<br>
+            • Pplatô &lt;30 cmH₂O absolutamente<br>
+            • Driving P &lt;15 cmH₂O<br>
+            • PEEP adequada (tabela ARDSnet)<br>
+            • Prona &gt;16h/dia se P/F &lt;150<br>
+            • FiO₂ 100% → titular SpO₂
+          </div>
+          <div class="alert al-blu">💡 Cst = Vt ÷ (Pplatô − PEEP). Normal: 60–100 mL/cmH₂O. SDRA: &lt;40 mL/cmH₂O.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 05 · TUTORIAL -->
+  <div class="section">
+    <div class="section-hd">
+      <span class="sec-num">05</span>
+      <h2 class="sec-title">Tutorial — Como Programar o Ventilador</h2>
+    </div>
+
+    <div class="tut">
+      <div class="tut-icon">1</div>
+      <div>
+        <div class="tut-title">Calcule o Peso Corporal Predito (PBW)</div>
+        <div class="tut-body">
+          <strong>Homem:</strong> 50 + 0,91 × (altura cm − 152,4) &nbsp;|&nbsp; <strong>Mulher:</strong> 45,5 + 0,91 × (altura cm − 152,4)<br>
+          <span style="color:var(--rust)">⚠️ Use sempre PBW — NUNCA peso real — para calcular Vt!</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tut">
+      <div class="tut-icon">2</div>
+      <div>
+        <div class="tut-title">Escolha o Modo Ventilatório</div>
+        <div class="tut-body">
+          <span class="tag tg-cl">VCV</span> Controle preciso de Vt — SDRA, pós-op imediato, sedação profunda<br>
+          <span class="tag tg-um">PCV</span> Melhor distribuição — pulmão heterogêneo, DPOC<br>
+          <span class="tag tg-sg">PSV/CPAP</span> Desmame, drive preservado, awake intubation
+        </div>
+      </div>
+    </div>
+
+    <div class="tut">
+      <div class="tut-icon">3</div>
+      <div>
+        <div class="tut-title">Ajuste os Parâmetros Iniciais</div>
+        <div class="tut-body">
+          <span class="tag tg-cl">Vt</span> 6 mL/kg PBW (SDRA) / 6–8 (outros) &nbsp;
+          <span class="tag tg-cl">f</span> 14–18 rpm &nbsp;
+          <span class="tag tg-cl">PEEP</span> 5 cmH₂O início &nbsp;
+          <span class="tag tg-cl">FiO₂</span> 100% → titular &nbsp;
+          <span class="tag tg-cl">Fluxo</span> 40–60 L/min (VCV)
+        </div>
+      </div>
+    </div>
+
+    <div class="tut">
+      <div class="tut-icon">4</div>
+      <div>
+        <div class="tut-title">Pausa Inspiratória → Medir Pplatô</div>
+        <div class="tut-body">
+          Pressione <em>pausa inspiratória (hold)</em> por 0,5–1 s com paciente sem esforço.<br>
+          <strong>Pplatô</strong> = pressão após redistribuição (sem fluxo) = pressão alveolar.<br>
+          Meta: Pplatô &lt;30 cmH₂O · Driving P = Pplatô − PEEP &lt;15 cmH₂O
+        </div>
+      </div>
+    </div>
+
+    <div class="tut">
+      <div class="tut-icon">5</div>
+      <div>
+        <div class="tut-title">Ajuste Disparo e Sensibilidade</div>
+        <div class="tut-body">
+          Prefira <strong>disparo a fluxo</strong> (1–2 L/min) se paciente com drive espontâneo.<br>
+          Pressão: −1 a −2 cmH₂O. Evite muito sensível (auto-trigger) ou insensível (falha de disparo).<br>
+          Auto-trigger: f monitored muito &gt; f programada sem esforço real → checar circuit leak.
+        </div>
+      </div>
+    </div>
+
+    <div class="tut">
+      <div class="tut-icon">6</div>
+      <div>
+        <div class="tut-title">Analise as Curvas em Tempo Real</div>
+        <div class="tut-body">
+          🌿 <strong>Fluxo:</strong> retorna ao zero? → Auto-PEEP se não retornar antes do próximo ciclo.<br>
+          📈 <strong>Pressão:</strong> oscilações no platô → esforço ativo (avaliar assincronias).<br>
+          📊 <strong>Volume:</strong> VCi ≠ VCe → vazamento de cuff ou circuito.<br>
+          🌊 Curva de fluxo em "dente de serra" → secreção nas vias aéreas.
+        </div>
+      </div>
+    </div>
+
+    <div class="tut">
+      <div class="tut-icon">7</div>
+      <div>
+        <div class="tut-title">Configure os Alarmes</div>
+        <div class="tut-body">
+          <span class="tag tg-rs">Ppico máx.</span> 40 cmH₂O &nbsp;
+          <span class="tag tg-rs">Vte mín.</span> 4 mL/kg &nbsp;
+          <span class="tag tg-rs">FR máx.</span> 30 rpm &nbsp;
+          <span class="tag tg-rs">Apneia</span> &lt;20 s<br>
+          FiO₂ alarme ±10% do ajuste. <strong>Nunca desligue alarmes.</strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="tut">
+      <div class="tut-icon">8</div>
+      <div>
+        <div class="tut-title">Gasometria 30–60 min após Iniciar VM</div>
+        <div class="tut-body">
+          Avaliar: pH · PaCO₂ · PaO₂ · HCO₃⁻ · SpO₂<br>
+          Calcular <strong>P/F = PaO₂ ÷ FiO₂</strong>. &lt;300 = SDRA leve · &lt;200 = moderada · &lt;100 = grave.<br>
+          Ajustar f → PaCO₂ alvo · Ajustar PEEP/FiO₂ → PaO₂ alvo ≥ 60–80 mmHg.
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:1rem">
+      <div class="card-title">Fórmulas Rápidas de Mecânica</div>
+      <div class="g2">
+        <div>
+          <div class="fbox">Cst = Vt ÷ (Pplatô − PEEP)<small>Normal: 60–100 mL/cmH₂O · SDRA: &lt;40</small></div>
+          <div class="fbox">Rva = (Ppico − Pplatô) ÷ Fluxo<small>Normal: 5–10 cmH₂O/L/s · Obs: &gt;15</small></div>
+        </div>
+        <div>
+          <div class="fbox">Driving P = Pplatô − PEEP<small>Meta: &lt;15 cmH₂O · &gt;15 → ↑ mortalidade SDRA</small></div>
+          <div class="fbox">P/F = PaO₂ ÷ FiO₂<small>&lt;300 leve · &lt;200 moderada · &lt;100 grave (SDRA)</small></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /vm -->
+
+<!-- ══════════════════════════════════════════════════
+     TAB: GASOMETRIA
+══════════════════════════════════════════════════ -->
+<div id="gaso" class="tab-pane">
+
+  <!-- 01 · VALORES NORMAIS -->
+  <div class="section">
+    <div class="section-hd">
+      <span class="sec-num">01</span>
+      <h2 class="sec-title">Valores Normais da Gasometria</h2>
+    </div>
+    <div class="card">
+      <div class="g2">
+        <div>
+          <div class="prop"><span class="prop-k">pH</span><span class="prop-v">7,35 – 7,45</span></div>
+          <div class="prop"><span class="prop-k">PaCO₂</span><span class="prop-v">35 – 45 mmHg</span></div>
+          <div class="prop"><span class="prop-k">HCO₃⁻</span><span class="prop-v">22 – 26 mEq/L</span></div>
+        </div>
+        <div>
+          <div class="prop"><span class="prop-k">BE (Base Excess)</span><span class="prop-v">−2 a +2</span></div>
+          <div class="prop"><span class="prop-k">SatO₂</span><span class="prop-v">≥ 95%</span></div>
+          <div class="prop"><span class="prop-k">PaO₂</span><span class="prop-v">80 – 100 mmHg</span></div>
+        </div>
+      </div>
+      <div class="alert al-blu" style="margin-top:.9rem">💡 <strong>Regra rápida:</strong> pH &lt;7,35 = acidose · pH &gt;7,45 = alcalose · PaCO₂ ↑ = componente resp. · HCO₃⁻ ↓ = componente metabólico</div>
+    </div>
+  </div>
+
+  <!-- 02 · PASSO A PASSO -->
+  <div class="section">
+    <div class="section-hd">
+      <span class="sec-num">02</span>
+      <h2 class="sec-title">Passo a Passo de Interpretação</h2>
+    </div>
     <div class="card">
       <div class="steps">
         <div class="step">
-          <div class="step-content">
-            <div class="step-title">Determine o pH — qual o distúrbio primário?</div>
-            <div class="step-desc">pH &lt; 7,35 → <span class="hl-red">Acidose</span> · pH &gt; 7,45 → <span class="hl-blue">Alcalose</span> · pH normal → distúrbio misto ou compensado</div>
+          <div class="step-n">1</div>
+          <div>
+            <div class="step-title">Determine o pH — distúrbio primário</div>
+            <div class="step-desc">pH &lt;7,35 → <span class="hl hl-r">Acidose</span> · pH &gt;7,45 → <span class="hl hl-b">Alcalose</span> · pH normal → misto ou compensado</div>
           </div>
         </div>
         <div class="step">
-          <div class="step-content">
+          <div class="step-n">2</div>
+          <div>
             <div class="step-title">Identifique o componente primário</div>
-            <div class="step-desc">
-              Olhe pCO₂ e HCO₃: qual está alterado <em>na mesma direção</em> do pH?<br>
-              <span class="hl-orange">pCO₂ ↑ + acidose</span> = Acidose respiratória &nbsp;|&nbsp; <span class="hl-green">HCO₃ ↓ + acidose</span> = Acidose metabólica
-            </div>
+            <div class="step-desc">Qual está alterado na mesma direção do desvio do pH?<br>
+            <span class="hl hl-o">PaCO₂ ↑ + acidose</span> = Acidose Respiratória &nbsp;|&nbsp;
+            <span class="hl hl-g">HCO₃⁻ ↓ + acidose</span> = Acidose Metabólica</div>
           </div>
         </div>
         <div class="step">
-          <div class="step-content">
-            <div class="step-title">Verifique se há compensação adequada</div>
-            <div class="step-desc">Use as fórmulas de compensação esperada (ver seção abaixo). Se estiver fora do esperado → distúrbio misto.</div>
+          <div class="step-n">3</div>
+          <div>
+            <div class="step-title">Verifique a compensação</div>
+            <div class="step-desc">Use as fórmulas da seção seguinte. Se fora do esperado → <strong>distúrbio misto</strong>.</div>
           </div>
         </div>
         <div class="step">
-          <div class="step-content">
-            <div class="step-title">Calcule o Ânion Gap (se acidose metabólica)</div>
-            <div class="step-desc">AG = Na⁺ – (Cl⁻ + HCO₃⁻). Normal: 8–12 mEq/L. AG elevado → causa diferente de AG normal.</div>
+          <div class="step-n">4</div>
+          <div>
+            <div class="step-title">Se acidose metabólica: calcule o Ânion Gap</div>
+            <div class="step-desc">AG = Na⁺ − (Cl⁻ + HCO₃⁻) · Normal: 8–12 mEq/L · AG alto vs normal → orienta causa</div>
           </div>
         </div>
         <div class="step">
-          <div class="step-content">
+          <div class="step-n">5</div>
+          <div>
             <div class="step-title">Se AG elevado: calcule o Delta-Delta</div>
-            <div class="step-desc">ΔAG / ΔHCO₃ = (AG – 12) / (24 – HCO₃). Resultado 1–2: pura AG. &lt;1: + acidose hiperclorêmica. &gt;2: + alcalose metabólica oculta.</div>
+            <div class="step-desc">ΔΔ = (AG − 12) ÷ (24 − HCO₃⁻) · &lt;1: mista · 1–2: pura AG · &gt;2: + alcalose metabólica oculta</div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- TABELA DISTÚRBIOS -->
+    <div class="card" style="margin-top:.8rem">
+      <div class="card-title">Os 4 Distúrbios Primários</div>
+      <table>
+        <thead><tr><th>Distúrbio</th><th>pH</th><th>Alteração Primária</th><th>Compensação</th></tr></thead>
+        <tbody>
+          <tr><td><span class="hl hl-r">Acidose Resp.</span></td><td>↓</td><td>PaCO₂ ↑</td><td>Rins retêm HCO₃⁻ (dias)</td></tr>
+          <tr><td><span class="hl hl-b">Alcalose Resp.</span></td><td>↑</td><td>PaCO₂ ↓</td><td>Rins excretam HCO₃⁻</td></tr>
+          <tr><td><span class="hl hl-o">Acidose Metab.</span></td><td>↓</td><td>HCO₃⁻ ↓</td><td>Hiperventilação (imediata)</td></tr>
+          <tr><td><span class="hl hl-g">Alcalose Metab.</span></td><td>↑</td><td>HCO₃⁻ ↑</td><td>Hipoventilação (limitada)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 03 · COMPENSAÇÕES -->
+  <div class="section">
+    <div class="section-hd">
+      <span class="sec-num">03</span>
+      <h2 class="sec-title">Fórmulas de Compensação</h2>
+    </div>
+    <div class="g2">
+      <div class="card">
+        <div class="card-title" style="color:var(--rust)">Acidose Metabólica → Resp.</div>
+        <div class="fbox">PaCO₂ = 1,5 × HCO₃⁻ + 8 (± 2)<small>Regra de Winter — a mais cobrada em prova.</small></div>
+        <div class="alert al-grn">✅ Ex: HCO₃ = 10 → PaCO₂ esperada = 1,5×10+8 = <strong>23 ±2</strong>. Real = 22 → compensação adequada.</div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="color:#2a5888">Alcalose Metabólica → Resp.</div>
+        <div class="fbox">PaCO₂ = 0,7 × HCO₃⁻ + 21 (± 2)<small>Hipoventilação compensatória — limitada pelo drive hipóxico</small></div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="color:var(--rust)">Acidose Resp. Aguda</div>
+        <div class="fbox">ΔHCO₃⁻ = +1 para cada ↑ 10 PaCO₂<small>Compensação tamponada (horas)</small></div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="color:var(--rust)">Acidose Resp. Crônica</div>
+        <div class="fbox">ΔHCO₃⁻ = +3,5 para cada ↑ 10 PaCO₂<small>Compensação renal (dias — mais eficaz)</small></div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="color:#2a5888">Alcalose Resp. Aguda</div>
+        <div class="fbox">ΔHCO₃⁻ = −2 para cada ↓ 10 PaCO₂<small>Tamponamento rápido</small></div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="color:#2a5888">Alcalose Resp. Crônica</div>
+        <div class="fbox">ΔHCO₃⁻ = −5 para cada ↓ 10 PaCO₂<small>Compensação renal eficaz</small></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 04 · ÂNION GAP -->
+  <div class="section">
+    <div class="section-hd">
+      <span class="sec-num">04</span>
+      <h2 class="sec-title">Ânion Gap e Causas de Acidose Metabólica</h2>
+    </div>
     <div class="card">
-      <div class="card-header"><div class="card-title">Os 4 Distúrbios Primários</div></div>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr><th>Distúrbio</th><th>pH</th><th>Alteração primária</th><th>Compensação</th></tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><span class="hl-red">Acidose Resp.</span></td>
-              <td class="mono">↓</td>
-              <td>pCO₂ ↑</td>
-              <td>Rins retêm HCO₃ (lento, dias)</td>
-            </tr>
-            <tr>
-              <td><span class="hl-blue">Alcalose Resp.</span></td>
-              <td class="mono">↑</td>
-              <td>pCO₂ ↓</td>
-              <td>Rins excretam HCO₃</td>
-            </tr>
-            <tr>
-              <td><span class="hl-orange">Acidose Metab.</span></td>
-              <td class="mono">↓</td>
-              <td>HCO₃ ↓</td>
-              <td>Hiperventilação (pCO₂ ↓) — imediato</td>
-            </tr>
-            <tr>
-              <td><span class="hl-green">Alcalose Metab.</span></td>
-              <td class="mono">↑</td>
-              <td>HCO₃ ↑</td>
-              <td>Hipoventilação (pCO₂ ↑) — limitado</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </section>
-
-  <!-- ======================== COMPENSAÇÕES ======================== -->
-  <section id="compensacoes">
-    <div class="section-header">
-      <span class="section-num">04</span>
-      <h2 class="section-title">Fórmulas de Compensação</h2>
-    </div>
-
-    <div class="card">
-      <div class="card-header"><div class="card-title">Acidose Metabólica → compensação respiratória</div><span class="badge badge-orange">MAIS COBRADA</span></div>
-      <div class="formula-box">
-        pCO₂ esperada = 1,5 × HCO₃ + 8 (± 2)
-        <span>Regra de Winter — a mais cobrada em prova. Ex: HCO₃ = 10 → pCO₂ esperada = 23 ± 2. Se pCO₂ real = 22 → compensação adequada ✅</span>
-      </div>
-      <div class="alert alert-green">
-        <span class="alert-icon">✅</span>
-        <span>Aplicando à Q1 da sua prova: HCO₃ = 10 → pCO₂ esperada = 1,5×10 + 8 = <strong>23</strong>. pCO₂ real = 22 → compensação adequada → Acidose metabólica pura.</span>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-header"><div class="card-title">Alcalose Metabólica → compensação respiratória</div></div>
-      <div class="formula-box">
-        pCO₂ esperada = 0,7 × HCO₃ + 21 (± 2)
-        <span>Ou: ΔpCO₂ = 0,7 × ΔHCO₃</span>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-header"><div class="card-title">Distúrbios Respiratórios → compensação renal</div></div>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Distúrbio</th><th>Compensação esperada do HCO₃</th><th>Tempo</th></tr></thead>
-          <tbody>
-            <tr>
-              <td>Acidose Resp. Aguda</td>
-              <td class="mono">↑ 1 para cada ↑ 10 de pCO₂</td>
-              <td>Minutos</td>
-            </tr>
-            <tr>
-              <td>Acidose Resp. Crônica</td>
-              <td class="mono">↑ 3,5 para cada ↑ 10 de pCO₂</td>
-              <td>3–5 dias</td>
-            </tr>
-            <tr>
-              <td>Alcalose Resp. Aguda</td>
-              <td class="mono">↓ 2 para cada ↓ 10 de pCO₂</td>
-              <td>Minutos</td>
-            </tr>
-            <tr>
-              <td>Alcalose Resp. Crônica</td>
-              <td class="mono">↓ 5 para cada ↓ 10 de pCO₂</td>
-              <td>3–5 dias</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </section>
-
-  <!-- ======================== ÂNION GAP ======================== -->
-  <section id="ag">
-    <div class="section-header">
-      <span class="section-num">05</span>
-      <h2 class="section-title">Ânion Gap — O Divisor de Águas</h2>
-    </div>
-
-    <div class="card">
-      <div class="formula-box">
-        AG = Na⁺ – (Cl⁻ + HCO₃⁻)
-        <span>Normal: 8–12 mEq/L (com albumina normal). Se albumina ↓, corrija: AG corrigido = AG + 2,5 × (4 – albumina)</span>
-      </div>
-
-      <div class="grid2" style="margin-top:1.2rem">
+      <div class="fbox" style="margin-bottom:.8rem">AG = Na⁺ − (Cl⁻ + HCO₃⁻) · Normal: 8–12 mEq/L</div>
+      <div class="alert al-org">💡 Corrija pela albumina: AG corr. = AG + 2,5 × (4 − albumina g/dL). Hipoalbuminemia mascara AG elevado!</div>
+      <div class="g2" style="margin-top:.9rem">
         <div>
-          <div class="card" style="border-color:rgba(248,81,73,0.3)">
-            <div class="card-header"><div class="card-title" style="font-size:1rem">AG <span class="hl-red">Elevado</span> (&gt;12)</div></div>
-            <div style="font-size:0.85rem;color:var(--text-muted)">
-              <strong style="color:var(--text)">MUDPILAS / CATMUDPILES:</strong><br>
-              · Metanol / Metformina (acidose lática)<br>
-              · Uremia<br>
-              · Diabética (cetoacidose)<br>
-              · Propileno glicol<br>
-              · Isoniazida / Iron (ferro)<br>
-              · Lactato (<span class="hl-red">acidose lática!</span>)<br>
-              · Etilenoglicol<br>
-              · Salicilatos
-            </div>
-          </div>
+          <div class="card-title">AG Elevado (&gt;12) — MUDPILES</div>
+          <div class="prop"><span class="prop-k"><span class="tag tg-rs">M</span> Metanol / Metformina</span></div>
+          <div class="prop"><span class="prop-k"><span class="tag tg-rs">U</span> Uremia</span></div>
+          <div class="prop"><span class="prop-k"><span class="tag tg-rs">D</span> Diabética (CAD)</span></div>
+          <div class="prop"><span class="prop-k"><span class="tag tg-rs">P</span> Propileno glicol</span></div>
+          <div class="prop"><span class="prop-k"><span class="tag tg-rs">I</span> Isoniazida / Intoxicações</span></div>
+          <div class="prop"><span class="prop-k"><span class="tag tg-rs">L</span> Láctico</span></div>
+          <div class="prop"><span class="prop-k"><span class="tag tg-rs">E</span> Etilenoglicol</span></div>
+          <div class="prop"><span class="prop-k"><span class="tag tg-rs">S</span> Salicilatos</span></div>
         </div>
         <div>
-          <div class="card" style="border-color:rgba(255,166,87,0.3)">
-            <div class="card-header"><div class="card-title" style="font-size:1rem">AG <span class="hl-orange">Normal</span> (hiperclorêmica)</div></div>
-            <div style="font-size:0.85rem;color:var(--text-muted)">
-              <strong style="color:var(--text)">DURHAM / HARD-UP:</strong><br>
-              · Diarreia (perda de HCO₃)<br>
-              · Uretero-sigmoidostomia<br>
-              · RTA (acidose tubular renal)<br>
-              · Hiperalimentação<br>
-              · Acetazolamida<br>
-              · Addison<br>
-              · Reposição de NaCl em excesso
-            </div>
-          </div>
+          <div class="card-title">AG Normal (hiperclorêmica) — HARDUPS</div>
+          <div class="prop"><span class="prop-k"><span class="tag tg-st">H</span> Hiperalimentação</span></div>
+          <div class="prop"><span class="prop-k"><span class="tag tg-st">A</span> Acetazolamida</span></div>
+          <div class="prop"><span class="prop-k"><span class="tag tg-st">R</span> Renal tubular (ATR 1, 2, 4)</span></div>
+          <div class="prop"><span class="prop-k"><span class="tag tg-st">D</span> Diarreia (perda HCO₃)</span></div>
+          <div class="prop"><span class="prop-k"><span class="tag tg-st">U</span> Ureterosigmoidostomia</span></div>
+          <div class="prop"><span class="prop-k"><span class="tag tg-st">P</span> Pancreaticostomia / Fístulas</span></div>
+          <div class="prop"><span class="prop-k"><span class="tag tg-st">S</span> SF 0,9% em excesso</span></div>
         </div>
       </div>
-
-      <div class="alert alert-red" style="margin-top:1rem">
-        <span class="alert-icon">🎯</span>
-        <span><strong>Q1 da prova:</strong> AG = 135 – (101 + 10) = <strong>24</strong> → AG <strong>elevado</strong>. Metformina causa acidose lática = AG elevado = <strong>é compatível</strong>. Por isso a resposta "metformina" estava ERRADA como "incompatível".</span>
-      </div>
     </div>
+  </div>
 
+  <!-- 05 · DELTA-DELTA -->
+  <div class="section">
+    <div class="section-hd">
+      <span class="sec-num">05</span>
+      <h2 class="sec-title">Delta-Delta — Identificar Distúrbios Mistos</h2>
+    </div>
     <div class="card">
-      <div class="card-header"><div class="card-title">Delta-Delta (ΔΔ) — detecta distúrbio misto oculto</div><span class="badge badge-purple">AVANÇADO</span></div>
-      <div class="formula-box">
-        ΔΔ = (AG – 12) / (24 – HCO₃)
-        <span>1–2: acidose AG pura · &lt;1: + acidose hiperclorêmica · &gt;2: + alcalose metabólica oculta</span>
-      </div>
+      <div class="fbox" style="margin-bottom:.8rem">ΔΔ = (AG − 12) ÷ (24 − HCO₃⁻)<small>Aplicar SOMENTE quando AG estiver elevado em acidose metabólica</small></div>
+      <table>
+        <thead><tr><th>ΔΔ</th><th>Interpretação</th><th>Exemplo Clínico</th></tr></thead>
+        <tbody>
+          <tr><td><strong>&lt;1</strong></td><td>Acidose mista (AG↑ + hiperclorêmica)</td><td>CAD + diarreia</td></tr>
+          <tr><td><strong>1 – 2</strong></td><td>Acidose metabólica pura com AG ↑</td><td>CAD isolada · láctico</td></tr>
+          <tr><td><strong>&gt;2</strong></td><td>AG↑ + alcalose metabólica oculta</td><td>Láctico + vômitos / furosemida</td></tr>
+        </tbody>
+      </table>
     </div>
-  </section>
+  </div>
 
-  <!-- ======================== MACETES ======================== -->
-  <section id="macetes">
-    <div class="section-header">
-      <span class="section-num">06</span>
-      <h2 class="section-title">Macetes Finais</h2>
+  <!-- 06 · DISTÚRBIOS MISTOS -->
+  <div class="section">
+    <div class="section-hd">
+      <span class="sec-num">06</span>
+      <h2 class="sec-title">Distúrbios Mistos — Reconhecimento Rápido</h2>
     </div>
-
-    <div class="grid2">
-      <div class="mnemonic">
-        <div class="mnemonic-title">🫁 Gasometria — ROME</div>
-        <div class="mnemonic-text">
-          <strong>R</strong>espiratory <strong>O</strong>pposite (oposto): pH↑ pCO₂↓ ou pH↓ pCO₂↑<br>
-          <strong>M</strong>etabolic <strong>E</strong>qual (igual): pH↑ HCO₃↑ ou pH↓ HCO₃↓
-        </div>
-      </div>
-      <div class="mnemonic">
-        <div class="mnemonic-title">🔧 VM — PCV vs VCV</div>
-        <div class="mnemonic-text">
-          <strong>PCV</strong> = pressão <em>quadrada</em>, fluxo desacelerante, volume variável<br>
-          <strong>VCV</strong> = fluxo <em>quadrado</em>, pressão em rampa, volume fixo
-        </div>
-      </div>
-      <div class="mnemonic">
-        <div class="mnemonic-title">📊 Ânion Gap rápido</div>
-        <div class="mnemonic-text">
-          <strong>AG = Na – Cl – HCO₃</strong><br>
-          Calcule SEMPRE antes de pensar na causa.<br>
-          Normal ≤ 12. Elevado &gt; 12.
-        </div>
-      </div>
-      <div class="mnemonic">
-        <div class="mnemonic-title">⏱️ Regra de Winter</div>
-        <div class="mnemonic-text">
-          <strong>pCO₂ = 1,5 × HCO₃ + 8 (±2)</strong><br>
-          Se pCO₂ real &lt; esperada → alcalose resp. associada<br>
-          Se pCO₂ real &gt; esperada → acidose resp. associada
-        </div>
-      </div>
+    <div class="card">
+      <table>
+        <thead><tr><th>Combinação</th><th>Achado-chave</th><th>Cenário típico</th></tr></thead>
+        <tbody>
+          <tr><td>Acid. Metab. + Acid. Resp.</td><td>PaCO₂ real &gt; esperado (Winter)</td><td>PCR · intox. grave</td></tr>
+          <tr><td>Acid. Metab. + Alc. Resp.</td><td>PaCO₂ real &lt; esperado (Winter)</td><td>Sepse + hiperventilação</td></tr>
+          <tr><td>Alc. Metab. + Alc. Resp.</td><td>pH muito ↑ · PaCO₂ não compensa</td><td>Vômitos + ventilação mecânica</td></tr>
+          <tr><td>Acid. Resp. + Alc. Metab.</td><td>HCO₃ muito ↑ para o PaCO₂</td><td>DPOC + furosemida</td></tr>
+          <tr><td>Acid. Metab. + Alc. Metab.</td><td>pH normal · HCO₃ e AG alterados</td><td>CAD + vômitos</td></tr>
+        </tbody>
+      </table>
+      <div class="alert al-blu" style="margin-top:.8rem">💡 Dois distúrbios opostos podem resultar em pH <strong>normal</strong>. Sempre analisar PaCO₂ e HCO₃⁻ mesmo com pH normal!</div>
     </div>
+  </div>
 
-    <!-- TABELA FINAL -->
-    <div class="card" style="margin-top:1.5rem">
-      <div class="card-header"><div class="card-title">Causa × Gasometria — tabela rápida</div></div>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr><th>Causa</th><th>pH</th><th>pCO₂</th><th>HCO₃</th><th>AG</th></tr>
-          </thead>
-          <tbody>
-            <tr><td>Cetoacidose diabética</td><td class="mono hl-red">↓</td><td class="mono">↓ (comp.)</td><td class="mono">↓↓</td><td class="mono hl-red">↑</td></tr>
-            <tr><td>Acidose lática (metformina, choque)</td><td class="mono hl-red">↓</td><td class="mono">↓ (comp.)</td><td class="mono">↓↓</td><td class="mono hl-red">↑</td></tr>
-            <tr><td>Insuficiência renal</td><td class="mono hl-red">↓</td><td class="mono">↓ (comp.)</td><td class="mono">↓</td><td class="mono hl-red">↑</td></tr>
-            <tr><td>Diarreia</td><td class="mono hl-red">↓</td><td class="mono">↓ (comp.)</td><td class="mono">↓</td><td class="mono">Normal</td></tr>
-            <tr><td>Acidose tubular renal</td><td class="mono hl-red">↓</td><td class="mono">↓ (comp.)</td><td class="mono">↓</td><td class="mono">Normal</td></tr>
-            <tr><td>Vômitos</td><td class="mono hl-green">↑</td><td class="mono">↑ (comp.)</td><td class="mono">↑</td><td class="mono">Normal/↓</td></tr>
-            <tr><td>DPOC descompensado</td><td class="mono hl-red">↓</td><td class="mono hl-red">↑↑</td><td class="mono">↑ (comp.)</td><td class="mono">Normal</td></tr>
-            <tr><td>Hiperventilação / TEP</td><td class="mono hl-green">↑</td><td class="mono hl-green">↓↓</td><td class="mono">↓ (comp.)</td><td class="mono">Normal</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </section>
-
-</div>
+</div><!-- /gaso -->
 
 <script>
-  // Progress bar
-  window.addEventListener('scroll', () => {
-    const el = document.documentElement;
-    const pct = (el.scrollTop / (el.scrollHeight - el.clientHeight)) * 100;
-    document.getElementById('progress').style.width = pct + '%';
+// ─────────────────────────────────────────────
+//  TAB SWITCH
+// ─────────────────────────────────────────────
+function goTab(id, btn) {
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ─────────────────────────────────────────────
+//  CANVAS SETUP
+// ─────────────────────────────────────────────
+const W = 320, H = 195, PH = 65; // panel height
+
+function setup(id) {
+  const el = document.getElementById(id);
+  const dpr = window.devicePixelRatio || 1;
+  el.width  = W * dpr;
+  el.height = H * dpr;
+  el.style.width  = '100%';
+  el.style.height = H + 'px';
+  const ctx = el.getContext('2d');
+  ctx.scale(dpr, dpr);
+  return ctx;
+}
+
+function bg(ctx) {
+  ctx.fillStyle = '#080f04';
+  ctx.fillRect(0, 0, W, H);
+  ctx.strokeStyle = '#0f1e08';
+  ctx.lineWidth = 0.5;
+  for (let x = 0; x < W; x += 32) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
+  for (let y = 0; y < H; y += 13) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+  // panel dividers
+  ctx.strokeStyle = '#1a3010';
+  ctx.lineWidth = 1;
+  [PH, PH*2].forEach(y => { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); });
+}
+
+function zeroLine(ctx, y) {
+  ctx.save();
+  ctx.strokeStyle = '#1e3814';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([5,5]);
+  ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke();
+  ctx.restore();
+}
+
+function lbl(ctx, txt, x, y, col) {
+  ctx.fillStyle = col || '#4a7030';
+  ctx.font = '600 8px "JetBrains Mono",monospace';
+  ctx.fillText(txt, x, y);
+}
+
+function wave(ctx, col, pts, lw) {
+  ctx.strokeStyle = col;
+  ctx.lineWidth = lw || 1.5;
+  ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+  ctx.beginPath();
+  ctx.moveTo(pts[0][0], pts[0][1]);
+  for (let i=1;i<pts.length;i++) ctx.lineTo(pts[i][0], pts[i][1]);
+  ctx.stroke();
+}
+
+// ─────────────────────────────────────────────
+//  VCV
+// ─────────────────────────────────────────────
+function drawVCV() {
+  const ctx = setup('cvVCV');
+  bg(ctx);
+  lbl(ctx,'FLUXO (L/min)',3,9);
+  lbl(ctx,'PRESSÃO (cmH₂O)',3,74);
+  lbl(ctx,'VOLUME (mL)',3,139);
+
+  // zero refs
+  zeroLine(ctx,32);     // flow zero
+  zeroLine(ctx,120);    // pressure PEEP
+  zeroLine(ctx,188);    // volume zero
+
+  const cyc=160, ins=55;
+  [0,cyc].forEach(off=>{
+    const x=off;
+    // FLOW: square positive then decelerating negative
+    wave(ctx,'#30d870',[
+      [x,32],[x+1,10],[x+ins,10],[x+ins+1,32],[x+ins+2,57],
+      [x+ins+16,52],[x+ins+42,36],[x+ins+70,33],[x+cyc,32]
+    ]);
+    // PRESSURE: triangular rise → brief plateau → drop
+    wave(ctx,'#e09830',[
+      [x,120],[x+ins,73],[x+ins+6,75],[x+ins+7,120],[x+cyc,120]
+    ]);
+    // VOLUME: linear rise → exponential fall
+    const volPts=[[x,188],[x+ins,140]];
+    for(let t=0;t<=(cyc-ins);t++){
+      const v=140+(188-140)*(1-Math.exp(-3.8*t/(cyc-ins)));
+      volPts.push([x+ins+t,v]);
+    }
+    wave(ctx,'#38c0e0',volPts);
   });
 
-  function setActive(el) {
-    document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
-    el.classList.add('active');
-  }
+  // annotations
+  lbl(ctx,'Ppico',55,70,'#e09830');
+  lbl(ctx,'Pplatô',55,78,'#c0b060');
+  lbl(ctx,'PEEP',130,118,'#e09830');
+  lbl(ctx,'Fluxo quadrado',3,22,'#30d870');
+}
 
-  // Highlight nav on scroll
-  const sections = document.querySelectorAll('section');
-  const navLinks = document.querySelectorAll('nav a');
-  window.addEventListener('scroll', () => {
-    let current = '';
-    sections.forEach(s => {
-      if (window.scrollY >= s.offsetTop - 100) current = s.id;
-    });
-    navLinks.forEach(a => {
-      a.classList.remove('active');
-      if (a.getAttribute('href') === '#' + current) a.classList.add('active');
-    });
+// ─────────────────────────────────────────────
+//  PCV
+// ─────────────────────────────────────────────
+function drawPCV() {
+  const ctx = setup('cvPCV');
+  bg(ctx);
+  lbl(ctx,'FLUXO (L/min)',3,9);
+  lbl(ctx,'PRESSÃO (cmH₂O)',3,74);
+  lbl(ctx,'VOLUME (mL)',3,139);
+
+  zeroLine(ctx,32); zeroLine(ctx,120); zeroLine(ctx,188);
+
+  const cyc=160, ins=55;
+  [0,cyc].forEach(off=>{
+    const x=off;
+    // FLOW: decelerating during insp
+    const fp=[[x,32]];
+    for(let t=0;t<=ins;t++){
+      const f=32-(32-10)*Math.exp(-4.5*t/ins);
+      fp.push([x+t,f]);
+    }
+    fp.push([x+ins,32],[x+ins+2,57]);
+    for(let t=0;t<=(cyc-ins-2);t++){
+      const f=57+(32-57)*(1-Math.exp(-3.5*t/(cyc-ins)));
+      fp.push([x+ins+2+t,f]);
+    }
+    wave(ctx,'#30d870',fp);
+
+    // PRESSURE: square
+    wave(ctx,'#e09830',[
+      [x,120],[x+1,71],[x+ins,71],[x+ins+1,120],[x+cyc,120]
+    ]);
+
+    // VOLUME: S-curve rise → exponential fall
+    const vp=[[x,188]];
+    for(let t=0;t<=ins;t++){
+      const v=188-(188-141)*(1-Math.exp(-4.5*t/ins));
+      vp.push([x+t,v]);
+    }
+    for(let t=0;t<=(cyc-ins);t++){
+      const v=141+(188-141)*(1-Math.exp(-3.5*t/(cyc-ins)));
+      vp.push([x+ins+t,v]);
+    }
+    wave(ctx,'#38c0e0',vp);
   });
+
+  lbl(ctx,'Pressão quadrada',3,68,'#e09830');
+  lbl(ctx,'Fluxo desacelera',3,22,'#30d870');
+}
+
+// ─────────────────────────────────────────────
+//  A/C — shows patient trigger dip
+// ─────────────────────────────────────────────
+function drawAC() {
+  const ctx = setup('cvAC');
+  bg(ctx);
+  lbl(ctx,'FLUXO (L/min)',3,9);
+  lbl(ctx,'PRESSÃO (cmH₂O)',3,74);
+  lbl(ctx,'VOLUME (mL)',3,139);
+
+  zeroLine(ctx,32); zeroLine(ctx,120); zeroLine(ctx,188);
+
+  const cyc=160, ins=55, trig=10;
+  [0,cyc].forEach(off=>{
+    const x=off;
+    // FLOW: small positive effort spike, then square
+    wave(ctx,'#30d870',[
+      [x,32],[x+2,29],[x+trig,32],[x+trig+1,10],
+      [x+trig+ins,10],[x+trig+ins+1,32],[x+trig+ins+2,56],
+      [x+trig+ins+18,50],[x+trig+ins+45,34],[x+cyc,32]
+    ]);
+    // PRESSURE: small negative dip (trigger effort), then up
+    wave(ctx,'#e09830',[
+      [x,120],[x+2,123],[x+trig,120],[x+trig+1,73],
+      [x+trig+ins,75],[x+trig+ins+1,120],[x+cyc,120]
+    ]);
+    // VOLUME
+    const vp=[[x+trig,188],[x+trig+ins,140]];
+    for(let t=0;t<=(cyc-trig-ins);t++){
+      const v=140+(188-140)*(1-Math.exp(-3.8*t/(cyc-trig-ins)));
+      vp.push([x+trig+ins+t,v]);
+    }
+    wave(ctx,'#38c0e0',vp);
+  });
+
+  // trigger annotation
+  ctx.fillStyle='#e0e040';
+  ctx.font='italic 8px serif';
+  ctx.fillText('← trigger',4,46);
+  ctx.fillText('← esforço',4,128);
+}
+
+// ─────────────────────────────────────────────
+//  PSV — irregular spontaneous cycles
+// ─────────────────────────────────────────────
+function drawPSV() {
+  const ctx = setup('cvPSV');
+  bg(ctx);
+  lbl(ctx,'FLUXO (L/min)',3,9);
+  lbl(ctx,'PRESSÃO (cmH₂O)',3,74);
+  lbl(ctx,'VOLUME (mL)',3,139);
+
+  zeroLine(ctx,32); zeroLine(ctx,120); zeroLine(ctx,188);
+
+  const cycles=[{x:4,ins:62,exp:88,a:1.0},{x:160,ins:48,exp:70,a:0.72},{x:285,ins:55,exp:30,a:0.9}];
+
+  cycles.forEach(({x,ins,exp,a})=>{
+    // trigger effort (tiny negative)
+    wave(ctx,'#30d870',[[x,32],[x+3,35],[x+6,32]]);
+    wave(ctx,'#e09830',[[x,120],[x+3,123],[x+6,120]]);
+
+    // FLOW: decelerating
+    const fp=[[x+6,32]];
+    for(let t=0;t<=ins&&x+6+t<W;t++){
+      const f=32-(32-12)*a*Math.exp(-3.5*t/ins);
+      fp.push([x+6+t,f]);
+    }
+    const xe=x+6+ins;
+    fp.push([xe,32],[xe+2,57*a+32*(1-a)]);
+    for(let t=0;t<=exp&&xe+2+t<W;t++){
+      const f=(57*a+32*(1-a))+(32-(57*a+32*(1-a)))*(1-Math.exp(-3.8*t/exp));
+      fp.push([xe+2+t,f]);
+    }
+    wave(ctx,'#30d870',fp);
+
+    // PRESSURE: PS rise then gradual slight drop
+    const pp=[[x+6,120]];
+    for(let t=0;t<=ins&&x+6+t<W;t++){
+      const p=120-(120-100)*a*(1-Math.exp(-5*t/ins));
+      pp.push([x+6+t,p]);
+    }
+    if(xe<W) pp.push([xe,120]);
+    if(xe+exp<W) pp.push([xe+exp,120]);
+    wave(ctx,'#e09830',pp);
+
+    // VOLUME
+    const vp=[[x+6,188]];
+    for(let t=0;t<=ins&&x+6+t<W;t++){
+      const v=188-(188-143)*a*(1-Math.exp(-3.5*t/ins));
+      vp.push([x+6+t,v]);
+    }
+    const vTop=188-(188-143)*a*(1-Math.exp(-3.5));
+    for(let t=0;t<=exp&&xe+t<W;t++){
+      const v=vTop+(188-vTop)*(1-Math.exp(-3.5*t/exp));
+      vp.push([xe+t,v]);
+    }
+    wave(ctx,'#38c0e0',vp);
+  });
+
+  ctx.fillStyle='#e0e040'; ctx.font='italic 8px serif';
+  ctx.fillText('variável',125,20);
+  ctx.fillText('paciente controla',125,60);
+}
+
+// ─────────────────────────────────────────────
+//  INIT
+// ─────────────────────────────────────────────
+window.addEventListener('load',()=>{
+  drawVCV(); drawPCV(); drawAC(); drawPSV();
+});
 </script>
 </body>
 </html>
