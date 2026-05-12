@@ -340,6 +340,40 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
 .vl-dot { width: 10px; height: 10px; border-radius: 3px; }
 
 
+/* ── MOVE ROW BUTTONS ── */
+.move-cell {
+  width: 32px;
+  text-align: center;
+  vertical-align: middle;
+  padding: 4px 2px !important;
+  display: none;
+}
+.notif-edit-mode .move-cell { display: table-cell; }
+.notif-edit-mode thead .move-cell { display: table-cell; }
+.move-btns {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: center;
+}
+.btn-move-row {
+  width: 22px; height: 20px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--muted);
+  font-size: 0.65rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+  line-height: 1;
+  padding: 0;
+}
+.btn-move-row:hover { background: var(--honey-light); border-color: var(--honey); color: var(--honey); }
+.btn-move-row:active { transform: scale(0.9); }
+
 /* ── NOTIF EDIT MODE ── */
 .notif-toolbar {
   display: flex;
@@ -567,7 +601,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
     <button class="btn-notif-edit" id="notifEditToggle" onclick="toggleNotifEdit()">
       ✏️ Editar agravos
     </button>
-    <span class="notif-edit-hint" id="notifEditHint">Clique no nome ou na observação para editar · Salvo automaticamente</span>
+    <span class="notif-edit-hint" id="notifEditHint">Clique no nome ou observação para editar · Use ↑ ↓ para reordenar · Salvo automaticamente</span>
   </div>
 
   <!-- FILTROS -->
@@ -588,6 +622,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
       <thead>
         <tr>
           <th style="width:30%">Agravo / Doença</th>
+          <th class="move-cell"></th>
           <th class="drive-cell" title="Link Google Drive">📎</th>
           <th style="width:9%; text-align:center">Prazo</th>
           <th style="width:14%">Notificar<br><span style="font-size:0.56rem;letter-spacing:0px;opacity:0.7">☑ SMS · ☑ SES · ☑ MS</span></th>
@@ -600,6 +635,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         <!-- ════ SEMANAL — CONFIRMAÇÃO ════ -->
         <tr data-prazo="semanal" data-quando="confirmacao">
           <td class="disease-name">Acidente de trabalho com exposição a material biológico</td>
+          <td class="move-cell"><div class="move-btns"><button class="btn-move-row" onclick="moveNotifRow(this,-1)" title="Subir">↑</button><button class="btn-move-row" onclick="moveNotifRow(this,1)" title="Descer">↓</button></div></td>
           <td class="drive-cell" id="dcell-1"><button class="drive-btn" id="dbtn-1" onclick="toggleDrivePopover(1,event)" title="Anexar arquivo do Drive">📎</button><div class="drive-popover" id="dpop-1"><div class="drive-popover-title">📁 Google Drive</div><input class="drive-input" id="dinput-1" placeholder="Cole o link do Google Drive..." /><div class="drive-popover-btns"><a class="drive-open-link" id="dlink-1" href="#" target="_blank">↗ abrir</a><button class="btn-drive-clear" onclick="clearDriveLink(1)">Remover</button><button class="btn-drive-save" onclick="saveDriveLink(1)">Salvar</button></div></div></td>
           <td style="text-align:center"><span class="badge badge-semanal">SEMANAL</span></td>
           <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
@@ -608,6 +644,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         </tr>
         <tr data-prazo="semanal" data-quando="confirmacao">
           <td class="disease-name">Hanseníase</td>
+          <td class="move-cell"><div class="move-btns"><button class="btn-move-row" onclick="moveNotifRow(this,-1)" title="Subir">↑</button><button class="btn-move-row" onclick="moveNotifRow(this,1)" title="Descer">↓</button></div></td>
           <td class="drive-cell" id="dcell-2"><button class="drive-btn" id="dbtn-2" onclick="toggleDrivePopover(2,event)" title="Anexar arquivo do Drive">📎</button><div class="drive-popover" id="dpop-2"><div class="drive-popover-title">📁 Google Drive</div><input class="drive-input" id="dinput-2" placeholder="Cole o link do Google Drive..." /><div class="drive-popover-btns"><a class="drive-open-link" id="dlink-2" href="#" target="_blank">↗ abrir</a><button class="btn-drive-clear" onclick="clearDriveLink(2)">Remover</button><button class="btn-drive-save" onclick="saveDriveLink(2)">Salvar</button></div></div></td>
           <td style="text-align:center"><span class="badge badge-semanal">SEMANAL</span></td>
           <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
@@ -616,6 +653,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         </tr>
         <tr data-prazo="semanal" data-quando="confirmacao">
           <td class="disease-name">HIV / AIDS (inclusive gestante, parturiente, puérpera e criança exposta à transmissão vertical)</td>
+          <td class="move-cell"><div class="move-btns"><button class="btn-move-row" onclick="moveNotifRow(this,-1)" title="Subir">↑</button><button class="btn-move-row" onclick="moveNotifRow(this,1)" title="Descer">↓</button></div></td>
           <td class="drive-cell" id="dcell-3"><button class="drive-btn" id="dbtn-3" onclick="toggleDrivePopover(3,event)" title="Anexar arquivo do Drive">📎</button><div class="drive-popover" id="dpop-3"><div class="drive-popover-title">📁 Google Drive</div><input class="drive-input" id="dinput-3" placeholder="Cole o link do Google Drive..." /><div class="drive-popover-btns"><a class="drive-open-link" id="dlink-3" href="#" target="_blank">↗ abrir</a><button class="btn-drive-clear" onclick="clearDriveLink(3)">Remover</button><button class="btn-drive-save" onclick="saveDriveLink(3)">Salvar</button></div></div></td>
           <td style="text-align:center"><span class="badge badge-semanal">SEMANAL</span></td>
           <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
@@ -624,6 +662,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         </tr>
         <tr data-prazo="semanal" data-quando="confirmacao">
           <td class="disease-name">Hepatites virais (A, B, C, D, E)</td>
+          <td class="move-cell"><div class="move-btns"><button class="btn-move-row" onclick="moveNotifRow(this,-1)" title="Subir">↑</button><button class="btn-move-row" onclick="moveNotifRow(this,1)" title="Descer">↓</button></div></td>
           <td class="drive-cell" id="dcell-4"><button class="drive-btn" id="dbtn-4" onclick="toggleDrivePopover(4,event)" title="Anexar arquivo do Drive">📎</button><div class="drive-popover" id="dpop-4"><div class="drive-popover-title">📁 Google Drive</div><input class="drive-input" id="dinput-4" placeholder="Cole o link do Google Drive..." /><div class="drive-popover-btns"><a class="drive-open-link" id="dlink-4" href="#" target="_blank">↗ abrir</a><button class="btn-drive-clear" onclick="clearDriveLink(4)">Remover</button><button class="btn-drive-save" onclick="saveDriveLink(4)">Salvar</button></div></div></td>
           <td style="text-align:center"><span class="badge badge-semanal">SEMANAL</span></td>
           <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
@@ -632,6 +671,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         </tr>
         <tr data-prazo="semanal" data-quando="confirmacao">
           <td class="disease-name">Hepatite B em gestante, parturiente ou puérpera e criança exposta</td>
+          <td class="move-cell"><div class="move-btns"><button class="btn-move-row" onclick="moveNotifRow(this,-1)" title="Subir">↑</button><button class="btn-move-row" onclick="moveNotifRow(this,1)" title="Descer">↓</button></div></td>
           <td class="drive-cell" id="dcell-5"><button class="drive-btn" id="dbtn-5" onclick="toggleDrivePopover(5,event)" title="Anexar arquivo do Drive">📎</button><div class="drive-popover" id="dpop-5"><div class="drive-popover-title">📁 Google Drive</div><input class="drive-input" id="dinput-5" placeholder="Cole o link do Google Drive..." /><div class="drive-popover-btns"><a class="drive-open-link" id="dlink-5" href="#" target="_blank">↗ abrir</a><button class="btn-drive-clear" onclick="clearDriveLink(5)">Remover</button><button class="btn-drive-save" onclick="saveDriveLink(5)">Salvar</button></div></div></td>
           <td style="text-align:center"><span class="badge badge-semanal">SEMANAL</span></td>
           <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
@@ -640,6 +680,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         </tr>
         <tr data-prazo="semanal" data-quando="confirmacao">
           <td class="disease-name">HTLV (gestante, parturiente, puérpera) e criança exposta à transmissão vertical</td>
+          <td class="move-cell"><div class="move-btns"><button class="btn-move-row" onclick="moveNotifRow(this,-1)" title="Subir">↑</button><button class="btn-move-row" onclick="moveNotifRow(this,1)" title="Descer">↓</button></div></td>
           <td class="drive-cell" id="dcell-6"><button class="drive-btn" id="dbtn-6" onclick="toggleDrivePopover(6,event)" title="Anexar arquivo do Drive">📎</button><div class="drive-popover" id="dpop-6"><div class="drive-popover-title">📁 Google Drive</div><input class="drive-input" id="dinput-6" placeholder="Cole o link do Google Drive..." /><div class="drive-popover-btns"><a class="drive-open-link" id="dlink-6" href="#" target="_blank">↗ abrir</a><button class="btn-drive-clear" onclick="clearDriveLink(6)">Remover</button><button class="btn-drive-save" onclick="saveDriveLink(6)">Salvar</button></div></div></td>
           <td style="text-align:center"><span class="badge badge-semanal">SEMANAL</span></td>
           <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
@@ -648,6 +689,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         </tr>
         <tr data-prazo="semanal" data-quando="confirmacao">
           <td class="disease-name">Esquistossomose</td>
+          <td class="move-cell"><div class="move-btns"><button class="btn-move-row" onclick="moveNotifRow(this,-1)" title="Subir">↑</button><button class="btn-move-row" onclick="moveNotifRow(this,1)" title="Descer">↓</button></div></td>
           <td class="drive-cell" id="dcell-7"><button class="drive-btn" id="dbtn-7" onclick="toggleDrivePopover(7,event)" title="Anexar arquivo do Drive">📎</button><div class="drive-popover" id="dpop-7"><div class="drive-popover-title">📁 Google Drive</div><input class="drive-input" id="dinput-7" placeholder="Cole o link do Google Drive..." /><div class="drive-popover-btns"><a class="drive-open-link" id="dlink-7" href="#" target="_blank">↗ abrir</a><button class="btn-drive-clear" onclick="clearDriveLink(7)">Remover</button><button class="btn-drive-save" onclick="saveDriveLink(7)">Salvar</button></div></div></td>
           <td style="text-align:center"><span class="badge badge-semanal">SEMANAL</span></td>
           <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
@@ -656,6 +698,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         </tr>
         <tr data-prazo="semanal" data-quando="confirmacao">
           <td class="disease-name">Leishmaniose tegumentar americana</td>
+          <td class="move-cell"><div class="move-btns"><button class="btn-move-row" onclick="moveNotifRow(this,-1)" title="Subir">↑</button><button class="btn-move-row" onclick="moveNotifRow(this,1)" title="Descer">↓</button></div></td>
           <td class="drive-cell" id="dcell-8"><button class="drive-btn" id="dbtn-8" onclick="toggleDrivePopover(8,event)" title="Anexar arquivo do Drive">📎</button><div class="drive-popover" id="dpop-8"><div class="drive-popover-title">📁 Google Drive</div><input class="drive-input" id="dinput-8" placeholder="Cole o link do Google Drive..." /><div class="drive-popover-btns"><a class="drive-open-link" id="dlink-8" href="#" target="_blank">↗ abrir</a><button class="btn-drive-clear" onclick="clearDriveLink(8)">Remover</button><button class="btn-drive-save" onclick="saveDriveLink(8)">Salvar</button></div></div></td>
           <td style="text-align:center"><span class="badge badge-semanal">SEMANAL</span></td>
           <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
@@ -664,6 +707,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         </tr>
         <tr data-prazo="semanal" data-quando="confirmacao">
           <td class="disease-name">Sífilis adquirida, congênita ou em gestante</td>
+          <td class="move-cell"><div class="move-btns"><button class="btn-move-row" onclick="moveNotifRow(this,-1)" title="Subir">↑</button><button class="btn-move-row" onclick="moveNotifRow(this,1)" title="Descer">↓</button></div></td>
           <td class="drive-cell" id="dcell-9"><button class="drive-btn" id="dbtn-9" onclick="toggleDrivePopover(9,event)" title="Anexar arquivo do Drive">📎</button><div class="drive-popover" id="dpop-9"><div class="drive-popover-title">📁 Google Drive</div><input class="drive-input" id="dinput-9" placeholder="Cole o link do Google Drive..." /><div class="drive-popover-btns"><a class="drive-open-link" id="dlink-9" href="#" target="_blank">↗ abrir</a><button class="btn-drive-clear" onclick="clearDriveLink(9)">Remover</button><button class="btn-drive-save" onclick="saveDriveLink(9)">Salvar</button></div></div></td>
           <td style="text-align:center"><span class="badge badge-semanal">SEMANAL</span></td>
           <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
@@ -672,6 +716,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         </tr>
         <tr data-prazo="semanal" data-quando="confirmacao">
           <td class="disease-name">Tuberculose (todas as formas)</td>
+          <td class="move-cell"><div class="move-btns"><button class="btn-move-row" onclick="moveNotifRow(this,-1)" title="Subir">↑</button><button class="btn-move-row" onclick="moveNotifRow(this,1)" title="Descer">↓</button></div></td>
           <td class="drive-cell" id="dcell-10"><button class="drive-btn" id="dbtn-10" onclick="toggleDrivePopover(10,event)" title="Anexar arquivo do Drive">📎</button><div class="drive-popover" id="dpop-10"><div class="drive-popover-title">📁 Google Drive</div><input class="drive-input" id="dinput-10" placeholder="Cole o link do Google Drive..." /><div class="drive-popover-btns"><a class="drive-open-link" id="dlink-10" href="#" target="_blank">↗ abrir</a><button class="btn-drive-clear" onclick="clearDriveLink(10)">Remover</button><button class="btn-drive-save" onclick="saveDriveLink(10)">Salvar</button></div></div></td>
           <td style="text-align:center"><span class="badge badge-semanal">SEMANAL</span></td>
           <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
@@ -680,6 +725,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         </tr>
         <tr data-prazo="semanal" data-quando="confirmacao">
           <td class="disease-name">Óbito infantil ou materno</td>
+          <td class="move-cell"><div class="move-btns"><button class="btn-move-row" onclick="moveNotifRow(this,-1)" title="Subir">↑</button><button class="btn-move-row" onclick="moveNotifRow(this,1)" title="Descer">↓</button></div></td>
           <td class="drive-cell" id="dcell-11"><button class="drive-btn" id="dbtn-11" onclick="toggleDrivePopover(11,event)" title="Anexar arquivo do Drive">📎</button><div class="drive-popover" id="dpop-11"><div class="drive-popover-title">📁 Google Drive</div><input class="drive-input" id="dinput-11" placeholder="Cole o link do Google Drive..." /><div class="drive-popover-btns"><a class="drive-open-link" id="dlink-11" href="#" target="_blank">↗ abrir</a><button class="btn-drive-clear" onclick="clearDriveLink(11)">Remover</button><button class="btn-drive-save" onclick="saveDriveLink(11)">Salvar</button></div></div></td>
           <td style="text-align:center"><span class="badge badge-semanal">SEMANAL</span></td>
           <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
@@ -690,6 +736,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         <!-- ════ SEMANAL — SUSPEITA ════ -->
         <tr data-prazo="semanal" data-quando="suspeita">
           <td class="disease-name">Dengue</td>
+          <td class="move-cell"><div class="move-btns"><button class="btn-move-row" onclick="moveNotifRow(this,-1)" title="Subir">↑</button><button class="btn-move-row" onclick="moveNotifRow(this,1)" title="Descer">↓</button></div></td>
           <td class="drive-cell" id="dcell-12"><button class="drive-btn" id="dbtn-12" onclick="toggleDrivePopover(12,event)" title="Anexar arquivo do Drive">📎</button><div class="drive-popover" id="dpop-12"><div class="drive-popover-title">📁 Google Drive</div><input class="drive-input" id="dinput-12" placeholder="Cole o link do Google Drive..." /><div class="drive-popover-btns"><a class="drive-open-link" id="dlink-12" href="#" target="_blank">↗ abrir</a><button class="btn-drive-clear" onclick="clearDriveLink(12)">Remover</button><button class="btn-drive-save" onclick="saveDriveLink(12)">Salvar</button></div></div></td>
           <td style="text-align:center"><span class="badge badge-semanal">SEMANAL</span></td>
           <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
@@ -698,6 +745,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         </tr>
         <tr data-prazo="semanal" data-quando="suspeita">
           <td class="disease-name">Doença aguda pelo vírus Zika</td>
+          <td class="move-cell"><div class="move-btns"><button class="btn-move-row" onclick="moveNotifRow(this,-1)" title="Subir">↑</button><button class="btn-move-row" onclick="moveNotifRow(this,1)" title="Descer">↓</button></div></td>
           <td class="drive-cell" id="dcell-13"><button class="drive-btn" id="dbtn-13" onclick="toggleDrivePopover(13,event)" title="Anexar arquivo do Drive">📎</button><div class="drive-popover" id="dpop-13"><div class="drive-popover-title">📁 Google Drive</div><input class="drive-input" id="dinput-13" placeholder="Cole o link do Google Drive..." /><div class="drive-popover-btns"><a class="drive-open-link" id="dlink-13" href="#" target="_blank">↗ abrir</a><button class="btn-drive-clear" onclick="clearDriveLink(13)">Remover</button><button class="btn-drive-save" onclick="saveDriveLink(13)">Salvar</button></div></div></td>
           <td style="text-align:center"><span class="badge badge-semanal">SEMANAL</span></td>
           <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
@@ -706,6 +754,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         </tr>
         <tr data-prazo="semanal" data-quando="suspeita">
           <td class="disease-name">Síndrome congênita associada ao vírus Zika</td>
+          <td class="move-cell"><div class="move-btns"><button class="btn-move-row" onclick="moveNotifRow(this,-1)" title="Subir">↑</button><button class="btn-move-row" onclick="moveNotifRow(this,1)" title="Descer">↓</button></div></td>
           <td class="drive-cell" id="dcell-14"><button class="drive-btn" id="dbtn-14" onclick="toggleDrivePopover(14,event)" title="Anexar arquivo do Drive">📎</button><div class="drive-popover" id="dpop-14"><div class="drive-popover-title">📁 Google Drive</div><input class="drive-input" id="dinput-14" placeholder="Cole o link do Google Drive..." /><div class="drive-popover-btns"><a class="drive-open-link" id="dlink-14" href="#" target="_blank">↗ abrir</a><button class="btn-drive-clear" onclick="clearDriveLink(14)">Remover</button><button class="btn-drive-save" onclick="saveDriveLink(14)">Salvar</button></div></div></td>
           <td style="text-align:center"><span class="badge badge-semanal">SEMANAL</span></td>
           <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
@@ -714,6 +763,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         </tr>
         <tr data-prazo="semanal" data-quando="suspeita">
           <td class="disease-name">Doença de Chagas crônica</td>
+          <td class="move-cell"><div class="move-btns"><button class="btn-move-row" onclick="moveNotifRow(this,-1)" title="Subir">↑</button><button class="btn-move-row" onclick="moveNotifRow(this,1)" title="Descer">↓</button></div></td>
           <td class="drive-cell" id="dcell-15"><button class="drive-btn" id="dbtn-15" onclick="toggleDrivePopover(15,event)" title="Anexar arquivo do Drive">📎</button><div class="drive-popover" id="dpop-15"><div class="drive-popover-title">📁 Google Drive</div><input class="drive-input" id="dinput-15" placeholder="Cole o link do Google Drive..." /><div class="drive-popover-btns"><a class="drive-open-link" id="dlink-15" href="#" target="_blank">↗ abrir</a><button class="btn-drive-clear" onclick="clearDriveLink(15)">Remover</button><button class="btn-drive-save" onclick="saveDriveLink(15)">Salvar</button></div></div></td>
           <td style="text-align:center"><span class="badge badge-semanal">SEMANAL</span></td>
           <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
@@ -722,6 +772,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         </tr>
         <tr data-prazo="semanal" data-quando="suspeita">
           <td class="disease-name">Intoxicação exógena (substâncias químicas)</td>
+          <td class="move-cell"><div class="move-btns"><button class="btn-move-row" onclick="moveNotifRow(this,-1)" title="Subir">↑</button><button class="btn-move-row" onclick="moveNotifRow(this,1)" title="Descer">↓</button></div></td>
           <td class="drive-cell" id="dcell-16"><button class="drive-btn" id="dbtn-16" onclick="toggleDrivePopover(16,event)" title="Anexar arquivo do Drive">📎</button><div class="drive-popover" id="dpop-16"><div class="drive-popover-title">📁 Google Drive</div><input class="drive-input" id="dinput-16" placeholder="Cole o link do Google Drive..." /><div class="drive-popover-btns"><a class="drive-open-link" id="dlink-16" href="#" target="_blank">↗ abrir</a><button class="btn-drive-clear" onclick="clearDriveLink(16)">Remover</button><button class="btn-drive-save" onclick="saveDriveLink(16)">Salvar</button></div></div></td>
           <td style="text-align:center"><span class="badge badge-semanal">SEMANAL</span></td>
           <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
@@ -730,6 +781,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         </tr>
         <tr data-prazo="semanal" data-quando="suspeita">
           <td class="disease-name">Leishmaniose visceral</td>
+          <td class="move-cell"><div class="move-btns"><button class="btn-move-row" onclick="moveNotifRow(this,-1)" title="Subir">↑</button><button class="btn-move-row" onclick="moveNotifRow(this,1)" title="Descer">↓</button></div></td>
           <td class="drive-cell" id="dcell-17"><button class="drive-btn" id="dbtn-17" onclick="toggleDrivePopover(17,event)" title="Anexar arquivo do Drive">📎</button><div class="drive-popover" id="dpop-17"><div class="drive-popover-title">📁 Google Drive</div><input class="drive-input" id="dinput-17" placeholder="Cole o link do Google Drive..." /><div class="drive-popover-btns"><a class="drive-open-link" id="dlink-17" href="#" target="_blank">↗ abrir</a><button class="btn-drive-clear" onclick="clearDriveLink(17)">Remover</button><button class="btn-drive-save" onclick="saveDriveLink(17)">Salvar</button></div></div></td>
           <td style="text-align:center"><span class="badge badge-semanal">SEMANAL</span></td>
           <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
@@ -738,6 +790,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         </tr>
         <tr data-prazo="semanal" data-quando="suspeita">
           <td class="disease-name">Toxoplasmose gestacional e congênita</td>
+          <td class="move-cell"><div class="move-btns"><button class="btn-move-row" onclick="moveNotifRow(this,-1)" title="Subir">↑</button><button class="btn-move-row" onclick="moveNotifRow(this,1)" title="Descer">↓</button></div></td>
           <td class="drive-cell" id="dcell-18"><button class="drive-btn" id="dbtn-18" onclick="toggleDrivePopover(18,event)" title="Anexar arquivo do Drive">📎</button><div class="drive-popover" id="dpop-18"><div class="drive-popover-title">📁 Google Drive</div><input class="drive-input" id="dinput-18" placeholder="Cole o link do Google Drive..." /><div class="drive-popover-btns"><a class="drive-open-link" id="dlink-18" href="#" target="_blank">↗ abrir</a><button class="btn-drive-clear" onclick="clearDriveLink(18)">Remover</button><button class="btn-drive-save" onclick="saveDriveLink(18)">Salvar</button></div></div></td>
           <td style="text-align:center"><span class="badge badge-semanal">SEMANAL</span></td>
           <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
@@ -746,6 +799,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         </tr>
         <tr data-prazo="semanal" data-quando="suspeita">
           <td class="disease-name">Doença falciforme</td>
+          <td class="move-cell"><div class="move-btns"><button class="btn-move-row" onclick="moveNotifRow(this,-1)" title="Subir">↑</button><button class="btn-move-row" onclick="moveNotifRow(this,1)" title="Descer">↓</button></div></td>
           <td class="drive-cell" id="dcell-19"><button class="drive-btn" id="dbtn-19" onclick="toggleDrivePopover(19,event)" title="Anexar arquivo do Drive">📎</button><div class="drive-popover" id="dpop-19"><div class="drive-popover-title">📁 Google Drive</div><input class="drive-input" id="dinput-19" placeholder="Cole o link do Google Drive..." /><div class="drive-popover-btns"><a class="drive-open-link" id="dlink-19" href="#" target="_blank">↗ abrir</a><button class="btn-drive-clear" onclick="clearDriveLink(19)">Remover</button><button class="btn-drive-save" onclick="saveDriveLink(19)">Salvar</button></div></div></td>
           <td style="text-align:center"><span class="badge badge-semanal">SEMANAL</span></td>
           <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
@@ -754,6 +808,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         </tr>
         <tr data-prazo="semanal" data-quando="suspeita">
           <td class="disease-name">Violência doméstica e/ou outras violências</td>
+          <td class="move-cell"><div class="move-btns"><button class="btn-move-row" onclick="moveNotifRow(this,-1)" title="Subir">↑</button><button class="btn-move-row" onclick="moveNotifRow(this,1)" title="Descer">↓</button></div></td>
           <td class="drive-cell" id="dcell-20"><button class="drive-btn" id="dbtn-20" onclick="toggleDrivePopover(20,event)" title="Anexar arquivo do Drive">📎</button><div class="drive-popover" id="dpop-20"><div class="drive-popover-title">📁 Google Drive</div><input class="drive-input" id="dinput-20" placeholder="Cole o link do Google Drive..." /><div class="drive-popover-btns"><a class="drive-open-link" id="dlink-20" href="#" target="_blank">↗ abrir</a><button class="btn-drive-clear" onclick="clearDriveLink(20)">Remover</button><button class="btn-drive-save" onclick="saveDriveLink(20)">Salvar</button></div></div></td>
           <td style="text-align:center"><span class="badge badge-semanal">SEMANAL</span></td>
           <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
@@ -762,6 +817,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         </tr>
         <tr data-prazo="semanal" data-quando="suspeita">
           <td class="disease-name">Febre de Chikungunya (área com transmissão ativa)</td>
+          <td class="move-cell"><div class="move-btns"><button class="btn-move-row" onclick="moveNotifRow(this,-1)" title="Subir">↑</button><button class="btn-move-row" onclick="moveNotifRow(this,1)" title="Descer">↓</button></div></td>
           <td class="drive-cell" id="dcell-21"><button class="drive-btn" id="dbtn-21" onclick="toggleDrivePopover(21,event)" title="Anexar arquivo do Drive">📎</button><div class="drive-popover" id="dpop-21"><div class="drive-popover-title">📁 Google Drive</div><input class="drive-input" id="dinput-21" placeholder="Cole o link do Google Drive..." /><div class="drive-popover-btns"><a class="drive-open-link" id="dlink-21" href="#" target="_blank">↗ abrir</a><button class="btn-drive-clear" onclick="clearDriveLink(21)">Remover</button><button class="btn-drive-save" onclick="saveDriveLink(21)">Salvar</button></div></div></td>
           <td style="text-align:center"><span class="badge badge-semanal">SEMANAL</span></td>
           <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
@@ -770,6 +826,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         </tr>
         <tr data-prazo="semanal" data-quando="suspeita">
           <td class="disease-name">Malária na Região Amazônica</td>
+          <td class="move-cell"><div class="move-btns"><button class="btn-move-row" onclick="moveNotifRow(this,-1)" title="Subir">↑</button><button class="btn-move-row" onclick="moveNotifRow(this,1)" title="Descer">↓</button></div></td>
           <td class="drive-cell" id="dcell-22"><button class="drive-btn" id="dbtn-22" onclick="toggleDrivePopover(22,event)" title="Anexar arquivo do Drive">📎</button><div class="drive-popover" id="dpop-22"><div class="drive-popover-title">📁 Google Drive</div><input class="drive-input" id="dinput-22" placeholder="Cole o link do Google Drive..." /><div class="drive-popover-btns"><a class="drive-open-link" id="dlink-22" href="#" target="_blank">↗ abrir</a><button class="btn-drive-clear" onclick="clearDriveLink(22)">Remover</button><button class="btn-drive-save" onclick="saveDriveLink(22)">Salvar</button></div></div></td>
           <td style="text-align:center"><span class="badge badge-semanal">SEMANAL</span></td>
           <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
@@ -778,6 +835,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         </tr>
         <tr data-prazo="semanal" data-quando="suspeita">
           <td class="disease-name">Doença de Creutzfeldt-Jakob (DCJ)</td>
+          <td class="move-cell"><div class="move-btns"><button class="btn-move-row" onclick="moveNotifRow(this,-1)" title="Subir">↑</button><button class="btn-move-row" onclick="moveNotifRow(this,1)" title="Descer">↓</button></div></td>
           <td class="drive-cell" id="dcell-23"><button class="drive-btn" id="dbtn-23" onclick="toggleDrivePopover(23,event)" title="Anexar arquivo do Drive">📎</button><div class="drive-popover" id="dpop-23"><div class="drive-popover-title">📁 Google Drive</div><input class="drive-input" id="dinput-23" placeholder="Cole o link do Google Drive..." /><div class="drive-popover-btns"><a class="drive-open-link" id="dlink-23" href="#" target="_blank">↗ abrir</a><button class="btn-drive-clear" onclick="clearDriveLink(23)">Remover</button><button class="btn-drive-save" onclick="saveDriveLink(23)">Salvar</button></div></div></td>
           <td style="text-align:center"><span class="badge badge-semanal">SEMANAL</span></td>
           <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
@@ -786,6 +844,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         </tr>
         <tr data-prazo="semanal" data-quando="suspeita">
           <td class="disease-name">Doenças ocupacionais</td>
+          <td class="move-cell"><div class="move-btns"><button class="btn-move-row" onclick="moveNotifRow(this,-1)" title="Subir">↑</button><button class="btn-move-row" onclick="moveNotifRow(this,1)" title="Descer">↓</button></div></td>
           <td class="drive-cell" id="dcell-24"><button class="drive-btn" id="dbtn-24" onclick="toggleDrivePopover(24,event)" title="Anexar arquivo do Drive">📎</button><div class="drive-popover" id="dpop-24"><div class="drive-popover-title">📁 Google Drive</div><input class="drive-input" id="dinput-24" placeholder="Cole o link do Google Drive..." /><div class="drive-popover-btns"><a class="drive-open-link" id="dlink-24" href="#" target="_blank">↗ abrir</a><button class="btn-drive-clear" onclick="clearDriveLink(24)">Remover</button><button class="btn-drive-save" onclick="saveDriveLink(24)">Salvar</button></div></div></td>
           <td style="text-align:center"><span class="badge badge-semanal">SEMANAL</span></td>
           <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
@@ -796,6 +855,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         <!-- ════ IMEDIATA — SMS APENAS ════ -->
         <tr data-prazo="imediata" data-quando="confirmacao">
           <td class="disease-name">Acidente de trabalho (grave)</td>
+          <td class="move-cell"><div class="move-btns"><button class="btn-move-row" onclick="moveNotifRow(this,-1)" title="Subir">↑</button><button class="btn-move-row" onclick="moveNotifRow(this,1)" title="Descer">↓</button></div></td>
           <td class="drive-cell" id="dcell-25"><button class="drive-btn" id="dbtn-25" onclick="toggleDrivePopover(25,event)" title="Anexar arquivo do Drive">📎</button><div class="drive-popover" id="dpop-25"><div class="drive-popover-title">📁 Google Drive</div><input class="drive-input" id="dinput-25" placeholder="Cole o link do Google Drive..." /><div class="drive-popover-btns"><a class="drive-open-link" id="dlink-25" href="#" target="_blank">↗ abrir</a><button class="btn-drive-clear" onclick="clearDriveLink(25)">Remover</button><button class="btn-drive-save" onclick="saveDriveLink(25)">Salvar</button></div></div></td>
           <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
           <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
@@ -804,6 +864,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         </tr>
         <tr data-prazo="imediata" data-quando="confirmacao">
           <td class="disease-name">Acidente por animal peçonhento</td>
+          <td class="move-cell"><div class="move-btns"><button class="btn-move-row" onclick="moveNotifRow(this,-1)" title="Subir">↑</button><button class="btn-move-row" onclick="moveNotifRow(this,1)" title="Descer">↓</button></div></td>
           <td class="drive-cell" id="dcell-26"><button class="drive-btn" id="dbtn-26" onclick="toggleDrivePopover(26,event)" title="Anexar arquivo do Drive">📎</button><div class="drive-popover" id="dpop-26"><div class="drive-popover-title">📁 Google Drive</div><input class="drive-input" id="dinput-26" placeholder="Cole o link do Google Drive..." /><div class="drive-popover-btns"><a class="drive-open-link" id="dlink-26" href="#" target="_blank">↗ abrir</a><button class="btn-drive-clear" onclick="clearDriveLink(26)">Remover</button><button class="btn-drive-save" onclick="saveDriveLink(26)">Salvar</button></div></div></td>
           <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
           <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
@@ -812,6 +873,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         </tr>
         <tr data-prazo="imediata" data-quando="confirmacao">
           <td class="disease-name">Acidente por animal potencialmente transmissor de raiva</td>
+          <td class="move-cell"><div class="move-btns"><button class="btn-move-row" onclick="moveNotifRow(this,-1)" title="Subir">↑</button><button class="btn-move-row" onclick="moveNotifRow(this,1)" title="Descer">↓</button></div></td>
           <td class="drive-cell" id="dcell-27"><button class="drive-btn" id="dbtn-27" onclick="toggleDrivePopover(27,event)" title="Anexar arquivo do Drive">📎</button><div class="drive-popover" id="dpop-27"><div class="drive-popover-title">📁 Google Drive</div><input class="drive-input" id="dinput-27" placeholder="Cole o link do Google Drive..." /><div class="drive-popover-btns"><a class="drive-open-link" id="dlink-27" href="#" target="_blank">↗ abrir</a><button class="btn-drive-clear" onclick="clearDriveLink(27)">Remover</button><button class="btn-drive-save" onclick="saveDriveLink(27)">Salvar</button></div></div></td>
           <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
           <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
@@ -820,6 +882,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         </tr>
         <tr data-prazo="imediata" data-quando="suspeita">
           <td class="disease-name">Leptospirose</td>
+          <td class="move-cell"><div class="move-btns"><button class="btn-move-row" onclick="moveNotifRow(this,-1)" title="Subir">↑</button><button class="btn-move-row" onclick="moveNotifRow(this,1)" title="Descer">↓</button></div></td>
           <td class="drive-cell" id="dcell-28"><button class="drive-btn" id="dbtn-28" onclick="toggleDrivePopover(28,event)" title="Anexar arquivo do Drive">📎</button><div class="drive-popover" id="dpop-28"><div class="drive-popover-title">📁 Google Drive</div><input class="drive-input" id="dinput-28" placeholder="Cole o link do Google Drive..." /><div class="drive-popover-btns"><a class="drive-open-link" id="dlink-28" href="#" target="_blank">↗ abrir</a><button class="btn-drive-clear" onclick="clearDriveLink(28)">Remover</button><button class="btn-drive-save" onclick="saveDriveLink(28)">Salvar</button></div></div></td>
           <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
           <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
@@ -828,6 +891,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         </tr>
         <tr data-prazo="imediata" data-quando="suspeita">
           <td class="disease-name">Tétano: acidental ou neonatal</td>
+          <td class="move-cell"><div class="move-btns"><button class="btn-move-row" onclick="moveNotifRow(this,-1)" title="Subir">↑</button><button class="btn-move-row" onclick="moveNotifRow(this,1)" title="Descer">↓</button></div></td>
           <td class="drive-cell" id="dcell-29"><button class="drive-btn" id="dbtn-29" onclick="toggleDrivePopover(29,event)" title="Anexar arquivo do Drive">📎</button><div class="drive-popover" id="dpop-29"><div class="drive-popover-title">📁 Google Drive</div><input class="drive-input" id="dinput-29" placeholder="Cole o link do Google Drive..." /><div class="drive-popover-btns"><a class="drive-open-link" id="dlink-29" href="#" target="_blank">↗ abrir</a><button class="btn-drive-clear" onclick="clearDriveLink(29)">Remover</button><button class="btn-drive-save" onclick="saveDriveLink(29)">Salvar</button></div></div></td>
           <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
           <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
@@ -836,6 +900,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         </tr>
         <tr data-prazo="imediata" data-quando="suspeita">
           <td class="disease-name">Violência sexual e tentativa de suicídio</td>
+          <td class="move-cell"><div class="move-btns"><button class="btn-move-row" onclick="moveNotifRow(this,-1)" title="Subir">↑</button><button class="btn-move-row" onclick="moveNotifRow(this,1)" title="Descer">↓</button></div></td>
           <td class="drive-cell" id="dcell-30"><button class="drive-btn" id="dbtn-30" onclick="toggleDrivePopover(30,event)" title="Anexar arquivo do Drive">📎</button><div class="drive-popover" id="dpop-30"><div class="drive-popover-title">📁 Google Drive</div><input class="drive-input" id="dinput-30" placeholder="Cole o link do Google Drive..." /><div class="drive-popover-btns"><a class="drive-open-link" id="dlink-30" href="#" target="_blank">↗ abrir</a><button class="btn-drive-clear" onclick="clearDriveLink(30)">Remover</button><button class="btn-drive-save" onclick="saveDriveLink(30)">Salvar</button></div></div></td>
           <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
           <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
@@ -846,6 +911,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         <!-- ════ IMEDIATA — SMS + SES ════ -->
         <tr data-prazo="imediata" data-quando="suspeita">
           <td class="disease-name">Coqueluche</td>
+          <td class="move-cell"><div class="move-btns"><button class="btn-move-row" onclick="moveNotifRow(this,-1)" title="Subir">↑</button><button class="btn-move-row" onclick="moveNotifRow(this,1)" title="Descer">↓</button></div></td>
           <td class="drive-cell" id="dcell-31"><button class="drive-btn" id="dbtn-31" onclick="toggleDrivePopover(31,event)" title="Anexar arquivo do Drive">📎</button><div class="drive-popover" id="dpop-31"><div class="drive-popover-title">📁 Google Drive</div><input class="drive-input" id="dinput-31" placeholder="Cole o link do Google Drive..." /><div class="drive-popover-btns"><a class="drive-open-link" id="dlink-31" href="#" target="_blank">↗ abrir</a><button class="btn-drive-clear" onclick="clearDriveLink(31)">Remover</button><button class="btn-drive-save" onclick="saveDriveLink(31)">Salvar</button></div></div></td>
           <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
           <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-ses">✓</span><span class="inst-label-on">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
@@ -854,6 +920,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         </tr>
         <tr data-prazo="imediata" data-quando="suspeita">
           <td class="disease-name">Difteria</td>
+          <td class="move-cell"><div class="move-btns"><button class="btn-move-row" onclick="moveNotifRow(this,-1)" title="Subir">↑</button><button class="btn-move-row" onclick="moveNotifRow(this,1)" title="Descer">↓</button></div></td>
           <td class="drive-cell" id="dcell-32"><button class="drive-btn" id="dbtn-32" onclick="toggleDrivePopover(32,event)" title="Anexar arquivo do Drive">📎</button><div class="drive-popover" id="dpop-32"><div class="drive-popover-title">📁 Google Drive</div><input class="drive-input" id="dinput-32" placeholder="Cole o link do Google Drive..." /><div class="drive-popover-btns"><a class="drive-open-link" id="dlink-32" href="#" target="_blank">↗ abrir</a><button class="btn-drive-clear" onclick="clearDriveLink(32)">Remover</button><button class="btn-drive-save" onclick="saveDriveLink(32)">Salvar</button></div></div></td>
           <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
           <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-ses">✓</span><span class="inst-label-on">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
@@ -862,6 +929,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         </tr>
         <tr data-prazo="imediata" data-quando="suspeita">
           <td class="disease-name">Doença de Chagas aguda</td>
+          <td class="move-cell"><div class="move-btns"><button class="btn-move-row" onclick="moveNotifRow(this,-1)" title="Subir">↑</button><button class="btn-move-row" onclick="moveNotifRow(this,1)" title="Descer">↓</button></div></td>
           <td class="drive-cell" id="dcell-33"><button class="drive-btn" id="dbtn-33" onclick="toggleDrivePopover(33,event)" title="Anexar arquivo do Drive">📎</button><div class="drive-popover" id="dpop-33"><div class="drive-popover-title">📁 Google Drive</div><input class="drive-input" id="dinput-33" placeholder="Cole o link do Google Drive..." /><div class="drive-popover-btns"><a class="drive-open-link" id="dlink-33" href="#" target="_blank">↗ abrir</a><button class="btn-drive-clear" onclick="clearDriveLink(33)">Remover</button><button class="btn-drive-save" onclick="saveDriveLink(33)">Salvar</button></div></div></td>
           <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
           <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-ses">✓</span><span class="inst-label-on">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
@@ -870,6 +938,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         </tr>
         <tr data-prazo="imediata" data-quando="suspeita">
           <td class="disease-name">Doença invasiva por Haemophilus influenzae</td>
+          <td class="move-cell"><div class="move-btns"><button class="btn-move-row" onclick="moveNotifRow(this,-1)" title="Subir">↑</button><button class="btn-move-row" onclick="moveNotifRow(this,1)" title="Descer">↓</button></div></td>
           <td class="drive-cell" id="dcell-34"><button class="drive-btn" id="dbtn-34" onclick="toggleDrivePopover(34,event)" title="Anexar arquivo do Drive">📎</button><div class="drive-popover" id="dpop-34"><div class="drive-popover-title">📁 Google Drive</div><input class="drive-input" id="dinput-34" placeholder="Cole o link do Google Drive..." /><div class="drive-popover-btns"><a class="drive-open-link" id="dlink-34" href="#" target="_blank">↗ abrir</a><button class="btn-drive-clear" onclick="clearDriveLink(34)">Remover</button><button class="btn-drive-save" onclick="saveDriveLink(34)">Salvar</button></div></div></td>
           <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
           <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-ses">✓</span><span class="inst-label-on">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
@@ -878,6 +947,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         </tr>
         <tr data-prazo="imediata" data-quando="suspeita">
           <td class="disease-name">Doença meningocócica e outras meningites</td>
+          <td class="move-cell"><div class="move-btns"><button class="btn-move-row" onclick="moveNotifRow(this,-1)" title="Subir">↑</button><button class="btn-move-row" onclick="moveNotifRow(this,1)" title="Descer">↓</button></div></td>
           <td class="drive-cell" id="dcell-35"><button class="drive-btn" id="dbtn-35" onclick="toggleDrivePopover(35,event)" title="Anexar arquivo do Drive">📎</button><div class="drive-popover" id="dpop-35"><div class="drive-popover-title">📁 Google Drive</div><input class="drive-input" id="dinput-35" placeholder="Cole o link do Google Drive..." /><div class="drive-popover-btns"><a class="drive-open-link" id="dlink-35" href="#" target="_blank">↗ abrir</a><button class="btn-drive-clear" onclick="clearDriveLink(35)">Remover</button><button class="btn-drive-save" onclick="saveDriveLink(35)">Salvar</button></div></div></td>
           <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
           <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-ses">✓</span><span class="inst-label-on">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
@@ -886,6 +956,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         </tr>
         <tr data-prazo="imediata" data-quando="suspeita">
           <td class="disease-name">Febre tifoide</td>
+          <td class="move-cell"><div class="move-btns"><button class="btn-move-row" onclick="moveNotifRow(this,-1)" title="Subir">↑</button><button class="btn-move-row" onclick="moveNotifRow(this,1)" title="Descer">↓</button></div></td>
           <td class="drive-cell" id="dcell-36"><button class="drive-btn" id="dbtn-36" onclick="toggleDrivePopover(36,event)" title="Anexar arquivo do Drive">📎</button><div class="drive-popover" id="dpop-36"><div class="drive-popover-title">📁 Google Drive</div><input class="drive-input" id="dinput-36" placeholder="Cole o link do Google Drive..." /><div class="drive-popover-btns"><a class="drive-open-link" id="dlink-36" href="#" target="_blank">↗ abrir</a><button class="btn-drive-clear" onclick="clearDriveLink(36)">Remover</button><button class="btn-drive-save" onclick="saveDriveLink(36)">Salvar</button></div></div></td>
           <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
           <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-ses">✓</span><span class="inst-label-on">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
@@ -894,6 +965,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         </tr>
         <tr data-prazo="imediata" data-quando="suspeita">
           <td class="disease-name">Varicela — caso grave internado ou óbito</td>
+          <td class="move-cell"><div class="move-btns"><button class="btn-move-row" onclick="moveNotifRow(this,-1)" title="Subir">↑</button><button class="btn-move-row" onclick="moveNotifRow(this,1)" title="Descer">↓</button></div></td>
           <td class="drive-cell" id="dcell-37"><button class="drive-btn" id="dbtn-37" onclick="toggleDrivePopover(37,event)" title="Anexar arquivo do Drive">📎</button><div class="drive-popover" id="dpop-37"><div class="drive-popover-title">📁 Google Drive</div><input class="drive-input" id="dinput-37" placeholder="Cole o link do Google Drive..." /><div class="drive-popover-btns"><a class="drive-open-link" id="dlink-37" href="#" target="_blank">↗ abrir</a><button class="btn-drive-clear" onclick="clearDriveLink(37)">Remover</button><button class="btn-drive-save" onclick="saveDriveLink(37)">Salvar</button></div></div></td>
           <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
           <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-ses">✓</span><span class="inst-label-on">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
@@ -902,6 +974,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         </tr>
         <tr data-prazo="imediata" data-quando="suspeita">
           <td class="disease-name">Doença aguda pelo vírus Zika em gestante</td>
+          <td class="move-cell"><div class="move-btns"><button class="btn-move-row" onclick="moveNotifRow(this,-1)" title="Subir">↑</button><button class="btn-move-row" onclick="moveNotifRow(this,1)" title="Descer">↓</button></div></td>
           <td class="drive-cell" id="dcell-38"><button class="drive-btn" id="dbtn-38" onclick="toggleDrivePopover(38,event)" title="Anexar arquivo do Drive">📎</button><div class="drive-popover" id="dpop-38"><div class="drive-popover-title">📁 Google Drive</div><input class="drive-input" id="dinput-38" placeholder="Cole o link do Google Drive..." /><div class="drive-popover-btns"><a class="drive-open-link" id="dlink-38" href="#" target="_blank">↗ abrir</a><button class="btn-drive-clear" onclick="clearDriveLink(38)">Remover</button><button class="btn-drive-save" onclick="saveDriveLink(38)">Salvar</button></div></div></td>
           <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
           <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-ses">✓</span><span class="inst-label-on">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
@@ -912,6 +985,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         <!-- ════ IMEDIATA — SMS + SES + MS ════ -->
         <tr data-prazo="imediata" data-quando="suspeita">
           <td class="disease-name">Botulismo</td>
+          <td class="move-cell"><div class="move-btns"><button class="btn-move-row" onclick="moveNotifRow(this,-1)" title="Subir">↑</button><button class="btn-move-row" onclick="moveNotifRow(this,1)" title="Descer">↓</button></div></td>
           <td class="drive-cell" id="dcell-39"><button class="drive-btn" id="dbtn-39" onclick="toggleDrivePopover(39,event)" title="Anexar arquivo do Drive">📎</button><div class="drive-popover" id="dpop-39"><div class="drive-popover-title">📁 Google Drive</div><input class="drive-input" id="dinput-39" placeholder="Cole o link do Google Drive..." /><div class="drive-popover-btns"><a class="drive-open-link" id="dlink-39" href="#" target="_blank">↗ abrir</a><button class="btn-drive-clear" onclick="clearDriveLink(39)">Remover</button><button class="btn-drive-save" onclick="saveDriveLink(39)">Salvar</button></div></div></td>
           <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
           <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-ses">✓</span><span class="inst-label-on">SES</span></div><div class="inst-item"><span class="inst-cb inst-ms">✓</span><span class="inst-label-on">MS</span></div></div></td>
@@ -920,6 +994,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         </tr>
         <tr data-prazo="imediata" data-quando="suspeita">
           <td class="disease-name">Chikungunya em áreas sem transmissão</td>
+          <td class="move-cell"><div class="move-btns"><button class="btn-move-row" onclick="moveNotifRow(this,-1)" title="Subir">↑</button><button class="btn-move-row" onclick="moveNotifRow(this,1)" title="Descer">↓</button></div></td>
           <td class="drive-cell" id="dcell-40"><button class="drive-btn" id="dbtn-40" onclick="toggleDrivePopover(40,event)" title="Anexar arquivo do Drive">📎</button><div class="drive-popover" id="dpop-40"><div class="drive-popover-title">📁 Google Drive</div><input class="drive-input" id="dinput-40" placeholder="Cole o link do Google Drive..." /><div class="drive-popover-btns"><a class="drive-open-link" id="dlink-40" href="#" target="_blank">↗ abrir</a><button class="btn-drive-clear" onclick="clearDriveLink(40)">Remover</button><button class="btn-drive-save" onclick="saveDriveLink(40)">Salvar</button></div></div></td>
           <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
           <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-ses">✓</span><span class="inst-label-on">SES</span></div><div class="inst-item"><span class="inst-cb inst-ms">✓</span><span class="inst-label-on">MS</span></div></div></td>
@@ -928,6 +1003,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         </tr>
         <tr data-prazo="imediata" data-quando="suspeita">
           <td class="disease-name">Cólera</td>
+          <td class="move-cell"><div class="move-btns"><button class="btn-move-row" onclick="moveNotifRow(this,-1)" title="Subir">↑</button><button class="btn-move-row" onclick="moveNotifRow(this,1)" title="Descer">↓</button></div></td>
           <td class="drive-cell" id="dcell-41"><button class="drive-btn" id="dbtn-41" onclick="toggleDrivePopover(41,event)" title="Anexar arquivo do Drive">📎</button><div class="drive-popover" id="dpop-41"><div class="drive-popover-title">📁 Google Drive</div><input class="drive-input" id="dinput-41" placeholder="Cole o link do Google Drive..." /><div class="drive-popover-btns"><a class="drive-open-link" id="dlink-41" href="#" target="_blank">↗ abrir</a><button class="btn-drive-clear" onclick="clearDriveLink(41)">Remover</button><button class="btn-drive-save" onclick="saveDriveLink(41)">Salvar</button></div></div></td>
           <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
           <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-ses">✓</span><span class="inst-label-on">SES</span></div><div class="inst-item"><span class="inst-cb inst-ms">✓</span><span class="inst-label-on">MS</span></div></div></td>
@@ -936,6 +1012,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         </tr>
         <tr data-prazo="imediata" data-quando="suspeita">
           <td class="disease-name">Covid-19</td>
+          <td class="move-cell"><div class="move-btns"><button class="btn-move-row" onclick="moveNotifRow(this,-1)" title="Subir">↑</button><button class="btn-move-row" onclick="moveNotifRow(this,1)" title="Descer">↓</button></div></td>
           <td class="drive-cell" id="dcell-42"><button class="drive-btn" id="dbtn-42" onclick="toggleDrivePopover(42,event)" title="Anexar arquivo do Drive">📎</button><div class="drive-popover" id="dpop-42"><div class="drive-popover-title">📁 Google Drive</div><input class="drive-input" id="dinput-42" placeholder="Cole o link do Google Drive..." /><div class="drive-popover-btns"><a class="drive-open-link" id="dlink-42" href="#" target="_blank">↗ abrir</a><button class="btn-drive-clear" onclick="clearDriveLink(42)">Remover</button><button class="btn-drive-save" onclick="saveDriveLink(42)">Salvar</button></div></div></td>
           <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
           <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-ses">✓</span><span class="inst-label-on">SES</span></div><div class="inst-item"><span class="inst-cb inst-ms">✓</span><span class="inst-label-on">MS</span></div></div></td>
@@ -944,6 +1021,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         </tr>
         <tr data-prazo="imediata" data-quando="suspeita">
           <td class="disease-name">Síndrome Inflamatória Multissistêmica em Adultos (SIM-A) e pediátrica (SIM-P) — covid-19</td>
+          <td class="move-cell"><div class="move-btns"><button class="btn-move-row" onclick="moveNotifRow(this,-1)" title="Subir">↑</button><button class="btn-move-row" onclick="moveNotifRow(this,1)" title="Descer">↓</button></div></td>
           <td class="drive-cell" id="dcell-43"><button class="drive-btn" id="dbtn-43" onclick="toggleDrivePopover(43,event)" title="Anexar arquivo do Drive">📎</button><div class="drive-popover" id="dpop-43"><div class="drive-popover-title">📁 Google Drive</div><input class="drive-input" id="dinput-43" placeholder="Cole o link do Google Drive..." /><div class="drive-popover-btns"><a class="drive-open-link" id="dlink-43" href="#" target="_blank">↗ abrir</a><button class="btn-drive-clear" onclick="clearDriveLink(43)">Remover</button><button class="btn-drive-save" onclick="saveDriveLink(43)">Salvar</button></div></div></td>
           <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
           <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-ses">✓</span><span class="inst-label-on">SES</span></div><div class="inst-item"><span class="inst-cb inst-ms">✓</span><span class="inst-label-on">MS</span></div></div></td>
@@ -952,6 +1030,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         </tr>
         <tr data-prazo="imediata" data-quando="suspeita">
           <td class="disease-name">SRAG associada a coronavírus</td>
+          <td class="move-cell"><div class="move-btns"><button class="btn-move-row" onclick="moveNotifRow(this,-1)" title="Subir">↑</button><button class="btn-move-row" onclick="moveNotifRow(this,1)" title="Descer">↓</button></div></td>
           <td class="drive-cell" id="dcell-44"><button class="drive-btn" id="dbtn-44" onclick="toggleDrivePopover(44,event)" title="Anexar arquivo do Drive">📎</button><div class="drive-popover" id="dpop-44"><div class="drive-popover-title">📁 Google Drive</div><input class="drive-input" id="dinput-44" placeholder="Cole o link do Google Drive..." /><div class="drive-popover-btns"><a class="drive-open-link" id="dlink-44" href="#" target="_blank">↗ abrir</a><button class="btn-drive-clear" onclick="clearDriveLink(44)">Remover</button><button class="btn-drive-save" onclick="saveDriveLink(44)">Salvar</button></div></div></td>
           <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
           <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-ses">✓</span><span class="inst-label-on">SES</span></div><div class="inst-item"><span class="inst-cb inst-ms">✓</span><span class="inst-label-on">MS</span></div></div></td>
@@ -960,6 +1039,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         </tr>
         <tr data-prazo="imediata" data-quando="suspeita">
           <td class="disease-name">Doenças exantemáticas: sarampo e rubéola</td>
+          <td class="move-cell"><div class="move-btns"><button class="btn-move-row" onclick="moveNotifRow(this,-1)" title="Subir">↑</button><button class="btn-move-row" onclick="moveNotifRow(this,1)" title="Descer">↓</button></div></td>
           <td class="drive-cell" id="dcell-45"><button class="drive-btn" id="dbtn-45" onclick="toggleDrivePopover(45,event)" title="Anexar arquivo do Drive">📎</button><div class="drive-popover" id="dpop-45"><div class="drive-popover-title">📁 Google Drive</div><input class="drive-input" id="dinput-45" placeholder="Cole o link do Google Drive..." /><div class="drive-popover-btns"><a class="drive-open-link" id="dlink-45" href="#" target="_blank">↗ abrir</a><button class="btn-drive-clear" onclick="clearDriveLink(45)">Remover</button><button class="btn-drive-save" onclick="saveDriveLink(45)">Salvar</button></div></div></td>
           <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
           <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-ses">✓</span><span class="inst-label-on">SES</span></div><div class="inst-item"><span class="inst-cb inst-ms">✓</span><span class="inst-label-on">MS</span></div></div></td>
@@ -968,6 +1048,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         </tr>
         <tr data-prazo="imediata" data-quando="suspeita">
           <td class="disease-name">Síndrome da Rubéola Congênita (SRC)</td>
+          <td class="move-cell"><div class="move-btns"><button class="btn-move-row" onclick="moveNotifRow(this,-1)" title="Subir">↑</button><button class="btn-move-row" onclick="moveNotifRow(this,1)" title="Descer">↓</button></div></td>
           <td class="drive-cell" id="dcell-46"><button class="drive-btn" id="dbtn-46" onclick="toggleDrivePopover(46,event)" title="Anexar arquivo do Drive">📎</button><div class="drive-popover" id="dpop-46"><div class="drive-popover-title">📁 Google Drive</div><input class="drive-input" id="dinput-46" placeholder="Cole o link do Google Drive..." /><div class="drive-popover-btns"><a class="drive-open-link" id="dlink-46" href="#" target="_blank">↗ abrir</a><button class="btn-drive-clear" onclick="clearDriveLink(46)">Remover</button><button class="btn-drive-save" onclick="saveDriveLink(46)">Salvar</button></div></div></td>
           <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
           <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-ses">✓</span><span class="inst-label-on">SES</span></div><div class="inst-item"><span class="inst-cb inst-ms">✓</span><span class="inst-label-on">MS</span></div></div></td>
@@ -976,6 +1057,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         </tr>
         <tr data-prazo="imediata" data-quando="suspeita">
           <td class="disease-name">Disseminação intencional: antraz pneumônico, tularemia, varíola</td>
+          <td class="move-cell"><div class="move-btns"><button class="btn-move-row" onclick="moveNotifRow(this,-1)" title="Subir">↑</button><button class="btn-move-row" onclick="moveNotifRow(this,1)" title="Descer">↓</button></div></td>
           <td class="drive-cell" id="dcell-47"><button class="drive-btn" id="dbtn-47" onclick="toggleDrivePopover(47,event)" title="Anexar arquivo do Drive">📎</button><div class="drive-popover" id="dpop-47"><div class="drive-popover-title">📁 Google Drive</div><input class="drive-input" id="dinput-47" placeholder="Cole o link do Google Drive..." /><div class="drive-popover-btns"><a class="drive-open-link" id="dlink-47" href="#" target="_blank">↗ abrir</a><button class="btn-drive-clear" onclick="clearDriveLink(47)">Remover</button><button class="btn-drive-save" onclick="saveDriveLink(47)">Salvar</button></div></div></td>
           <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
           <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-ses">✓</span><span class="inst-label-on">SES</span></div><div class="inst-item"><span class="inst-cb inst-ms">✓</span><span class="inst-label-on">MS</span></div></div></td>
@@ -984,6 +1066,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         </tr>
         <tr data-prazo="imediata" data-quando="suspeita">
           <td class="disease-name">Doenças febris hemorrágicas emergentes / reemergentes</td>
+          <td class="move-cell"><div class="move-btns"><button class="btn-move-row" onclick="moveNotifRow(this,-1)" title="Subir">↑</button><button class="btn-move-row" onclick="moveNotifRow(this,1)" title="Descer">↓</button></div></td>
           <td class="drive-cell" id="dcell-48"><button class="drive-btn" id="dbtn-48" onclick="toggleDrivePopover(48,event)" title="Anexar arquivo do Drive">📎</button><div class="drive-popover" id="dpop-48"><div class="drive-popover-title">📁 Google Drive</div><input class="drive-input" id="dinput-48" placeholder="Cole o link do Google Drive..." /><div class="drive-popover-btns"><a class="drive-open-link" id="dlink-48" href="#" target="_blank">↗ abrir</a><button class="btn-drive-clear" onclick="clearDriveLink(48)">Remover</button><button class="btn-drive-save" onclick="saveDriveLink(48)">Salvar</button></div></div></td>
           <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
           <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-ses">✓</span><span class="inst-label-on">SES</span></div><div class="inst-item"><span class="inst-cb inst-ms">✓</span><span class="inst-label-on">MS</span></div></div></td>
@@ -992,6 +1075,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         </tr>
         <tr data-prazo="imediata" data-quando="suspeita">
           <td class="disease-name">Eventos adversos graves ou óbitos pós-vacinação</td>
+          <td class="move-cell"><div class="move-btns"><button class="btn-move-row" onclick="moveNotifRow(this,-1)" title="Subir">↑</button><button class="btn-move-row" onclick="moveNotifRow(this,1)" title="Descer">↓</button></div></td>
           <td class="drive-cell" id="dcell-49"><button class="drive-btn" id="dbtn-49" onclick="toggleDrivePopover(49,event)" title="Anexar arquivo do Drive">📎</button><div class="drive-popover" id="dpop-49"><div class="drive-popover-title">📁 Google Drive</div><input class="drive-input" id="dinput-49" placeholder="Cole o link do Google Drive..." /><div class="drive-popover-btns"><a class="drive-open-link" id="dlink-49" href="#" target="_blank">↗ abrir</a><button class="btn-drive-clear" onclick="clearDriveLink(49)">Remover</button><button class="btn-drive-save" onclick="saveDriveLink(49)">Salvar</button></div></div></td>
           <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
           <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-ses">✓</span><span class="inst-label-on">SES</span></div><div class="inst-item"><span class="inst-cb inst-ms">✓</span><span class="inst-label-on">MS</span></div></div></td>
@@ -1000,6 +1084,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         </tr>
         <tr data-prazo="imediata" data-quando="suspeita">
           <td class="disease-name">Evento de Saúde Pública que constitua ameaça à saúde pública</td>
+          <td class="move-cell"><div class="move-btns"><button class="btn-move-row" onclick="moveNotifRow(this,-1)" title="Subir">↑</button><button class="btn-move-row" onclick="moveNotifRow(this,1)" title="Descer">↓</button></div></td>
           <td class="drive-cell" id="dcell-50"><button class="drive-btn" id="dbtn-50" onclick="toggleDrivePopover(50,event)" title="Anexar arquivo do Drive">📎</button><div class="drive-popover" id="dpop-50"><div class="drive-popover-title">📁 Google Drive</div><input class="drive-input" id="dinput-50" placeholder="Cole o link do Google Drive..." /><div class="drive-popover-btns"><a class="drive-open-link" id="dlink-50" href="#" target="_blank">↗ abrir</a><button class="btn-drive-clear" onclick="clearDriveLink(50)">Remover</button><button class="btn-drive-save" onclick="saveDriveLink(50)">Salvar</button></div></div></td>
           <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
           <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-ses">✓</span><span class="inst-label-on">SES</span></div><div class="inst-item"><span class="inst-cb inst-ms">✓</span><span class="inst-label-on">MS</span></div></div></td>
@@ -1008,6 +1093,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         </tr>
         <tr data-prazo="imediata" data-quando="suspeita">
           <td class="disease-name">Febre amarela</td>
+          <td class="move-cell"><div class="move-btns"><button class="btn-move-row" onclick="moveNotifRow(this,-1)" title="Subir">↑</button><button class="btn-move-row" onclick="moveNotifRow(this,1)" title="Descer">↓</button></div></td>
           <td class="drive-cell" id="dcell-51"><button class="drive-btn" id="dbtn-51" onclick="toggleDrivePopover(51,event)" title="Anexar arquivo do Drive">📎</button><div class="drive-popover" id="dpop-51"><div class="drive-popover-title">📁 Google Drive</div><input class="drive-input" id="dinput-51" placeholder="Cole o link do Google Drive..." /><div class="drive-popover-btns"><a class="drive-open-link" id="dlink-51" href="#" target="_blank">↗ abrir</a><button class="btn-drive-clear" onclick="clearDriveLink(51)">Remover</button><button class="btn-drive-save" onclick="saveDriveLink(51)">Salvar</button></div></div></td>
           <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
           <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-ses">✓</span><span class="inst-label-on">SES</span></div><div class="inst-item"><span class="inst-cb inst-ms">✓</span><span class="inst-label-on">MS</span></div></div></td>
@@ -1016,6 +1102,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         </tr>
         <tr data-prazo="imediata" data-quando="suspeita">
           <td class="disease-name">Febre do Nilo Ocidental e outras arboviroses de importância</td>
+          <td class="move-cell"><div class="move-btns"><button class="btn-move-row" onclick="moveNotifRow(this,-1)" title="Subir">↑</button><button class="btn-move-row" onclick="moveNotifRow(this,1)" title="Descer">↓</button></div></td>
           <td class="drive-cell" id="dcell-52"><button class="drive-btn" id="dbtn-52" onclick="toggleDrivePopover(52,event)" title="Anexar arquivo do Drive">📎</button><div class="drive-popover" id="dpop-52"><div class="drive-popover-title">📁 Google Drive</div><input class="drive-input" id="dinput-52" placeholder="Cole o link do Google Drive..." /><div class="drive-popover-btns"><a class="drive-open-link" id="dlink-52" href="#" target="_blank">↗ abrir</a><button class="btn-drive-clear" onclick="clearDriveLink(52)">Remover</button><button class="btn-drive-save" onclick="saveDriveLink(52)">Salvar</button></div></div></td>
           <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
           <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-ses">✓</span><span class="inst-label-on">SES</span></div><div class="inst-item"><span class="inst-cb inst-ms">✓</span><span class="inst-label-on">MS</span></div></div></td>
@@ -1024,6 +1111,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         </tr>
         <tr data-prazo="imediata" data-quando="suspeita">
           <td class="disease-name">Febre maculosa e outras riquetsioses</td>
+          <td class="move-cell"><div class="move-btns"><button class="btn-move-row" onclick="moveNotifRow(this,-1)" title="Subir">↑</button><button class="btn-move-row" onclick="moveNotifRow(this,1)" title="Descer">↓</button></div></td>
           <td class="drive-cell" id="dcell-53"><button class="drive-btn" id="dbtn-53" onclick="toggleDrivePopover(53,event)" title="Anexar arquivo do Drive">📎</button><div class="drive-popover" id="dpop-53"><div class="drive-popover-title">📁 Google Drive</div><input class="drive-input" id="dinput-53" placeholder="Cole o link do Google Drive..." /><div class="drive-popover-btns"><a class="drive-open-link" id="dlink-53" href="#" target="_blank">↗ abrir</a><button class="btn-drive-clear" onclick="clearDriveLink(53)">Remover</button><button class="btn-drive-save" onclick="saveDriveLink(53)">Salvar</button></div></div></td>
           <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
           <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-ses">✓</span><span class="inst-label-on">SES</span></div><div class="inst-item"><span class="inst-cb inst-ms">✓</span><span class="inst-label-on">MS</span></div></div></td>
@@ -1032,6 +1120,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         </tr>
         <tr data-prazo="imediata" data-quando="suspeita">
           <td class="disease-name">Hantavirose</td>
+          <td class="move-cell"><div class="move-btns"><button class="btn-move-row" onclick="moveNotifRow(this,-1)" title="Subir">↑</button><button class="btn-move-row" onclick="moveNotifRow(this,1)" title="Descer">↓</button></div></td>
           <td class="drive-cell" id="dcell-54"><button class="drive-btn" id="dbtn-54" onclick="toggleDrivePopover(54,event)" title="Anexar arquivo do Drive">📎</button><div class="drive-popover" id="dpop-54"><div class="drive-popover-title">📁 Google Drive</div><input class="drive-input" id="dinput-54" placeholder="Cole o link do Google Drive..." /><div class="drive-popover-btns"><a class="drive-open-link" id="dlink-54" href="#" target="_blank">↗ abrir</a><button class="btn-drive-clear" onclick="clearDriveLink(54)">Remover</button><button class="btn-drive-save" onclick="saveDriveLink(54)">Salvar</button></div></div></td>
           <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
           <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-ses">✓</span><span class="inst-label-on">SES</span></div><div class="inst-item"><span class="inst-cb inst-ms">✓</span><span class="inst-label-on">MS</span></div></div></td>
@@ -1040,6 +1129,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         </tr>
         <tr data-prazo="imediata" data-quando="suspeita">
           <td class="disease-name">Influenza humana produzida por novo subtipo viral</td>
+          <td class="move-cell"><div class="move-btns"><button class="btn-move-row" onclick="moveNotifRow(this,-1)" title="Subir">↑</button><button class="btn-move-row" onclick="moveNotifRow(this,1)" title="Descer">↓</button></div></td>
           <td class="drive-cell" id="dcell-55"><button class="drive-btn" id="dbtn-55" onclick="toggleDrivePopover(55,event)" title="Anexar arquivo do Drive">📎</button><div class="drive-popover" id="dpop-55"><div class="drive-popover-title">📁 Google Drive</div><input class="drive-input" id="dinput-55" placeholder="Cole o link do Google Drive..." /><div class="drive-popover-btns"><a class="drive-open-link" id="dlink-55" href="#" target="_blank">↗ abrir</a><button class="btn-drive-clear" onclick="clearDriveLink(55)">Remover</button><button class="btn-drive-save" onclick="saveDriveLink(55)">Salvar</button></div></div></td>
           <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
           <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-ses">✓</span><span class="inst-label-on">SES</span></div><div class="inst-item"><span class="inst-cb inst-ms">✓</span><span class="inst-label-on">MS</span></div></div></td>
@@ -1048,6 +1138,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         </tr>
         <tr data-prazo="imediata" data-quando="suspeita">
           <td class="disease-name">Malária na Região Extra-Amazônica</td>
+          <td class="move-cell"><div class="move-btns"><button class="btn-move-row" onclick="moveNotifRow(this,-1)" title="Subir">↑</button><button class="btn-move-row" onclick="moveNotifRow(this,1)" title="Descer">↓</button></div></td>
           <td class="drive-cell" id="dcell-56"><button class="drive-btn" id="dbtn-56" onclick="toggleDrivePopover(56,event)" title="Anexar arquivo do Drive">📎</button><div class="drive-popover" id="dpop-56"><div class="drive-popover-title">📁 Google Drive</div><input class="drive-input" id="dinput-56" placeholder="Cole o link do Google Drive..." /><div class="drive-popover-btns"><a class="drive-open-link" id="dlink-56" href="#" target="_blank">↗ abrir</a><button class="btn-drive-clear" onclick="clearDriveLink(56)">Remover</button><button class="btn-drive-save" onclick="saveDriveLink(56)">Salvar</button></div></div></td>
           <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
           <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-ses">✓</span><span class="inst-label-on">SES</span></div><div class="inst-item"><span class="inst-cb inst-ms">✓</span><span class="inst-label-on">MS</span></div></div></td>
@@ -1056,6 +1147,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         </tr>
         <tr data-prazo="imediata" data-quando="suspeita">
           <td class="disease-name">Monkeypox (Mpox)</td>
+          <td class="move-cell"><div class="move-btns"><button class="btn-move-row" onclick="moveNotifRow(this,-1)" title="Subir">↑</button><button class="btn-move-row" onclick="moveNotifRow(this,1)" title="Descer">↓</button></div></td>
           <td class="drive-cell" id="dcell-57"><button class="drive-btn" id="dbtn-57" onclick="toggleDrivePopover(57,event)" title="Anexar arquivo do Drive">📎</button><div class="drive-popover" id="dpop-57"><div class="drive-popover-title">📁 Google Drive</div><input class="drive-input" id="dinput-57" placeholder="Cole o link do Google Drive..." /><div class="drive-popover-btns"><a class="drive-open-link" id="dlink-57" href="#" target="_blank">↗ abrir</a><button class="btn-drive-clear" onclick="clearDriveLink(57)">Remover</button><button class="btn-drive-save" onclick="saveDriveLink(57)">Salvar</button></div></div></td>
           <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
           <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-ses">✓</span><span class="inst-label-on">SES</span></div><div class="inst-item"><span class="inst-cb inst-ms">✓</span><span class="inst-label-on">MS</span></div></div></td>
@@ -1064,6 +1156,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         </tr>
         <tr data-prazo="imediata" data-quando="suspeita">
           <td class="disease-name">Óbito por dengue</td>
+          <td class="move-cell"><div class="move-btns"><button class="btn-move-row" onclick="moveNotifRow(this,-1)" title="Subir">↑</button><button class="btn-move-row" onclick="moveNotifRow(this,1)" title="Descer">↓</button></div></td>
           <td class="drive-cell" id="dcell-58"><button class="drive-btn" id="dbtn-58" onclick="toggleDrivePopover(58,event)" title="Anexar arquivo do Drive">📎</button><div class="drive-popover" id="dpop-58"><div class="drive-popover-title">📁 Google Drive</div><input class="drive-input" id="dinput-58" placeholder="Cole o link do Google Drive..." /><div class="drive-popover-btns"><a class="drive-open-link" id="dlink-58" href="#" target="_blank">↗ abrir</a><button class="btn-drive-clear" onclick="clearDriveLink(58)">Remover</button><button class="btn-drive-save" onclick="saveDriveLink(58)">Salvar</button></div></div></td>
           <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
           <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-ses">✓</span><span class="inst-label-on">SES</span></div><div class="inst-item"><span class="inst-cb inst-ms">✓</span><span class="inst-label-on">MS</span></div></div></td>
@@ -1072,6 +1165,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         </tr>
         <tr data-prazo="imediata" data-quando="suspeita">
           <td class="disease-name">Óbito com suspeita de Zika</td>
+          <td class="move-cell"><div class="move-btns"><button class="btn-move-row" onclick="moveNotifRow(this,-1)" title="Subir">↑</button><button class="btn-move-row" onclick="moveNotifRow(this,1)" title="Descer">↓</button></div></td>
           <td class="drive-cell" id="dcell-59"><button class="drive-btn" id="dbtn-59" onclick="toggleDrivePopover(59,event)" title="Anexar arquivo do Drive">📎</button><div class="drive-popover" id="dpop-59"><div class="drive-popover-title">📁 Google Drive</div><input class="drive-input" id="dinput-59" placeholder="Cole o link do Google Drive..." /><div class="drive-popover-btns"><a class="drive-open-link" id="dlink-59" href="#" target="_blank">↗ abrir</a><button class="btn-drive-clear" onclick="clearDriveLink(59)">Remover</button><button class="btn-drive-save" onclick="saveDriveLink(59)">Salvar</button></div></div></td>
           <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
           <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-ses">✓</span><span class="inst-label-on">SES</span></div><div class="inst-item"><span class="inst-cb inst-ms">✓</span><span class="inst-label-on">MS</span></div></div></td>
@@ -1080,6 +1174,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         </tr>
         <tr data-prazo="imediata" data-quando="suspeita">
           <td class="disease-name">Óbito com suspeita de Chikungunya</td>
+          <td class="move-cell"><div class="move-btns"><button class="btn-move-row" onclick="moveNotifRow(this,-1)" title="Subir">↑</button><button class="btn-move-row" onclick="moveNotifRow(this,1)" title="Descer">↓</button></div></td>
           <td class="drive-cell" id="dcell-60"><button class="drive-btn" id="dbtn-60" onclick="toggleDrivePopover(60,event)" title="Anexar arquivo do Drive">📎</button><div class="drive-popover" id="dpop-60"><div class="drive-popover-title">📁 Google Drive</div><input class="drive-input" id="dinput-60" placeholder="Cole o link do Google Drive..." /><div class="drive-popover-btns"><a class="drive-open-link" id="dlink-60" href="#" target="_blank">↗ abrir</a><button class="btn-drive-clear" onclick="clearDriveLink(60)">Remover</button><button class="btn-drive-save" onclick="saveDriveLink(60)">Salvar</button></div></div></td>
           <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
           <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-ses">✓</span><span class="inst-label-on">SES</span></div><div class="inst-item"><span class="inst-cb inst-ms">✓</span><span class="inst-label-on">MS</span></div></div></td>
@@ -1088,6 +1183,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         </tr>
         <tr data-prazo="imediata" data-quando="suspeita">
           <td class="disease-name">Peste (Yersinia pestis)</td>
+          <td class="move-cell"><div class="move-btns"><button class="btn-move-row" onclick="moveNotifRow(this,-1)" title="Subir">↑</button><button class="btn-move-row" onclick="moveNotifRow(this,1)" title="Descer">↓</button></div></td>
           <td class="drive-cell" id="dcell-61"><button class="drive-btn" id="dbtn-61" onclick="toggleDrivePopover(61,event)" title="Anexar arquivo do Drive">📎</button><div class="drive-popover" id="dpop-61"><div class="drive-popover-title">📁 Google Drive</div><input class="drive-input" id="dinput-61" placeholder="Cole o link do Google Drive..." /><div class="drive-popover-btns"><a class="drive-open-link" id="dlink-61" href="#" target="_blank">↗ abrir</a><button class="btn-drive-clear" onclick="clearDriveLink(61)">Remover</button><button class="btn-drive-save" onclick="saveDriveLink(61)">Salvar</button></div></div></td>
           <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
           <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-ses">✓</span><span class="inst-label-on">SES</span></div><div class="inst-item"><span class="inst-cb inst-ms">✓</span><span class="inst-label-on">MS</span></div></div></td>
@@ -1096,6 +1192,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         </tr>
         <tr data-prazo="imediata" data-quando="suspeita">
           <td class="disease-name">Poliomielite por poliovírus selvagem / Síndrome da Paralisia Flácida Aguda</td>
+          <td class="move-cell"><div class="move-btns"><button class="btn-move-row" onclick="moveNotifRow(this,-1)" title="Subir">↑</button><button class="btn-move-row" onclick="moveNotifRow(this,1)" title="Descer">↓</button></div></td>
           <td class="drive-cell" id="dcell-62"><button class="drive-btn" id="dbtn-62" onclick="toggleDrivePopover(62,event)" title="Anexar arquivo do Drive">📎</button><div class="drive-popover" id="dpop-62"><div class="drive-popover-title">📁 Google Drive</div><input class="drive-input" id="dinput-62" placeholder="Cole o link do Google Drive..." /><div class="drive-popover-btns"><a class="drive-open-link" id="dlink-62" href="#" target="_blank">↗ abrir</a><button class="btn-drive-clear" onclick="clearDriveLink(62)">Remover</button><button class="btn-drive-save" onclick="saveDriveLink(62)">Salvar</button></div></div></td>
           <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
           <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-ses">✓</span><span class="inst-label-on">SES</span></div><div class="inst-item"><span class="inst-cb inst-ms">✓</span><span class="inst-label-on">MS</span></div></div></td>
@@ -1104,6 +1201,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
         </tr>
         <tr data-prazo="imediata" data-quando="suspeita">
           <td class="disease-name">Raiva humana</td>
+          <td class="move-cell"><div class="move-btns"><button class="btn-move-row" onclick="moveNotifRow(this,-1)" title="Subir">↑</button><button class="btn-move-row" onclick="moveNotifRow(this,1)" title="Descer">↓</button></div></td>
           <td class="drive-cell" id="dcell-63"><button class="drive-btn" id="dbtn-63" onclick="toggleDrivePopover(63,event)" title="Anexar arquivo do Drive">📎</button><div class="drive-popover" id="dpop-63"><div class="drive-popover-title">📁 Google Drive</div><input class="drive-input" id="dinput-63" placeholder="Cole o link do Google Drive..." /><div class="drive-popover-btns"><a class="drive-open-link" id="dlink-63" href="#" target="_blank">↗ abrir</a><button class="btn-drive-clear" onclick="clearDriveLink(63)">Remover</button><button class="btn-drive-save" onclick="saveDriveLink(63)">Salvar</button></div></div></td>
           <td style="text-align:center"><span class="badge badge-imediata">IMEDIATA</span></td>
           <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-ses">✓</span><span class="inst-label-on">SES</span></div><div class="inst-item"><span class="inst-cb inst-ms">✓</span><span class="inst-label-on">MS</span></div></div></td>
@@ -1113,6 +1211,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
 
         <tr data-prazo="semanal" data-quando="suspeita">
           <td class="disease-name">Anomalias congênitas <span style="font-family:'JetBrains Mono',monospace;font-size:0.58rem;background:#fff3e0;color:#b5521e;border:1px solid #e8c4ae;border-radius:3px;padding:1px 5px;margin-left:4px;vertical-align:middle;">NOVO 2026</span></td>
+          <td class="move-cell"><div class="move-btns"><button class="btn-move-row" onclick="moveNotifRow(this,-1)" title="Subir">↑</button><button class="btn-move-row" onclick="moveNotifRow(this,1)" title="Descer">↓</button></div></td>
           <td class="drive-cell" id="dcell-64"><button class="drive-btn" id="dbtn-64" onclick="toggleDrivePopover(64,event)" title="Anexar arquivo do Drive">📎</button><div class="drive-popover" id="dpop-64"><div class="drive-popover-title">📁 Google Drive</div><input class="drive-input" id="dinput-64" placeholder="Cole o link do Google Drive..." /><div class="drive-popover-btns"><a class="drive-open-link" id="dlink-64" href="#" target="_blank">↗ abrir</a><button class="btn-drive-clear" onclick="clearDriveLink(64)">Remover</button><button class="btn-drive-save" onclick="saveDriveLink(64)">Salvar</button></div></div></td>
           <td style="text-align:center"><span class="badge badge-semanal">SEMANAL</span></td>
           <td><div class="inst-grid"><div class="inst-item"><span class="inst-cb inst-on">✓</span><span class="inst-label-on">SMS</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">SES</span></div><div class="inst-item"><span class="inst-cb inst-off">–</span><span class="inst-label-off">MS</span></div></div></td>
@@ -1122,7 +1221,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
 
         <!-- empty row -->
         <tr class="empty-row hidden" id="emptyRow">
-          <td colspan="6" style="text-align:center; padding:30px; color:var(--muted2); font-family:'JetBrains Mono',monospace; font-size:0.78rem; font-style:italic;">Nenhum agravo encontrado para essa busca.</td>
+          <td colspan="7" style="text-align:center; padding:30px; color:var(--muted2); font-family:'JetBrains Mono',monospace; font-size:0.78rem; font-style:italic;">Nenhum agravo encontrado para essa busca.</td>
         </tr>
       </tbody>
     </table>
@@ -1693,6 +1792,47 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
   if (_rGrid) _rGrid.addEventListener('input', () => { if (isEditing) saveRast(); });
 
 
+  function moveNotifRow(btn, dir) {
+    const row   = btn.closest('tr');
+    const tbody = document.getElementById('notifBody');
+    const rows  = [...tbody.querySelectorAll('tr[data-prazo]')];
+    const idx   = rows.indexOf(row);
+    const empty = document.getElementById('emptyRow');
+
+    if (dir === -1 && idx > 0) {
+      tbody.insertBefore(row, rows[idx - 1]);
+    } else if (dir === 1 && idx < rows.length - 1) {
+      tbody.insertBefore(rows[idx + 1], row);
+    }
+    saveNotifOrder();
+    applyAllFilters();
+  }
+
+  const ORDER_KEY = 'sus_notif_order_v1';
+
+  function saveNotifOrder() {
+    try {
+      const rows = [...document.querySelectorAll('#notifBody tr[data-prazo]')];
+      const order = rows.map(r => (r.querySelector('td.disease-name')?.textContent || '').trim().slice(0, 60));
+      localStorage.setItem(ORDER_KEY, JSON.stringify(order));
+    } catch(e) {}
+  }
+
+  function loadNotifOrder() {
+    try {
+      const order = JSON.parse(localStorage.getItem(ORDER_KEY) || 'null');
+      if (!order || !order.length) return false;
+      const tbody = document.getElementById('notifBody');
+      const empty = document.getElementById('emptyRow');
+      const rows  = [...tbody.querySelectorAll('tr[data-prazo]')];
+      order.forEach(name => {
+        const row = rows.find(r => (r.querySelector('td.disease-name')?.textContent || '').trim().slice(0, 60) === name);
+        if (row) tbody.insertBefore(row, empty);
+      });
+      return true;
+    } catch(e) { return false; }
+  }
+
   // ── NOTIF EDIT MODE ──
   const NOTIF_KEY  = 'sus_notif_edits_v1';
   const DRIVE_KEY  = 'sus_drive_links_v1';
@@ -1714,7 +1854,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
       td.contentEditable = notifEditing ? 'true' : 'false';
     });
 
-    if (!notifEditing) saveNotifEdits();
+    if (!notifEditing) { saveNotifEdits(); saveNotifOrder(); }
   }
 
   function saveNotifEdits() {
@@ -1870,7 +2010,8 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
   // Init drive links
   loadDriveLinks();
   loadNotifEdits();
-  sortNotifAlpha();
+  // Load saved order; if none, sort alphabetically
+  if (!loadNotifOrder()) sortNotifAlpha();
 
   // Re-sort after edits (in case name was changed)
   document.addEventListener('input', e => {
