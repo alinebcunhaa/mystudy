@@ -1850,9 +1850,32 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
     }
   });
 
+  // ── SORT TABLE ALPHABETICALLY ──
+  function sortNotifAlpha() {
+    const tbody = document.getElementById('notifBody');
+    const rows  = [...tbody.querySelectorAll('tr[data-prazo]')];
+    const empty = document.getElementById('emptyRow');
+
+    rows.sort((a, b) => {
+      const nameA = (a.querySelector('td.disease-name')?.textContent || '').trim().toLowerCase()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      const nameB = (b.querySelector('td.disease-name')?.textContent || '').trim().toLowerCase()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      return nameA.localeCompare(nameB, 'pt-BR');
+    });
+
+    rows.forEach(r => tbody.insertBefore(r, empty));
+  }
+
   // Init drive links
   loadDriveLinks();
   loadNotifEdits();
+  sortNotifAlpha();
+
+  // Re-sort after edits (in case name was changed)
+  document.addEventListener('input', e => {
+    if (e.target.closest('td.disease-name') && !notifEditing) sortNotifAlpha();
+  });
 
   // Init
   window._searchQ = '';

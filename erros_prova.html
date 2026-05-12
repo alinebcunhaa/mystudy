@@ -150,6 +150,7 @@ label.lbl{font-size:.68rem;font-weight:700;color:#64748b;text-transform:uppercas
       <input type="text" id="search-err" placeholder="🔍 Buscar..." oninput="renderErros()">
       <select id="filter-mat" onchange="renderErros()"><option value="">Todas as matérias</option><option>CLM</option><option>Cirurgia</option><option>GO</option><option>Pediatria</option><option>Preventiva</option><option>Psiquiatria</option><option>Outro</option></select>
       <select id="filter-tipo" onchange="renderErros()"><option value="">Todos os tipos</option><option>Conceito</option><option>Distração</option><option>Nunca vi</option><option>Confusão entre temas</option></select>
+      <select id="filter-prova" onchange="renderErros()"><option value="">Todos os simulados</option></select>
       <button class="btn-sec" id="btn-clear-err" style="display:none" onclick="clearErrFilter()">✕ Limpar</button>
     </div>
     <div class="results-count" id="err-count"></div>
@@ -235,6 +236,19 @@ const INIT_ERRORS=[
   {id:35,materia:"Pediatria",tema:"Dermatite Atópica — Padrão por Faixa Etária",erro:"Em LACTENTES a DA é exsudativa, acomete face e extensores. Liquenificação em flexão é padrão de crianças maiores e adultos. Complicação ocular: ceratoconjuntivite alérgica (em até 30% dos casos).",tipo:"Conceito",data:"2026-04-30",prova:"Simulado R1 Abr/26"},
   {id:36,materia:"Pediatria",tema:"Profilaxia de Ferro — RN Baixo Peso",erro:"RN com 2400g = baixo peso (< 2500g). Correto: iniciar com 30 DIAS de vida, dose 2 mg/kg/dia. RN a termo com peso normal: 6 meses, 1 mg/kg/dia.",tipo:"Conceito",data:"2026-04-30",prova:"Simulado R1 Abr/26"},
   {id:37,materia:"Pediatria",tema:"Dislipidemia na Infância — Valores de Referência",erro:"CT >150 e LDL >100 são LIMÍTROFES, não altos. Valores ALTOS: CT ≥ 170 mg/dL e LDL ≥ 130 mg/dL. Fatores de risco: obesidade, diabetes, Kawasaki com aneurisma, HIV.",tipo:"Conceito",data:"2026-04-30",prova:"Simulado R1 Abr/26"},
+  {id:38,materia:"Preventiva",tema:"PNAB / ESF — Apoio Matricial (eMulti)",erro:"Marcou que integralidade é alcançada primariamente pelos ACS. Incorreto: ACS fazem busca ativa e vínculo, não são os responsáveis pela integralidade. Correto: Apoio matricial (eMulti/NASF-AB) amplia capacidade clínica da equipe no território → reduz encaminhamentos = integralidade na prática.",tipo:"Conceito",data:"2026-05-12",prova:"SUS-SP 2026"},
+  {id:39,materia:"Preventiva",tema:"Rastreamento / AAA — Homem ex-tabagista",erro:"Marcou TC de tórax baixa dose (rastreamento Ca pulmão). Paciente parou de fumar há 30 anos → não preenche critério (exige pausa <15 anos). Correto: US abdominal para AAA (homens 65–75 anos que já fumaram — recomendação USPSTF/MS).",tipo:"Conceito",data:"2026-05-12",prova:"SUS-SP 2026"},
+  {id:40,materia:"Preventiva",tema:"Investigação de Surto — GEA / Fase Inicial",erro:"Marcou inspeção sanitária imediata em todas as barracas (ação de Vigilância Sanitária, fase de controle). Fase INICIAL da investigação epidemiológica: (1) confirmar se é surto — comparar com série histórica; (2) caracterizar casos — revisar prontuários. Inspeção e interdição vêm depois.",tipo:"Conceito",data:"2026-05-12",prova:"SUS-SP 2026"},
+  {id:41,materia:"Preventiva",tema:"Varicela em Gestante — Profilaxia Pós-Exposição",erro:"Marcou valaciclovir profilático. Valaciclovir é TRATAMENTO da varicela ativa, não profilaxia. Gestante sem história de varicela e sem registro vacinal → 1º passo: coletar SOROLOGIA IgG anti-VVZ. Se negativa → VZIG em até 10 dias. Vacina VVZ é contraindicada na gravidez (vírus vivo).",tipo:"Conceito",data:"2026-05-12",prova:"SUS-SP 2026"},
+  {id:42,materia:"Preventiva",tema:"Validade Interna — Viés de Confusão vs Poder Estatístico",erro:"Marcou baixo poder estatístico. Poder não é o problema: IC95% (0,42–0,67) está longe de 1, resultado é significativo. Em estudo observacional não randomizado, a principal ameaça à validade interna é VIÉS DE CONFUSÃO RESIDUAL (variáveis não medidas não controladas).",tipo:"Conceito",data:"2026-05-12",prova:"SUS-SP 2026"},
+  {id:43,materia:"Preventiva",tema:"Diabetes Gestacional — Diagnóstico no 1º Trimestre",erro:"Marcou TOTG às 24–28 semanas. Pelo critério IADPSG/OMS (adotado pelo MS): glicemia jejum ≥ 92 mg/dL no 1º trimestre = DMG CONFIRMADO. Paciente com 95 mg/dL com 10 semanas → diagnóstico já feito. TOTG é para quem ainda não tem diagnóstico estabelecido.",tipo:"Conceito",data:"2026-05-12",prova:"SUS-SP 2026"},
+  {id:44,materia:"Preventiva",tema:"Bradford Hill — Temporalidade e Analogia",erro:"Marcou analogia como critério mais forte (com transferência quantitativa de evidências). Analogia é um dos MAIS FRACOS de Hill e não existe transferência quantitativa. Correto: TEMPORALIDADE é o único critério conceitualmente indispensável — sua violação refuta a hipótese causal.",tipo:"Conceito",data:"2026-05-12",prova:"SUS-SP 2026"},
+  {id:45,materia:"Preventiva",tema:"Bioestatística — Teste para Dois Grupos Independentes",erro:"Marcou ANOVA de medidas repetidas. ANOVA repetidas = mesmo grupo em múltiplos momentos. Aqui: dois grupos NÃO PAREADOS (cirúrgico vs conservador), variável contínua → Teste t para amostras INDEPENDENTES (ou Mann-Whitney se não paramétrico).",tipo:"Conceito",data:"2026-05-12",prova:"SUS-SP 2026"},
+  {id:46,materia:"Preventiva",tema:"Risco Cardiovascular Alto — Meta LDL e Estatina",erro:"Marcou GLP-1 agonista como 1ª escolha. GLP-1 é para DM2 estabelecido com DCV, não para pré-diabetes. Paciente: pai IAM <60a + HAS + dislipidemia + placas em carótida + obesidade + pré-DM = ALTO RISCO CV. Meta LDL <70. Com LDL 121 em estatina de baixa dose → intensificar: rosuvastatina 40 mg.",tipo:"Conceito",data:"2026-05-12",prova:"SUS-SP 2026"},
+  {id:47,materia:"Preventiva",tema:"Idoso com Quedas — Exercício Multicomponente",erro:"Marcou desprescrição da glibenclamida como conduta principal. TUG >12s = risco elevado de quedas. Conduta de MAIOR IMPACTO na prevenção de quedas em idoso: programa de EXERCÍCIOS MULTICOMPONENTES (fortalecimento + equilíbrio + marcha). Desprescrição é adjuvante, não a conduta primária.",tipo:"Conceito",data:"2026-05-12",prova:"SUS-SP 2026"},
+  {id:48,materia:"Preventiva",tema:"Intoxicação por Organofosforado/Carbamato",erro:"Marcou que são agonistas da colinesterase. Organofosforados e carbamatos são INIBIDORES da colinesterase (não agonistas). Dosagem de colinesterase eritrocitária/plasmática REDUZIDA confirma diagnóstico. Tratamento: atropina (muscarínicos) + pralidoxima (reativador, para organofosforado). EDTA é quelante de metais, não indicado aqui.",tipo:"Conceito",data:"2026-05-12",prova:"SUS-SP 2026"},
+  {id:49,materia:"Preventiva",tema:"Hepatite A — Vacina Pós-Exposição em Adulto",erro:"Marcou solicitar sorologias para hepatites virais. Sorologia atrasa a conduta sem mudar desfecho. Adulto suscetível exposta a VHA em surto → ação de MAIOR EFETIVIDADE PRÁTICA: aplicar vacina VHA (eficácia >95%). Imunoglobulina só se vacina indisponível ou contato >2 semanas.",tipo:"Conceito",data:"2026-05-12",prova:"SUS-SP 2026"},
+  {id:50,materia:"Preventiva",tema:"Sistemas de Informação em Saúde — APS e Auditoria",erro:"Marcou linkage e-SUS AB + SIH-SUS como estratégia correta. Alternativa mais correta: e-SUS AB é a FONTE PRIMÁRIA para auditar qualidade e frequência do pré-natal na APS. SINAN e SIM NÃO fazem cruzamento automático — investigação de óbito notificado é manual, depende do gestor.",tipo:"Conceito",data:"2026-05-12",prova:"SUS-SP 2026"},
 ];
 
 const INIT_RESUMOS=[
@@ -418,7 +432,7 @@ const INIT_RESUMOS=[
 let errors=JSON.parse(localStorage.getItem('erros-r1-v3')||'null')||INIT_ERRORS;
 let resumos=JSON.parse(localStorage.getItem('resumos-r1-v3')||'null')||INIT_RESUMOS;
 let editErrId=null,editResId=null;
-function save(){localStorage.setItem('erros-r1-v3',JSON.stringify(errors));localStorage.setItem('resumos-r1-v3',JSON.stringify(resumos));}
+function save(){localStorage.setItem('erros-r1-v3',JSON.stringify(errors));localStorage.setItem('resumos-r1-v3',JSON.stringify(resumos));renderDashboard();buildProvaSelect();}
 
 function setView(v,btn){
   document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
@@ -450,22 +464,23 @@ function renderDashboard(){
   let tH='<div class="panel-title">Erros por Tipo</div>';
   TIPOS.forEach((t,i)=>{const c=errors.filter(e=>e.tipo===t).length;if(!c)return;tH+=`<div class="type-row" onclick="filterAndGo('tipo','${t}')"><div class="type-dot" style="background:${TIPO_COLORS[i]}"></div><span class="type-label">${t}</span><span class="type-count" style="color:${TIPO_COLORS[i]}">${c}</span></div>`;});
   const pr=[...new Set(errors.map(e=>e.prova).filter(Boolean))].slice(0,5);
-  if(pr.length){tH+='<div class="panel-title" style="margin-top:1.1rem">Simulados</div>';pr.forEach(p=>{tH+=`<div class="prova-item">📋 ${esc(p)} <span style="color:#94a3b8">(${errors.filter(e=>e.prova===p).length})</span></div>`;});}
+  if(pr.length){tH+='<div class="panel-title" style="margin-top:1.1rem">Simulados</div>';pr.forEach(p=>{tH+=`<div class="prova-item" style="cursor:pointer" onclick="filterAndGo('prova','${esc(p)}')">📋 ${esc(p)} <span style="color:#94a3b8">(${errors.filter(e=>e.prova===p).length})</span></div>`;});}
   document.getElementById('panel-tipo').innerHTML=tH;
   document.getElementById('dash-erros').innerHTML=errors.slice(0,5).map(e=>{const pc=PASTEL[e.materia]||PASTEL['Outro'];return`<div class="mini-card"><div class="mini-dot" style="background:${pc.dot}"></div><div><div class="mini-title">${esc(e.tema)}</div><div class="mini-sub">${esc(e.materia)}</div></div></div>`;}).join('');
   document.getElementById('dash-resumos').innerHTML=resumos.slice(0,5).map(r=>{const pc=PASTEL[r.materia]||PASTEL['Outro'];return`<div class="mini-card"><div class="mini-dot" style="background:${pc.dot}"></div><div><div class="mini-title">${esc(r.titulo)}</div><div class="mini-sub">${esc(r.materia)}</div></div></div>`;}).join('');
 }
-function filterAndGo(type,val){if(type==='mat')document.getElementById('filter-mat').value=val;if(type==='tipo')document.getElementById('filter-tipo').value=val;setView('erros',document.querySelectorAll('.nav-btn')[1]);}
+function filterAndGo(type,val){if(type==='mat')document.getElementById('filter-mat').value=val;if(type==='tipo')document.getElementById('filter-tipo').value=val;if(type==='prova')document.getElementById('filter-prova').value=val;setView('erros',document.querySelectorAll('.nav-btn')[1]);}
 function renderErros(){
   const s=document.getElementById('search-err').value.toLowerCase();
   const m=document.getElementById('filter-mat').value;
   const t=document.getElementById('filter-tipo').value;
-  document.getElementById('btn-clear-err').style.display=(s||m||t)?'':'none';
-  const f=errors.filter(e=>(!m||e.materia===m)&&(!t||e.tipo===t)&&(!s||e.tema.toLowerCase().includes(s)||e.erro.toLowerCase().includes(s)));
+  const p=document.getElementById('filter-prova').value;
+  document.getElementById('btn-clear-err').style.display=(s||m||t||p)?'':'none';
+  const f=errors.filter(e=>(!m||e.materia===m)&&(!t||e.tipo===t)&&(!p||e.prova===p)&&(!s||e.tema.toLowerCase().includes(s)||e.erro.toLowerCase().includes(s)));
   document.getElementById('err-count').textContent=`${f.length} erro${f.length!==1?'s':''}`;
   document.getElementById('erros-list').innerHTML=f.length?f.map(e=>{const pc=PASTEL[e.materia]||PASTEL['Outro'];return`<div class="err-card" id="ec-${e.id}" style="border-color:${pc.border};border-left-color:${pc.dot}"><div class="err-card-head" onclick="toggleEC(${e.id})"><div style="flex:1;min-width:0"><div class="err-card-meta"><span class="badge" style="background:${pc.bg};color:${pc.text};border-color:${pc.border}">${esc(e.materia)}</span><span class="badge badge-tipo">${esc(e.tipo)}</span>${e.prova?`<span class="badge-prova">· ${esc(e.prova)}</span>`:''}<span style="font-size:.64rem;color:#cbd5e1;margin-left:auto">${e.data}</span></div><div class="err-title">${esc(e.tema)}</div><div class="err-preview" id="ep-${e.id}">${esc(e.erro)}</div></div><span class="chevron" id="ch-${e.id}">▼</span></div><div class="err-body" id="eb-${e.id}" style="background:${pc.bg};border-color:${pc.border}"><div class="err-text">${esc(e.erro)}</div><div class="card-actions" id="ea-${e.id}"><button class="btn-sm btn-blue-sm" onclick="editErr(${e.id})">✏️ Editar</button><button class="btn-sm btn-red-sm" onclick="confirmDel(${e.id},'err')">🗑️</button></div></div></div>`;}).join(''):'<div class="empty">Nenhum erro encontrado 🎉</div>';
 }
-function clearErrFilter(){document.getElementById('search-err').value='';document.getElementById('filter-mat').value='';document.getElementById('filter-tipo').value='';renderErros();}
+function clearErrFilter(){document.getElementById('search-err').value='';document.getElementById('filter-mat').value='';document.getElementById('filter-tipo').value='';document.getElementById('filter-prova').value='';renderErros();}
 function toggleEC(id){const b=document.getElementById('eb-'+id);const ch=document.getElementById('ch-'+id);const pr=document.getElementById('ep-'+id);if(b.classList.contains('open')){b.classList.remove('open');ch.textContent='▼';if(pr)pr.style.display='';}else{b.classList.add('open');ch.textContent='▲';if(pr)pr.style.display='none';}}
 function confirmDel(id,type){const actId=type==='err'?`ea-${id}`:`ra-${id}`;document.getElementById(actId).innerHTML=`<span class="confirm-text">Confirmar?</span><button class="btn-sm btn-red-sm" onclick="${type==='err'?`delErr(${id})`:`delRes(${id})`}">Apagar</button><button class="btn-sm btn-grey-sm" onclick="${type==='err'?'renderErros()':'renderResumos()'}">Cancelar</button>`;}
 function delErr(id){errors=errors.filter(e=>e.id!==id);save();renderErros();showToast('🗑️ Removido.');}
@@ -501,7 +516,9 @@ function openResForm(id){editResId=id||null;const res=id?resumos.find(r=>r.id===
 function closeResForm(){document.getElementById('modal-res').classList.remove('open');}
 function submitRes(){const titulo=document.getElementById('rf-titulo').value.trim();const conteudo=document.getElementById('rf-conteudo').value.trim();if(!titulo||!conteudo)return;const obj={id:editResId||Date.now(),materia:document.getElementById('rf-mat').value,titulo,blocos:[{t:'texto',v:conteudo}]};if(editResId){resumos=resumos.map(r=>r.id===editResId?obj:r);showToast('✏️ Resumo atualizado!');}else{resumos=[obj,...resumos];showToast('📝 Resumo salvo!');}save();closeResForm();renderResumos();}
 function editRes(id){openResForm(id);}
+function buildProvaSelect(){const sel=document.getElementById('filter-prova');const cur=sel.value;const provas=[...new Set(errors.map(e=>e.prova).filter(Boolean))].sort();sel.innerHTML='<option value="">Todos os simulados</option>'+provas.map(p=>`<option value="${esc(p)}"${p===cur?' selected':''}>${esc(p)} (${errors.filter(e=>e.prova===p).length})</option>`).join('');}
 renderDashboard();
+buildProvaSelect();
 </script>
 </body>
 </html>
