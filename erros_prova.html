@@ -191,4 +191,182 @@ label.lbl{font-size:.68rem;font-weight:700;color:#64748b;text-transform:uppercas
   <div class="modal">
     <div class="modal-header"><span class="modal-title" id="modal-res-title">Novo Resumo</span><button class="close-btn" onclick="closeResForm()">✕</button></div>
     <div class="form-grid">
-      <div class="form-group"><label class="lbl">Matéria</label><select id="rf-mat"><option>CLM</option><option>Cirurgia</option><option>GO</option><option>Pediatria</option>
+      <div class="form-group"><label class="lbl">Matéria</label><select id="rf-mat"><option>CLM</option><option>Cirurgia</option><option>GO</option><option>Pediatria</option><option>Preventiva</option><option>Psiquiatria</option><option>Outro</option></select></div>
+      <div class="form-group"><label class="lbl">Título</label><input id="rf-titulo" placeholder="Ex: Critérios de Fong"></div>
+      <div class="form-group full"><label class="lbl">Conteúdo</label><textarea id="rf-conteudo" rows="8" placeholder="Escreva o resumo aqui..."></textarea></div>
+    </div>
+    <div class="modal-actions"><button class="btn-sec" onclick="closeResForm()">Cancelar</button><button class="btn-outline" onclick="submitRes()">Criar Resumo</button></div>
+  </div>
+</div>
+<div id="toast"></div>
+<script>
+const PASTEL={CLM:{bg:"#fde8e8",border:"#f8b4b4",text:"#b91c1c",dot:"#ef4444"},Cirurgia:{bg:"#fef3e2",border:"#fcd34d",text:"#92400e",dot:"#f59e0b"},GO:{bg:"#fce7f3",border:"#f9a8d4",text:"#9d174d",dot:"#ec4899"},Pediatria:{bg:"#e0f2fe",border:"#7dd3fc",text:"#0c4a6e",dot:"#0ea5e9"},Preventiva:{bg:"#dcfce7",border:"#86efac",text:"#14532d",dot:"#22c55e"},Psiquiatria:{bg:"#ede9fe",border:"#c4b5fd",text:"#4c1d95",dot:"#8b5cf6"},Outro:{bg:"#f1f5f9",border:"#cbd5e1",text:"#334155",dot:"#64748b"}};
+const TIPO_COLORS=["#ef4444","#f59e0b","#0ea5e9","#8b5cf6"];
+const TIPOS=["Conceito","Distração","Nunca vi","Confusão entre temas"];
+const MATERIAS=["CLM","Cirurgia","GO","Pediatria","Preventiva","Psiquiatria","Outro"];
+
+const INIT_ERRORS=[
+  {id:1,materia:"CLM",tema:"Gasometria / Ânion Gap",erro:"Não calculou o AG antes de responder. AG = Na – (Cl + HCO₃) = 135 – 111 = 24 → elevado. Metformina causa acidose lática (AG alto) → é compatível com o quadro, não a resposta da 'incompatível'.",tipo:"Conceito",data:"2026-04-30",prova:"Simulado R1 Abr/26",revisado:false},
+  {id:2,materia:"CLM",tema:"CCR Metastático / Critérios de Fong",erro:"Marcou colostomia profilática. Não há indicação de operar sítio primário sem obstrução em doença metastática. Critérios de Fong são exclusivamente hepáticos — acometimento pulmonar não faz parte.",tipo:"Conceito",data:"2026-04-30",prova:"Simulado R1 Abr/26",revisado:false}
+];
+
+const INIT_RESUMOS=[
+  {id:1,materia:"CLM",titulo:"Gasometria — Interpretação Passo a Passo",blocos:[
+    {t:"titulo",v:"Valores Normais"},{t:"tabela",cols:["Parâmetro","Valor Normal"],rows:[["pH","7,35 – 7,45"],["pCO₂","35 – 45 mmHg"],["HCO₃⁻","22 – 26 mEq/L"],["BE","-2 a +2"]]},
+    {t:"titulo",v:"Passo a Passo"},{t:"ol",v:["Checar o pH → acidose (<7,35) ou alcalose (>7,45)?","Identificar o componente primário: pCO₂ (resp.) ou HCO₃ (metab.)?","Verificar compensação com as fórmulas","Calcular o Ânion Gap se acidose metabólica","Se AG elevado → calcular Delta-Delta"]},
+    {t:"formula",v:"AG = Na⁺ – (Cl⁻ + HCO₃⁻)   →   Normal: 8–12 mEq/L"},
+    {t:"macete",v:"ROME: Respiratory Opposite (pH↑ pCO₂↓) · Metabolic Equal (pH↑ HCO₃↑)"},
+  ]}
+];
+
+let errors=JSON.parse(localStorage.getItem('erros-r1-v3')||'null')||INIT_ERRORS;
+let resumos=JSON.parse(localStorage.getItem('resumos-r1-v3')||'null')||INIT_RESUMOS;
+let editErrId=null,editResId=null;
+
+function save(){localStorage.setItem('erros-r1-v3',JSON.stringify(errors));localStorage.setItem('resumos-r1-v3',JSON.stringify(resumos));renderDashboard();buildProvaSelect();}
+
+function setView(v,btn){
+  document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
+  document.getElementById('view-'+v).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  document.getElementById('btn-new-resumo').style.display=v==='resumos'?'':'none';
+  document.getElementById('btn-new-erro').style.display=v==='resumos'?'none':'';
+  if(v==='dashboard')renderDashboard();
+  if(v==='erros')renderErros();
+  if(v==='resumos')renderResumos();
+}
+
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+function renderDashboard(){
+  const mats=[...new Set(errors.map(e=>e.materia))];
+  document.getElementById('header-sub').textContent=`${errors.length} erros · ${resumos.length} resumos · ${mats.length} matérias`;
+  document.getElementById('stats-row').innerHTML=[
+    {num:errors.length,label:"Total Erros",color:"#4f46e5",click:"setView('erros',document.querySelectorAll('.nav-btn')[1])"},
+    {num:resumos.length,label:"Resumos",color:"#0ea5e9",click:"setView('resumos',document.querySelectorAll('.nav-btn')[2])"},
+    {num:errors.filter(e=>e.revisado).length,label:"Revisados ✅",color:"#10b981",click:"renderErros()"},
+    {num:errors.filter(e=>e.tipo==="Conceito").length,label:"Por Conceito",color:"#ef4444",click:"filterAndGo('tipo','Conceito')"},
+  ].map(s=>`<div class="stat-card" onclick="${s.click}"><div class="stat-num" style="color:${s.color}">${s.num}</div><div class="stat-label">${s.label}</div></div>`).join('');
+  
+  const byMat=["CLM","Cirurgia","GO","Pediatria","Preventiva","Psiquiatria","Outro"].map(m=>({m,c:errors.filter(e=>e.materia===m).length})).filter(x=>x.c>0).sort((a,b)=>b.c-a.c);
+  let mH='<div class="panel-title">Erros por Matéria</div>';
+  byMat.forEach(({m,c})=>{const pc=PASTEL[m]||PASTEL['Outro'];const pct=Math.round((c/errors.length)*100);mH+=`<div class="bar-wrap" onclick="filterAndGo('mat','${m}')"><div class="bar-row"><span class="bar-name" style="color:${pc.text}">${m}</span><span class="bar-count">${c} (${pct}%)</span></div><div class="bar-bg"><div class="bar-fill" style="width:${pct}%;background:${pc.dot}"></div></div></div>`;});
+  document.getElementById('panel-materia').innerHTML=mH;
+  
+  let tH='<div class="panel-title">Erros por Tipo</div>';
+  TIPOS.forEach((t,i)=>{const c=errors.filter(e=>e.tipo===t).length;if(!c)return;tH+=`<div class="type-row" onclick="filterAndGo('tipo','${t}')"><div class="type-dot" style="background:${TIPO_COLORS[i]}"></div><span class="type-label">${t}</span><span class="type-count" style="color:${TIPO_COLORS[i]}">${c}</span></div>`;});
+  document.getElementById('panel-tipo').innerHTML=tH;
+  
+  document.getElementById('dash-erros').innerHTML=errors.slice(0,5).map(e=>{const pc=PASTEL[e.materia]||PASTEL['Outro'];return`<div class="mini-card"><div class="mini-dot" style="background:${pc.dot}"></div><div><div class="mini-title">${esc(e.tema)}</div><div class="mini-sub">${esc(e.materia)}</div></div></div>`;}).join('');
+}
+
+function filterAndGo(type,val){if(type==='mat')document.getElementById('filter-mat').value=val;if(type==='tipo')document.getElementById('filter-tipo').value=val;if(type==='prova')document.getElementById('filter-prova').value=val;setView('erros',document.querySelectorAll('.nav-btn')[1]);}
+
+function toggleRevisado(id) {
+    errors = errors.map(e => {
+        if(e.id === id) return { ...e, revisado: !e.revisado };
+        return e;
+    });
+    save();
+    renderErros();
+    const e = errors.find(err => err.id === id);
+    showToast(e.revisado ? '✅ Marcado como revisado!' : '↩️ Retornado para pendentes');
+}
+
+function renderErros(){
+  const s=document.getElementById('search-err').value.toLowerCase();
+  const m=document.getElementById('filter-mat').value;
+  const t=document.getElementById('filter-tipo').value;
+  const p=document.getElementById('filter-prova').value;
+  document.getElementById('btn-clear-err').style.display=(s||m||t||p)?'':'none';
+  const f=errors.filter(e=>(!m||e.materia===m)&&(!t||e.tipo===t)&&(!p||e.prova===p)&&(!s||e.tema.toLowerCase().includes(s)||e.erro.toLowerCase().includes(s)));
+  document.getElementById('err-count').textContent=`${f.length} erro${f.length!==1?'s':''}`;
+  
+  document.getElementById('erros-list').innerHTML=f.length?f.map(e=>{
+    const pc=PASTEL[e.materia]||PASTEL['Outro'];
+    const isRev = e.revisado ? 'revisado' : '';
+    const checked = e.revisado ? 'checked' : '';
+    
+    return `<div class="err-card ${isRev}" id="ec-${e.id}" style="border-color:${pc.border};border-left-color:${pc.dot}">
+      <div class="err-card-head">
+        <input type="checkbox" class="check-revisado" ${checked} onclick="toggleRevisado(${e.id}); event.stopPropagation();" title="Marcar como revisado">
+        <div style="flex:1;min-width:0" onclick="toggleEC(${e.id})">
+          <div class="err-card-meta">
+            <span class="badge" style="background:${pc.bg};color:${pc.text};border-color:${pc.border}">${esc(e.materia)}</span>
+            <span class="badge badge-tipo">${esc(e.tipo)}</span>
+            ${e.prova?`<span class="badge-prova">· ${esc(e.prova)}</span>`:''}
+            <span style="font-size:.64rem;color:#cbd5e1;margin-left:auto">${e.data}</span>
+          </div>
+          <div class="err-title">${esc(e.tema)}</div>
+          <div class="err-preview" id="ep-${e.id}">${esc(e.erro)}</div>
+        </div>
+        <span class="chevron" id="ch-${e.id}" onclick="toggleEC(${e.id})">▼</span>
+      </div>
+      <div class="err-body" id="eb-${e.id}" style="background:${pc.bg};border-color:${pc.border}">
+        <div class="err-text">${esc(e.erro)}</div>
+        <div class="card-actions" id="ea-${e.id}">
+          <button class="btn-sm btn-blue-sm" onclick="editErr(${e.id})">✏️ Editar</button>
+          <button class="btn-sm btn-red-sm" onclick="confirmDel(${e.id},'err')">🗑️</button>
+        </div>
+      </div>
+    </div>`;
+  }).join(''):'<div class="empty">Nenhum erro encontrado 🎉</div>';
+}
+
+function toggleEC(id){const b=document.getElementById('eb-'+id);const ch=document.getElementById('ch-'+id);const pr=document.getElementById('ep-'+id);if(b.classList.contains('open')){b.classList.remove('open');ch.textContent='▼';if(pr)pr.style.display='';}else{b.classList.add('open');ch.textContent='▲';if(pr)pr.style.display='none';}}
+
+function renderResumos(){
+  const s=document.getElementById('search-res').value.toLowerCase();
+  const m=document.getElementById('filter-res-mat').value;
+  document.getElementById('btn-clear-res').style.display=(s||m)?'':'none';
+  const f=resumos.filter(r=>(!m||r.materia===m)&&(!s||r.titulo.toLowerCase().includes(s)));
+  document.getElementById('res-count').textContent=`${f.length} resumo${f.length!==1?'s':''}`;
+  document.getElementById('resumos-list').innerHTML=f.length?f.map(r=>{const pc=PASTEL[r.materia]||PASTEL['Outro'];return`<div class="res-card" id="rc-${r.id}" style="border-color:${pc.border};border-left-color:${pc.dot}"><div class="res-card-head" onclick="toggleRC(${r.id})"><div style="flex:1"><div style="display:flex;align-items:center;gap:.4rem;margin-bottom:.2rem"><span class="badge" style="background:${pc.bg};color:${pc.text};border-color:${pc.border}">${esc(r.materia)}</span><span style="font-size:.65rem;color:#94a3b8">📚 Resumo</span></div><div style="font-weight:600;font-size:.95rem;color:#1e293b;font-family:'Lora',serif">${esc(r.titulo)}</div></div><span class="chevron" id="rch-${r.id}">▼</span></div><div class="res-body" id="rb-${r.id}" style="border-color:${pc.border}">${renderBlocos(r.blocos,pc)}<div class="card-actions" id="ra-${r.id}"><button class="btn-sm btn-blue-sm" onclick="editRes(${r.id})">✏️ Editar</button><button class="btn-sm btn-red-sm" onclick="confirmDel(${r.id},'res')">🗑️</button></div></div></div>`;}).join(''):'<div class="empty">Nenhum resumo encontrado.</div>';
+}
+
+function renderBlocos(blocos,pc){
+  return blocos.map(b=>{
+    if(b.t==='titulo')return`<div class="res-section-title" style="border-color:${pc.border}">${esc(b.v)}</div>`;
+    if(b.t==='texto')return`<p class="res-text">${esc(b.v)}</p>`;
+    if(b.t==='ul')return`<ul class="res-list">${b.v.map(i=>`<li>${esc(i)}</li>`).join('')}</ul>`;
+    if(b.t==='formula')return`<div class="formula-box">${esc(b.v)}</div>`;
+    if(b.t==='macete')return`<div class="macete-box"><strong>🧠 Macete: </strong>${esc(b.v)}</div>`;
+    if(b.t==='alerta'){const cls={red:'alert-red',orange:'alert-orange',blue:'alert-blue',green:'alert-verde',purple:'alert-purple'}[b.cor]||'alert-blue';return`<div class="alert-box ${cls}">${esc(b.v)}</div>`;}
+    if(b.t==='tabela'){const ths=b.cols.map(c=>`<th>${esc(c)}</th>`).join('');const trs=b.rows.map(row=>`<tr>${row.map(c=>`<td>${esc(c)}</td>`).join('')}</tr>`).join('');return`<div class="res-table-wrap"><table class="res-table"><thead><tr>${ths}</tr></thead><tbody>${trs}</tbody></table></div>`;}
+    return'';
+  }).join('');
+}
+
+function openErrForm(id){editErrId=id||null;const err=id?errors.find(e=>e.id===id):null;document.getElementById('modal-err-title').textContent=id?'Editar Erro':'Registrar Erro';document.getElementById('ef-mat').value=err?err.materia:'CLM';document.getElementById('ef-tipo').value=err?err.tipo:'Conceito';document.getElementById('ef-tema').value=err?err.tema:'';document.getElementById('ef-erro').value=err?err.erro:'';document.getElementById('ef-prova').value=err?err.prova:'';document.getElementById('ef-data').value=err?err.data:new Date().toISOString().slice(0,10);document.querySelector('#modal-err .btn-primary').textContent=id?'Salvar':'Registrar';document.getElementById('modal-err').classList.add('open');}
+function closeErrForm(){document.getElementById('modal-err').classList.remove('open');}
+function submitErr(){const tema=document.getElementById('ef-tema').value.trim();const erro=document.getElementById('ef-erro').value.trim();if(!tema||!erro)return;const obj={id:editErrId||Date.now(),materia:document.getElementById('ef-mat').value,tema,erro,tipo:document.getElementById('ef-tipo').value,prova:document.getElementById('ef-prova').value,data:document.getElementById('ef-data').value,revisado:editErrId?errors.find(e=>e.id===editErrId).revisado:false};if(editErrId){errors=errors.map(e=>e.id===editErrId?obj:e);showToast('✏️ Atualizado!');}else{errors=[obj,...errors];showToast('✅ Erro salvo!');}save();closeErrForm();renderErros();}
+
+function confirmDel(id,type){const actId=type==='err'?`ea-${id}`:`ra-${id}`;document.getElementById(actId).innerHTML=`<span class="confirm-text">Confirmar?</span><button class="btn-sm btn-red-sm" onclick="${type==='err'?`delErr(${id})`:`delRes(${id})`}">Apagar</button><button class="btn-sm btn-grey-sm" onclick="${type==='err'?'renderErros()':'renderResumos()'}">Cancelar</button>`;}
+function delErr(id){errors=errors.filter(e=>e.id!==id);save();renderErros();showToast('🗑️ Removido.');}
+
+function buildProvaSelect(){const sel=document.getElementById('filter-prova');const cur=sel.value;const provas=[...new Set(errors.map(e=>e.prova).filter(Boolean))].sort();sel.innerHTML='<option value="">Todos os simulados</option>'+provas.map(p=>`<option value="${esc(p)}"${p===cur?' selected':''}>${esc(p)} (${errors.filter(e=>e.prova===p).length})</option>`).join('');}
+
+function exportHTML(){
+  const src = document.documentElement.outerHTML;
+  const errorsJSON = JSON.stringify(errors, null, 2);
+  const resumosJSON = JSON.stringify(resumos, null, 2);
+  const errRx = /const INIT_ERRORS=\[[\s\S]*?\];/;
+  const resRx = /const INIT_RESUMOS=\[[\s\S]*?\];/;
+  let out = src.replace(errRx, `const INIT_ERRORS=${errorsJSON};`);
+  out = out.replace(resRx, `const INIT_RESUMOS=${resumosJSON};`);
+  const blob = new Blob([out], {type:'text/html;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'erros_prova.html';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  showToast('⬇️ HTML exportado com status de revisão!');
+}
+
+renderDashboard();
+buildProvaSelect();
+</script>
+</body>
+</html>
