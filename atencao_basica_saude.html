@@ -1,0 +1,1303 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>APS — Mapa Mental</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Lora:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+  :root {
+    --bg:#f5f0eb; --surface:#fdfaf7; --border:#e2d9cf; --text:#3d3229; --muted:#9c8c7e;
+    --cyan-p:#a8d8e8;  --cyan-bg:#e8f5fa;  --cyan-t:#2a6a7a;
+    --green-p:#b8ddb8; --green-bg:#edf7ed; --green-t:#2a5a2a;
+    --yellow-p:#f0d9a0;--yellow-bg:#fdf6e3;--yellow-t:#7a5a10;
+    --purple-p:#c8b8e8;--purple-bg:#f2eefb;--purple-t:#5a2a8a;
+    --rose-p:#f0b8c0;  --rose-bg:#fdf0f2;  --rose-t:#8a2a3a;
+    --blue-p:#b8c8f0;  --blue-bg:#edf0fb;  --blue-t:#2a3a8a;
+    --peach-p:#f0c8a8; --peach-bg:#fdf4ed; --peach-t:#7a4a1a;
+    --mint-p:#a8e8d8;  --mint-bg:#e8faf5;  --mint-t:#1a5a4a;
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text);padding:32px 20px 60px;}
+
+  .header{text-align:center;margin-bottom:32px;}
+  .header h1{font-family:'Lora',serif;font-size:2rem;font-weight:700;}
+  .header h1 span{color:#7a9fb8;}
+  .header p{font-size:.78rem;color:var(--muted);margin-top:5px;letter-spacing:.08em;}
+  .badge{display:inline-block;margin-top:10px;background:var(--green-bg);border:1px solid var(--green-p);color:var(--green-t);font-size:.7rem;padding:3px 12px;border-radius:99px;}
+
+  .tabs{display:flex;justify-content:center;gap:6px;margin-bottom:24px;flex-wrap:wrap;}
+  .tab{background:var(--surface);border:1.5px solid var(--border);color:var(--muted);font-size:.76rem;padding:7px 16px;border-radius:99px;cursor:pointer;transition:all .2s;font-weight:500;}
+  .tab:hover{border-color:#7a9fb8;color:#7a9fb8;}
+  .tab.active{background:var(--cyan-bg);border-color:var(--cyan-p);color:var(--cyan-t);font-weight:600;}
+
+  .panel{display:none;} .panel.active{display:block;}
+
+  /* ── FLOWCHART ── */
+  .flow-wrap{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:32px 24px;box-shadow:0 2px 16px rgba(0,0,0,.04);overflow-x:auto;}
+  .flow{display:flex;flex-direction:column;align-items:center;gap:0;min-width:700px;}
+  .node{display:inline-flex;align-items:center;justify-content:center;text-align:center;font-size:.78rem;font-weight:500;line-height:1.4;padding:10px 18px;border-radius:10px;border:1.5px solid;min-width:140px;max-width:200px;}
+  .node-era  {background:var(--cyan-bg);  border-color:var(--cyan-p);  color:var(--cyan-t);  font-weight:700;font-family:'Lora',serif;border-radius:99px;padding:10px 24px;}
+  .node-pos  {background:var(--green-bg); border-color:var(--green-p); color:var(--green-t);}
+  .node-warn {background:var(--yellow-bg);border-color:var(--yellow-p);color:var(--yellow-t);}
+  .node-pil  {background:var(--purple-bg);border-color:var(--purple-p);color:var(--purple-t);font-weight:600;}
+  .node-mod  {background:var(--blue-bg);  border-color:var(--blue-p);  color:var(--blue-t);}
+  .node-emulti{background:var(--green-bg);border-color:#6abf6a;color:var(--green-t);font-weight:700;font-family:'Lora',serif;border-radius:99px;padding:10px 24px;}
+  .node-nota {background:var(--peach-bg); border-color:var(--peach-p); color:var(--peach-t);border-style:dashed;font-size:.72rem;}
+  .node-base {background:#f5f0eb;border-color:var(--border);color:var(--muted);font-size:.74rem;}
+  .row{display:flex;align-items:flex-start;justify-content:center;gap:20px;width:100%;}
+  .col{display:flex;flex-direction:column;align-items:center;gap:0;}
+  .arrow-down{width:2px;height:28px;background:var(--border);margin:0 auto;position:relative;}
+  .arrow-down::after{content:'';position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);border-left:5px solid transparent;border-right:5px solid transparent;border-top:7px solid var(--border);}
+  .arrow-down-sm{width:2px;height:18px;background:var(--border);margin:0 auto;position:relative;}
+  .arrow-down-sm::after{content:'';position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);border-left:4px solid transparent;border-right:4px solid transparent;border-top:6px solid var(--border);}
+  .legend{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:18px;}
+  .legend-item{display:flex;align-items:center;gap:5px;font-size:.7rem;color:var(--muted);}
+  .legend-dot{width:10px;height:10px;border-radius:3px;flex-shrink:0;}
+
+  /* ── CARDS & GRID ── */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;}
+  .grid-2{display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:14px;}
+  .card{background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:18px 20px;box-shadow:0 1px 8px rgba(0,0,0,.03);}
+  .card .ctitle{font-family:'Lora',serif;font-size:.78rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:12px;}
+  .card ul{list-style:none;display:flex;flex-direction:column;gap:6px;}
+  .card ul li{font-size:.82rem;color:var(--text);padding-left:14px;position:relative;line-height:1.5;}
+  .card ul li::before{content:'·';position:absolute;left:2px;color:var(--muted);font-size:1.1rem;line-height:1.2;}
+  .card ul li strong{font-weight:600;}
+
+  .c-cyan  {border-left:3px solid var(--cyan-p);}  .t-cyan  {color:var(--cyan-t);}
+  .c-green {border-left:3px solid var(--green-p);} .t-green {color:var(--green-t);}
+  .c-purple{border-left:3px solid var(--purple-p);}.t-purple{color:var(--purple-t);}
+  .c-yellow{border-left:3px solid var(--yellow-p);}.t-yellow{color:var(--yellow-t);}
+  .c-rose  {border-left:3px solid var(--rose-p);}  .t-rose  {color:var(--rose-t);}
+  .c-blue  {border-left:3px solid var(--blue-p);}  .t-blue  {color:var(--blue-t);}
+  .c-peach {border-left:3px solid var(--peach-p);} .t-peach {color:var(--peach-t);}
+  .c-mint  {border-left:3px solid var(--mint-p);}  .t-mint  {color:var(--mint-t);}
+
+  /* ── TABLES ── */
+  .tbl-wrap{overflow-x:auto;}
+  table.t{width:100%;border-collapse:collapse;font-size:.8rem;background:var(--surface);border-radius:12px;overflow:hidden;box-shadow:0 1px 8px rgba(0,0,0,.04);}
+  table.t thead tr{background:var(--cyan-bg);border-bottom:2px solid var(--cyan-p);}
+  table.t thead th{padding:10px 14px;text-align:left;font-size:.68rem;letter-spacing:.1em;color:var(--cyan-t);text-transform:uppercase;font-weight:700;}
+  table.t tbody tr{border-bottom:1px solid var(--border);}
+  table.t tbody tr:hover{background:#faf7f4;}
+  table.t tbody td{padding:9px 14px;color:var(--text);vertical-align:top;}
+  .tg{display:inline-block;padding:2px 8px;border-radius:4px;font-size:.68rem;font-weight:600;}
+  .tg-g{background:var(--green-bg);color:var(--green-t);}
+  .tg-r{background:var(--rose-bg);color:var(--rose-t);}
+  .tg-b{background:var(--blue-bg);color:var(--blue-t);}
+  .tg-y{background:var(--yellow-bg);color:var(--yellow-t);}
+
+  .mini-t{width:100%;border-collapse:collapse;font-size:.78rem;margin-top:8px;}
+  .mini-t th{text-align:left;padding:5px 8px;font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border-bottom:1.5px solid var(--border);}
+  .mini-t td{padding:6px 8px;border-bottom:1px solid var(--border);color:var(--text);}
+  .mini-t tr:last-child td{border-bottom:none;}
+
+  /* ── SECTION LABEL ── */
+  .slabel{font-family:'Lora',serif;font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:26px 0 14px;padding-bottom:6px;border-bottom:1.5px solid var(--border);}
+
+  /* ── HIGHLIGHT BOX ── */
+  .hbox{background:var(--yellow-bg);border:1.5px solid var(--yellow-p);border-radius:10px;padding:14px 18px;font-size:.82rem;color:var(--yellow-t);margin:14px 0;line-height:1.6;}
+  .hbox strong{font-weight:700;}
+
+  /* ── TWO COLUMN COMPARE ── */
+  .compare{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .compare .card{border-top:3px solid;}
+  .compare .card.esf{border-color:var(--green-p);}
+  .compare .card.eab{border-color:var(--yellow-p);}
+
+  /* ── FLASHCARDS ── */
+  .flash-card{background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:18px 20px;}
+  .flash-card .q{font-size:.75rem;color:var(--cyan-t);font-weight:600;margin-bottom:9px;line-height:1.5;}
+  .flash-card .a{font-size:.82rem;color:var(--text);line-height:1.65;border-left:2.5px solid var(--green-p);padding-left:10px;}
+
+  @media(max-width:640px){
+    .compare{grid-template-columns:1fr;}
+    .grid-2{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>APS — <span>Atenção Primária à Saúde</span></h1>
+  <p>PNAB 2017 · Previne Brasil 2019 · eMulti 2023</p>
+  <span class="badge">✓ Baseado nas Portarias 2436/2017 e 635/2023</span>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="showTab('mapa',this)">🗺️ Mapa Geral</div>
+  <div class="tab" onclick="showTab('equipes',this)">👥 Equipes</div>
+  <div class="tab" onclick="showTab('processo',this)">⚙️ Processo de Trabalho</div>
+  <div class="tab" onclick="showTab('emulti',this)">⚕️ eMulti</div>
+  <div class="tab" onclick="showTab('comparativo',this)">📊 NASF vs eMulti</div>
+  <div class="tab" onclick="showTab('previne',this)">💰 Previne Brasil</div>
+  <div class="tab" onclick="showTab('principios',this)">📜 Princípios e Diretrizes</div>
+  <div class="tab" onclick="showTab('planejamento',this)">📐 Planejamento</div>
+  <div class="tab" onclick="showTab('flashcards',this)">🎯 Flashcards</div>
+</div>
+
+<!-- ══════════════ MAPA GERAL ══════════════ -->
+<div class="panel active" id="tab-mapa">
+<div class="flow-wrap">
+<div class="flow">
+  <div class="node node-era">📋 PNAB 2011</div>
+  <div class="arrow-down"></div>
+  <div class="row">
+    <div class="col"><div class="node node-base">ESF como<br>modelo principal</div></div>
+    <div class="col"><div class="node node-base">Financiamento<br>fixo por equipe</div></div>
+    <div class="col"><div class="node node-base">NASF criado como<br>suporte à eSF</div></div>
+  </div>
+  <div class="arrow-down"></div>
+
+  <div class="node node-era">⚡ PNAB 2017 — Port. 2436</div>
+  <div class="arrow-down"></div>
+  <div class="row">
+    <div class="col"><div class="node node-pos">✅ ESF continua<br>prioritária</div></div>
+    <div class="col"><div class="node node-warn">⚠️ Criou eAB<br>sem ACS obrigatório</div></div>
+    <div class="col"><div class="node node-pos">✅ NASF-AB<br>mantido e regulamentado<br>na lei (item 4, cap. 3.4)</div></div>
+    <div class="col"><div class="node node-base">APS = principal<br>porta de entrada<br>(não a única!)</div></div>
+  </div>
+  <div class="arrow-down"></div>
+
+  <div class="node node-era">🏛️ Previne Brasil — Port. 2.979/2019</div>
+  <div class="arrow-down"></div>
+  <div class="row">
+    <div class="col">
+      <div class="node node-pil">💰 Capitação<br>Ponderada<br>por cadastro</div>
+      <div class="arrow-down-sm"></div>
+      <div class="node node-pos" style="font-size:.72rem">eSF → peso maior ✅<br>eAP → peso menor ⚠️</div>
+    </div>
+    <div class="col"><div class="node node-pil">📊 P4D<br>7 indicadores</div></div>
+    <div class="col"><div class="node node-pil">🏗️ Incentivos<br>Estratégicos</div></div>
+    <div class="col">
+      <div class="node node-warn">⚠️ Financiamento<br>NASF-AB<br>descontinuado</div>
+      <div class="arrow-down-sm"></div>
+      <div class="node node-nota">NT 3/2020<br>sem repasse federal<br>para NASF-AB</div>
+    </div>
+  </div>
+  <div class="arrow-down"></div>
+
+  <div class="node node-emulti">✅ eMulti — Port. 635/2023</div>
+  <div class="arrow-down"></div>
+  <div class="row">
+    <div class="col"><div class="node node-mod">Ampliada<br>10–12 equipes<br>300h · R$36k/mês</div></div>
+    <div class="col"><div class="node node-mod">Complementar<br>5–9 equipes<br>200h · R$24k/mês</div></div>
+    <div class="col"><div class="node node-mod">Estratégica<br>1–4 equipes<br>100h · R$12k/mês</div></div>
+  </div>
+  <div class="arrow-down"></div>
+
+  <div class="node node-era">🆕 Novo Financiamento — Port. 3.493/2024</div>
+  <div class="arrow-down"></div>
+  <div class="row">
+    <div class="col">
+      <div class="node node-pil">I — Fixo<br>por equipe + IED</div>
+    </div>
+    <div class="col">
+      <div class="node node-pil">II — Vínculo e<br>Acompanhamento<br>Territorial</div>
+    </div>
+    <div class="col">
+      <div class="node node-pil">III — Qualidade<br>15 indicadores<br>eSF+eAP+eMulti+eSB</div>
+    </div>
+    <div class="col">
+      <div class="node node-pil">IV — Programas<br>e Serviços</div>
+    </div>
+    <div class="col">
+      <div class="node node-pil">V — Saúde<br>Bucal</div>
+    </div>
+    <div class="col">
+      <div class="node node-pil">VI — Per Capita<br>base IBGE</div>
+    </div>
+  </div>
+  <div class="arrow-down"></div>
+  <div class="row">
+    <div class="col">
+      <div class="node node-pos" style="font-size:.72rem">Fim da<br>"caça ao CPF" ✅</div>
+    </div>
+    <div class="col">
+      <div class="node node-pos" style="font-size:.72rem">+33% repasse<br>eSF/eAP em 2024 ✅</div>
+    </div>
+    <div class="col">
+      <div class="node node-warn" style="font-size:.72rem">P4D do Previne Brasil<br>revogado ⚠️</div>
+    </div>
+  </div>
+</div>
+</div>
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:var(--cyan-bg);border:1px solid var(--cyan-p)"></div>Marco legislativo</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--green-bg);border:1px solid var(--green-p)"></div>Mantido / positivo</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--yellow-bg);border:1px solid var(--yellow-p)"></div>Atenção / mudança</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--purple-bg);border:1px solid var(--purple-p)"></div>Pilar de financiamento</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--blue-bg);border:1px solid var(--blue-p)"></div>Modalidades eMulti</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--peach-bg);border:1px solid var(--peach-p);border-style:dashed"></div>Nota técnica</div>
+</div>
+</div>
+
+<!-- ══════════════ EQUIPES ══════════════ -->
+<div class="panel" id="tab-equipes">
+
+  <p class="slabel">📌 Regras gerais da UBS (PNAB 2017)</p>
+  <div class="grid">
+    <div class="card c-cyan">
+      <div class="ctitle t-cyan">🏥 Funcionamento da UBS</div>
+      <ul>
+        <li>Carga horária mínima: <strong>40h semanais</strong></li>
+        <li>Mínimo <strong>5 dias por semana</strong>, nos <strong>12 meses do ano</strong></li>
+        <li>Horários alternativos podem ser pactuados nos <strong>Conselhos Locais de Saúde</strong></li>
+        <li>Recomendado até <strong>4 equipes por UBS</strong></li>
+        <li>População adscrita por equipe: <strong>2.000 a 3.500 pessoas</strong></li>
+        <li>Teto máximo de equipes: fórmula <strong>População ÷ 2.000</strong></li>
+        <li>Municípios com menos de 2.000 hab: <strong>1 equipe para toda a população</strong></li>
+      </ul>
+    </div>
+    <div class="card c-purple">
+      <div class="ctitle t-purple">📋 Art. 2 — Definição de APS</div>
+      <ul>
+        <li>Conjunto de ações individuais, familiares e coletivas: <strong>promoção, prevenção, diagnóstico, tratamento, reabilitação, redução de danos, cuidados paliativos e vigilância</strong></li>
+        <li>APS é a <strong>principal</strong> porta de entrada da RAS — <span style="background:var(--rose-bg);color:var(--rose-t);padding:1px 6px;border-radius:4px;font-size:.75rem;font-weight:600">NÃO É A ÚNICA ⚠️</span></li>
+        <li>Ofertada <strong>integralmente e gratuitamente</strong> conforme necessidades do território</li>
+        <li>Proibida qualquer exclusão por: idade, gênero, raça, etnia, orientação sexual, condição socioeconômica etc.</li>
+      </ul>
+    </div>
+  </div>
+
+  <p class="slabel">👥 eSF vs eAB — comparativo direto</p>
+  <div class="compare">
+    <div class="card esf">
+      <div class="ctitle t-green">✅ eSF — Equipe de Saúde da Família</div>
+      <ul>
+        <li><strong>Modelo prioritário</strong> do SUS</li>
+        <li>Composição mínima obrigatória: <strong>médico + enfermeiro + aux/técnico enfermagem + ACS</strong></li>
+        <li>ACS: máximo <strong>750 pessoas por ACS</strong></li>
+        <li>Nº de ACS conforme critérios demográficos e epidemiológicos locais</li>
+        <li>CH obrigatória: <strong>40h semanais</strong> para todos os profissionais</li>
+        <li>Profissional vinculado a <strong>apenas 1 eSF</strong> no SCNES</li>
+        <li>Pode complementar com: <strong>eSB</strong> (dentista + técnico/auxiliar) e <strong>ACE</strong></li>
+        <li>Maior valor no Componente Fixo (IED) e maior peso no Componente de Vínculo ✅</li>
+      </ul>
+    </div>
+    <div class="card eab">
+      <div class="ctitle t-yellow">⚠️ eAB / eAP — Equipe de Atenção Básica</div>
+      <ul>
+        <li><strong>Modelo flexível e transitório</strong> — deve evoluir para eSF</li>
+        <li>Composição mínima: <strong>médico + enfermeiro + aux/técnico enfermagem</strong></li>
+        <li><strong>ACS não obrigatório</strong> — pode ter, mas não é exigido</li>
+        <li>CH mínima por categoria: <strong>10h</strong>, máximo 3 profissionais por categoria</li>
+        <li>Total mínimo da equipe: <strong>40h semanais</strong></li>
+        <li>Sem cobertura territorial total obrigatória</li>
+        <li>Menor valor no Componente Fixo e menor peso no Componente de Vínculo ⚠️</li>
+        <li>Port. 635/2023 usa a nomenclatura <strong>eAP</strong> para esta equipe</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="hbox">
+    <strong>⚠️ Por que a ausência do ACS muda tudo:</strong> O ACS é o que faz a eSF ser territorial de verdade — cadastramento das famílias, busca ativa, visita domiciliar, detecção de vulnerabilidades. Sem ACS → sem territorialização plena → <strong>eAB vira um ambulatório sofisticado</strong>, não uma equipe de saúde da família.
+  </div>
+
+  <p class="slabel">🦷 Equipe de Saúde Bucal (eSB)</p>
+  <div class="grid">
+    <div class="card c-mint">
+      <div class="ctitle t-mint">Composição e modalidades</div>
+      <ul>
+        <li>Modalidade I: <strong>Cirurgião-dentista + ASB</strong> (auxiliar em saúde bucal)</li>
+        <li>Modalidade II: <strong>Cirurgião-dentista + TSB + ASB</strong></li>
+        <li>Vinculada a uma eSF ou eAB — compartilha o mesmo território</li>
+        <li>Pode estar na UBS ou em Unidade Odontológica Móvel</li>
+        <li>Ao implantar a eSB, o MS doa equipamentos odontológicos ao município</li>
+      </ul>
+    </div>
+    <div class="card c-blue">
+      <div class="ctitle t-blue">⚠️ Como a banca testa composição</div>
+      <ul>
+        <li>"Município implantou equipes <strong>sem ACS</strong>. Qual modalidade?" → <strong>eAB</strong> ✅</li>
+        <li>"Qual modelo recebe <strong>maior incentivo</strong> per capita?" → <strong>eSF</strong> ✅</li>
+        <li>"PNAB 2017 exige que todos os municípios usem <strong>exclusivamente</strong> a ESF" → <strong>FALSO</strong> ✅</li>
+        <li>"Qual o <strong>máximo de pessoas</strong> por ACS em área de risco?" → <strong>750</strong> ✅</li>
+        <li>"Quantas equipes por UBS são recomendadas?" → <strong>4</strong> ✅</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ PROCESSO DE TRABALHO ══════════════ -->
+<div class="panel" id="tab-processo">
+
+  <p class="slabel">🚪 Organização do Acesso e Acolhimento</p>
+  <div class="grid">
+    <div class="card c-cyan">
+      <div class="ctitle t-cyan">Acolhimento com Classificação de Risco — 5 fluxos</div>
+      <ul>
+        <li><strong>Atendimento imediato:</strong> urgências — consulta ou procedimento imediato</li>
+        <li><strong>Atendimento no dia:</strong> condições agudas de menor gravidade</li>
+        <li><strong>Agendamento programado:</strong> marcação futura conforme protocolos</li>
+        <li><strong>Resolução de demandas simples:</strong> renovação de receitas, exames de seguimento</li>
+        <li><strong>Referenciamento:</strong> encaminhamento com contato prévio ou orientação sobre fluxos da rede</li>
+      </ul>
+    </div>
+    <div class="card c-yellow">
+      <div class="ctitle t-yellow">⚠️ Classificação vs Estratificação de Risco</div>
+      <table class="mini-t">
+        <thead><tr><th>Conceito</th><th>Foco</th><th>Critérios</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Classificação de risco</strong></td><td>Urgência / eventos agudos</td><td>Clínicos, gravidade, sofrimento</td></tr>
+          <tr><td><strong>Estratificação de risco</strong></td><td>Condições crônicas</td><td>Clínicos + sociais + econômicos + familiares</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <p class="slabel">🗺️ Territorialização e Vigilância</p>
+  <div class="grid">
+    <div class="card c-green">
+      <div class="ctitle t-green">Território como espaço "vivo"</div>
+      <ul>
+        <li>Não é apenas limite administrativo — é campo de <strong>forças sociais, econômicas e ambientais</strong></li>
+        <li>Diagnóstico multidimensional: ambiental, demográfico, econômico, sanitário e cultural</li>
+        <li>Base geográfica <strong>única</strong> para equipes de AB e de Vigilância em Saúde</li>
+        <li>Integração: Vigilância Sanitária + Epidemiológica + Ambiental + do Trabalhador</li>
+      </ul>
+    </div>
+    <div class="card c-mint">
+      <div class="ctitle t-mint">Sinergia ACS + ACE</div>
+      <ul>
+        <li><strong>ACS:</strong> olhar clínico sobre as famílias, vínculo, busca ativa</li>
+        <li><strong>ACE:</strong> olhar ambiental, controle de vetores e endemias</li>
+        <li>Juntos: identificam determinantes do processo saúde-doença antes de virarem agravos clínicos</li>
+      </ul>
+    </div>
+  </div>
+
+  <p class="slabel">🛠️ Ferramentas de Gestão da Clínica</p>
+  <div class="grid">
+    <div class="card c-purple">
+      <div class="ctitle t-purple">Ferramentas do trabalho multiprofissional</div>
+      <ul>
+        <li><strong>PTS (Projeto Terapêutico Singular):</strong> obrigatório em casos de alta vulnerabilidade ou complexidade clínica</li>
+        <li><strong>Genograma:</strong> visualiza estrutura familiar</li>
+        <li><strong>Ecomapa:</strong> visualiza redes de apoio social</li>
+        <li><strong>Linhas de cuidado:</strong> fluxos para que o usuário não se perca na RAS</li>
+        <li><strong>Apoio matricial:</strong> suporte técnico-pedagógico de especialistas às equipes de referência</li>
+      </ul>
+    </div>
+    <div class="card c-blue">
+      <div class="ctitle t-blue">Atenção Domiciliar — critérios</div>
+      <ul>
+        <li>Para usuários com problemas <strong>controlados/compensados</strong></li>
+        <li>Com algum grau de <strong>dependência para atividades da vida diária</strong></li>
+        <li>Que <strong>não podem se deslocar</strong> à UBS</li>
+        <li>Domicílio = espaço de cuidado, busca ativa e vigilância</li>
+      </ul>
+    </div>
+    <div class="card c-rose">
+      <div class="ctitle t-rose">Educação Permanente vs Continuada</div>
+      <ul>
+        <li><strong>Educação Permanente (EPS):</strong> ocorre no <strong>cotidiano do trabalho</strong> — reuniões, fóruns; usa conflitos reais para transformar práticas</li>
+        <li><strong>Educação Continuada:</strong> treinamentos pontuais, atualizações específicas</li>
+        <li>A PNAB privilegia a <strong>EPS</strong> como estratégia de aprendizagem significativa</li>
+      </ul>
+    </div>
+    <div class="card c-peach">
+      <div class="ctitle t-peach">Atribuições comuns a TODOS da equipe AB</div>
+      <ul>
+        <li>Territorialização e mapeamento da área de atuação</li>
+        <li>Cadastramento e atualização de dados no SISAB</li>
+        <li>Acolhimento com classificação de risco e vínculo</li>
+        <li>Longitudinalidade do cuidado — acompanhar ao longo do tempo</li>
+        <li>Coordenar o cuidado mesmo em outros pontos da RAS</li>
+        <li>Busca ativa e notificação de doenças compulsórias</li>
+        <li>Visitas domiciliares conforme planejamento</li>
+        <li>Participar de reuniões de equipe e educação permanente</li>
+        <li>Controle social — estimular participação nos Conselhos</li>
+      </ul>
+    </div>
+  </div>
+
+  <p class="slabel">🔗 Intersetorialidade</p>
+  <div class="grid">
+    <div class="card c-green">
+      <div class="ctitle t-green">Parceiros estratégicos da APS</div>
+      <ul>
+        <li><strong>Programa Saúde na Escola (PSE):</strong> articulação com educação</li>
+        <li><strong>CRAS / CREAS</strong> — equipamentos do SUAS (assistência social)</li>
+        <li><strong>Associações de moradores</strong> e Segurança Pública</li>
+        <li>Objetivo: garantir integralidade <strong>fora dos muros da UBS</strong></li>
+      </ul>
+    </div>
+    <div class="card c-cyan">
+      <div class="ctitle t-cyan">Atribuições específicas do Médico na AB</div>
+      <ul>
+        <li>Consultas clínicas e pequenos procedimentos cirúrgicos</li>
+        <li>Estratificação de risco + plano de cuidados para crônicos</li>
+        <li>Encaminhamentos responsáveis mantendo <strong>coordenação do cuidado</strong></li>
+        <li>Indicar internação hospitalar ou domiciliar</li>
+        <li>Planejar e gerenciar ações dos ACS e ACE com a equipe</li>
+      </ul>
+    </div>
+  </div>
+
+  <p class="slabel">📐 Planejamento em APS — 4 conceitos que a banca correlaciona</p>
+
+  <div class="hbox">
+    <strong>Dica de prova:</strong> a banca adora pedir a correlação entre esses 4 conceitos. Cada um representa uma <em>escala diferente</em> de olhar para a saúde — do mais participativo/qualitativo (estimativa rápida) ao mais técnico/epidemiológico (diagnóstico de saúde). Na prática, todos se complementam.
+  </div>
+
+  <div class="grid">
+
+    <div class="card c-mint">
+      <div class="ctitle t-mint">I — Diagnóstico de Saúde da Comunidade</div>
+      <ul>
+        <li>Avaliação <strong>sistemática e técnica</strong> do território</li>
+        <li>Identifica: condições de saúde, fatores de risco, <strong>determinantes sociais</strong> e necessidades da população</li>
+        <li>Olha o contexto completo do indivíduo ou população</li>
+        <li>Base: dados epidemiológicos, SISAB, sistemas de informação</li>
+        <li style="background:var(--mint-bg);padding:4px 8px;border-radius:6px;margin-top:4px">🔑 Palavra-chave da banca: <strong>determinantes sociais de saúde</strong></li>
+      </ul>
+    </div>
+
+    <div class="card c-blue">
+      <div class="ctitle t-blue">II — Território</div>
+      <ul>
+        <li>Não é apenas delimitação geográfica — é um <strong>espaço vivido</strong>, construído e transformado pelas pessoas</li>
+        <li>Onde se desenvolvem relações sociais, econômicas, culturais e políticas</li>
+        <li>Influencia diretamente o processo saúde-doença</li>
+        <li>Para atender a população, a UBS primeiro delimita sua abrangência via <strong>adscrição</strong></li>
+        <li style="background:var(--blue-bg);padding:4px 8px;border-radius:6px;margin-top:4px">🔑 Palavra-chave da banca: <strong>adscrição de clientela</strong></li>
+      </ul>
+    </div>
+
+    <div class="card c-purple">
+      <div class="ctitle t-purple">III — Estimativa Rápida Participativa</div>
+      <ul>
+        <li>Metodologia que <strong>envolve a comunidade</strong> na coleta e análise de informações sobre sua própria situação</li>
+        <li>Técnicas: entrevistas, grupos focais, observação direta</li>
+        <li>Valoriza o <strong>conhecimento e experiência da comunidade</strong></li>
+        <li>Constrói um panorama da situação de saúde local de forma ágil</li>
+        <li style="background:var(--purple-bg);padding:4px 8px;border-radius:6px;margin-top:4px">🔑 Palavra-chave da banca: <strong>competência cultural</strong></li>
+      </ul>
+    </div>
+
+    <div class="card c-yellow">
+      <div class="ctitle t-yellow">IV — Diagnóstico de Demanda</div>
+      <ul>
+        <li>Identifica e analisa <strong>necessidades e expectativas</strong> da população em relação aos serviços</li>
+        <li>Busca compreender: problemas prevalentes, fatores que influenciam a busca por assistência, características socioeconômicas e culturais</li>
+        <li>Pode ser aplicado para um <strong>indivíduo</strong> (clínica) ou para uma <strong>população</strong> (gestão)</li>
+        <li style="background:var(--yellow-bg);padding:4px 8px;border-radius:6px;margin-top:4px">🔑 Palavra-chave da banca: <strong>MCCP — 1º componente: explorando saúde, doença e experiência da doença</strong></li>
+      </ul>
+    </div>
+
+  </div>
+
+  <p class="slabel">🔄 Como os 4 conceitos se relacionam na prática</p>
+  <div class="card c-peach" style="max-width:100%">
+    <div class="ctitle t-peach">Fluxo integrado do planejamento em APS</div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:4px">
+      <div style="background:var(--blue-bg);border:1.5px solid var(--blue-p);border-radius:8px;padding:8px 14px;font-size:.78rem;color:var(--blue-t);text-align:center"><strong>Território</strong><br><span style="font-size:.7rem;color:var(--muted)">delimitar + adscrição</span></div>
+      <div style="color:var(--muted);font-size:1.2rem">→</div>
+      <div style="background:var(--mint-bg);border:1.5px solid var(--mint-p);border-radius:8px;padding:8px 14px;font-size:.78rem;color:var(--mint-t);text-align:center"><strong>Diag. Saúde<br>da Comunidade</strong><br><span style="font-size:.7rem;color:var(--muted)">dados + determinantes</span></div>
+      <div style="color:var(--muted);font-size:1.2rem">→</div>
+      <div style="background:var(--purple-bg);border:1.5px solid var(--purple-p);border-radius:8px;padding:8px 14px;font-size:.78rem;color:var(--purple-t);text-align:center"><strong>Estimativa<br>Rápida Partic.</strong><br><span style="font-size:.7rem;color:var(--muted)">comunidade + cultura</span></div>
+      <div style="color:var(--muted);font-size:1.2rem">→</div>
+      <div style="background:var(--yellow-bg);border:1.5px solid var(--yellow-p);border-radius:8px;padding:8px 14px;font-size:.78rem;color:var(--yellow-t);text-align:center"><strong>Diag. de<br>Demanda</strong><br><span style="font-size:.7rem;color:var(--muted)">necessidades + expectativas</span></div>
+      <div style="color:var(--muted);font-size:1.2rem">→</div>
+      <div style="background:var(--green-bg);border:1.5px solid var(--green-p);border-radius:8px;padding:8px 14px;font-size:.78rem;color:var(--green-t);text-align:center"><strong>Programação<br>da UBS</strong><br><span style="font-size:.7rem;color:var(--muted)">oferta organizada</span></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════ eMULTI ══════════════ -->
+
+<div class="panel" id="tab-emulti">
+  <p class="slabel">Portaria GM/MS 635 — 22 de maio de 2023</p>
+  <div class="grid">
+    <div class="card c-cyan">
+      <div class="ctitle t-cyan">📌 O que é (Art. 1)</div>
+      <ul>
+        <li>Equipe com profissionais de <strong>diferentes áreas</strong> de conhecimento</li>
+        <li>Atua de forma <strong>complementar e integrada</strong> às equipes da APS</li>
+        <li>Corresponsável pela <strong>população e território</strong></li>
+        <li>Articula com a <strong>RAS e ações intersetoriais</strong></li>
+      </ul>
+    </div>
+    <div class="card c-purple">
+      <div class="ctitle t-purple">⚕️ 3 Modalidades (Art. 3–5)</div>
+      <table class="mini-t">
+        <thead><tr><th>Modalidade</th><th>Equipes</th><th>CH/sem</th><th>R$/mês</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Ampliada</strong></td><td>10–12</td><td>300h</td><td>36.000</td></tr>
+          <tr><td><strong>Complementar</strong></td><td>5–9</td><td>200h</td><td>24.000</td></tr>
+          <tr><td><strong>Estratégica</strong></td><td>1–4</td><td>100h</td><td>12.000</td></tr>
+        </tbody>
+      </table>
+      <ul style="margin-top:10px">
+        <li>CH mínima médica: <strong>10h/semana</strong></li>
+        <li>CH mínima demais profissionais: <strong>20h/semana</strong></li>
+      </ul>
+    </div>
+    <div class="card c-green">
+      <div class="ctitle t-green">🔗 Vinculação (Art. 4)</div>
+      <ul>
+        <li><strong>eSF</strong>, <strong>eSFR</strong>, <strong>eCR</strong>, <strong>eAP</strong> (antiga eAB), <strong>UBS Fluvial</strong></li>
+        <li>⚠️ 1 equipe = apenas <strong>1 eMulti</strong> simultânea</li>
+        <li>✅ 1 profissional pode estar em <strong>mais de 1 eMulti</strong> se CH compatível</li>
+      </ul>
+    </div>
+    <div class="card c-blue">
+      <div class="ctitle t-blue">📋 Ações prioritárias (Art. 2)</div>
+      <ul>
+        <li>Atendimento individual, em grupo e domiciliar</li>
+        <li>Apoio matricial e discussão de casos</li>
+        <li>Atendimento compartilhado entre profissionais</li>
+        <li>Atendimento remoto mediado por TIC</li>
+        <li>Construção conjunta de PTS</li>
+        <li>Práticas intersetoriais</li>
+      </ul>
+    </div>
+    <div class="card c-yellow">
+      <div class="ctitle t-yellow">📊 P4D — 5 Indicadores (Art. 14–17)</div>
+      <ul>
+        <li>Avaliação <strong>quadrimestral</strong></li>
+        <li>Bônus: Ampliada +R$9k · Complementar +R$6k · Estratégica +R$3k</li>
+        <li>① Solicitações respondidas em <strong>72h</strong></li>
+        <li>② Satisfação da pessoa atendida</li>
+        <li>③ Resolução das ações interprofissionais</li>
+        <li>④ Quantidade de ações realizadas</li>
+        <li>⑤ % atendimentos remotos por TIC</li>
+        <li>Pagamento <strong>adicional anual</strong> = média dos 3 quadrimestres</li>
+      </ul>
+    </div>
+    <div class="card c-peach">
+      <div class="ctitle t-peach">💻 Atendimento Remoto (Art. 7 e 13)</div>
+      <ul>
+        <li>Incentivo extra: <strong>R$ 2.500/mês</strong> + R$ 15.000 na homologação</li>
+        <li>Exige: sala dedicada, profissional intermediador e equipamentos TIC</li>
+        <li>Atendimento <strong>assistido</strong> — profissional presente</li>
+      </ul>
+    </div>
+    <div class="card c-rose">
+      <div class="ctitle t-rose">⚠️ Suspensão do repasse (Art. 19)</div>
+      <ul>
+        <li>Descumprimento dos critérios da portaria</li>
+        <li>Ausência de qualquer profissional do Anexo I</li>
+        <li>Omissão no SISAB por <strong>3 competências consecutivas</strong></li>
+      </ul>
+    </div>
+    <div class="card c-green">
+      <div class="ctitle t-green">👥 Composição — Categorias fixas (Anexo I)</div>
+      <ul>
+        <li><strong>Ampliada e Complementar:</strong> (AS OU Farmacêutico OU Nutricionista OU Psicólogo) + (Fisio OU Fono OU Ed. Física OU TO)</li>
+        <li><strong>Estratégica:</strong> Nutricionista OU Psicólogo</li>
+        <li>Variáveis: Cardiologista, Psiquiatra, Geriatra, Infectologista, Pediatra, Gineco/Obstetra, Endocrinologista, Dermatologista, Veterinário, Sanitarista…</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ COMPARATIVO ══════════════ -->
+<div class="panel" id="tab-comparativo">
+  <div class="tbl-wrap">
+    <table class="t">
+      <thead><tr><th>Critério</th><th>NASF-AB (PNAB 2017)</th><th>eMulti (Port. 635/2023)</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Base legal</strong></td><td>Port. 2436/2017 — ainda na lei</td><td>Port. 635/2023</td></tr>
+        <tr><td><strong>Financiamento federal</strong></td><td><span class="tg tg-r">Descontinuado 2019/2020</span></td><td><span class="tg tg-g">Restabelecido com valores fixos</span></td></tr>
+        <tr><td><strong>Modalidades</strong></td><td>Tipos 1, 2, 3 por nº de eSF</td><td>Ampliada · Complementar · Estratégica</td></tr>
+        <tr><td><strong>Equipes vinculadas</strong></td><td>Apenas eSF e eAB</td><td>eSF + eAP + eCR + Fluvial + Ribeirinha</td></tr>
+        <tr><td><strong>Especialistas médicos</strong></td><td>Previstos sem destaque formal</td><td><span class="tg tg-g">Formalmente incluídos com CBO</span></td></tr>
+        <tr><td><strong>Atendimento remoto</strong></td><td><span class="tg tg-r">Não previsto</span></td><td><span class="tg tg-g">Previsto + incentivo adicional</span></td></tr>
+        <tr><td><strong>Pagamento por desempenho</strong></td><td><span class="tg tg-r">Não havia</span></td><td><span class="tg tg-g">5 indicadores quadrimestrais</span></td></tr>
+        <tr><td><strong>Endereço físico próprio?</strong></td><td>Não</td><td><span class="tg tg-r">Não — mesmo estabelecimento das equipes</span></td></tr>
+        <tr><td><strong>1 equipe = 2 eMulti?</strong></td><td>—</td><td><span class="tg tg-r">Proibido (Art. 4 §2º)</span></td></tr>
+        <tr><td><strong>1 profissional = 2 eMulti?</strong></td><td>—</td><td><span class="tg tg-g">Permitido se CH compatível</span></td></tr>
+        <tr><td><strong>Monitoramento</strong></td><td>e-SUS APS</td><td>SISAB — suspensão após 3 competências sem envio</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══════════════ PREVINE BRASIL ══════════════ -->
+<div class="panel" id="tab-previne">
+
+  <p class="slabel">💰 Linha do tempo do financiamento federal da APS</p>
+
+  <div class="card c-cyan" style="max-width:100%;margin-bottom:14px">
+    <div class="ctitle t-cyan">📅 O "reset" do financiamento</div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:8px">
+      <div style="background:var(--bg);border:1.5px solid var(--border);border-radius:8px;padding:8px 14px;font-size:.78rem;color:var(--muted);text-align:center"><strong>PAB</strong><br><span style="font-size:.7rem">Piso da Atenção Básica<br>antes de 2019</span></div>
+      <div style="color:var(--muted);font-size:1.4rem">→</div>
+      <div style="background:var(--yellow-bg);border:1.5px solid var(--yellow-p);border-radius:8px;padding:8px 14px;font-size:.78rem;color:var(--yellow-t);text-align:center"><strong>Previne Brasil</strong><br><span style="font-size:.7rem">Port. 2.979/2019<br>Tripé: capitação + P4D + estratégico</span></div>
+      <div style="color:var(--muted);font-size:1.4rem">→</div>
+      <div style="background:var(--green-bg);border:1.5px solid var(--green-p);border-radius:8px;padding:8px 14px;font-size:.78rem;color:var(--green-t);text-align:center"><strong>Novo Modelo</strong><br><span style="font-size:.7rem">Port. 3.493/2024<br>6 componentes + foco no território</span></div>
+    </div>
+  </div>
+
+  <p class="slabel">📊 Modelo 2019 vs Modelo 2024 — comparativo direto</p>
+  <div class="tbl-wrap">
+    <table class="t">
+      <thead><tr><th>Aspecto</th><th>Previne Brasil — 2019 (até abril/2024)</th><th>Novo Modelo — Port. 3.493/2024 (a partir de maio/2024)</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Lógica central</strong></td>
+          <td>Tripé: Capitação Ponderada + Pagamento por Desempenho + Incentivos</td>
+          <td>6 componentes separados com lógicas próprias</td>
+        </tr>
+        <tr>
+          <td><strong>Base do repasse fixo</strong></td>
+          <td>Pessoa <strong>cadastrada</strong> no CPF/Cartão SUS — gerou "caça ao CPF"</td>
+          <td>Pessoa <strong>residente</strong> no território (IBGE) — <span class="tg tg-g">fim da caça ao CPF</span></td>
+        </tr>
+        <tr>
+          <td><strong>Vulnerabilidade/equidade</strong></td>
+          <td>Ponderações por área rural, indígena, quilombola etc.</td>
+          <td><strong>IED</strong> — Índice de Equidade e Dimensionamento (IVS + porte populacional)</td>
+        </tr>
+        <tr>
+          <td><strong>Indicadores de qualidade</strong></td>
+          <td><strong>7 indicadores</strong> — determinavam diretamente o repasse</td>
+          <td><strong>15 indicadores</strong> em 3 blocos — geram bônus de qualidade (Componente III)</td>
+        </tr>
+        <tr>
+          <td><strong>Saúde bucal</strong></td>
+          <td>Incluída no Incentivo para Ações Estratégicas</td>
+          <td>Componente V exclusivo para eSB</td>
+        </tr>
+        <tr>
+          <td><strong>eMulti</strong></td>
+          <td>Não existia como componente</td>
+          <td>Incluída no Componente III (qualidade) e IV (programas)</td>
+        </tr>
+        <tr>
+          <td><strong>Foco territorial</strong></td>
+          <td>Fraco — dependia de cadastro individual</td>
+          <td><span class="tg tg-g">Forte</span> — quem mora no território é responsabilidade do município</td>
+        </tr>
+        <tr>
+          <td><strong>Aumento de repasse</strong></td>
+          <td>—</td>
+          <td><span class="tg tg-g">+33% para eSF/eAP entre 2023 e 2024</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="slabel">🏛️ Os 6 Componentes do Novo Modelo (Port. 3.493/2024)</p>
+  <div class="grid">
+    <div class="card c-cyan">
+      <div class="ctitle t-cyan">I — Componente Fixo</div>
+      <ul>
+        <li>Valor mensal fixo por equipe habilitada (eSF e eAP)</li>
+        <li>Calculado pelo <strong>IED</strong> — quanto mais vulnerável/menor o município, maior o valor</li>
+        <li>Recurso de implantação para eSF, eAP, eSB e eMulti</li>
+        <li>Base garantida, <strong>independente de desempenho</strong></li>
+        <li style="background:var(--cyan-bg);padding:4px 8px;border-radius:6px;margin-top:4px">🔑 Substitui a lógica da "capitação ponderada" do Previne Brasil</li>
+      </ul>
+    </div>
+    <div class="card c-blue">
+      <div class="ctitle t-blue">II — Componente de Vínculo e Acompanhamento Territorial</div>
+      <ul>
+        <li>Para eSF e eAP</li>
+        <li>Avalia: qualificação do cadastro, perfil demográfico, vulnerabilidade (BPC + Bolsa Família), satisfação do usuário</li>
+        <li>Quanto melhor a equipe acompanha seus cadastrados → maior o repasse</li>
+        <li>Classificações: <strong>Regular / Bom / Ótimo</strong></li>
+        <li style="background:var(--blue-bg);padding:4px 8px;border-radius:6px;margin-top:4px">🔑 Componente <strong>novo</strong> — não existia no Previne Brasil</li>
+      </ul>
+    </div>
+    <div class="card c-green">
+      <div class="ctitle t-green">III — Componente de Qualidade</div>
+      <ul>
+        <li>Para eSF, eAP, eSB e eMulti</li>
+        <li><strong>15 indicadores</strong> em 3 blocos (eSF/eAP: 7, eMulti: 2, eSB: 6)</li>
+        <li>Substituiu o P4D do Previne Brasil</li>
+        <li>Funciona como "bônus de qualidade" — não é a única fonte de sobrevivência financeira</li>
+        <li style="background:var(--green-bg);padding:4px 8px;border-radius:6px;margin-top:4px">🔑 Os indicadores agora são um <strong>selo de qualidade</strong>, não condição de sobrevivência</li>
+      </ul>
+    </div>
+    <div class="card c-purple">
+      <div class="ctitle t-purple">IV — Componente para Programas e Serviços</div>
+      <ul>
+        <li>Implantação e manutenção de programas específicos</li>
+        <li>Inclui: eMulti, eCR, UBSF, eSFR, Saúde Prisional, ACS, Microscopista, PSE, Residências, IAF etc.</li>
+        <li>Mantém financiamento de ações que a lógica fixa não cobriria</li>
+      </ul>
+    </div>
+    <div class="card c-yellow">
+      <div class="ctitle t-yellow">V — Componente para Atenção à Saúde Bucal</div>
+      <ul>
+        <li>Incentivo específico exclusivo para as eSB</li>
+        <li>Considera: modalidade de trabalho, carga horária e população atendida</li>
+        <li>Transferência mensal conforme funcionamento dos serviços</li>
+      </ul>
+    </div>
+    <div class="card c-mint">
+      <div class="ctitle t-mint">VI — Componente Per Capita</div>
+      <ul>
+        <li>Valor calculado por habitante (base populacional IBGE)</li>
+        <li>Para ações gerais no âmbito da APS</li>
+        <li>Parâmetro atual: <strong>R$ 5,95/habitante/ano</strong></li>
+        <li>Independe de cadastro individual — é por <strong>residência</strong> no território</li>
+      </ul>
+    </div>
+  </div>
+
+  <p class="slabel">🎯 Os 7 Indicadores do Previne Brasil — ainda caem em prova!</p>
+  <div class="hbox">
+    <strong>⚠️ Atenção de prova:</strong> com a mudança de 2024, os 7 indicadores do Previne Brasil foram substituídos pelos 15 do Componente de Qualidade. Mas <strong>provas elaboradas em 2024 ainda cobram os 7 indicadores</strong>. Verifique o ano da prova antes de responder.
+  </div>
+
+  <div class="tbl-wrap" style="margin-top:14px">
+    <table class="t">
+      <thead><tr><th>Categoria</th><th>Indicador (Previne Brasil — 2019)</th></tr></thead>
+      <tbody>
+        <tr><td rowspan="3"><strong>Pré-Natal</strong></td><td>① Proporção de gestantes com ≥ 6 consultas iniciadas até a 12ª semana</td></tr>
+        <tr><td>② Proporção de gestantes com exames de Sífilis e HIV realizados</td></tr>
+        <tr><td>③ Proporção de gestantes com atendimento odontológico realizado</td></tr>
+        <tr><td><strong>Saúde da Mulher</strong></td><td>④ Proporção de mulheres com coleta de citopatológico (Papanicolau) em dia</td></tr>
+        <tr><td><strong>Infância</strong></td><td>⑤ Proporção de crianças de 1 ano vacinadas (VIP, DTP, HB, HiB e Pólio)</td></tr>
+        <tr><td rowspan="2"><strong>Crônicos</strong></td><td>⑥ Proporção de hipertensos com consultas e PA aferida no semestre</td></tr>
+        <tr><td>⑦ Proporção de diabéticos com solicitação de Hemoglobina Glicada</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="slabel">✅ Os 15 Indicadores do Novo Componente de Qualidade (Port. 3.493/2024)</p>
+  <div class="grid">
+    <div class="card c-green">
+      <div class="ctitle t-green">eSF e eAP — 7 indicadores</div>
+      <ul>
+        <li>① Mais acesso à APS</li>
+        <li>② Cuidado da pessoa com <strong>diabetes</strong></li>
+        <li>③ Cuidado da pessoa com <strong>hipertensão</strong></li>
+        <li>④ Cuidado da <strong>gestante e do puerpério</strong></li>
+        <li>⑤ Cuidado da mulher na <strong>prevenção do câncer</strong></li>
+        <li>⑥ Cuidado da <strong>pessoa idosa</strong></li>
+        <li>⑦ Cuidado no <strong>desenvolvimento infantil</strong></li>
+      </ul>
+    </div>
+    <div class="card c-purple">
+      <div class="ctitle t-purple">eMulti — 2 indicadores</div>
+      <ul>
+        <li>⑧ Ações interprofissionais realizadas pela eMulti</li>
+        <li>⑨ Média de atendimentos por pessoa assistida pela eMulti</li>
+      </ul>
+    </div>
+    <div class="card c-blue">
+      <div class="ctitle t-blue">eSB — 6 indicadores</div>
+      <ul>
+        <li>⑩ Escovação dentária supervisionada em faixa etária escolar</li>
+        <li>⑪ Primeira consulta odontológica programada</li>
+        <li>⑫ Tratamento odontológico concluído</li>
+        <li>⑬ Tratamento restaurador atraumático</li>
+        <li>⑭ Procedimentos odontológicos preventivos</li>
+        <li>⑮ Taxa de exodontias realizadas</li>
+      </ul>
+    </div>
+  </div>
+
+  <p class="slabel">🧠 O que mudou na prática — para a médica na ponta</p>
+  <div class="grid">
+    <div class="card c-rose">
+      <div class="ctitle t-rose">Antes — 2019 a abril/2024</div>
+      <ul>
+        <li>Paciente sem CPF cadastrado no sistema → prefeitura não recebia por ele</li>
+        <li>Pressão enorme pelo cadastro → <strong>"caça ao CPF"</strong></li>
+        <li>Os 7 indicadores eram <strong>condição de sobrevivência financeira</strong> do posto</li>
+        <li>Municípios menores e mais vulneráveis tinham dificuldade de competir</li>
+        <li>Previne Brasil gerou perdas para <strong>60% dos municípios</strong> do país</li>
+      </ul>
+    </div>
+    <div class="card c-green">
+      <div class="ctitle t-green">Agora — a partir de maio/2024</div>
+      <ul>
+        <li>Pessoa mora no território → município recebe por ela, <strong>ponto final</strong></li>
+        <li>Foco volta a ser o <strong>território</strong>, não o cadastro</li>
+        <li>Indicadores viram <strong>"selo de qualidade"</strong> que gera recursos extras</li>
+        <li>IED valoriza municípios mais vulneráveis e de menor porte</li>
+        <li>+33% de repasse para eSF/eAP entre 2023 e 2024</li>
+        <li>98,5% dos municípios paulistas tiveram <strong>ganhos financeiros reais</strong></li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════ PRINCÍPIOS E DIRETRIZES ══════════════ -->
+<div class="panel" id="tab-principios">
+
+  <p class="slabel">🏛️ SUS — Lei 8.080/90, Art. 7º</p>
+  <div class="grid">
+    <div class="card c-cyan">
+      <div class="ctitle t-cyan">Princípios Doutrinários (3)</div>
+      <ul>
+        <li><strong>Universalidade</strong> — acesso a todos os serviços, em todos os níveis de assistência</li>
+        <li><strong>Equidade</strong> — tratar desigualmente os desiguais; investir mais onde a carência é maior</li>
+        <li><strong>Integralidade</strong> — conjunto articulado e contínuo de ações preventivas, curativas, individuais e coletivas em todos os níveis de complexidade</li>
+      </ul>
+    </div>
+    <div class="card c-blue">
+      <div class="ctitle t-blue">Princípios Organizativos (principais)</div>
+      <ul>
+        <li><strong>Descentralização</strong> com direção única em cada esfera de governo</li>
+        <li><strong>Regionalização e hierarquização</strong> da rede de serviços</li>
+        <li><strong>Resolubilidade</strong> — capacidade de resolução em todos os níveis</li>
+        <li><strong>Participação da comunidade</strong></li>
+        <li><strong>Complementaridade do setor privado</strong></li>
+        <li><strong>Conjugação de recursos</strong> da União, Estados e Municípios</li>
+        <li><strong>Utilização da epidemiologia</strong> para prioridades e alocação de recursos</li>
+        <li><strong>Preservação da autonomia</strong> das pessoas</li>
+        <li><strong>Direito à informação</strong> sobre saúde e serviços</li>
+        <li style="background:var(--blue-bg);padding:4px 8px;border-radius:6px;margin-top:4px">⚠️ Na Lei 8080 tudo é chamado de "princípio" — a divisão doutrinário/organizativo é <strong>didática</strong>, não legal</li>
+      </ul>
+    </div>
+  </div>
+
+  <p class="slabel">🏥 APS — PNAB 2017, Art. 3º</p>
+  <div class="grid">
+    <div class="card c-green">
+      <div class="ctitle t-green">Princípios (3) — os mesmos do SUS</div>
+      <ul>
+        <li><strong>Universalidade</strong></li>
+        <li><strong>Equidade</strong></li>
+        <li><strong>Integralidade</strong></li>
+        <li style="background:var(--green-bg);padding:4px 8px;border-radius:6px;margin-top:4px">💡 A APS <strong>operacionaliza</strong> os princípios do SUS no território — não cria novos princípios</li>
+      </ul>
+    </div>
+    <div class="card c-mint">
+      <div class="ctitle t-mint">Diretrizes (9)</div>
+      <ul>
+        <li><strong>Regionalização e hierarquização</strong></li>
+        <li><strong>Territorialização e adscrição de clientela</strong></li>
+        <li><strong>População adscrita</strong></li>
+        <li><strong>Cuidado centrado na pessoa</strong> ← banca adora ⚠️</li>
+        <li><strong>Resolutividade</strong></li>
+        <li><strong>Longitudinalidade do cuidado</strong></li>
+        <li><strong>Coordenação do cuidado</strong></li>
+        <li><strong>Ordenação da rede</strong></li>
+        <li><strong>Participação da comunidade</strong></li>
+      </ul>
+    </div>
+  </div>
+
+  <p class="slabel">🔗 RAS — Port. 4.279/2010</p>
+  <div class="grid">
+    <div class="card c-purple">
+      <div class="ctitle t-purple">Atributos Essenciais (8)</div>
+      <ul>
+        <li><strong>População e territórios definidos</strong></li>
+        <li><strong>APS como primeiro nível de atenção</strong> — principal porta de entrada</li>
+        <li>Extensa gama de estabelecimentos com <strong>diferentes densidades tecnológicas</strong></li>
+        <li>Serviços especializados disponíveis</li>
+        <li><strong>Mecanismos de coordenação</strong> e continuidade do cuidado</li>
+        <li><strong>Atenção centrada no indivíduo, família e comunidade</strong></li>
+        <li>Integração entre os <strong>entes federativos</strong></li>
+        <li>Recursos suficientes e <strong>gestão baseada em resultados</strong></li>
+      </ul>
+    </div>
+    <div class="card c-yellow">
+      <div class="ctitle t-yellow">Fundamentos (9)</div>
+      <ul>
+        <li><strong>Economia de escala</strong></li>
+        <li><strong>Suficiência e qualidade</strong></li>
+        <li><strong>Acesso</strong></li>
+        <li><strong>Disponibilidade de recursos</strong></li>
+        <li><strong>Integração vertical</strong> — articulação entre diferentes níveis de atenção</li>
+        <li><strong>Integração horizontal</strong> — articulação entre serviços do mesmo nível</li>
+        <li><strong>Processos de substituição</strong> — reagrupamento contínuo de recursos</li>
+        <li><strong>Região de saúde / abrangência</strong></li>
+        <li><strong>Níveis de atenção</strong></li>
+      </ul>
+    </div>
+  </div>
+
+  <p class="slabel">⚠️ Pegadinha — O que NÃO são Diretrizes</p>
+  <div class="card c-rose" style="max-width:100%">
+    <div class="ctitle t-rose">❌ Não são Diretrizes da PNAB — os distratores favoritos da banca</div>
+    <ul style="margin-bottom:14px">
+      <li><strong>Acolhimento</strong> → é ferramenta/dispositivo clínico, não diretriz</li>
+      <li><strong>Promoção da saúde</strong> → é política separada (PNPS)</li>
+      <li><strong>Humanização</strong> → é política separada (PNH)</li>
+      <li><strong>Integralidade</strong> → é <em>princípio</em>, não diretriz</li>
+      <li><strong>Universalidade</strong> → é <em>princípio</em>, não diretriz</li>
+    </ul>
+    <div style="background:var(--yellow-bg);border:1.5px solid var(--yellow-p);border-radius:8px;padding:14px 16px;font-size:.82rem;color:var(--yellow-t);line-height:1.7">
+      <strong>💡 Por que a banca chama de "Diretriz da RAS" algo que parece "Atributo da APS"?</strong><br><br>
+      A lei brasileira <strong>simplificou a nomenclatura</strong>. Ela pegou os conceitos de rede (RAS) e os fundamentos da clínica (APS) e carimbou tudo como "Diretrizes".<br><br>
+      <strong>Como não cair na pegadinha:</strong>
+      <ul style="margin-top:8px;list-style:none;display:flex;flex-direction:column;gap:6px">
+        <li style="padding-left:14px;position:relative"><span style="position:absolute;left:2px">·</span>Se a questão citar a <strong>Portaria ou a PNAB</strong>: considere "Longitudinalidade", "Coordenação" e "Ordenação" como <strong>Diretrizes</strong> ✅</li>
+        <li style="padding-left:14px;position:relative"><span style="position:absolute;left:2px">·</span>Se a questão citar <strong>Starfield</strong> (literatura acadêmica): aí sim você separa em Atributos Essenciais e Derivados</li>
+      </ul>
+      <br>
+      <strong>Resumo da ópera:</strong> se a questão diz que "Ordenação da Rede" é uma diretriz da RAS a ser operacionalizada na AB, ela está <strong>correta de acordo com a letra da lei</strong>, mesmo que pareça uma mistura conceitual.
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════ PLANEJAMENTO ══════════════ -->
+<div class="panel" id="tab-planejamento">
+
+  <p class="slabel">🏛️ Planejamento Estratégico Situacional — PES (Carlos Matus)</p>
+
+  <div class="hbox">
+    <strong>Por que cai em prova:</strong> o SUS adota o PES como modelo oficial de planejamento. A banca testa a diferença dele para o planejamento tradicional e os 4 momentos.
+  </div>
+
+  <div class="grid">
+    <div class="card c-cyan">
+      <div class="ctitle t-cyan">PES vs Planejamento Tradicional</div>
+      <table class="mini-t">
+        <thead><tr><th>Tradicional</th><th>PES</th></tr></thead>
+        <tbody>
+          <tr><td>Só técnicos planejam</td><td><strong>Participativo</strong> — trabalhadores e usuários incluídos</td></tr>
+          <tr><td>Parte de dados objetivos</td><td>Parte de <strong>problemas reais do cotidiano</strong></td></tr>
+          <tr><td>De cima para baixo</td><td><strong>Ascendente</strong> — do território para a gestão</td></tr>
+          <tr><td>Meta = produto final</td><td>Meta = <strong>processo contínuo</strong></td></tr>
+          <tr><td>Um único ator planeja</td><td><strong>Múltiplos atores</strong> com interesses diferentes</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card c-purple">
+      <div class="ctitle t-purple">Os 4 momentos do PES</div>
+      <ul>
+        <li><strong>1. Explicativo</strong> — "O que está acontecendo?" Identificar e priorizar problemas reais do território</li>
+        <li><strong>2. Normativo</strong> — "O que queremos alcançar?" Definir objetivos, metas e estratégias</li>
+        <li><strong>3. Estratégico</strong> — "Como vamos chegar lá?" Analisar viabilidade, atores e recursos</li>
+        <li><strong>4. Tático-operacional</strong> — "Quem faz o quê e quando?" Plano de ação com responsáveis e prazos</li>
+        <li style="background:var(--purple-bg);padding:4px 8px;border-radius:6px;margin-top:4px">⚠️ Pegadinha: <strong>"O PES considera múltiplos atores com interesses diferentes"</strong> → VERDADEIRO ✅</li>
+      </ul>
+    </div>
+
+    <div class="card c-blue">
+      <div class="ctitle t-blue">Triângulo de Governo — Matus</div>
+      <ul>
+        <li><strong>Projeto de Governo</strong> — o que quer fazer</li>
+        <li><strong>Governabilidade</strong> — poder político para fazer</li>
+        <li><strong>Capacidade de Governo</strong> — saber técnico para fazer</li>
+        <li>Os 3 vértices precisam estar equilibrados</li>
+        <li>Gestor com ótimo projeto mas sem poder político não consegue executar</li>
+      </ul>
+    </div>
+
+    <div class="card c-green">
+      <div class="ctitle t-green">Outras ferramentas do planejamento</div>
+      <ul>
+        <li><strong>Ishikawa (Espinha de peixe):</strong> identifica causas de um problema — útil para priorização no PES</li>
+        <li><strong>Matriz SWOT:</strong> Forças / Fraquezas (interno) + Oportunidades / Ameaças (externo)</li>
+        <li><strong>Apoio Institucional:</strong> relação horizontal — substitui supervisão verticalizada; ajuda equipes a analisar seus problemas</li>
+      </ul>
+    </div>
+  </div>
+
+  <p class="slabel">📊 Monitoramento vs Avaliação</p>
+  <div class="grid">
+    <div class="card c-blue">
+      <div class="ctitle t-blue">🔍 Monitoramento — acompanhamento contínuo</div>
+      <ul>
+        <li>Olha o <strong>processo enquanto ele acontece</strong> — é feito no dia a dia</li>
+        <li>Pergunta: <strong>"Estamos fazendo o que planejamos?"</strong></li>
+        <li>Exemplo: checar todo mês quantas gestantes fizeram consulta de pré-natal no 1º trimestre</li>
+        <li>Se o número cair, a equipe ajusta a rota imediatamente — <strong>sem esperar o fim do ano</strong></li>
+        <li>Ferramenta no SUS: <strong>SISAB, painéis de indicadores</strong></li>
+        <li style="background:var(--blue-bg);padding:4px 8px;border-radius:6px;margin-top:4px">🧭 Analogia: <strong>GPS durante a viagem</strong> — te avisa em tempo real se você saiu do caminho</li>
+      </ul>
+    </div>
+    <div class="card c-purple">
+      <div class="ctitle t-purple">📋 Avaliação — julgamento periódico</div>
+      <ul>
+        <li>Olha os <strong>resultados depois de um período</strong> — é feita em momentos definidos</li>
+        <li>Pergunta: <strong>"O que fizemos funcionou? Mudou algo na saúde da população?"</strong></li>
+        <li>Exemplo: ao final do ano, verificar se a taxa de sífilis congênita caiu no município após as ações de pré-natal</li>
+        <li>Vai além do processo — avalia <strong>impacto real</strong> na saúde</li>
+        <li>Ferramenta no SUS: <strong>P4D (Pagamento por Desempenho), indicadores de saúde</strong></li>
+        <li style="background:var(--purple-bg);padding:4px 8px;border-radius:6px;margin-top:4px">🏁 Analogia: <strong>balanço ao chegar no destino</strong> — valeu a pena a viagem?</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card c-peach" style="margin-top:14px">
+    <div class="ctitle t-peach">🧠 Como a banca testa essa diferença</div>
+    <table class="mini-t" style="margin-top:8px">
+      <thead><tr><th></th><th>Monitoramento</th><th>Avaliação</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Frequência</strong></td><td>Contínuo — mensal, semanal</td><td>Periódico — quadrimestral, anual</td></tr>
+        <tr><td><strong>Foco</strong></td><td>Processo — "está sendo feito?"</td><td>Resultado — "funcionou?"</td></tr>
+        <tr><td><strong>Ação gerada</strong></td><td>Correção imediata de rota</td><td>Reformulação do planejamento</td></tr>
+        <tr><td><strong>Ferramenta SUS</strong></td><td>SISAB, painéis</td><td>P4D, indicadores epidemiológicos</td></tr>
+        <tr><td><strong>Pergunta central</strong></td><td>"Estamos fazendo?"</td><td>"Adiantou fazer?"</td></tr>
+      </tbody>
+    </table>
+    <div style="background:var(--yellow-bg);border:1.5px solid var(--yellow-p);border-radius:8px;padding:10px 14px;font-size:.8rem;color:var(--yellow-t);margin-top:12px">
+      ⚠️ <strong>Pegadinha:</strong> a banca coloca "avaliação" como sinônimo de "acompanhamento contínuo" — <strong>ERRADO</strong>. Avaliação é pontual e analisa resultado. Quem é contínuo é o <strong>monitoramento</strong>.
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════ FLASHCARDS ══════════════ -->
+<div class="panel" id="tab-flashcards">
+
+  <!-- TOOLBAR -->
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:20px">
+    <div style="display:flex;gap:8px;flex-wrap:wrap" id="fc-filters">
+      <button class="fc-filter active" onclick="filterCards('all',this)">Todos</button>
+      <button class="fc-filter" onclick="filterCards('pegadinha',this)">⚠️ Pegadinhas</button>
+      <button class="fc-filter" onclick="filterCards('conceito',this)">📌 Conceitos</button>
+      <button class="fc-filter" onclick="filterCards('custom',this)">✏️ Meus cards</button>
+    </div>
+    <button onclick="openModal()" style="background:var(--green-bg);border:1.5px solid var(--green-p);color:var(--green-t);font-size:.78rem;font-weight:600;padding:8px 18px;border-radius:99px;cursor:pointer;">
+      + Novo flashcard
+    </button>
+    <button onclick="resetToDefaults()" style="background:var(--surface);border:1.5px solid var(--border);color:var(--muted);font-size:.72rem;padding:8px 14px;border-radius:99px;cursor:pointer;" title="Restaurar cards padrão">
+      🔄 Restaurar padrão
+    </button>
+  </div>
+
+  <!-- CARDS GRID -->
+  <div class="grid" id="fc-grid"></div>
+
+  <!-- EMPTY STATE -->
+  <div id="fc-empty" style="display:none;text-align:center;padding:40px;color:var(--muted);font-size:.85rem">
+    Nenhum card nessa categoria ainda.
+  </div>
+
+</div>
+
+<!-- ══════════════ MODAL ══════════════ -->
+<div id="fc-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:999;align-items:center;justify-content:center;padding:20px">
+  <div style="background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:28px;width:100%;max-width:500px;box-shadow:0 8px 40px rgba(0,0,0,.12)">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+      <span style="font-family:'Lora',serif;font-size:1rem;font-weight:700;color:var(--text)" id="modal-title">Novo Flashcard</span>
+      <button onclick="closeModal()" style="background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--muted);line-height:1">×</button>
+    </div>
+
+    <div style="margin-bottom:14px">
+      <label style="font-size:.72rem;font-weight:600;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;display:block;margin-bottom:6px">Categoria</label>
+      <select id="fc-cat" style="width:100%;padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);font-size:.82rem;font-family:'DM Sans',sans-serif">
+        <option value="pegadinha">⚠️ Pegadinha</option>
+        <option value="conceito">📌 Conceito</option>
+        <option value="custom">✏️ Meu card</option>
+      </select>
+    </div>
+
+    <div style="margin-bottom:14px">
+      <label style="font-size:.72rem;font-weight:600;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;display:block;margin-bottom:6px">Pergunta</label>
+      <textarea id="fc-q" rows="3" placeholder="Ex: A APS é a única porta de entrada do SUS?" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);font-size:.82rem;font-family:'DM Sans',sans-serif;resize:vertical"></textarea>
+    </div>
+
+    <div style="margin-bottom:20px">
+      <label style="font-size:.72rem;font-weight:600;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;display:block;margin-bottom:6px">Resposta</label>
+      <textarea id="fc-a" rows="4" placeholder="Ex: FALSO. O Art. 2º da PNAB 2017 diz que é a principal porta de entrada — não a única." style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);font-size:.82rem;font-family:'DM Sans',sans-serif;resize:vertical"></textarea>
+    </div>
+
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button onclick="closeModal()" style="background:var(--bg);border:1.5px solid var(--border);color:var(--muted);font-size:.78rem;padding:8px 16px;border-radius:8px;cursor:pointer">Cancelar</button>
+      <button onclick="saveCard()" style="background:var(--green-bg);border:1.5px solid var(--green-p);color:var(--green-t);font-size:.78rem;font-weight:600;padding:8px 20px;border-radius:8px;cursor:pointer">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<style>
+  .fc-filter {
+    background:var(--surface);border:1.5px solid var(--border);color:var(--muted);
+    font-size:.72rem;padding:5px 14px;border-radius:99px;cursor:pointer;transition:all .2s;font-weight:500;
+  }
+  .fc-filter:hover { border-color:#7a9fb8;color:#7a9fb8; }
+  .fc-filter.active { background:var(--cyan-bg);border-color:var(--cyan-p);color:var(--cyan-t);font-weight:600; }
+
+  .fc-card {
+    background:var(--surface);border:1.5px solid var(--border);border-radius:12px;
+    padding:18px 20px;position:relative;transition:box-shadow .2s;
+  }
+  .fc-card:hover { box-shadow:0 4px 18px rgba(0,0,0,.07); }
+  .fc-card.pegadinha { border-left:3px solid var(--rose-p); }
+  .fc-card.conceito  { border-left:3px solid var(--cyan-p); }
+  .fc-card.custom    { border-left:3px solid var(--green-p); }
+
+  .fc-card .fc-tag {
+    font-size:.65rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+    padding:2px 8px;border-radius:4px;display:inline-block;margin-bottom:8px;
+  }
+  .fc-card.pegadinha .fc-tag { background:var(--rose-bg);color:var(--rose-t); }
+  .fc-card.conceito  .fc-tag { background:var(--cyan-bg);color:var(--cyan-t); }
+  .fc-card.custom    .fc-tag { background:var(--green-bg);color:var(--green-t); }
+
+  .fc-card .fc-q-text { font-size:.78rem;color:var(--cyan-t);font-weight:600;margin-bottom:9px;line-height:1.5; }
+  .fc-card .fc-a-text { font-size:.82rem;color:var(--text);line-height:1.65;border-left:2.5px solid var(--green-p);padding-left:10px; }
+
+  .fc-actions { position:absolute;top:12px;right:12px;display:flex;gap:6px;opacity:0;transition:opacity .2s; }
+  .fc-card:hover .fc-actions { opacity:1; }
+  .fc-btn {
+    background:var(--bg);border:1px solid var(--border);color:var(--muted);
+    font-size:.7rem;padding:3px 8px;border-radius:6px;cursor:pointer;transition:all .15s;
+  }
+  .fc-btn:hover { border-color:#7a9fb8;color:#4a7a8a; }
+  .fc-btn.del:hover { border-color:var(--rose-p);color:var(--rose-t); }
+</style>
+
+<script>
+  // ── DADOS INICIAIS ──
+  const DEFAULT_CARDS = [
+    { id:1,  cat:'pegadinha', q:'❓ A APS é a ÚNICA porta de entrada do SUS?', a:'FALSO. O Art. 2º da PNAB 2017 diz que é a principal porta de entrada — não a única. Essa é uma das pegadinhas mais cobradas em prova.' },
+    { id:2,  cat:'pegadinha', q:'❓ A PNAB 2017 extinguiu o NASF?', a:'FALSO. O NASF-AB está regulamentado no item 4, capítulo 3.4 da PNAB 2017. Quem descontinuou o financiamento foi o Previne Brasil (2019/2020), confirmado pela NT 3/2020.' },
+    { id:3,  cat:'pegadinha', q:'❓ A PNAB 2017 tornou a ESF a única forma de organizar a APS?', a:'FALSO. Criou a eAB/eAP como alternativa com caráter transitório e possibilidade de conversão progressiva para eSF. ESF é prioritária, mas outras formas são reconhecidas.' },
+    { id:4,  cat:'pegadinha', q:'❓ Classificação de risco = estratificação de risco?', a:'NÃO. Classificação de risco → urgências/eventos agudos, critérios clínicos. Estratificação de risco → condições crônicas, critérios clínicos + sociais + econômicos + familiares.' },
+    { id:5,  cat:'pegadinha', q:'❓ Uma mesma equipe pode estar vinculada a duas eMulti ao mesmo tempo?', a:'FALSO. Art. 4, §2º da Port. 635/2023: nenhuma equipe poderá estar vinculada a mais de uma eMulti simultaneamente. Mas um profissional pode estar em mais de uma eMulti se houver compatibilidade de CH.' },
+    { id:6,  cat:'pegadinha', q:'❓ Educação Permanente = treinamento periódico?', a:'FALSO. A EPS ocorre no cotidiano do trabalho (reuniões, fóruns), usando os conflitos reais para transformar práticas. Educação continuada é que engloba treinamentos pontuais e atualizações específicas.' },
+    { id:7,  cat:'pegadinha', q:'❓ O Previne Brasil ainda está vigente em 2024?', a:'FALSO. A Port. 3.493/2024 substituiu o Previne Brasil (Port. 2.979/2019) a partir de maio/2024. O novo modelo tem 6 componentes e acabou com a "caça ao CPF".' },
+    { id:8,  cat:'pegadinha', q:'❓ Acolhimento e Humanização são diretrizes da PNAB?', a:'FALSO. Acolhimento é ferramenta/dispositivo clínico (não é diretriz). Humanização é política separada (PNH). As 9 diretrizes do Art. 3º da PNAB não incluem nenhum dos dois.' },
+    { id:9,  cat:'conceito', q:'📌 Linha do tempo NASF → eMulti', a:'2008: NASF criado\n2017: NASF-AB regulamentado na PNAB 2017\n2019: Previne Brasil — perde financiamento específico\n2020: NT 3/2020 confirma descontinuidade\n2023: eMulti criada (Port. 635/2023)\n2024: Port. 3.493 revoga indicadores eMulti da 635/2023' },
+    { id:10, cat:'conceito', q:'📌 Os 3 pilares do Previne Brasil (2019 — revogado em 2024)', a:'1. Capitação Ponderada — por pessoa cadastrada no CPF/Cartão SUS\n2. Pagamento por Desempenho — 7 indicadores\n3. Incentivo para Ações Estratégicas\n⚠️ Substituído pela Port. 3.493/2024 com 6 componentes' },
+    { id:11, cat:'conceito', q:'📌 Os 6 componentes do novo financiamento (Port. 3.493/2024)', a:'I — Fixo (por equipe + IED)\nII — Vínculo e Acompanhamento Territorial\nIII — Qualidade (15 indicadores: eSF/eAP + eMulti + eSB)\nIV — Programas e Serviços\nV — Saúde Bucal\nVI — Per Capita (base IBGE)' },
+    { id:12, cat:'conceito', q:'📌 Os 7 indicadores do Previne Brasil (ainda cobrados em provas de 2024)', a:'① Pré-natal 1º trimestre ② 6+ consultas pré-natal ③ HIV/Sífilis na gestante ④ Citopatológico colo uterino ⑤ DM com HbA1c ⑥ Hipertensos com PA aferida ⑦ Vacina infantil (VIP, DTP, HB, HiB, Pólio)' },
+    { id:13, cat:'conceito', q:'📌 eSF vs eAP — diferença essencial', a:'eSF: ACS obrigatório, cobertura 100% do território, CH 40h, maior valor no Componente Fixo (IED) e Vínculo, modelo prioritário.\neAP: sem ACS obrigatório, sem cobertura total, CH mínima 10h por categoria. Modelo flexível/transitório.' },
+    { id:14, cat:'conceito', q:'📌 Os 5 fluxos do Acolhimento com Classificação de Risco', a:'① Atendimento imediato (urgência)\n② Atendimento no dia (agudo menor gravidade)\n③ Agendamento programado\n④ Resolução de demandas simples (receitas, exames)\n⑤ Referenciamento/orientação sobre fluxos da rede' },
+    { id:15, cat:'conceito', q:'📌 Quando o repasse da eMulti é suspenso? (Port. 635/2023)', a:'· Descumprimento dos critérios da portaria\n· Ausência de qualquer profissional do Anexo I\n· Omissão no SISAB por 3 competências consecutivas' },
+    { id:16, cat:'conceito', q:'📌 As 9 Diretrizes da PNAB 2017 (Art. 3º)', a:'① Regionalização e hierarquização\n② Territorialização e adscrição\n③ População adscrita\n④ Cuidado centrado na pessoa ← banca adora\n⑤ Resolutividade\n⑥ Longitudinalidade\n⑦ Coordenação do cuidado\n⑧ Ordenação da rede\n⑨ Participação da comunidade' },
+    { id:17, cat:'conceito', q:'📌 IED — O que é e para que serve?', a:'Índice de Equidade e Dimensionamento — substitui a tipologia IBGE do Previne Brasil.\nCombina: IVS (Índice de Vulnerabilidade Social/IPEA) + porte populacional (IBGE).\nResulta em 4 estratos (1 = mais vulnerável/menor). Quanto mais vulnerável → maior o Componente Fixo.' },
+    { id:18, cat:'conceito', q:'❓ Segundo o Art. 3º da Portaria de Consolidação nº 2, o que são Diretrizes?', a:'São os aspectos operacionais da APS: Territorialização, Adscrição, Resolutividade, Longitudinalidade, Coordenação do Cuidado e Ordenação da Rede — entre outros. São as "ferramentas de gestão" para operacionalizar os princípios do SUS no território.' },
+    { id:19, cat:'conceito', q:'❓ Qual a diferença entre Princípio e Diretriz na APS?', a:'Princípios são os valores estruturantes do SUS: Universalidade, Equidade e Integralidade — o "por quê" do sistema.\nDiretrizes são as ferramentas de gestão: Regionalização, Hierarquização, Territorialização, Longitudinalidade etc. — o "como" operacionalizar.' },
+    { id:20, cat:'conceito', q:'❓ Como funciona a nova "Capitação Republicana" (Port. 3.493/2024)?', a:'O Componente Fixo agora é baseado no número de residentes do município (IBGE), e não apenas nos cadastrados no posto. Isso garante repasse para quem mora no território, mesmo sem cadastro ativo — acabando com a "caça ao CPF" do Previne Brasil.' },
+    { id:21, cat:'conceito', q:'❓ O que substituiu a Capitação Ponderada de 2019?', a:'O Componente Fixo (I) da Port. 3.493/2024, calculado pelo IED — Índice de Equidade e Dimensionamento, que combina o IVS (Índice de Vulnerabilidade Social/IPEA) com o porte populacional (IBGE), garantindo equidade: quanto mais vulnerável o município → maior o repasse.' },
+  ];
+
+  let cards = [];
+  let editingId = null;
+  let activeFilter = 'all';
+
+  // ── STORAGE — sempre carrega defaults + custom cards salvos ──
+  async function loadCards() {
+    try {
+      const res = await window.storage.get('aps-flashcards-custom');
+      const customCards = res ? JSON.parse(res.value) : [];
+      // Sempre começa com os defaults atualizados, adiciona apenas os custom (cat='custom')
+      cards = [
+        ...DEFAULT_CARDS,
+        ...customCards.filter(c => c.cat === 'custom')
+      ];
+    } catch {
+      cards = [...DEFAULT_CARDS];
+    }
+    renderCards();
+  }
+
+  async function saveCards() {
+    try {
+      // Só salva os cards customizados pelo usuário
+      const customOnly = cards.filter(c => c.cat === 'custom');
+      await window.storage.set('aps-flashcards-custom', JSON.stringify(customOnly));
+    } catch {}
+  }
+
+  function resetToDefaults() {
+    if (!confirm('Restaurar todos os flashcards padrão? Seus cards personalizados serão mantidos.')) return;
+    loadCards();
+  }
+
+  // ── RENDER ──
+  function renderCards() {
+    const grid = document.getElementById('fc-grid');
+    const empty = document.getElementById('fc-empty');
+    const filtered = activeFilter === 'all' ? cards : cards.filter(c => c.cat === activeFilter);
+
+    if (!filtered.length) {
+      grid.innerHTML = '';
+      empty.style.display = 'block';
+      return;
+    }
+    empty.style.display = 'none';
+
+    grid.innerHTML = filtered.map(c => `
+      <div class="fc-card ${c.cat}">
+        <div class="fc-actions">
+          <button class="fc-btn" onclick="editCard(${c.id})">✏️ editar</button>
+          <button class="fc-btn del" onclick="deleteCard(${c.id})">🗑️</button>
+        </div>
+        <div class="fc-tag">${c.cat === 'pegadinha' ? '⚠️ Pegadinha' : c.cat === 'conceito' ? '📌 Conceito' : '✏️ Meu card'}</div>
+        <div class="fc-q-text">${c.q}</div>
+        <div class="fc-a-text">${c.a.replace(/\n/g,'<br>')}</div>
+      </div>
+    `).join('');
+  }
+
+  // ── FILTER ──
+  function filterCards(cat, el) {
+    activeFilter = cat;
+    document.querySelectorAll('.fc-filter').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+    renderCards();
+  }
+
+  // ── MODAL ──
+  function openModal(id = null) {
+    editingId = id;
+    const modal = document.getElementById('fc-modal');
+    document.getElementById('modal-title').textContent = id ? 'Editar Flashcard' : 'Novo Flashcard';
+    if (id) {
+      const c = cards.find(x => x.id === id);
+      document.getElementById('fc-cat').value = c.cat;
+      document.getElementById('fc-q').value = c.q;
+      document.getElementById('fc-a').value = c.a;
+    } else {
+      document.getElementById('fc-cat').value = 'custom';
+      document.getElementById('fc-q').value = '';
+      document.getElementById('fc-a').value = '';
+    }
+    modal.style.display = 'flex';
+  }
+
+  function closeModal() {
+    document.getElementById('fc-modal').style.display = 'none';
+    editingId = null;
+  }
+
+  function saveCard() {
+    const q = document.getElementById('fc-q').value.trim();
+    const a = document.getElementById('fc-a').value.trim();
+    const cat = document.getElementById('fc-cat').value;
+    if (!q || !a) { alert('Preencha a pergunta e a resposta!'); return; }
+
+    if (editingId) {
+      const idx = cards.findIndex(c => c.id === editingId);
+      cards[idx] = { ...cards[idx], q, a, cat };
+    } else {
+      const newId = Math.max(0, ...cards.map(c => c.id)) + 1;
+      cards.push({ id: newId, cat, q, a });
+    }
+    saveCards();
+    renderCards();
+    closeModal();
+  }
+
+  function editCard(id) { openModal(id); }
+
+  function deleteCard(id) {
+    if (!confirm('Apagar este flashcard?')) return;
+    cards = cards.filter(c => c.id !== id);
+    saveCards();
+    renderCards();
+  }
+
+  // Fechar modal clicando fora
+  document.getElementById('fc-modal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+  });
+
+  // Inicializar quando a aba for aberta
+  loadCards();
+</script>
+
+<script>
+  function showTab(name,el){
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    document.getElementById('tab-'+name).classList.add('active');
+    el.classList.add('active');
+  }
+</script>
+</body>
+</html>
