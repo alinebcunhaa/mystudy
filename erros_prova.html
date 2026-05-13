@@ -123,6 +123,7 @@ label.lbl{font-size:.68rem;font-weight:700;color:#64748b;text-transform:uppercas
       <p class="header-sub" id="header-sub">Carregando...</p>
     </div>
     <div class="header-btns">
+      <button class="btn-sec" onclick="exportHTML()" title="Baixar HTML com seus dados para subir no GitHub">⬇️ Exportar</button>
       <button class="btn-outline" id="btn-new-resumo" style="display:none" onclick="openResForm()">+ Novo Resumo</button>
       <button class="btn-primary" id="btn-new-erro" onclick="openErrForm()">+ Novo Erro</button>
     </div>
@@ -517,6 +518,30 @@ function closeResForm(){document.getElementById('modal-res').classList.remove('o
 function submitRes(){const titulo=document.getElementById('rf-titulo').value.trim();const conteudo=document.getElementById('rf-conteudo').value.trim();if(!titulo||!conteudo)return;const obj={id:editResId||Date.now(),materia:document.getElementById('rf-mat').value,titulo,blocos:[{t:'texto',v:conteudo}]};if(editResId){resumos=resumos.map(r=>r.id===editResId?obj:r);showToast('✏️ Resumo atualizado!');}else{resumos=[obj,...resumos];showToast('📝 Resumo salvo!');}save();closeResForm();renderResumos();}
 function editRes(id){openResForm(id);}
 function buildProvaSelect(){const sel=document.getElementById('filter-prova');const cur=sel.value;const provas=[...new Set(errors.map(e=>e.prova).filter(Boolean))].sort();sel.innerHTML='<option value="">Todos os simulados</option>'+provas.map(p=>`<option value="${esc(p)}"${p===cur?' selected':''}>${esc(p)} (${errors.filter(e=>e.prova===p).length})</option>`).join('');}
+function exportHTML(){
+  // Pega o HTML original da página
+  const src = document.documentElement.outerHTML;
+
+  // Serializa os dados atuais
+  const errorsJSON = JSON.stringify(errors, null, 2);
+  const resumosJSON = JSON.stringify(resumos, null, 2);
+
+  // Substitui o bloco INIT_ERRORS no fonte
+  const errRx = /const INIT_ERRORS=\[[\s\S]*?\];/;
+  const resRx = /const INIT_RESUMOS=\[[\s\S]*?\];/;
+
+  let out = src.replace(errRx, `const INIT_ERRORS=${errorsJSON};`);
+  out = out.replace(resRx, `const INIT_RESUMOS=${resumosJSON};`);
+
+  // Dispara download
+  const blob = new Blob([out], {type:'text/html;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'erros_prova.html';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  showToast('⬇️ HTML exportado! Suba no GitHub.');
+}
 renderDashboard();
 buildProvaSelect();
 </script>
