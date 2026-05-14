@@ -112,6 +112,16 @@ label.lbl{font-size:.68rem;font-weight:700;color:#64748b;text-transform:uppercas
 #toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:#1e293b;color:#fff;padding:.6rem 1.35rem;border-radius:99px;font-size:.8rem;font-weight:600;z-index:999;box-shadow:0 4px 20px rgba(0,0,0,.18);opacity:0;transition:opacity .25s;pointer-events:none}
 #toast.show{opacity:1}
 .confirm-text{font-size:.75rem;color:#ef4444}
+.err-card.revisado{opacity:.72}
+.err-card.revisado .err-title{text-decoration:line-through;color:#94a3b8}
+.badge-revisado{background:#dcfce7;color:#15803d;border:1px solid #86efac;border-radius:5px;font-size:.65rem;font-weight:700;padding:.1rem .45rem}
+.rev-filter{display:flex;border:1px solid #e2e8f0;border-radius:8px;overflow:hidden;flex-shrink:0}
+.rev-btn{background:#faf8f5;border:none;padding:.42rem .75rem;font-size:.75rem;font-weight:600;color:#94a3b8;cursor:pointer;font-family:'Nunito',sans-serif;border-right:1px solid #e2e8f0;white-space:nowrap;transition:all .15s}
+.rev-btn:last-child{border-right:none}
+.rev-btn.active{background:#4f46e5;color:#fff}
+.drag-handle{cursor:grab;color:#cbd5e1;font-size:1.15rem;padding:0 .45rem .05rem;flex-shrink:0;line-height:1;user-select:none;touch-action:none}
+.drag-handle:active{cursor:grabbing;color:#94a3b8}
+.err-card.drag-over{box-shadow:0 0 0 2px #4f46e5;transform:translateY(-2px);transition:transform .1s}
 </style>
 </head>
 <body>
@@ -152,6 +162,11 @@ label.lbl{font-size:.68rem;font-weight:700;color:#64748b;text-transform:uppercas
       <select id="filter-mat" onchange="renderErros()"><option value="">Todas as matérias</option><option>CLM</option><option>Cirurgia</option><option>GO</option><option>Pediatria</option><option>Preventiva</option><option>Psiquiatria</option><option>Outro</option></select>
       <select id="filter-tipo" onchange="renderErros()"><option value="">Todos os tipos</option><option>Conceito</option><option>Distração</option><option>Nunca vi</option><option>Confusão entre temas</option></select>
       <select id="filter-prova" onchange="renderErros()"><option value="">Todos os simulados</option></select>
+      <div class="rev-filter">
+        <button class="rev-btn active" id="rfb-all"      onclick="setRevFilter('all')">Todos</button>
+        <button class="rev-btn"        id="rfb-pendente" onclick="setRevFilter('pendente')">⏳ Pendentes</button>
+        <button class="rev-btn"        id="rfb-revisado" onclick="setRevFilter('revisado')">✅ Revisados</button>
+      </div>
       <button class="btn-sec" id="btn-clear-err" style="display:none" onclick="clearErrFilter()">✕ Limpar</button>
     </div>
     <div class="results-count" id="err-count"></div>
@@ -198,6 +213,8 @@ const PASTEL={CLM:{bg:"#fde8e8",border:"#f8b4b4",text:"#b91c1c",dot:"#ef4444"},C
 const TIPO_COLORS=["#ef4444","#f59e0b","#0ea5e9","#8b5cf6"];
 const TIPOS=["Conceito","Distração","Nunca vi","Confusão entre temas"];
 const MATERIAS=["CLM","Cirurgia","GO","Pediatria","Preventiva","Psiquiatria","Outro"];
+let revFilter='all';
+function setRevFilter(v){revFilter=v;['all','pendente','revisado'].forEach(k=>{const el=document.getElementById('rfb-'+k);if(el)el.classList.toggle('active',k===v);});renderErros();}
 
 const INIT_ERRORS=[
   {id:1,materia:"CLM",tema:"Gasometria / Ânion Gap",erro:"Não calculou o AG antes de responder. AG = Na – (Cl + HCO₃) = 135 – 111 = 24 → elevado. Metformina causa acidose lática (AG alto) → é compatível com o quadro, não a resposta da 'incompatível'.",tipo:"Conceito",data:"2026-04-30",prova:"Simulado R1 Abr/26"},
@@ -476,12 +493,22 @@ function renderErros(){
   const m=document.getElementById('filter-mat').value;
   const t=document.getElementById('filter-tipo').value;
   const p=document.getElementById('filter-prova').value;
-  document.getElementById('btn-clear-err').style.display=(s||m||t||p)?'':'none';
-  const f=errors.filter(e=>(!m||e.materia===m)&&(!t||e.tipo===t)&&(!p||e.prova===p)&&(!s||e.tema.toLowerCase().includes(s)||e.erro.toLowerCase().includes(s)));
+  document.getElementById('btn-clear-err').style.display=(s||m||t||p||revFilter!=='all')?'':'none';
+  let f=errors.filter(e=>(!m||e.materia===m)&&(!t||e.tipo===t)&&(!p||e.prova===p)&&(!s||e.tema.toLowerCase().includes(s)||e.erro.toLowerCase().includes(s)));
+  if(revFilter==='revisado')f=f.filter(e=>e.revisado);
+  if(revFilter==='pendente')f=f.filter(e=>!e.revisado);
   document.getElementById('err-count').textContent=`${f.length} erro${f.length!==1?'s':''}`;
-  document.getElementById('erros-list').innerHTML=f.length?f.map(e=>{const pc=PASTEL[e.materia]||PASTEL['Outro'];return`<div class="err-card" id="ec-${e.id}" style="border-color:${pc.border};border-left-color:${pc.dot}"><div class="err-card-head" onclick="toggleEC(${e.id})"><div style="flex:1;min-width:0"><div class="err-card-meta"><span class="badge" style="background:${pc.bg};color:${pc.text};border-color:${pc.border}">${esc(e.materia)}</span><span class="badge badge-tipo">${esc(e.tipo)}</span>${e.prova?`<span class="badge-prova">· ${esc(e.prova)}</span>`:''}<span style="font-size:.64rem;color:#cbd5e1;margin-left:auto">${e.data}</span></div><div class="err-title">${esc(e.tema)}</div><div class="err-preview" id="ep-${e.id}">${esc(e.erro)}</div></div><span class="chevron" id="ch-${e.id}">▼</span></div><div class="err-body" id="eb-${e.id}" style="background:${pc.bg};border-color:${pc.border}"><div class="err-text">${esc(e.erro)}</div><div class="card-actions" id="ea-${e.id}"><button class="btn-sm btn-blue-sm" onclick="editErr(${e.id})">✏️ Editar</button><button class="btn-sm btn-red-sm" onclick="confirmDel(${e.id},'err')">🗑️</button></div></div></div>`;}).join(''):'<div class="empty">Nenhum erro encontrado 🎉</div>';
+  document.getElementById('erros-list').innerHTML=f.length?f.map(e=>{const pc=PASTEL[e.materia]||PASTEL['Outro'];const revClass=e.revisado?' revisado':'';const revBadge=e.revisado?'<span class="badge-revisado">✅ Revisado</span>':'';const revBtnLabel=e.revisado?'↩️ Desfazer':'✅ Revisado';return`<div class="err-card${revClass}" id="ec-${e.id}" style="border-color:${pc.border};border-left-color:${pc.dot}" draggable="true" ondragstart="onDragStart(${e.id},event)" ondragend="onDragEnd(${e.id})" ondragover="onDragOver(${e.id},event)" ondrop="onDrop(${e.id},event)"><div class="err-card-head" onclick="toggleEC(${e.id})"><span class="drag-handle" onclick="event.stopPropagation()">⠿</span><div style="flex:1;min-width:0"><div class="err-card-meta"><span class="badge" style="background:${pc.bg};color:${pc.text};border-color:${pc.border}">${esc(e.materia)}</span><span class="badge badge-tipo">${esc(e.tipo)}</span>${e.prova?`<span class="badge-prova">· ${esc(e.prova)}</span>`:''}${revBadge}<span style="font-size:.64rem;color:#cbd5e1;margin-left:auto">${e.data}</span></div><div class="err-title">${esc(e.tema)}</div><div class="err-preview" id="ep-${e.id}">${esc(e.erro)}</div></div><span class="chevron" id="ch-${e.id}">▼</span></div><div class="err-body" id="eb-${e.id}" style="background:${pc.bg};border-color:${pc.border}"><div class="err-text">${esc(e.erro)}</div><div class="card-actions" id="ea-${e.id}"><button class="btn-sm btn-grey-sm" onclick="moveErr(${e.id},-1)">↑</button><button class="btn-sm btn-grey-sm" onclick="moveErr(${e.id},1)">↓</button><button class="btn-sm" style="background:${e.revisado?'#fef3c7':'#dcfce7'};color:${e.revisado?'#92400e':'#15803d'}" onclick="toggleRevisado(${e.id})">${revBtnLabel}</button><button class="btn-sm btn-blue-sm" onclick="editErr(${e.id})">✏️ Editar</button><button class="btn-sm btn-red-sm" onclick="confirmDel(${e.id},'err')">🗑️</button></div></div></div>`;}).join(''):'<div class="empty">Nenhum erro encontrado 🎉</div>';
 }
-function clearErrFilter(){document.getElementById('search-err').value='';document.getElementById('filter-mat').value='';document.getElementById('filter-tipo').value='';document.getElementById('filter-prova').value='';renderErros();}
+function clearErrFilter(){document.getElementById('search-err').value='';document.getElementById('filter-mat').value='';document.getElementById('filter-tipo').value='';document.getElementById('filter-prova').value='';setRevFilter('all');}
+function toggleRevisado(id){errors=errors.map(e=>e.id===id?{...e,revisado:!e.revisado}:e);save();renderErros();showToast(errors.find(e=>e.id===id).revisado?'✅ Marcado como revisado!':'↩️ Marcado como pendente.');}
+let _dragId=null;
+function onDragStart(id,ev){_dragId=id;ev.dataTransfer.effectAllowed='move';setTimeout(()=>{const el=document.getElementById('ec-'+id);if(el)el.style.opacity='.4';},0);}
+function onDragEnd(id){_dragId=null;const el=document.getElementById('ec-'+id);if(el)el.style.opacity='1';document.querySelectorAll('.err-card').forEach(c=>c.classList.remove('drag-over'));}
+function onDragOver(id,ev){ev.preventDefault();if(_dragId===id)return;document.querySelectorAll('.err-card').forEach(c=>c.classList.remove('drag-over'));const el=document.getElementById('ec-'+id);if(el)el.classList.add('drag-over');}
+function onDrop(id,ev){ev.preventDefault();if(!_dragId||_dragId===id)return;swapErrors(_dragId,id);document.querySelectorAll('.err-card').forEach(c=>c.classList.remove('drag-over'));}
+function swapErrors(idA,idB){const iA=errors.findIndex(e=>e.id===idA);const iB=errors.findIndex(e=>e.id===idB);if(iA<0||iB<0)return;[errors[iA],errors[iB]]=[errors[iB],errors[iA]];save();renderErros();}
+function moveErr(id,dir){const s=document.getElementById('search-err').value.toLowerCase();const m=document.getElementById('filter-mat').value;const t=document.getElementById('filter-tipo').value;const p=document.getElementById('filter-prova').value;let f=errors.filter(e=>(!m||e.materia===m)&&(!t||e.tipo===t)&&(!p||e.prova===p)&&(!s||e.tema.toLowerCase().includes(s)||e.erro.toLowerCase().includes(s)));if(revFilter==='revisado')f=f.filter(e=>e.revisado);if(revFilter==='pendente')f=f.filter(e=>!e.revisado);const idx=f.findIndex(e=>e.id===id);if(dir===-1&&idx===0)return;if(dir===1&&idx===f.length-1)return;swapErrors(id,f[idx+dir].id);}
 function toggleEC(id){const b=document.getElementById('eb-'+id);const ch=document.getElementById('ch-'+id);const pr=document.getElementById('ep-'+id);if(b.classList.contains('open')){b.classList.remove('open');ch.textContent='▼';if(pr)pr.style.display='';}else{b.classList.add('open');ch.textContent='▲';if(pr)pr.style.display='none';}}
 function confirmDel(id,type){const actId=type==='err'?`ea-${id}`:`ra-${id}`;document.getElementById(actId).innerHTML=`<span class="confirm-text">Confirmar?</span><button class="btn-sm btn-red-sm" onclick="${type==='err'?`delErr(${id})`:`delRes(${id})`}">Apagar</button><button class="btn-sm btn-grey-sm" onclick="${type==='err'?'renderErros()':'renderResumos()'}">Cancelar</button>`;}
 function delErr(id){errors=errors.filter(e=>e.id!==id);save();renderErros();showToast('🗑️ Removido.');}
@@ -511,36 +538,34 @@ function renderBlocos(blocos,pc){
 }
 function openErrForm(id){editErrId=id||null;const err=id?errors.find(e=>e.id===id):null;document.getElementById('modal-err-title').textContent=id?'Editar Erro':'Registrar Erro';document.getElementById('ef-mat').value=err?err.materia:'CLM';document.getElementById('ef-tipo').value=err?err.tipo:'Conceito';document.getElementById('ef-tema').value=err?err.tema:'';document.getElementById('ef-erro').value=err?err.erro:'';document.getElementById('ef-prova').value=err?err.prova:'';document.getElementById('ef-data').value=err?err.data:new Date().toISOString().slice(0,10);document.querySelector('#modal-err .btn-primary').textContent=id?'Salvar':'Registrar';document.getElementById('modal-err').classList.add('open');}
 function closeErrForm(){document.getElementById('modal-err').classList.remove('open');}
-function submitErr(){const tema=document.getElementById('ef-tema').value.trim();const erro=document.getElementById('ef-erro').value.trim();if(!tema||!erro)return;const obj={id:editErrId||Date.now(),materia:document.getElementById('ef-mat').value,tema,erro,tipo:document.getElementById('ef-tipo').value,prova:document.getElementById('ef-prova').value,data:document.getElementById('ef-data').value};if(editErrId){errors=errors.map(e=>e.id===editErrId?obj:e);showToast('✏️ Atualizado!');}else{errors=[obj,...errors];showToast('✅ Erro salvo!');}save();closeErrForm();renderErros();}
+function submitErr(){const tema=document.getElementById('ef-tema').value.trim();const erro=document.getElementById('ef-erro').value.trim();if(!tema||!erro)return;const existing=editErrId?errors.find(e=>e.id===editErrId):null;const obj={id:editErrId||Date.now(),materia:document.getElementById('ef-mat').value,tema,erro,tipo:document.getElementById('ef-tipo').value,prova:document.getElementById('ef-prova').value,data:document.getElementById('ef-data').value,revisado:existing?!!existing.revisado:false};if(editErrId){errors=errors.map(e=>e.id===editErrId?obj:e);showToast('✏️ Atualizado!');}else{errors=[obj,...errors];showToast('✅ Erro salvo!');}save();closeErrForm();renderErros();}
 function editErr(id){openErrForm(id);}
 function openResForm(id){editResId=id||null;const res=id?resumos.find(r=>r.id===id):null;document.getElementById('modal-res-title').textContent=id?'Editar Resumo':'Novo Resumo';document.getElementById('rf-mat').value=res?res.materia:'CLM';document.getElementById('rf-titulo').value=res?res.titulo:'';document.getElementById('rf-conteudo').value=res?res.blocos.map(b=>b.v||'').filter(Boolean).join('\n\n'):'';document.querySelector('#modal-res .btn-outline').textContent=id?'Salvar':'Criar Resumo';document.getElementById('modal-res').classList.add('open');}
 function closeResForm(){document.getElementById('modal-res').classList.remove('open');}
 function submitRes(){const titulo=document.getElementById('rf-titulo').value.trim();const conteudo=document.getElementById('rf-conteudo').value.trim();if(!titulo||!conteudo)return;const obj={id:editResId||Date.now(),materia:document.getElementById('rf-mat').value,titulo,blocos:[{t:'texto',v:conteudo}]};if(editResId){resumos=resumos.map(r=>r.id===editResId?obj:r);showToast('✏️ Resumo atualizado!');}else{resumos=[obj,...resumos];showToast('📝 Resumo salvo!');}save();closeResForm();renderResumos();}
 function editRes(id){openResForm(id);}
 function buildProvaSelect(){const sel=document.getElementById('filter-prova');const cur=sel.value;const provas=[...new Set(errors.map(e=>e.prova).filter(Boolean))].sort();sel.innerHTML='<option value="">Todos os simulados</option>'+provas.map(p=>`<option value="${esc(p)}"${p===cur?' selected':''}>${esc(p)} (${errors.filter(e=>e.prova===p).length})</option>`).join('');}
+let _originalSrc='';
+fetch(location.href).then(r=>r.text()).then(t=>{_originalSrc=t;}).catch(()=>{});
 function exportHTML(){
-  // Pega o HTML original da página
-  const src = document.documentElement.outerHTML;
-
-  // Serializa os dados atuais
-  const errorsJSON = JSON.stringify(errors, null, 2);
-  const resumosJSON = JSON.stringify(resumos, null, 2);
-
-  // Substitui o bloco INIT_ERRORS no fonte
-  const errRx = /const INIT_ERRORS=\[[\s\S]*?\];/;
-  const resRx = /const INIT_RESUMOS=\[[\s\S]*?\];/;
-
-  let out = src.replace(errRx, `const INIT_ERRORS=${errorsJSON};`);
-  out = out.replace(resRx, `const INIT_RESUMOS=${resumosJSON};`);
-
-  // Dispara download
-  const blob = new Blob([out], {type:'text/html;charset=utf-8'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'erros_prova.html';
-  a.click();
-  URL.revokeObjectURL(a.href);
-  showToast('⬇️ HTML exportado! Suba no GitHub.');
+  const doExport=(src)=>{
+    const errorsJSON=JSON.stringify(errors);
+    const resumosJSON=JSON.stringify(resumos);
+    const errRx=/const INIT_ERRORS=\[[\s\S]*?\];/;
+    const resRx=/const INIT_RESUMOS=\[[\s\S]*?\];/;
+    let out=src.replace(errRx,`const INIT_ERRORS=${errorsJSON};`);
+    out=out.replace(resRx,`const INIT_RESUMOS=${resumosJSON};`);
+    if(!errRx.test(src)){showToast('⚠️ Erro na exportação. Tente novamente.');return;}
+    const blob=new Blob([out],{type:'text/html;charset=utf-8'});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download='erros_prova.html';
+    a.click();
+    URL.revokeObjectURL(a.href);
+    showToast('⬇️ Exportado! Suba no GitHub.');
+  };
+  if(_originalSrc){doExport(_originalSrc);}
+  else{fetch(location.href).then(r=>r.text()).then(t=>{_originalSrc=t;doExport(t);}).catch(()=>showToast('⚠️ Erro ao buscar fonte. Tente novamente.'));}
 }
 renderDashboard();
 buildProvaSelect();
