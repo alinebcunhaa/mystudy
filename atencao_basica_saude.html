@@ -1,6 +1,291 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
+<html lang="pt-BR"><head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.13/html-to-image.min.js" integrity="sha512-iZ2ORl595Wx6miw+GuadDet4WQbdSWS3JLMoNfY8cRGoEFy6oT3G9IbcrBeL6AfkgpA51ETt/faX6yLV+/gFJg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+      (function() {
+        const originalConsole = window.console;
+        window.console = {
+          log: (...args) => {
+            originalConsole.log(...args);
+            window.parent.postMessage({ type: 'console', message: args.join(' ') }, '*');
+          },
+          error: (...args) => {
+            originalConsole.error(...args);
+            window.parent.postMessage({ type: 'console', message: 'Error: ' + args.join(' ') }, '*');
+          },
+          warn: (...args) => {
+            originalConsole.warn(...args);
+            window.parent.postMessage({ type: 'console', message: 'Warning: ' + args.join(' ') }, '*');
+          }
+        };
+
+        let requestId = 0;
+        let callbacksMap = new Map();
+        let streamControllers = new Map();
+        
+        window.claude = {
+          complete: (prompt) => {
+            return new Promise((resolve, reject) => {
+              const id = requestId++;
+              callbacksMap.set(id, { resolve, reject });
+              window.parent.postMessage({ type: 'claudeComplete', id, prompt }, '*');
+            });
+          }
+        };
+
+        window.storage = {
+          get: (key, shared = false) => {
+            return new Promise((resolve, reject) => {
+              const id = requestId++;
+              callbacksMap.set(id, { resolve, reject });
+              window.parent.postMessage({ type: 'storageGet', id, key, shared }, '*');
+            });
+          },
+          set: (key, value, shared = false) => {
+            return new Promise((resolve, reject) => {
+              const id = requestId++;
+              callbacksMap.set(id, { resolve, reject });
+              window.parent.postMessage({ type: 'storageSet', id, key, value, shared }, '*');
+            });
+          },
+          delete: (key, shared = false) => {
+            return new Promise((resolve, reject) => {
+              const id = requestId++;
+              callbacksMap.set(id, { resolve, reject });
+              window.parent.postMessage({ type: 'storageDelete', id, key, shared }, '*');
+            });
+          },
+          list: (prefix, shared = false) => {
+            return new Promise((resolve, reject) => {
+              const id = requestId++;
+              callbacksMap.set(id, { resolve, reject });
+              window.parent.postMessage({ type: 'storageList', id, prefix, shared }, '*');
+            });
+          }
+        };
+
+        let pendingBlobs = new Map();
+        URL.createObjectURL = (blob) => {
+          // Store the blob and create an ID and URL for it
+          const blobId = `blob-${Date.now()}-${Math.random()}`;
+          pendingBlobs.set(blobId, blob);
+          return `blob-request://${blobId}`;
+        };
+
+        URL.revokeObjectURL = (url) => {
+          // Remove the blob from our store
+          const blobId = url.replace("blob-request://", "");
+          pendingBlobs.delete(blobId);
+        };
+
+        const getBlobFromURL = (url) => {
+          const blobId = url.replace("blob-request://", "");
+          return pendingBlobs.get(blobId);
+        };
+
+        // Override global fetch with streaming support
+        window.fetch = (url, init = {}) => {
+          return new Promise((resolve, reject) => {
+            const id = requestId++;
+            const channelId = `fetch-${id}-${Date.now()}`;
+            
+            callbacksMap.set(id, { 
+              resolve: (response) => {
+                // Create a ReadableStream for the response body
+                const stream = new ReadableStream({
+                  start(controller) {
+                    streamControllers.set(channelId, controller);
+                  },
+                  cancel() {
+                    streamControllers.delete(channelId);
+                  }
+                });
+                
+                // Create and return the Response with the stream
+                resolve(new Response(stream, {
+                  status: response.status,
+                  statusText: response.statusText,
+                  headers: response.headers
+                }));
+              },
+              reject,
+              channelId
+            });
+            
+            window.parent.postMessage({
+              type: 'proxyFetch',
+              id,
+              url,
+              init,
+              channelId
+            }, '*');
+          });
+        };
+
+        window.addEventListener('message', async (event) => {
+          if (event.data.type === 'takeScreenshot') {
+            const rootElement = document.getElementById('artifacts-component-root-html');
+            if (!rootElement) {
+              window.parent.postMessage({
+                type: 'screenshotError',
+                error: new Error('Root element not found'),
+              }, '*');
+            }
+            const screenshot = await htmlToImage.toPng(rootElement, {
+              imagePlaceholder:
+                "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAA1JREFUGFdjePDgwX8ACOQDoNsk0PMAAAAASUVORK5CYII=",
+            });
+            window.parent.postMessage({
+              type: 'screenshotData',
+              data: screenshot,
+            }, '*');
+          } else if (event.data.type === 'claudeComplete') {
+            const callback = callbacksMap.get(event.data.id);
+            if (event.data.error) {
+              callback.reject(new Error(event.data.error));
+            } else {
+              callback.resolve(event.data.completion);
+            }
+            callbacksMap.delete(event.data.id);
+          } else if (event.data.type === 'proxyFetchResponse') {
+            const callback = callbacksMap.get(event.data.id);
+            if (event.data.error) {
+              callback.reject(new Error(event.data.error));
+              callbacksMap.delete(event.data.id);
+            } else {
+              // Initial response with headers, status, etc.
+              callback.resolve({
+                status: event.data.status,
+                statusText: event.data.statusText,
+                headers: event.data.headers
+              });
+              // Don't delete the callback yet if streaming
+              if (!event.data.body) {
+                callbacksMap.delete(event.data.id);
+              }
+            }
+          } else if (event.data.type === 'proxyFetchStream') {
+            // Handle streaming data chunks
+            const controller = streamControllers.get(event.data.channelId);
+            if (controller) {
+              if (event.data.error) {
+                controller.error(new Error(event.data.error));
+                streamControllers.delete(event.data.channelId);
+              } else if (event.data.done) {
+                controller.close();
+                streamControllers.delete(event.data.channelId);
+                // Clean up the callback
+                const callback = Array.from(callbacksMap.entries()).find(
+                  ([_, value]) => value.channelId === event.data.channelId
+                );
+                if (callback) {
+                  callbacksMap.delete(callback[0]);
+                }
+              } else if (event.data.chunk) {
+                controller.enqueue(new Uint8Array(event.data.chunk));
+              }
+            }
+          } else if (event.data.type === 'storageGet') {
+            const callback = callbacksMap.get(event.data.id);
+            if (event.data.error) {
+              callback.reject(new Error(event.data.error));
+            } else {
+              callback.resolve(event.data.result);
+            }
+            callbacksMap.delete(event.data.id);
+          } else if (event.data.type === 'storageSet') {
+            const callback = callbacksMap.get(event.data.id);
+            if (event.data.error) {
+              callback.reject(new Error(event.data.error));
+            } else {
+              callback.resolve(event.data.result);
+            }
+            callbacksMap.delete(event.data.id);
+          } else if (event.data.type === 'storageDelete') {
+            const callback = callbacksMap.get(event.data.id);
+            if (event.data.error) {
+              callback.reject(new Error(event.data.error));
+            } else {
+              callback.resolve(event.data.result);
+            }
+            callbacksMap.delete(event.data.id);
+          } else if (event.data.type === 'storageList') {
+            const callback = callbacksMap.get(event.data.id);
+            if (event.data.error) {
+              callback.reject(new Error(event.data.error));
+            } else {
+              callback.resolve(event.data.result);
+            }
+            callbacksMap.delete(event.data.id);
+          }
+        });
+
+        window.addEventListener('click', (event) => {
+          const isEl = event.target instanceof HTMLElement;
+          if (!isEl) return;
+    
+          // find ancestor links
+          const linkEl = event.target.closest("a");
+          if (!linkEl || !linkEl.href) return;
+    
+          event.preventDefault();
+          event.stopImmediatePropagation();
+    
+          if (linkEl.href.startsWith("blob-request:")) {
+            const blob = getBlobFromURL(linkEl.href);
+            if (!blob) return;
+            void blob.arrayBuffer().then((data) => {
+              window.parent.postMessage({
+                type: "downloadFile",
+                filename: linkEl.download,
+                data,
+                mimeType: blob.type || "application/octet-stream",
+              });
+            });
+          } else if (linkEl.href.startsWith("data:")) {
+            const [header, base64Data] = linkEl.href.split(",");
+            const mimeMatch = header.match(/data:([^;]+)/);
+            const mimeType = mimeMatch ? mimeMatch[1] : "application/octet-stream";
+            const binaryString = atob(base64Data);
+            const data = Uint8Array.from(binaryString, (c) =>
+              c.charCodeAt(0),
+            ).buffer;
+            window.parent.postMessage({
+              type: "downloadFile",
+              filename: linkEl.download,
+              data,
+              mimeType,
+            });
+          } else {
+            let linkUrl;
+            try {
+              linkUrl = new URL(linkEl.href);
+            } catch (error) {
+              return;
+            }
+    
+            if (linkUrl.hostname === window.location.hostname) return;
+      
+            window.parent.postMessage({
+              type: 'openExternal',
+              href: linkEl.href,
+            }, '*');
+          }
+      });
+
+        const originalOpen = window.open;
+        window.open = function (url) {
+          window.parent.postMessage({
+            type: "openExternal",
+            href: url,
+          }, "*");
+        };
+
+        window.addEventListener('error', (event) => {
+          window.parent.postMessage({ type: 'console', message: 'Uncaught Error: ' + event.message }, '*');
+        });
+      })();
+    </script>
+  
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>APS — Mapa Mental</title>
@@ -119,7 +404,7 @@
   }
 </style>
 </head>
-<body>
+<body id="artifacts-component-root-html">
 
 <div class="header">
   <h1>APS — <span>Atenção Primária à Saúde</span></h1>
@@ -128,7 +413,7 @@
 </div>
 
 <div class="tabs">
-  <div class="tab active" onclick="showTab('mapa',this)">🗺️ Mapa Geral</div>
+  <div class="tab" onclick="showTab('mapa',this)">🗺️ Mapa Geral</div>
   <div class="tab" onclick="showTab('equipes',this)">👥 Equipes</div>
   <div class="tab" onclick="showTab('processo',this)">⚙️ Processo de Trabalho</div>
   <div class="tab" onclick="showTab('emulti',this)">⚕️ eMulti</div>
@@ -136,11 +421,11 @@
   <div class="tab" onclick="showTab('previne',this)">💰 Previne Brasil</div>
   <div class="tab" onclick="showTab('principios',this)">📜 Princípios e Diretrizes</div>
   <div class="tab" onclick="showTab('planejamento',this)">📐 Planejamento</div>
-  <div class="tab" onclick="showTab('flashcards',this)">🎯 Flashcards</div>
+  <div class="tab active" onclick="showTab('flashcards',this)">🎯 Flashcards</div>
 </div>
 
 <!-- ══════════════ MAPA GERAL ══════════════ -->
-<div class="panel active" id="tab-mapa">
+<div class="panel" id="tab-mapa">
 <div class="flow-wrap">
 <div class="flow">
   <div class="node node-era">📋 PNAB 2011</div>
@@ -1039,7 +1324,7 @@
 </div>
 
 <!-- ══════════════ FLASHCARDS ══════════════ -->
-<div class="panel" id="tab-flashcards">
+<div class="panel active" id="tab-flashcards">
 
   <!-- TOOLBAR -->
   <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:20px">
@@ -1052,13 +1337,226 @@
     <button onclick="openModal()" style="background:var(--green-bg);border:1.5px solid var(--green-p);color:var(--green-t);font-size:.78rem;font-weight:600;padding:8px 18px;border-radius:99px;cursor:pointer;">
       + Novo flashcard
     </button>
+    <button onclick="exportHTML()" style="background:var(--blue-bg);border:1.5px solid var(--blue-p);color:var(--blue-t);font-size:.78rem;font-weight:600;padding:8px 18px;border-radius:99px;cursor:pointer;" title="Salvar todos os cards no arquivo HTML">
+      ⬇️ Exportar HTML
+    </button>
     <button onclick="resetToDefaults()" style="background:var(--surface);border:1.5px solid var(--border);color:var(--muted);font-size:.72rem;padding:8px 14px;border-radius:99px;cursor:pointer;" title="Restaurar cards padrão">
       🔄 Restaurar padrão
     </button>
   </div>
 
   <!-- CARDS GRID -->
-  <div class="grid" id="fc-grid"></div>
+  <div class="grid" id="fc-grid">
+      <div class="fc-card pegadinha">
+        <div class="fc-actions">
+          <button class="fc-btn" onclick="editCard(1)">✏️ editar</button>
+          <button class="fc-btn del" onclick="deleteCard(1)">🗑️</button>
+        </div>
+        <div class="fc-tag">⚠️ Pegadinha</div>
+        <div class="fc-q-text">❓ A APS é a ÚNICA porta de entrada do SUS?</div>
+        <div class="fc-a-text">FALSO. O Art. 2º da PNAB 2017 diz que é a principal porta de entrada — não a única. Essa é uma das pegadinhas mais cobradas em prova.</div>
+      </div>
+    
+      <div class="fc-card pegadinha">
+        <div class="fc-actions">
+          <button class="fc-btn" onclick="editCard(2)">✏️ editar</button>
+          <button class="fc-btn del" onclick="deleteCard(2)">🗑️</button>
+        </div>
+        <div class="fc-tag">⚠️ Pegadinha</div>
+        <div class="fc-q-text">❓ A PNAB 2017 extinguiu o NASF?</div>
+        <div class="fc-a-text">FALSO. O NASF-AB está regulamentado no item 4, capítulo 3.4 da PNAB 2017. Quem descontinuou o financiamento foi o Previne Brasil (2019/2020), confirmado pela NT 3/2020.</div>
+      </div>
+    
+      <div class="fc-card pegadinha">
+        <div class="fc-actions">
+          <button class="fc-btn" onclick="editCard(3)">✏️ editar</button>
+          <button class="fc-btn del" onclick="deleteCard(3)">🗑️</button>
+        </div>
+        <div class="fc-tag">⚠️ Pegadinha</div>
+        <div class="fc-q-text">❓ A PNAB 2017 tornou a ESF a única forma de organizar a APS?</div>
+        <div class="fc-a-text">FALSO. Criou a eAB/eAP como alternativa com caráter transitório e possibilidade de conversão progressiva para eSF. ESF é prioritária, mas outras formas são reconhecidas.</div>
+      </div>
+    
+      <div class="fc-card pegadinha">
+        <div class="fc-actions">
+          <button class="fc-btn" onclick="editCard(4)">✏️ editar</button>
+          <button class="fc-btn del" onclick="deleteCard(4)">🗑️</button>
+        </div>
+        <div class="fc-tag">⚠️ Pegadinha</div>
+        <div class="fc-q-text">❓ Classificação de risco = estratificação de risco?</div>
+        <div class="fc-a-text">NÃO. Classificação de risco → urgências/eventos agudos, critérios clínicos. Estratificação de risco → condições crônicas, critérios clínicos + sociais + econômicos + familiares.</div>
+      </div>
+    
+      <div class="fc-card pegadinha">
+        <div class="fc-actions">
+          <button class="fc-btn" onclick="editCard(5)">✏️ editar</button>
+          <button class="fc-btn del" onclick="deleteCard(5)">🗑️</button>
+        </div>
+        <div class="fc-tag">⚠️ Pegadinha</div>
+        <div class="fc-q-text">❓ Uma mesma equipe pode estar vinculada a duas eMulti ao mesmo tempo?</div>
+        <div class="fc-a-text">FALSO. Art. 4, §2º da Port. 635/2023: nenhuma equipe poderá estar vinculada a mais de uma eMulti simultaneamente. Mas um profissional pode estar em mais de uma eMulti se houver compatibilidade de CH.</div>
+      </div>
+    
+      <div class="fc-card pegadinha">
+        <div class="fc-actions">
+          <button class="fc-btn" onclick="editCard(6)">✏️ editar</button>
+          <button class="fc-btn del" onclick="deleteCard(6)">🗑️</button>
+        </div>
+        <div class="fc-tag">⚠️ Pegadinha</div>
+        <div class="fc-q-text">❓ Educação Permanente = treinamento periódico?</div>
+        <div class="fc-a-text">FALSO. A EPS ocorre no cotidiano do trabalho (reuniões, fóruns), usando os conflitos reais para transformar práticas. Educação continuada é que engloba treinamentos pontuais e atualizações específicas.</div>
+      </div>
+    
+      <div class="fc-card pegadinha">
+        <div class="fc-actions">
+          <button class="fc-btn" onclick="editCard(7)">✏️ editar</button>
+          <button class="fc-btn del" onclick="deleteCard(7)">🗑️</button>
+        </div>
+        <div class="fc-tag">⚠️ Pegadinha</div>
+        <div class="fc-q-text">❓ O Previne Brasil ainda está vigente em 2024?</div>
+        <div class="fc-a-text">FALSO. A Port. 3.493/2024 substituiu o Previne Brasil (Port. 2.979/2019) a partir de maio/2024. O novo modelo tem 6 componentes e acabou com a "caça ao CPF".</div>
+      </div>
+    
+      <div class="fc-card pegadinha">
+        <div class="fc-actions">
+          <button class="fc-btn" onclick="editCard(8)">✏️ editar</button>
+          <button class="fc-btn del" onclick="deleteCard(8)">🗑️</button>
+        </div>
+        <div class="fc-tag">⚠️ Pegadinha</div>
+        <div class="fc-q-text">❓ Acolhimento e Humanização são diretrizes da PNAB?</div>
+        <div class="fc-a-text">FALSO. Acolhimento é ferramenta/dispositivo clínico (não é diretriz). Humanização é política separada (PNH). As 9 diretrizes do Art. 3º da PNAB não incluem nenhum dos dois.</div>
+      </div>
+    
+      <div class="fc-card conceito">
+        <div class="fc-actions">
+          <button class="fc-btn" onclick="editCard(9)">✏️ editar</button>
+          <button class="fc-btn del" onclick="deleteCard(9)">🗑️</button>
+        </div>
+        <div class="fc-tag">📌 Conceito</div>
+        <div class="fc-q-text">📌 Linha do tempo NASF → eMulti</div>
+        <div class="fc-a-text">2008: NASF criado<br>2017: NASF-AB regulamentado na PNAB 2017<br>2019: Previne Brasil — perde financiamento específico<br>2020: NT 3/2020 confirma descontinuidade<br>2023: eMulti criada (Port. 635/2023)<br>2024: Port. 3.493 revoga indicadores eMulti da 635/2023</div>
+      </div>
+    
+      <div class="fc-card conceito">
+        <div class="fc-actions">
+          <button class="fc-btn" onclick="editCard(10)">✏️ editar</button>
+          <button class="fc-btn del" onclick="deleteCard(10)">🗑️</button>
+        </div>
+        <div class="fc-tag">📌 Conceito</div>
+        <div class="fc-q-text">📌 Os 3 pilares do Previne Brasil (2019 — revogado em 2024)</div>
+        <div class="fc-a-text">1. Capitação Ponderada — por pessoa cadastrada no CPF/Cartão SUS<br>2. Pagamento por Desempenho — 7 indicadores<br>3. Incentivo para Ações Estratégicas<br>⚠️ Substituído pela Port. 3.493/2024 com 6 componentes</div>
+      </div>
+    
+      <div class="fc-card conceito">
+        <div class="fc-actions">
+          <button class="fc-btn" onclick="editCard(11)">✏️ editar</button>
+          <button class="fc-btn del" onclick="deleteCard(11)">🗑️</button>
+        </div>
+        <div class="fc-tag">📌 Conceito</div>
+        <div class="fc-q-text">📌 Os 6 componentes do novo financiamento (Port. 3.493/2024)</div>
+        <div class="fc-a-text">I — Fixo (por equipe + IED)<br>II — Vínculo e Acompanhamento Territorial<br>III — Qualidade (15 indicadores: eSF/eAP + eMulti + eSB)<br>IV — Programas e Serviços<br>V — Saúde Bucal<br>VI — Per Capita (base IBGE)</div>
+      </div>
+    
+      <div class="fc-card conceito">
+        <div class="fc-actions">
+          <button class="fc-btn" onclick="editCard(12)">✏️ editar</button>
+          <button class="fc-btn del" onclick="deleteCard(12)">🗑️</button>
+        </div>
+        <div class="fc-tag">📌 Conceito</div>
+        <div class="fc-q-text">📌 Os 7 indicadores do Previne Brasil (ainda cobrados em provas de 2024)</div>
+        <div class="fc-a-text">① Pré-natal 1º trimestre ② 6+ consultas pré-natal ③ HIV/Sífilis na gestante ④ Citopatológico colo uterino ⑤ DM com HbA1c ⑥ Hipertensos com PA aferida ⑦ Vacina infantil (VIP, DTP, HB, HiB, Pólio)</div>
+      </div>
+    
+      <div class="fc-card conceito">
+        <div class="fc-actions">
+          <button class="fc-btn" onclick="editCard(13)">✏️ editar</button>
+          <button class="fc-btn del" onclick="deleteCard(13)">🗑️</button>
+        </div>
+        <div class="fc-tag">📌 Conceito</div>
+        <div class="fc-q-text">📌 eSF vs eAP — diferença essencial</div>
+        <div class="fc-a-text">eSF: ACS obrigatório, cobertura 100% do território, CH 40h, maior valor no Componente Fixo (IED) e Vínculo, modelo prioritário.<br>eAP: sem ACS obrigatório, sem cobertura total, CH mínima 10h por categoria. Modelo flexível/transitório.</div>
+      </div>
+    
+      <div class="fc-card conceito">
+        <div class="fc-actions">
+          <button class="fc-btn" onclick="editCard(14)">✏️ editar</button>
+          <button class="fc-btn del" onclick="deleteCard(14)">🗑️</button>
+        </div>
+        <div class="fc-tag">📌 Conceito</div>
+        <div class="fc-q-text">📌 Os 5 fluxos do Acolhimento com Classificação de Risco</div>
+        <div class="fc-a-text">① Atendimento imediato (urgência)<br>② Atendimento no dia (agudo menor gravidade)<br>③ Agendamento programado<br>④ Resolução de demandas simples (receitas, exames)<br>⑤ Referenciamento/orientação sobre fluxos da rede</div>
+      </div>
+    
+      <div class="fc-card conceito">
+        <div class="fc-actions">
+          <button class="fc-btn" onclick="editCard(15)">✏️ editar</button>
+          <button class="fc-btn del" onclick="deleteCard(15)">🗑️</button>
+        </div>
+        <div class="fc-tag">📌 Conceito</div>
+        <div class="fc-q-text">📌 Quando o repasse da eMulti é suspenso? (Port. 635/2023)</div>
+        <div class="fc-a-text">· Descumprimento dos critérios da portaria<br>· Ausência de qualquer profissional do Anexo I<br>· Omissão no SISAB por 3 competências consecutivas</div>
+      </div>
+    
+      <div class="fc-card conceito">
+        <div class="fc-actions">
+          <button class="fc-btn" onclick="editCard(16)">✏️ editar</button>
+          <button class="fc-btn del" onclick="deleteCard(16)">🗑️</button>
+        </div>
+        <div class="fc-tag">📌 Conceito</div>
+        <div class="fc-q-text">📌 As 9 Diretrizes da PNAB 2017 (Art. 3º)</div>
+        <div class="fc-a-text">① Regionalização e hierarquização<br>② Territorialização e adscrição<br>③ População adscrita<br>④ Cuidado centrado na pessoa ← banca adora<br>⑤ Resolutividade<br>⑥ Longitudinalidade<br>⑦ Coordenação do cuidado<br>⑧ Ordenação da rede<br>⑨ Participação da comunidade</div>
+      </div>
+    
+      <div class="fc-card conceito">
+        <div class="fc-actions">
+          <button class="fc-btn" onclick="editCard(17)">✏️ editar</button>
+          <button class="fc-btn del" onclick="deleteCard(17)">🗑️</button>
+        </div>
+        <div class="fc-tag">📌 Conceito</div>
+        <div class="fc-q-text">📌 IED — O que é e para que serve?</div>
+        <div class="fc-a-text">Índice de Equidade e Dimensionamento — é o "coração" do Componente Fixo na Port. 3.493/2024.<br><br>Compõe-se de 3 fatores:<br>① Vulnerabilidade socioeconômica: cidades mais pobres recebem peso maior (IVS/IPEA)<br>② Perfil demográfico: áreas com mais idosos ou crianças elevam o índice<br>③ Capacidade de atendimento: dimensionamento das equipes em relação à população<br><br>Resulta em 4 estratos — quanto mais vulnerável/menor o município → maior o Componente Fixo.</div>
+      </div>
+    
+      <div class="fc-card conceito">
+        <div class="fc-actions">
+          <button class="fc-btn" onclick="editCard(18)">✏️ editar</button>
+          <button class="fc-btn del" onclick="deleteCard(18)">🗑️</button>
+        </div>
+        <div class="fc-tag">📌 Conceito</div>
+        <div class="fc-q-text">❓ Segundo o Art. 3º da Portaria de Consolidação nº 2, o que são Diretrizes?</div>
+        <div class="fc-a-text">São os aspectos operacionais da APS: Territorialização, Adscrição, Resolutividade, Longitudinalidade, Coordenação do Cuidado e Ordenação da Rede — entre outros. São as "ferramentas de gestão" para operacionalizar os princípios do SUS no território.</div>
+      </div>
+    
+      <div class="fc-card conceito">
+        <div class="fc-actions">
+          <button class="fc-btn" onclick="editCard(19)">✏️ editar</button>
+          <button class="fc-btn del" onclick="deleteCard(19)">🗑️</button>
+        </div>
+        <div class="fc-tag">📌 Conceito</div>
+        <div class="fc-q-text">❓ Qual a diferença entre Princípio e Diretriz na APS?</div>
+        <div class="fc-a-text">Princípios são os valores estruturantes do SUS: Universalidade, Equidade e Integralidade — o "por quê" do sistema.<br>Diretrizes são as ferramentas de gestão: Regionalização, Hierarquização, Territorialização, Longitudinalidade etc. — o "como" operacionalizar.</div>
+      </div>
+    
+      <div class="fc-card conceito">
+        <div class="fc-actions">
+          <button class="fc-btn" onclick="editCard(20)">✏️ editar</button>
+          <button class="fc-btn del" onclick="deleteCard(20)">🗑️</button>
+        </div>
+        <div class="fc-tag">📌 Conceito</div>
+        <div class="fc-q-text">❓ Como funciona a nova "Capitação Republicana" (Port. 3.493/2024)?</div>
+        <div class="fc-a-text">O Componente Fixo agora é baseado no número de residentes do município (IBGE), e não apenas nos cadastrados no posto. Isso garante repasse para quem mora no território, mesmo sem cadastro ativo — acabando com a "caça ao CPF" do Previne Brasil.</div>
+      </div>
+    
+      <div class="fc-card conceito">
+        <div class="fc-actions">
+          <button class="fc-btn" onclick="editCard(21)">✏️ editar</button>
+          <button class="fc-btn del" onclick="deleteCard(21)">🗑️</button>
+        </div>
+        <div class="fc-tag">📌 Conceito</div>
+        <div class="fc-q-text">❓ O que substituiu a Capitação Ponderada de 2019?</div>
+        <div class="fc-a-text">Port. 3.493/2024, <br><br>O Componente Fixo, que considera o Índice de Vulnerabilidade Social (IVS) do município para ajustar o valor por habitante, mantendo a equidade. <br>calculado pelo IED — Índice de Equidade e Dimensionamento.<br><br>O IED combina:<br>① Vulnerabilidade socioeconômica (IVS/IPEA)<br>② Perfil demográfico (idosos + crianças = maior demanda na APS)<br>③ Capacidade de atendimento (dimensionamento das equipes)<br><br>Diferença chave: antes o peso era por pessoa cadastrada. Agora é por residente + perfil do município, garantindo equidade real.</div>
+      </div>
+    </div>
 
   <!-- EMPTY STATE -->
   <div id="fc-empty" style="display:none;text-align:center;padding:40px;color:var(--muted);font-size:.85rem">
@@ -1068,10 +1566,10 @@
 </div>
 
 <!-- ══════════════ MODAL ══════════════ -->
-<div id="fc-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:999;align-items:center;justify-content:center;padding:20px">
+<div id="fc-modal" style="display: none; position: fixed; inset: 0px; background: rgba(0, 0, 0, 0.35); z-index: 999; align-items: center; justify-content: center; padding: 20px;">
   <div style="background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:28px;width:100%;max-width:500px;box-shadow:0 8px 40px rgba(0,0,0,.12)">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
-      <span style="font-family:'Lora',serif;font-size:1rem;font-weight:700;color:var(--text)" id="modal-title">Novo Flashcard</span>
+      <span style="font-family:'Lora',serif;font-size:1rem;font-weight:700;color:var(--text)" id="modal-title">Editar Flashcard</span>
       <button onclick="closeModal()" style="background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--muted);line-height:1">×</button>
     </div>
 
@@ -1142,39 +1640,166 @@
 <script>
   // ── DADOS INICIAIS ──
   const DEFAULT_CARDS = [
-    { id:1,  cat:'pegadinha', q:'❓ A APS é a ÚNICA porta de entrada do SUS?', a:'FALSO. O Art. 2º da PNAB 2017 diz que é a principal porta de entrada — não a única. Essa é uma das pegadinhas mais cobradas em prova.' },
-    { id:2,  cat:'pegadinha', q:'❓ A PNAB 2017 extinguiu o NASF?', a:'FALSO. O NASF-AB está regulamentado no item 4, capítulo 3.4 da PNAB 2017. Quem descontinuou o financiamento foi o Previne Brasil (2019/2020), confirmado pela NT 3/2020.' },
-    { id:3,  cat:'pegadinha', q:'❓ A PNAB 2017 tornou a ESF a única forma de organizar a APS?', a:'FALSO. Criou a eAB/eAP como alternativa com caráter transitório e possibilidade de conversão progressiva para eSF. ESF é prioritária, mas outras formas são reconhecidas.' },
-    { id:4,  cat:'pegadinha', q:'❓ Classificação de risco = estratificação de risco?', a:'NÃO. Classificação de risco → urgências/eventos agudos, critérios clínicos. Estratificação de risco → condições crônicas, critérios clínicos + sociais + econômicos + familiares.' },
-    { id:5,  cat:'pegadinha', q:'❓ Uma mesma equipe pode estar vinculada a duas eMulti ao mesmo tempo?', a:'FALSO. Art. 4, §2º da Port. 635/2023: nenhuma equipe poderá estar vinculada a mais de uma eMulti simultaneamente. Mas um profissional pode estar em mais de uma eMulti se houver compatibilidade de CH.' },
-    { id:6,  cat:'pegadinha', q:'❓ Educação Permanente = treinamento periódico?', a:'FALSO. A EPS ocorre no cotidiano do trabalho (reuniões, fóruns), usando os conflitos reais para transformar práticas. Educação continuada é que engloba treinamentos pontuais e atualizações específicas.' },
-    { id:7,  cat:'pegadinha', q:'❓ O Previne Brasil ainda está vigente em 2024?', a:'FALSO. A Port. 3.493/2024 substituiu o Previne Brasil (Port. 2.979/2019) a partir de maio/2024. O novo modelo tem 6 componentes e acabou com a "caça ao CPF".' },
-    { id:8,  cat:'pegadinha', q:'❓ Acolhimento e Humanização são diretrizes da PNAB?', a:'FALSO. Acolhimento é ferramenta/dispositivo clínico (não é diretriz). Humanização é política separada (PNH). As 9 diretrizes do Art. 3º da PNAB não incluem nenhum dos dois.' },
-    { id:9,  cat:'conceito', q:'📌 Linha do tempo NASF → eMulti', a:'2008: NASF criado\n2017: NASF-AB regulamentado na PNAB 2017\n2019: Previne Brasil — perde financiamento específico\n2020: NT 3/2020 confirma descontinuidade\n2023: eMulti criada (Port. 635/2023)\n2024: Port. 3.493 revoga indicadores eMulti da 635/2023' },
-    { id:10, cat:'conceito', q:'📌 Os 3 pilares do Previne Brasil (2019 — revogado em 2024)', a:'1. Capitação Ponderada — por pessoa cadastrada no CPF/Cartão SUS\n2. Pagamento por Desempenho — 7 indicadores\n3. Incentivo para Ações Estratégicas\n⚠️ Substituído pela Port. 3.493/2024 com 6 componentes' },
-    { id:11, cat:'conceito', q:'📌 Os 6 componentes do novo financiamento (Port. 3.493/2024)', a:'I — Fixo (por equipe + IED)\nII — Vínculo e Acompanhamento Territorial\nIII — Qualidade (15 indicadores: eSF/eAP + eMulti + eSB)\nIV — Programas e Serviços\nV — Saúde Bucal\nVI — Per Capita (base IBGE)' },
-    { id:12, cat:'conceito', q:'📌 Os 7 indicadores do Previne Brasil (ainda cobrados em provas de 2024)', a:'① Pré-natal 1º trimestre ② 6+ consultas pré-natal ③ HIV/Sífilis na gestante ④ Citopatológico colo uterino ⑤ DM com HbA1c ⑥ Hipertensos com PA aferida ⑦ Vacina infantil (VIP, DTP, HB, HiB, Pólio)' },
-    { id:13, cat:'conceito', q:'📌 eSF vs eAP — diferença essencial', a:'eSF: ACS obrigatório, cobertura 100% do território, CH 40h, maior valor no Componente Fixo (IED) e Vínculo, modelo prioritário.\neAP: sem ACS obrigatório, sem cobertura total, CH mínima 10h por categoria. Modelo flexível/transitório.' },
-    { id:14, cat:'conceito', q:'📌 Os 5 fluxos do Acolhimento com Classificação de Risco', a:'① Atendimento imediato (urgência)\n② Atendimento no dia (agudo menor gravidade)\n③ Agendamento programado\n④ Resolução de demandas simples (receitas, exames)\n⑤ Referenciamento/orientação sobre fluxos da rede' },
-    { id:15, cat:'conceito', q:'📌 Quando o repasse da eMulti é suspenso? (Port. 635/2023)', a:'· Descumprimento dos critérios da portaria\n· Ausência de qualquer profissional do Anexo I\n· Omissão no SISAB por 3 competências consecutivas' },
-    { id:16, cat:'conceito', q:'📌 As 9 Diretrizes da PNAB 2017 (Art. 3º)', a:'① Regionalização e hierarquização\n② Territorialização e adscrição\n③ População adscrita\n④ Cuidado centrado na pessoa ← banca adora\n⑤ Resolutividade\n⑥ Longitudinalidade\n⑦ Coordenação do cuidado\n⑧ Ordenação da rede\n⑨ Participação da comunidade' },
-    { id:17, cat:'conceito', q:'📌 IED — O que é e para que serve?', a:'Índice de Equidade e Dimensionamento — substitui a tipologia IBGE do Previne Brasil.\nCombina: IVS (Índice de Vulnerabilidade Social/IPEA) + porte populacional (IBGE).\nResulta em 4 estratos (1 = mais vulnerável/menor). Quanto mais vulnerável → maior o Componente Fixo.' },
-    { id:18, cat:'conceito', q:'❓ Segundo o Art. 3º da Portaria de Consolidação nº 2, o que são Diretrizes?', a:'São os aspectos operacionais da APS: Territorialização, Adscrição, Resolutividade, Longitudinalidade, Coordenação do Cuidado e Ordenação da Rede — entre outros. São as "ferramentas de gestão" para operacionalizar os princípios do SUS no território.' },
-    { id:19, cat:'conceito', q:'❓ Qual a diferença entre Princípio e Diretriz na APS?', a:'Princípios são os valores estruturantes do SUS: Universalidade, Equidade e Integralidade — o "por quê" do sistema.\nDiretrizes são as ferramentas de gestão: Regionalização, Hierarquização, Territorialização, Longitudinalidade etc. — o "como" operacionalizar.' },
-    { id:20, cat:'conceito', q:'❓ Como funciona a nova "Capitação Republicana" (Port. 3.493/2024)?', a:'O Componente Fixo agora é baseado no número de residentes do município (IBGE), e não apenas nos cadastrados no posto. Isso garante repasse para quem mora no território, mesmo sem cadastro ativo — acabando com a "caça ao CPF" do Previne Brasil.' },
-    { id:21, cat:'conceito', q:'❓ O que substituiu a Capitação Ponderada de 2019?', a:'O Componente Fixo (I) da Port. 3.493/2024, calculado pelo IED — Índice de Equidade e Dimensionamento, que combina o IVS (Índice de Vulnerabilidade Social/IPEA) com o porte populacional (IBGE), garantindo equidade: quanto mais vulnerável o município → maior o repasse.' },
+      {
+          "id": 1,
+          "cat": "pegadinha",
+          "q": "❓ A APS é a ÚNICA porta de entrada do SUS?",
+          "a": "FALSO. O Art. 2º da PNAB 2017 diz que é a principal porta de entrada — não a única. Essa é uma das pegadinhas mais cobradas em prova."
+      },
+      {
+          "id": 2,
+          "cat": "pegadinha",
+          "q": "❓ A PNAB 2017 extinguiu o NASF?",
+          "a": "FALSO. O NASF-AB está regulamentado no item 4, capítulo 3.4 da PNAB 2017. Quem descontinuou o financiamento foi o Previne Brasil (2019/2020), confirmado pela NT 3/2020."
+      },
+      {
+          "id": 3,
+          "cat": "pegadinha",
+          "q": "❓ A PNAB 2017 tornou a ESF a única forma de organizar a APS?",
+          "a": "FALSO. Criou a eAB/eAP como alternativa com caráter transitório e possibilidade de conversão progressiva para eSF. ESF é prioritária, mas outras formas são reconhecidas."
+      },
+      {
+          "id": 4,
+          "cat": "pegadinha",
+          "q": "❓ Classificação de risco = estratificação de risco?",
+          "a": "NÃO. Classificação de risco → urgências/eventos agudos, critérios clínicos. Estratificação de risco → condições crônicas, critérios clínicos + sociais + econômicos + familiares."
+      },
+      {
+          "id": 5,
+          "cat": "pegadinha",
+          "q": "❓ Uma mesma equipe pode estar vinculada a duas eMulti ao mesmo tempo?",
+          "a": "FALSO. Art. 4, §2º da Port. 635/2023: nenhuma equipe poderá estar vinculada a mais de uma eMulti simultaneamente. Mas um profissional pode estar em mais de uma eMulti se houver compatibilidade de CH."
+      },
+      {
+          "id": 6,
+          "cat": "pegadinha",
+          "q": "❓ Educação Permanente = treinamento periódico?",
+          "a": "FALSO. A EPS ocorre no cotidiano do trabalho (reuniões, fóruns), usando os conflitos reais para transformar práticas. Educação continuada é que engloba treinamentos pontuais e atualizações específicas."
+      },
+      {
+          "id": 7,
+          "cat": "pegadinha",
+          "q": "❓ O Previne Brasil ainda está vigente em 2024?",
+          "a": "FALSO. A Port. 3.493/2024 substituiu o Previne Brasil (Port. 2.979/2019) a partir de maio/2024. O novo modelo tem 6 componentes e acabou com a \"caça ao CPF\"."
+      },
+      {
+          "id": 8,
+          "cat": "pegadinha",
+          "q": "❓ Acolhimento e Humanização são diretrizes da PNAB?",
+          "a": "FALSO. Acolhimento é ferramenta/dispositivo clínico (não é diretriz). Humanização é política separada (PNH). As 9 diretrizes do Art. 3º da PNAB não incluem nenhum dos dois."
+      },
+      {
+          "id": 9,
+          "cat": "conceito",
+          "q": "📌 Linha do tempo NASF → eMulti",
+          "a": "2008: NASF criado\n2017: NASF-AB regulamentado na PNAB 2017\n2019: Previne Brasil — perde financiamento específico\n2020: NT 3/2020 confirma descontinuidade\n2023: eMulti criada (Port. 635/2023)\n2024: Port. 3.493 revoga indicadores eMulti da 635/2023"
+      },
+      {
+          "id": 10,
+          "cat": "conceito",
+          "q": "📌 Os 3 pilares do Previne Brasil (2019 — revogado em 2024)",
+          "a": "1. Capitação Ponderada — por pessoa cadastrada no CPF/Cartão SUS\n2. Pagamento por Desempenho — 7 indicadores\n3. Incentivo para Ações Estratégicas\n⚠️ Substituído pela Port. 3.493/2024 com 6 componentes"
+      },
+      {
+          "id": 11,
+          "cat": "conceito",
+          "q": "📌 Os 6 componentes do novo financiamento (Port. 3.493/2024)",
+          "a": "I — Fixo (por equipe + IED)\nII — Vínculo e Acompanhamento Territorial\nIII — Qualidade (15 indicadores: eSF/eAP + eMulti + eSB)\nIV — Programas e Serviços\nV — Saúde Bucal\nVI — Per Capita (base IBGE)"
+      },
+      {
+          "id": 12,
+          "cat": "conceito",
+          "q": "📌 Os 7 indicadores do Previne Brasil (ainda cobrados em provas de 2024)",
+          "a": "① Pré-natal 1º trimestre ② 6+ consultas pré-natal ③ HIV/Sífilis na gestante ④ Citopatológico colo uterino ⑤ DM com HbA1c ⑥ Hipertensos com PA aferida ⑦ Vacina infantil (VIP, DTP, HB, HiB, Pólio)"
+      },
+      {
+          "id": 13,
+          "cat": "conceito",
+          "q": "📌 eSF vs eAP — diferença essencial",
+          "a": "eSF: ACS obrigatório, cobertura 100% do território, CH 40h, maior valor no Componente Fixo (IED) e Vínculo, modelo prioritário.\neAP: sem ACS obrigatório, sem cobertura total, CH mínima 10h por categoria. Modelo flexível/transitório."
+      },
+      {
+          "id": 14,
+          "cat": "conceito",
+          "q": "📌 Os 5 fluxos do Acolhimento com Classificação de Risco",
+          "a": "① Atendimento imediato (urgência)\n② Atendimento no dia (agudo menor gravidade)\n③ Agendamento programado\n④ Resolução de demandas simples (receitas, exames)\n⑤ Referenciamento/orientação sobre fluxos da rede"
+      },
+      {
+          "id": 15,
+          "cat": "conceito",
+          "q": "📌 Quando o repasse da eMulti é suspenso? (Port. 635/2023)",
+          "a": "· Descumprimento dos critérios da portaria\n· Ausência de qualquer profissional do Anexo I\n· Omissão no SISAB por 3 competências consecutivas"
+      },
+      {
+          "id": 16,
+          "cat": "conceito",
+          "q": "📌 As 9 Diretrizes da PNAB 2017 (Art. 3º)",
+          "a": "① Regionalização e hierarquização\n② Territorialização e adscrição\n③ População adscrita\n④ Cuidado centrado na pessoa ← banca adora\n⑤ Resolutividade\n⑥ Longitudinalidade\n⑦ Coordenação do cuidado\n⑧ Ordenação da rede\n⑨ Participação da comunidade"
+      },
+      {
+          "id": 17,
+          "cat": "conceito",
+          "q": "📌 IED — O que é e para que serve?",
+          "a": "Índice de Equidade e Dimensionamento — é o \"coração\" do Componente Fixo na Port. 3.493/2024.\n\nCompõe-se de 3 fatores:\n① Vulnerabilidade socioeconômica: cidades mais pobres recebem peso maior (IVS/IPEA)\n② Perfil demográfico: áreas com mais idosos ou crianças elevam o índice\n③ Capacidade de atendimento: dimensionamento das equipes em relação à população\n\nResulta em 4 estratos — quanto mais vulnerável/menor o município → maior o Componente Fixo."
+      },
+      {
+          "id": 18,
+          "cat": "conceito",
+          "q": "❓ Segundo o Art. 3º da Portaria de Consolidação nº 2, o que são Diretrizes?",
+          "a": "São os aspectos operacionais da APS: Territorialização, Adscrição, Resolutividade, Longitudinalidade, Coordenação do Cuidado e Ordenação da Rede — entre outros. São as \"ferramentas de gestão\" para operacionalizar os princípios do SUS no território."
+      },
+      {
+          "id": 19,
+          "cat": "conceito",
+          "q": "❓ Qual a diferença entre Princípio e Diretriz na APS?",
+          "a": "Princípios são os valores estruturantes do SUS: Universalidade, Equidade e Integralidade — o \"por quê\" do sistema.\nDiretrizes são as ferramentas de gestão: Regionalização, Hierarquização, Territorialização, Longitudinalidade etc. — o \"como\" operacionalizar."
+      },
+      {
+          "id": 20,
+          "cat": "conceito",
+          "q": "❓ Como funciona a nova \"Capitação Republicana\" (Port. 3.493/2024)?",
+          "a": "O Componente Fixo agora é baseado no número de residentes do município (IBGE), e não apenas nos cadastrados no posto. Isso garante repasse para quem mora no território, mesmo sem cadastro ativo — acabando com a \"caça ao CPF\" do Previne Brasil."
+      },
+      {
+          "id": 21,
+          "cat": "conceito",
+          "q": "❓ O que substituiu a Capitação Ponderada de 2019?",
+          "a": "Port. 3.493/2024, \n\nO Componente Fixo, que considera o Índice de Vulnerabilidade Social (IVS) do município para ajustar o valor por habitante, mantendo a equidade. \ncalculado pelo IED — Índice de Equidade e Dimensionamento.\n\nO IED combina:\n① Vulnerabilidade socioeconômica (IVS/IPEA)\n② Perfil demográfico (idosos + crianças = maior demanda na APS)\n③ Capacidade de atendimento (dimensionamento das equipes)\n\nDiferença chave: antes o peso era por pessoa cadastrada. Agora é por residente + perfil do município, garantindo equidade real."
+      }
   ];
 
   let cards = [];
   let editingId = null;
   let activeFilter = 'all';
 
-  // ── STORAGE — sempre carrega defaults + custom cards salvos ──
+  // ── STORAGE — funciona no Claude e em qualquer navegador ──
+  const STORAGE_KEY = 'aps-flashcards-custom';
+
+  async function storageGet(key) {
+    try {
+      if (window.storage) {
+        const res = await window.storage.get(key);
+        return res ? res.value : null;
+      } else {
+        return localStorage.getItem(key);
+      }
+    } catch { return localStorage.getItem(key) || null; }
+  }
+
+  async function storageSet(key, value) {
+    try {
+      if (window.storage) {
+        await window.storage.set(key, value);
+      } else {
+        localStorage.setItem(key, value);
+      }
+    } catch { try { localStorage.setItem(key, value); } catch {} }
+  }
+
   async function loadCards() {
     try {
-      const res = await window.storage.get('aps-flashcards-custom');
-      const customCards = res ? JSON.parse(res.value) : [];
-      // Sempre começa com os defaults atualizados, adiciona apenas os custom (cat='custom')
+      const raw = await storageGet(STORAGE_KEY);
+      const customCards = raw ? JSON.parse(raw) : [];
       cards = [
         ...DEFAULT_CARDS,
         ...customCards.filter(c => c.cat === 'custom')
@@ -1187,15 +1812,65 @@
 
   async function saveCards() {
     try {
-      // Só salva os cards customizados pelo usuário
       const customOnly = cards.filter(c => c.cat === 'custom');
-      await window.storage.set('aps-flashcards-custom', JSON.stringify(customOnly));
+      await storageSet(STORAGE_KEY, JSON.stringify(customOnly));
     } catch {}
   }
 
   function resetToDefaults() {
     if (!confirm('Restaurar todos os flashcards padrão? Seus cards personalizados serão mantidos.')) return;
     loadCards();
+  }
+
+  // ── EXPORTAR HTML com cards embutidos ──
+  function exportHTML() {
+    // Pega o HTML atual da página
+    const currentHTML = document.documentElement.outerHTML;
+
+    // Serializa todos os cards atuais (padrão + personalizados)
+    const allCardsJSON = JSON.stringify(cards, null, 2)
+      .replace(/\\/g, '\\\\')
+      .replace(/`/g, '\\`');
+
+    // Substitui o DEFAULT_CARDS no HTML pelo array completo atual
+    const marker = '// ── DADOS INICIAIS ──';
+    const endMarker = 'let cards = [];';
+
+    const newBlock = `// ── DADOS INICIAIS ──
+  const DEFAULT_CARDS = ${JSON.stringify(cards, null, 4).replace(/^/gm, '  ').trim()};
+
+  let cards = [];`;
+
+    // Extrai o HTML do source atual
+    const source = currentHTML.replace(
+      /\/\/ ── DADOS INICIAIS ──[\s\S]*?let cards = \[\];/,
+      newBlock
+    );
+
+    // Cria o blob e faz download
+    const blob = new Blob([source], { type: 'text/html;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'pnab_completo.html';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    // Feedback visual
+    const btn = event.target;
+    const original = btn.textContent;
+    btn.textContent = '✅ Salvo!';
+    btn.style.background = 'var(--green-bg)';
+    btn.style.borderColor = 'var(--green-p)';
+    btn.style.color = 'var(--green-t)';
+    setTimeout(() => {
+      btn.textContent = original;
+      btn.style.background = 'var(--blue-bg)';
+      btn.style.borderColor = 'var(--blue-p)';
+      btn.style.color = 'var(--blue-t)';
+    }, 2000);
   }
 
   // ── RENDER ──
@@ -1299,5 +1974,6 @@
     el.classList.add('active');
   }
 </script>
-</body>
-</html>
+
+
+</body></html>
