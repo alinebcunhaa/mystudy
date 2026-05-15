@@ -1823,54 +1823,53 @@
   }
 
   // ── EXPORTAR HTML com cards embutidos ──
+  const EXPORT_TS = '2026-05-14';
+
   function exportHTML() {
-    // Pega o HTML atual da página
-    const currentHTML = document.documentElement.outerHTML;
+    try {
+      const source = document.documentElement.outerHTML;
 
-    // Serializa todos os cards atuais (padrão + personalizados)
-    const allCardsJSON = JSON.stringify(cards, null, 2)
-      .replace(/\\/g, '\\\\')
-      .replace(/`/g, '\\`');
+      // Monta novo bloco DEFAULT_CARDS com TODOS os cards atuais
+      const newBlock = `// ── DADOS INICIAIS ──
+  const DEFAULT_CARDS = ${JSON.stringify(cards, null, 2)};`;
 
-    // Substitui o DEFAULT_CARDS no HTML pelo array completo atual
-    const marker = '// ── DADOS INICIAIS ──';
-    const endMarker = 'let cards = [];';
+      // Substitui usando indexOf para maior confiabilidade
+      const startMarker = '// ── DADOS INICIAIS ──';
+      const endMarker = 'let cards = [];';
+      const start = source.indexOf(startMarker);
+      const end = source.indexOf(endMarker);
 
-    const newBlock = `// ── DADOS INICIAIS ──
-  const DEFAULT_CARDS = ${JSON.stringify(cards, null, 4).replace(/^/gm, '  ').trim()};
+      let updated = source;
+      if (start !== -1 && end !== -1) {
+        updated = source.slice(0, start) + newBlock + '\n\n  ' + source.slice(end);
+      }
 
-  let cards = [];`;
+      // Download via data URI — funciona em qualquer navegador
+      const a = document.createElement('a');
+      a.href = 'data:text/html;charset=utf-8,' + encodeURIComponent(updated);
+      a.download = 'atencao_basica_saude.html';
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
 
-    // Extrai o HTML do source atual
-    const source = currentHTML.replace(
-      /\/\/ ── DADOS INICIAIS ──[\s\S]*?let cards = \[\];/,
-      newBlock
-    );
+      // Feedback visual
+      const btn = event.currentTarget;
+      const original = btn.innerHTML;
+      btn.innerHTML = '✅ Baixando!';
+      btn.style.background = 'var(--green-bg)';
+      btn.style.borderColor = 'var(--green-p)';
+      btn.style.color = 'var(--green-t)';
+      setTimeout(() => {
+        btn.innerHTML = original;
+        btn.style.background = 'var(--blue-bg)';
+        btn.style.borderColor = 'var(--blue-p)';
+        btn.style.color = 'var(--blue-t)';
+      }, 2500);
 
-    // Cria o blob e faz download
-    const blob = new Blob([source], { type: 'text/html;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'pnab_completo.html';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-
-    // Feedback visual
-    const btn = event.target;
-    const original = btn.textContent;
-    btn.textContent = '✅ Salvo!';
-    btn.style.background = 'var(--green-bg)';
-    btn.style.borderColor = 'var(--green-p)';
-    btn.style.color = 'var(--green-t)';
-    setTimeout(() => {
-      btn.textContent = original;
-      btn.style.background = 'var(--blue-bg)';
-      btn.style.borderColor = 'var(--blue-p)';
-      btn.style.color = 'var(--blue-t)';
-    }, 2000);
+    } catch(err) {
+      alert('Erro ao exportar: ' + err.message + '\n\nAlternativa: Ctrl+S para salvar a página manualmente.');
+    }
   }
 
   // ── RENDER ──
