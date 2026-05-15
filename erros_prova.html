@@ -545,27 +545,35 @@ function closeResForm(){document.getElementById('modal-res').classList.remove('o
 function submitRes(){const titulo=document.getElementById('rf-titulo').value.trim();const conteudo=document.getElementById('rf-conteudo').value.trim();if(!titulo||!conteudo)return;const obj={id:editResId||Date.now(),materia:document.getElementById('rf-mat').value,titulo,blocos:[{t:'texto',v:conteudo}]};if(editResId){resumos=resumos.map(r=>r.id===editResId?obj:r);showToast('✏️ Resumo atualizado!');}else{resumos=[obj,...resumos];showToast('📝 Resumo salvo!');}save();closeResForm();renderResumos();}
 function editRes(id){openResForm(id);}
 function buildProvaSelect(){const sel=document.getElementById('filter-prova');const cur=sel.value;const provas=[...new Set(errors.map(e=>e.prova).filter(Boolean))].sort();sel.innerHTML='<option value="">Todos os simulados</option>'+provas.map(p=>`<option value="${esc(p)}"${p===cur?' selected':''}>${esc(p)} (${errors.filter(e=>e.prova===p).length})</option>`).join('');}
-let _originalSrc='';
-fetch(location.href).then(r=>r.text()).then(t=>{_originalSrc=t;}).catch(()=>{});
 function exportHTML(){
-  const doExport=(src)=>{
-    const errorsJSON=JSON.stringify(errors);
-    const resumosJSON=JSON.stringify(resumos);
-    const errRx=/const INIT_ERRORS=\[[\s\S]*?\];/;
-    const resRx=/const INIT_RESUMOS=\[[\s\S]*?\];/;
-    let out=src.replace(errRx,`const INIT_ERRORS=${errorsJSON};`);
-    out=out.replace(resRx,`const INIT_RESUMOS=${resumosJSON};`);
-    if(!errRx.test(src)){showToast('⚠️ Erro na exportação. Tente novamente.');return;}
-    const blob=new Blob([out],{type:'text/html;charset=utf-8'});
-    const a=document.createElement('a');
-    a.href=URL.createObjectURL(blob);
-    a.download='erros_prova.html';
-    a.click();
-    URL.revokeObjectURL(a.href);
-    showToast('⬇️ Exportado! Suba no GitHub.');
-  };
-  if(_originalSrc){doExport(_originalSrc);}
-  else{fetch(location.href).then(r=>r.text()).then(t=>{_originalSrc=t;doExport(t);}).catch(()=>showToast('⚠️ Erro ao buscar fonte. Tente novamente.'));}
+  const src=document.documentElement.outerHTML;
+  const errorsJSON=JSON.stringify(errors);
+  const resumosJSON=JSON.stringify(resumos);
+
+  // Localiza os limites de INIT_ERRORS e INIT_RESUMOS por indexOf (mais confiável que regex)
+  const E_START=src.indexOf('const INIT_ERRORS=');
+  const R_START=src.indexOf('const INIT_RESUMOS=');
+  const P_START=src.indexOf('const PASTEL=');
+
+  if(E_START<0||R_START<0||P_START<0){
+    showToast('⚠️ Não foi possível localizar os dados no HTML. Recarregue a página e tente novamente.');
+    return;
+  }
+
+  // Monta o HTML substituindo os dois blocos de dados
+  const out=
+    src.slice(0,E_START)+
+    `const INIT_ERRORS=${errorsJSON};\n`+
+    `const INIT_RESUMOS=${resumosJSON};\n`+
+    src.slice(P_START);
+
+  const blob=new Blob([out],{type:'text/html;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='erros_prova.html';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  showToast('⬇️ Exportado com sucesso! Suba no GitHub.');
 }
 renderDashboard();
 buildProvaSelect();
