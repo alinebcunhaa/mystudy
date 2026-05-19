@@ -1,0 +1,2998 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG — Padrões & Localização</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400&family=Source+Sans+3:wght@300;400;600;700&display=swap');
+
+:root {
+  --bg:        #f2e8d9;
+  --bg2:       #ede0cc;
+  --paper:     #faf4ea;
+  --border:    #c9b49a;
+  --border2:   #e0cdb6;
+  --text:      #3a2a1c;
+  --text-dim:  #8a7060;
+  --text-mid:  #5c3f2a;
+
+  --terra:     #b85c2a;   /* terracota */
+  --rust:      #a0391a;   /* ferrugem */
+  --olive:     #6b7a3a;   /* oliva */
+  --olive2:    #8a9c50;
+  --sand:      #c4a055;   /* areia dourada */
+  --mauve:     #8c5c6e;   /* rosado escuro */
+  --teal:      #3d7a78;   /* petróleo */
+  --umber:     #7a4a28;   /* marrom escuro */
+  --amber:     #b87c20;
+  --cream:     #f7f0e3;
+
+  /* parede/lead colors */
+  --inf:   #b85c2a;
+  --ant:   #3d7a78;
+  --sep:   #c4a055;
+  --latA:  #6b7a3a;
+  --latB:  #8c5c6e;
+  --post:  #7a4a28;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+/* subtle warm paper texture */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(180,120,60,0.06) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(120,80,40,0.05) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.page {
+  position: relative;
+  z-index: 1;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 28px 20px 60px;
+}
+
+/* ─── HEADER ─── */
+.page-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  border-bottom: 2px solid var(--terra);
+  padding-bottom: 10px;
+  margin-bottom: 24px;
+}
+
+.page-header h1 {
+  font-family: 'Lora', serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--terra);
+  letter-spacing: 0.01em;
+}
+
+.page-header .subtitle {
+  font-size: 11px;
+  color: var(--text-dim);
+  font-weight: 300;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* ─── TOP SECTION: compass + walls ─── */
+.top-section {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 20px;
+  margin-bottom: 24px;
+  align-items: start;
+}
+
+@media (max-width: 680px) {
+  .top-section { grid-template-columns: 1fr; }
+}
+
+/* COMPASS */
+.compass-box {
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.compass-box h3 {
+  font-family: 'Lora', serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-mid);
+  text-align: center;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* WALLS TABLE */
+.walls-box {
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.walls-box h3 {
+  font-family: 'Lora', serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-mid);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 10px 14px 6px;
+  border-bottom: 1px solid var(--border2);
+}
+
+.walls-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+}
+
+@media (max-width: 500px) {
+  .walls-grid { grid-template-columns: 1fr 1fr; }
+}
+
+.wall-cell {
+  padding: 10px 12px;
+  border-right: 1px solid var(--border2);
+  border-bottom: 1px solid var(--border2);
+  position: relative;
+}
+
+.wall-cell:nth-child(3n) { border-right: none; }
+.wall-cell:nth-last-child(-n+3) { border-bottom: none; }
+
+.wall-cell .wall-name {
+  font-weight: 700;
+  font-size: 12px;
+  margin-bottom: 3px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.wall-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.wall-cell .leads {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 2px;
+  font-family: 'Lora', serif;
+}
+
+.wall-cell .artery {
+  font-size: 10px;
+  color: var(--text-dim);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.wall-cell .reciprocal {
+  font-size: 10px;
+  color: var(--text-dim);
+  font-style: italic;
+}
+
+/* ─── CARDS GRID ─── */
+.cards-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+@media (max-width: 660px) {
+  .cards-grid { grid-template-columns: 1fr; }
+}
+
+.card {
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px 8px;
+  border-bottom: 1px solid var(--border2);
+  background: var(--cream);
+}
+
+.tag {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 2px;
+}
+
+.card-title {
+  font-family: 'Lora', serif;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.ecg-wrap {
+  padding: 10px 12px 8px;
+  background: #f9f1e4;
+  border-bottom: 1px solid var(--border2);
+  /* subtle ECG grid */
+  background-image:
+    linear-gradient(rgba(180,120,60,0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(180,120,60,0.1) 1px, transparent 1px),
+    linear-gradient(rgba(180,120,60,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(180,120,60,0.04) 1px, transparent 1px);
+  background-size: 40px 40px, 40px 40px, 8px 8px, 8px 8px;
+}
+
+.ecg-svg {
+  display: block;
+  width: 100%;
+  height: 88px;
+}
+
+.ecg-line {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.details {
+  padding: 10px 12px 12px;
+}
+
+.detail-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.detail-list li {
+  display: flex;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-mid);
+  line-height: 1.5;
+  align-items: baseline;
+}
+
+.detail-list li::before {
+  content: '›';
+  font-weight: 700;
+  color: var(--terra);
+  flex-shrink: 0;
+}
+
+.detail-list strong {
+  color: var(--text);
+  font-weight: 700;
+}
+
+/* wide card */
+.card.wide { grid-column: span 2; }
+@media (max-width: 660px) { .card.wide { grid-column: span 1; } }
+
+/* multi-ecg row for Wellens/Winters */
+.multi-ecg {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  padding: 10px 12px;
+  background: #f9f1e4;
+  background-image:
+    linear-gradient(rgba(180,120,60,0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(180,120,60,0.1) 1px, transparent 1px),
+    linear-gradient(rgba(180,120,60,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(180,120,60,0.04) 1px, transparent 1px);
+  background-size: 40px 40px, 40px 40px, 8px 8px, 8px 8px;
+  border-bottom: 1px solid var(--border2);
+}
+
+.mini-ecg { display: flex; flex-direction: column; gap: 3px; }
+.mini-label {
+  font-size: 9px;
+  color: var(--text-dim);
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.legend-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border2);
+  background: var(--cream);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11px;
+  color: var(--text-mid);
+}
+
+.legend-dash {
+  width: 14px; height: 2.5px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+/* section title between groups */
+.section-title {
+  font-family: 'Lora', serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-mid);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin: 22px 0 10px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid var(--border2);
+}
+
+footer {
+  margin-top: 32px;
+  font-size: 10px;
+  color: var(--text-dim);
+  letter-spacing: 0.06em;
+  text-align: center;
+  padding-top: 14px;
+  border-top: 1px solid var(--border2);
+}
+
+/* ─── TABS ─── */
+.tab-nav {
+  display: flex;
+  gap: 0;
+  border-bottom: 2px solid var(--border);
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.tab-btn {
+  font-family: 'Lora', serif;
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 9px 20px 8px;
+  border: 1px solid var(--border);
+  border-bottom: none;
+  background: var(--bg2);
+  color: var(--text-dim);
+  cursor: pointer;
+  border-radius: 5px 5px 0 0;
+  margin-right: 4px;
+  margin-bottom: -2px;
+  transition: background 0.15s, color 0.15s;
+  letter-spacing: 0.01em;
+  position: relative;
+  top: 2px;
+}
+
+.tab-btn:hover {
+  background: var(--cream);
+  color: var(--text);
+}
+
+.tab-btn.active {
+  background: var(--paper);
+  color: var(--terra);
+  border-color: var(--border);
+  border-bottom: 2px solid var(--paper);
+  z-index: 1;
+}
+
+.tab-btn .tab-badge {
+  display: inline-block;
+  font-size: 8.5px;
+  font-family: 'Source Sans 3', sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 1px 5px;
+  border-radius: 2px;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* ─── R DOMINANTE TAB STYLES ─── */
+.tree-root-r {
+  background: var(--terra);
+  color: #faf4ea;
+  font-family: 'Lora', serif;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 10px 18px;
+  border-radius: 6px 6px 0 0;
+  letter-spacing: 0.02em;
+}
+
+.tree-trunk-r {
+  width: 3px;
+  background: var(--terra);
+  margin-left: 38px;
+  height: 12px;
+}
+
+.r-cards {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 900px) { .r-cards { grid-template-columns: repeat(3,1fr); } }
+@media (max-width: 580px) { .r-cards { grid-template-columns: 1fr 1fr; } }
+
+.r-branch { display: flex; flex-direction: column; }
+.r-branch-line { width: 3px; height: 16px; margin-left: 50%; flex-shrink: 0; }
+
+.r-card {
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+  flex: 1;
+}
+
+.r-card-top {
+  padding: 8px 10px 6px;
+  border-bottom: 1px solid var(--border2);
+}
+
+.r-card-tag {
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  padding: 1px 6px;
+  border-radius: 2px;
+  margin-bottom: 4px;
+  display: inline-block;
+}
+
+.r-card-title {
+  font-family: 'Lora', serif;
+  font-size: 11.5px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.r-ecg-box {
+  background: #f9f1e4;
+  background-image:
+    linear-gradient(rgba(180,120,60,0.12) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(180,120,60,0.12) 1px,transparent 1px),
+    linear-gradient(rgba(180,120,60,0.05) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(180,120,60,0.05) 1px,transparent 1px);
+  background-size: 40px 40px,40px 40px,8px 8px,8px 8px;
+  padding: 8px 6px 6px;
+  border-bottom: 1px solid var(--border2);
+}
+
+.r-ecg-box svg { display: block; width: 100%; }
+
+.r-key {
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--border2);
+  font-size: 10.5px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.r-key-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+
+.r-details {
+  padding: 7px 10px 9px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.r-details li {
+  list-style: none;
+  font-size: 10.5px;
+  color: var(--text-mid);
+  line-height: 1.4;
+  display: flex;
+  gap: 5px;
+  align-items: baseline;
+}
+
+.r-details li::before { content: '›'; color: var(--terra); font-weight: 700; flex-shrink: 0; }
+.r-details strong { color: var(--text); font-weight: 700; }
+
+.r-progression {
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.r-prog-header {
+  background: var(--cream);
+  padding: 9px 14px;
+  border-bottom: 1px solid var(--border2);
+  font-family: 'Lora', serif;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.r-sub {
+  font-size: 11px;
+  color: var(--text-dim);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <h1>ECG — Padrões de Alteração &amp; Localização</h1>
+    <span class="subtitle">Referência Rápida · PSA &amp; Residência</span>
+  </div>
+
+  <!-- TAB NAVIGATION -->
+  <nav class="tab-nav">
+    <button class="tab-btn active" onclick="switchTab('padroes', this)">
+      Padrões de ECG
+      <span class="tab-badge" style="background:#fdf0dc;color:#7a4a10;">Principal</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('rdominante', this)">
+      R Dominante em V1
+      <span class="tab-badge" style="background:#e8f0da;color:#4a5e20;">Diferencial</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('brugada', this)">
+      Síndrome de Brugada
+      <span class="tab-badge" style="background:#fce8e0;color:#7a2a10;">Canalopatia</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('casos', this)">
+      Casos Clínicos
+      <span class="tab-badge" style="background:#deeaf5;color:#2a5a7a;">PSA</span>
+    </button>
+  </nav>
+
+  <!-- ══════ TAB 1: PADRÕES ══════ -->
+  <div class="tab-panel active" id="tab-padroes">
+
+  <!-- TOP: compass + IAM walls -->
+  <div class="top-section">
+
+    <!-- COMPASS ROSE -->
+    <div class="compass-box">
+      <h3>Rosa dos Ventos das Derivações</h3>
+      <svg viewBox="0 0 200 200" width="190" height="190">
+        <!-- outer circle -->
+        <circle cx="100" cy="100" r="88" fill="none" stroke="#c9b49a" stroke-width="0.8" stroke-dasharray="3,3"/>
+        <circle cx="100" cy="100" r="66" fill="none" stroke="#e0cdb6" stroke-width="0.5"/>
+
+        <!-- degree marks -->
+        <circle cx="100" cy="12" r="2" fill="#c9b49a"/>   <!-- 0° top = -90 → D1 is 0° right -->
+        
+        <!-- LEAD LINES with correct angles -->
+        <!-- D1: 0° → right (3 o'clock) -->
+        <line x1="100" y1="100" x2="188" y2="100" stroke="#6b7a3a" stroke-width="2" stroke-linecap="round"/>
+        <polygon points="188,97 196,100 188,103" fill="#6b7a3a"/>
+        <text x="198" y="104" fill="#6b7a3a" font-size="11" font-family="Lora,serif" font-weight="700">D1</text>
+
+        <!-- aVR: -150° = 210° → upper-left -->
+        <!-- sin(210°)=-0.5, cos(210°)=-0.866 → x=100-86*0.866=100-74.5=25.5, y=100+86*0.5=100-43=57 wait -->
+        <!-- angle from east, counter-clockwise: D1=0°, D2=60°, D3=120°, aVF=90°, aVL=-30°(330°), aVR=210°(-150°) -->
+        <!-- standard ECG hexaxial: measured from positive pole -->
+        <!-- D1: 0°, D2: 60°, D3: 120°, aVF: 90°, aVL: -30°, aVR: -150° (or 210°) -->
+        <!-- converting to SVG coords (x right=0°, y down=90°): -->
+        <!-- D1 0°: x+88, y+0 → (188,100) ✓ -->
+        <!-- D2 60°: x+88*cos60=44, y+88*sin60=76.2 → (144,176) -->
+        <!-- D3 120°: x+88*cos120=-44, y+88*sin120=76.2 → (56,176) -->
+        <!-- aVF 90°: x+0, y+88 → (100,188) -->
+        <!-- aVL -30° (330°): x+88*cos(-30)=76.2, y+88*sin(-30)=-44 → (176,56) -->
+        <!-- aVR 210° (-150°): x+88*cos(210)=-76.2, y+88*sin(210)=-44 → (23.8,56) -->
+
+        <!-- D2: 60° -->
+        <line x1="100" y1="100" x2="144" y2="176" stroke="#b85c2a" stroke-width="2" stroke-linecap="round"/>
+        <polygon points="141,176 147,183 150,176" fill="#b85c2a"/>
+        <text x="148" y="188" fill="#b85c2a" font-size="11" font-family="Lora,serif" font-weight="700">D2</text>
+
+        <!-- D3: 120° -->
+        <line x1="100" y1="100" x2="56" y2="176" stroke="#b85c2a" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="4,2"/>
+        <polygon points="59,176 53,183 50,176" fill="#b85c2a"/>
+        <text x="30" y="188" fill="#b85c2a" font-size="11" font-family="Lora,serif" font-weight="700">D3</text>
+
+        <!-- aVF: 90° -->
+        <line x1="100" y1="100" x2="100" y2="188" stroke="#b85c2a" stroke-width="2" stroke-linecap="round"/>
+        <polygon points="97,188 100,196 103,188" fill="#b85c2a"/>
+        <text x="88" y="200" fill="#b85c2a" font-size="11" font-family="Lora,serif" font-weight="700">aVF</text>
+
+        <!-- aVL: -30° (330°) -->
+        <line x1="100" y1="100" x2="176" y2="56" stroke="#6b7a3a" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="4,2"/>
+        <polygon points="174,49 180,54 174,60" fill="#6b7a3a"/>
+        <text x="182" y="52" fill="#6b7a3a" font-size="11" font-family="Lora,serif" font-weight="700">aVL</text>
+
+        <!-- aVR: -150° (210°) -->
+        <line x1="100" y1="100" x2="24" y2="56" stroke="#8a7060" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="4,2"/>
+        <polygon points="26,49 20,54 26,60" fill="#8a7060"/>
+        <text x="2" y="52" fill="#8a7060" font-size="11" font-family="Lora,serif" font-weight="700">aVR</text>
+
+        <!-- center dot -->
+        <circle cx="100" cy="100" r="4" fill="var(--terra)" opacity="0.7"/>
+
+        <!-- labels for regions -->
+        <text x="100" y="92" fill="#b85c2a" font-size="8" font-family='Source Sans 3,sans-serif' text-anchor="middle" opacity="0.7">INFERIOR</text>
+        <text x="168" y="86" fill="#6b7a3a" font-size="7" font-family='Source Sans 3,sans-serif' text-anchor="middle" opacity="0.7">LAT. ALTA</text>
+
+        <!-- degree arc annotations -->
+        <text x="152" y="110" fill="#c9b49a" font-size="8" font-family="monospace">0°</text>
+        <text x="126" y="162" fill="#c9b49a" font-size="8" font-family="monospace">60°</text>
+        <text x="104" y="178" fill="#c9b49a" font-size="8" font-family="monospace">90°</text>
+      </svg>
+      <div style="font-size:10px;color:var(--text-dim);text-align:center;line-height:1.4;">
+        Sólida = polo positivo<br>
+        Tracejada = polo negativo / aVR
+      </div>
+    </div>
+
+    <!-- IAM WALLS -->
+    <div class="walls-box">
+      <h3>Paredes do Ventrículo Esquerdo no IAM — Derivações e Artérias</h3>
+      <div class="walls-grid">
+
+        <div class="wall-cell">
+          <div class="wall-name" style="color:var(--inf);">
+            <div class="wall-dot" style="background:var(--inf);"></div>Inferior
+          </div>
+          <div class="leads">D2 · D3 · aVF</div>
+          <div class="artery">Coronária Direita (CD)</div>
+          <div class="reciprocal">Imagem recíproca: D1, aVL</div>
+        </div>
+
+        <div class="wall-cell">
+          <div class="wall-name" style="color:var(--ant);">
+            <div class="wall-dot" style="background:var(--ant);"></div>Anterior
+          </div>
+          <div class="leads">V1 · V2 · V3 · V4</div>
+          <div class="artery">DA (Descendente Anterior)</div>
+          <div class="reciprocal">Imagem recíproca: D2, D3, aVF</div>
+        </div>
+
+        <div class="wall-cell">
+          <div class="wall-name" style="color:var(--sep);">
+            <div class="wall-dot" style="background:var(--sep);"></div>Septal
+          </div>
+          <div class="leads">V1 · V2</div>
+          <div class="artery">DA proximal / Ramos septais</div>
+          <div class="reciprocal">Frequentemente associado ao anterior</div>
+        </div>
+
+        <div class="wall-cell">
+          <div class="wall-name" style="color:var(--latA);">
+            <div class="wall-dot" style="background:var(--latA);"></div>Lateral Alta
+          </div>
+          <div class="leads">D1 · aVL</div>
+          <div class="artery">Circunflexa (Cx) / Diagonal</div>
+          <div class="reciprocal">Imagem recíproca: D2, D3, aVF</div>
+        </div>
+
+        <div class="wall-cell">
+          <div class="wall-name" style="color:var(--latB);">
+            <div class="wall-dot" style="background:var(--latB);"></div>Lateral Baixa
+          </div>
+          <div class="leads">V5 · V6</div>
+          <div class="artery">Circunflexa (Cx)</div>
+          <div class="reciprocal">Associado a anterior ou inferior</div>
+        </div>
+
+        <div class="wall-cell">
+          <div class="wall-name" style="color:var(--post);">
+            <div class="wall-dot" style="background:var(--post);"></div>Posterior
+          </div>
+          <div class="leads">V7 · V8 · V9</div>
+          <div class="artery">CD ou Circunflexa (Cx)</div>
+          <div class="reciprocal">Recíproca: R/S ≥1 + ST↓ em V1–V2</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── TRAÇADO BASE ANOTADO ─── -->
+  <div style="background:var(--paper);border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-bottom:24px;">
+    <div style="background:var(--cream);padding:9px 14px 8px;border-bottom:1px solid var(--border2);display:flex;align-items:center;gap:10px;">
+      <span style="font-size:9px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;padding:2px 7px;border-radius:2px;background:#fdf0dc;color:#7a4a10;">Base</span>
+      <span style="font-family:'Lora',serif;font-size:12.5px;font-weight:600;color:var(--text);">Morfologia Normal do ECG — Ondas, Intervalos e Referências Patológicas</span>
+    </div>
+    <div style="padding:16px 18px 14px;background:#f9f1e4;
+      background-image:
+        linear-gradient(rgba(180,120,60,0.12) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(180,120,60,0.12) 1px,transparent 1px),
+        linear-gradient(rgba(180,120,60,0.05) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(180,120,60,0.05) 1px,transparent 1px);
+      background-size:40px 40px,40px 40px,8px 8px,8px 8px;">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1060 310" style="width:100%;display:block;" font-family="'Source Sans 3',sans-serif">
+        <defs>
+          <marker id="arr" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+            <path d="M0,0 L0,7 L7,3.5 z" fill="#7a4a28"/>
+          </marker>
+          <marker id="arr2" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+            <path d="M0,0 L0,7 L7,3.5 z" fill="#b85c2a"/>
+          </marker>
+          <marker id="arr-rev" markerWidth="7" markerHeight="7" refX="2" refY="3.5" orient="auto">
+            <path d="M7,0 L7,7 L0,3.5 z" fill="#b85c2a"/>
+          </marker>
+          <marker id="arr3" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+            <path d="M0,0 L0,7 L7,3.5 z" fill="#3d7a78"/>
+          </marker>
+          <marker id="arr3r" markerWidth="7" markerHeight="7" refX="2" refY="3.5" orient="auto">
+            <path d="M7,0 L7,7 L0,3.5 z" fill="#3d7a78"/>
+          </marker>
+          <marker id="arr4" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+            <path d="M0,0 L0,7 L7,3.5 z" fill="#8c5c6e"/>
+          </marker>
+          <marker id="arr4r" markerWidth="7" markerHeight="7" refX="2" refY="3.5" orient="auto">
+            <path d="M7,0 L7,7 L0,3.5 z" fill="#8c5c6e"/>
+          </marker>
+          <marker id="arr5" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+            <path d="M0,0 L0,7 L7,3.5 z" fill="#6b7a3a"/>
+          </marker>
+          <marker id="arr5r" markerWidth="7" markerHeight="7" refX="2" refY="3.5" orient="auto">
+            <path d="M7,0 L7,7 L0,3.5 z" fill="#6b7a3a"/>
+          </marker>
+        </defs>
+
+        <!-- ══════════════════════════════════════════════════ -->
+        <!-- ISOELECTRIC LINE -->
+        <line x1="30" y1="175" x2="1040" y2="175" stroke="#c4a06080" stroke-width="1" stroke-dasharray="6,4"/>
+
+        <!-- ══════════════════════════════════════════════════ -->
+        <!-- ECG TRACE — full annotated complex + Q patológica -->
+
+        <!-- baseline in -->
+        <line x1="30" y1="175" x2="90" y2="175" stroke="#3a2a1c" stroke-width="2.5" stroke-linecap="round"/>
+
+        <!-- P WAVE -->
+        <path d="M90,175 Q108,138 126,175" fill="none" stroke="#b85c2a" stroke-width="2.8" stroke-linecap="round"/>
+
+        <!-- PR segment -->
+        <line x1="126" y1="175" x2="168" y2="175" stroke="#3a2a1c" stroke-width="2.5" stroke-linecap="round"/>
+
+        <!-- Q wave (normal, small) -->
+        <polyline points="168,175 176,175 180,193 188,175" fill="none" stroke="#3a2a1c" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+
+        <!-- R wave -->
+        <polyline points="188,175 192,175 196,60 200,175" fill="none" stroke="#3a2a1c" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+
+        <!-- S wave -->
+        <polyline points="200,175 204,175 208,210 216,175" fill="none" stroke="#3a2a1c" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+
+        <!-- J point + ST segment (isoelectric) -->
+        <line x1="216" y1="175" x2="280" y2="175" stroke="#3a2a1c" stroke-width="2.5" stroke-linecap="round"/>
+
+        <!-- T WAVE -->
+        <path d="M280,175 Q316,108 352,175" fill="none" stroke="#3d7a78" stroke-width="2.8" stroke-linecap="round"/>
+
+        <!-- U WAVE (small, same polarity) -->
+        <path d="M352,175 Q368,160 384,175" fill="none" stroke="#8c5c6e" stroke-width="2.2" stroke-linecap="round"/>
+
+        <!-- baseline between -->
+        <line x1="384" y1="175" x2="445" y2="175" stroke="#3a2a1c" stroke-width="2" stroke-linecap="round" stroke-dasharray="4,3"/>
+
+        <!-- ══ PATHOLOGICAL VARIATIONS SECTION ══ -->
+
+        <!-- Q PATOLÓGICA (wide+deep) -->
+        <line x1="445" y1="175" x2="480" y2="175" stroke="#a0391a" stroke-width="2" stroke-linecap="round" stroke-dasharray="3,2"/>
+        <path d="M480,175 Q484,175 490,175" fill="none" stroke="#a0391a" stroke-width="2"/>
+        <!-- P wave for Q patol complex -->
+        <path d="M445,175 Q456,155 467,175" fill="none" stroke="#a0391a" stroke-width="2" stroke-linecap="round"/>
+        <line x1="467" y1="175" x2="480" y2="175" stroke="#a0391a" stroke-width="2"/>
+        <polyline points="480,175 490,175 498,230 508,90 516,175" fill="none" stroke="#a0391a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        <line x1="516" y1="175" x2="530" y2="175" stroke="#a0391a" stroke-width="2"/>
+        <path d="M530,175 Q548,208 566,175" fill="none" stroke="#a0391a" stroke-width="2.2" stroke-linecap="round"/>
+        <line x1="566" y1="175" x2="610" y2="175" stroke="#a0391a" stroke-width="2" stroke-linecap="round" stroke-dasharray="3,2"/>
+
+        <!-- ST ELEVATION complex -->
+        <path d="M610,175 Q621,155 632,175" fill="none" stroke="#b87c20" stroke-width="2" stroke-linecap="round"/>
+        <line x1="632" y1="175" x2="645" y2="175" stroke="#b87c20" stroke-width="2"/>
+        <polyline points="645,175 648,175 652,205 660,105 666,175" fill="none" stroke="#b87c20" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+        <!-- ST elevation + T -->
+        <path d="M666,175 Q674,148 684,140 Q696,132 708,148 Q716,162 722,175" fill="none" stroke="#b87c20" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="722" y1="175" x2="770" y2="175" stroke="#b87c20" stroke-width="2" stroke-linecap="round" stroke-dasharray="3,2"/>
+
+        <!-- ST DEPRESSION + T inversion complex -->
+        <path d="M770,175 Q781,155 792,175" fill="none" stroke="#6b7a3a" stroke-width="2" stroke-linecap="round"/>
+        <line x1="792" y1="175" x2="805" y2="175" stroke="#6b7a3a" stroke-width="2"/>
+        <polyline points="805,175 808,175 812,205 820,100 826,175" fill="none" stroke="#6b7a3a" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+        <!-- ST depression then T inverted -->
+        <path d="M826,175 Q834,190 848,196 Q862,198 872,188 Q882,178 888,175" fill="none" stroke="#6b7a3a" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="888" y1="175" x2="1040" y2="175" stroke="#3a2a1c" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="4,4"/>
+
+
+        <!-- ══════════════════════════════════════════════════ -->
+        <!-- TOP ANNOTATIONS — waves -->
+
+        <!-- P wave label -->
+        <line x1="108" y1="138" x2="108" y2="110" stroke="#b85c2a" stroke-width="1" stroke-dasharray="3,2"/>
+        <text x="108" y="106" text-anchor="middle" font-size="13" font-weight="700" fill="#b85c2a">P</text>
+        <text x="108" y="92" text-anchor="middle" font-size="9" fill="#5c3f2a">despolarização</text>
+        <text x="108" y="103" text-anchor="middle" font-size="9" fill="#5c3f2a">atrial</text>
+
+        <!-- Q label -->
+        <line x1="180" y1="193" x2="163" y2="232" stroke="#7a4a28" stroke-width="1" stroke-dasharray="3,2"/>
+        <text x="155" y="248" text-anchor="middle" font-size="13" font-weight="700" fill="#7a4a28">Q</text>
+        <text x="155" y="260" text-anchor="middle" font-size="9" fill="#5c3f2a">septo</text>
+
+        <!-- R label -->
+        <line x1="196" y1="60" x2="196" y2="40" stroke="#3a2a1c" stroke-width="1" stroke-dasharray="3,2"/>
+        <text x="196" y="36" text-anchor="middle" font-size="13" font-weight="700" fill="#3a2a1c">R</text>
+
+        <!-- S label -->
+        <line x1="208" y1="210" x2="228" y2="240" stroke="#7a4a28" stroke-width="1" stroke-dasharray="3,2"/>
+        <text x="236" y="252" text-anchor="middle" font-size="13" font-weight="700" fill="#7a4a28">S</text>
+
+        <!-- J point -->
+        <circle cx="216" cy="175" r="3.5" fill="#b87c20" opacity="0.9"/>
+        <line x1="216" y1="175" x2="230" y2="145" stroke="#b87c20" stroke-width="1"/>
+        <text x="235" y="142" font-size="9" font-weight="700" fill="#b87c20">Ponto J</text>
+
+        <!-- T wave label -->
+        <line x1="316" y1="108" x2="316" y2="82" stroke="#3d7a78" stroke-width="1" stroke-dasharray="3,2"/>
+        <text x="316" y="78" text-anchor="middle" font-size="13" font-weight="700" fill="#3d7a78">T</text>
+        <text x="316" y="64" text-anchor="middle" font-size="9" fill="#3d7a78">repolarização</text>
+        <text x="316" y="75" text-anchor="middle" font-size="9" fill="#3d7a78">ventricular</text>
+
+        <!-- U wave label -->
+        <line x1="368" y1="160" x2="368" y2="132" stroke="#8c5c6e" stroke-width="1" stroke-dasharray="3,2"/>
+        <text x="368" y="128" text-anchor="middle" font-size="13" font-weight="700" fill="#8c5c6e">U</text>
+        <text x="368" y="114" text-anchor="middle" font-size="9" fill="#8c5c6e">repolarização</text>
+        <text x="368" y="125" text-anchor="middle" font-size="9" fill="#8c5c6e">septal/Purkinje</text>
+
+        <!-- ══════════════════════════════════════════════════ -->
+        <!-- INTERVAL BRACKETS — bottom -->
+
+        <!-- PR interval bracket -->
+        <line x1="90" y1="253" x2="168" y2="253" stroke="#b85c2a" stroke-width="1.5" marker-start="url(#arr-rev)" marker-end="url(#arr2)"/>
+        <line x1="90" y1="175" x2="90" y2="256" stroke="#b85c2a" stroke-width="0.8" stroke-dasharray="3,2"/>
+        <line x1="168" y1="175" x2="168" y2="256" stroke="#b85c2a" stroke-width="0.8" stroke-dasharray="3,2"/>
+        <text x="129" y="267" text-anchor="middle" font-size="10" font-weight="700" fill="#b85c2a">Intervalo PR</text>
+        <text x="129" y="278" text-anchor="middle" font-size="9" fill="#5c3f2a">120–200 ms</text>
+
+        <!-- QRS duration bracket -->
+        <line x1="176" y1="253" x2="216" y2="253" stroke="#3a2a1c" stroke-width="1.5" marker-start="url(#arr-rev)" marker-end="url(#arr2)"/>
+        <line x1="176" y1="175" x2="176" y2="256" stroke="#3a2a1c" stroke-width="0.8" stroke-dasharray="3,2"/>
+        <text x="196" y="267" text-anchor="middle" font-size="10" font-weight="700" fill="#3a2a1c">QRS</text>
+        <text x="196" y="278" text-anchor="middle" font-size="9" fill="#5c3f2a">≤ 120 ms</text>
+
+        <!-- QT interval bracket -->
+        <line x1="168" y1="290" x2="352" y2="290" stroke="#3d7a78" stroke-width="1.5" marker-start="url(#arr3r)" marker-end="url(#arr3)"/>
+        <line x1="168" y1="175" x2="168" y2="293" stroke="#3d7a78" stroke-width="0.8" stroke-dasharray="3,2"/>
+        <line x1="352" y1="175" x2="352" y2="293" stroke="#3d7a78" stroke-width="0.8" stroke-dasharray="3,2"/>
+        <text x="260" y="304" text-anchor="middle" font-size="10" font-weight="700" fill="#3d7a78">Intervalo QT</text>
+        <text x="260" y="215" text-anchor="middle" font-size="9" fill="#3d7a78">corrigido (QTc)</text>
+
+        <!-- ST segment bracket -->
+        <line x1="216" y1="253" x2="280" y2="253" stroke="#b87c20" stroke-width="1.5" marker-start="url(#arr-rev)" marker-end="url(#arr2)"/>
+        <line x1="280" y1="175" x2="280" y2="256" stroke="#b87c20" stroke-width="0.8" stroke-dasharray="3,2"/>
+        <text x="248" y="267" text-anchor="middle" font-size="10" font-weight="700" fill="#b87c20">Segmento ST</text>
+        <text x="248" y="278" text-anchor="middle" font-size="9" fill="#5c3f2a">isoelétrico normal</text>
+
+        <!-- ══════════════════════════════════════════════════ -->
+        <!-- PATHOLOGICAL ANNOTATIONS — right section -->
+
+        <!-- divider line -->
+        <line x1="430" y1="30" x2="430" y2="295" stroke="#c9b49a" stroke-width="1" stroke-dasharray="5,4"/>
+        <text x="432" y="26" font-size="9" fill="#8a7060" font-style="italic">alterações patológicas →</text>
+
+        <!-- Q patológica annotation -->
+        <line x1="498" y1="230" x2="498" y2="262" stroke="#a0391a" stroke-width="1" stroke-dasharray="3,2"/>
+        <text x="498" y="274" text-anchor="middle" font-size="10" font-weight="700" fill="#a0391a">Q patológica</text>
+        <text x="498" y="285" text-anchor="middle" font-size="9" fill="#5c3f2a">≥40ms · ≥1/3 R</text>
+        <!-- Q depth arrow -->
+        <line x1="476" y1="175" x2="476" y2="230" stroke="#a0391a" stroke-width="1" marker-start="url(#arr-rev)" marker-end="url(#arr2)"/>
+
+        <!-- ST elevation label -->
+        <line x1="688" y1="140" x2="688" y2="105" stroke="#b87c20" stroke-width="1" stroke-dasharray="3,2"/>
+        <text x="688" y="101" text-anchor="middle" font-size="10" font-weight="700" fill="#b87c20">Supra ST</text>
+        <text x="688" y="90" text-anchor="middle" font-size="9" fill="#5c3f2a">≥1mm (≥2mm V1–V3)</text>
+        <!-- elevation reference line -->
+        <line x1="660" y1="175" x2="724" y2="175" stroke="#b87c20" stroke-width="0.8" stroke-dasharray="3,3" opacity="0.6"/>
+        <line x1="684" y1="140" x2="684" y2="175" stroke="#b87c20" stroke-width="1" marker-start="url(#arr-rev)" marker-end="url(#arr2)"/>
+
+        <!-- ST depression label -->
+        <line x1="848" y1="196" x2="848" y2="230" stroke="#6b7a3a" stroke-width="1" stroke-dasharray="3,2"/>
+        <text x="848" y="242" text-anchor="middle" font-size="10" font-weight="700" fill="#6b7a3a">Infra ST + T inv.</text>
+        <text x="848" y="253" text-anchor="middle" font-size="9" fill="#5c3f2a">isquemia / strain</text>
+        <!-- depression reference line -->
+        <line x1="826" y1="175" x2="892" y2="175" stroke="#6b7a3a" stroke-width="0.8" stroke-dasharray="3,3" opacity="0.6"/>
+        <line x1="848" y1="196" x2="848" y2="175" stroke="#6b7a3a" stroke-width="1" marker-start="url(#arr-rev)" marker-end="url(#arr5)"/>
+
+        <!-- ══════════════════════════════════════════════════ -->
+        <!-- QTc formula label top right -->
+        <rect x="920" y="30" width="120" height="52" rx="4" fill="#fdf0dc" stroke="#c9b49a" stroke-width="0.8"/>
+        <text x="980" y="46" text-anchor="middle" font-size="9" font-weight="700" fill="#7a4a10">Fórmula de Bazett</text>
+        <text x="980" y="58" text-anchor="middle" font-size="11" fill="#3a2a1c" font-style="italic">QTc = QT / √RR</text>
+        <text x="980" y="72" text-anchor="middle" font-size="8.5" fill="#5c3f2a">♂ ≤ 440ms · ♀ ≤ 460ms</text>
+
+        <!-- Normal values box top left -->
+        <rect x="32" y="30" width="48" height="36" rx="3" fill="#fdf0dc" stroke="#c9b49a" stroke-width="0.8"/>
+        <text x="56" y="44" text-anchor="middle" font-size="8" font-weight="700" fill="#7a4a10">25mm/s</text>
+        <text x="56" y="56" text-anchor="middle" font-size="8" fill="#5c3f2a">10mm/mV</text>
+
+      </svg>
+    </div>
+
+    <!-- legenda inferior -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-top:1px solid var(--border2);">
+      <div style="padding:8px 12px;border-right:1px solid var(--border2);">
+        <div style="font-size:10px;font-weight:700;color:#b85c2a;margin-bottom:3px;text-transform:uppercase;letter-spacing:0.05em;">Onda P</div>
+        <div style="font-size:11px;color:var(--text-mid);">Duração ≤ 120 ms · amplitude ≤ 2,5 mm · positiva em D2</div>
+      </div>
+      <div style="padding:8px 12px;border-right:1px solid var(--border2);">
+        <div style="font-size:10px;font-weight:700;color:#3a2a1c;margin-bottom:3px;text-transform:uppercase;letter-spacing:0.05em;">Complexo QRS</div>
+        <div style="font-size:11px;color:var(--text-mid);">Duração ≤ 120 ms · onda Q normal: &lt;40 ms e &lt;1/3 da R · eixo −30° a +90°</div>
+      </div>
+      <div style="padding:8px 12px;border-right:1px solid var(--border2);">
+        <div style="font-size:10px;font-weight:700;color:#3d7a78;margin-bottom:3px;text-transform:uppercase;letter-spacing:0.05em;">Onda T e QT</div>
+        <div style="font-size:11px;color:var(--text-mid);">T positiva em D1, D2, V3–V6 · QTc ♂ ≤ 440ms · QTc ♀ ≤ 460ms</div>
+      </div>
+      <div style="padding:8px 12px;">
+        <div style="font-size:10px;font-weight:700;color:#8c5c6e;margin-bottom:3px;text-transform:uppercase;letter-spacing:0.05em;">Onda U</div>
+        <div style="font-size:11px;color:var(--text-mid);">Pequena, mesma polaridade da T · proeminente na hipocalemia e bradicardias</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION: Condução e Câmaras -->
+  <div class="section-title">Alterações de Condução e Sobrecarga</div>
+
+  <div class="cards-grid">
+
+    <!-- BRE -->
+    <div class="card">
+      <div class="card-header">
+        <span class="tag" style="background:#e8f0da;color:#4a5e20;">Condução</span>
+        <span class="card-title">Bloqueio de Ramo Esquerdo (BRE)</span>
+      </div>
+      <div class="ecg-wrap">
+        <svg class="ecg-svg" viewBox="0 0 400 88" preserveAspectRatio="none">
+          <line fill="none" stroke="rgba(100,70,40,0.3)" x1="0" y1="44" x2="400" y2="44" stroke-width="0.5"/>
+          <!-- P wave -->
+          <path class="ecg-line" stroke="#6b7a3a" stroke-width="1.8" d="M0,44 L30,44 Q38,32 46,44"/>
+          <!-- PR -->
+          <line class="ecg-line" stroke="#6b7a3a" stroke-width="1.8" x1="46" y1="44" x2="60" y2="44"/>
+          <!-- Wide notched R (V5 pattern) RR' -->
+          <polyline class="ecg-line" stroke="#6b7a3a" stroke-width="2.5" points="60,44 65,44 72,14 80,24 88,10 96,44"/>
+          <!-- Discordant ST depression + T inversion -->
+          <path class="ecg-line" stroke="#6b7a3a" stroke-width="1.8" d="M96,44 L110,49 Q122,62 134,44"/>
+          <line class="ecg-line" stroke="#6b7a3a" stroke-width="1.8" x1="134" y1="44" x2="162" y2="44"/>
+          <!-- V1: QS pattern -->
+          <line class="ecg-line" stroke="#8a9c50" stroke-width="1.5" x1="185" y1="44" x2="205" y2="44"/>
+          <polyline class="ecg-line" stroke="#8a9c50" stroke-width="2" points="205,44 210,44 218,74 226,44"/>
+          <!-- T upright V1 discordant -->
+          <path class="ecg-line" stroke="#8a9c50" stroke-width="1.5" d="M226,44 L234,41 Q244,28 252,44"/>
+          <line class="ecg-line" stroke="#8a9c50" stroke-width="1.5" x1="252" y1="44" x2="400" y2="44"/>
+          <!-- labels -->
+          <text x="80" y="7" fill="#6b7a3a" font-size="8" font-family="monospace" text-anchor="middle">RR' em M (V5)</text>
+          <text x="218" y="84" fill="#8a9c50" font-size="8" font-family="monospace" text-anchor="middle">QS profundo (V1)</text>
+          <!-- width marker -->
+          <line stroke="#b87c20" stroke-width="0.8" stroke-dasharray="2,2" x1="65" y1="82" x2="96" y2="82"/>
+          <text x="80" y="88" fill="#b87c20" font-size="8" font-family="monospace" text-anchor="middle">≥120ms</text>
+        </svg>
+      </div>
+      <div class="details">
+        <ul class="detail-list">
+          <li><span>QRS <strong>≥ 120 ms</strong> — alargado</span></li>
+          <li><span>V5, V6, D1, aVL: <strong>R pura, larga, com entalhe</strong> — padrão RR' em M</span></li>
+          <li><span>V1–V3: <strong>QS profundo</strong> ou rS — sem deflexão R inicial</span></li>
+          <li><span>Repolarização <strong>discordante</strong>: ST/T opostos à deflexão principal do QRS</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Necrose -->
+    <div class="card">
+      <div class="card-header">
+        <span class="tag" style="background:#fce8e0;color:#7a2a10;">Isquemia</span>
+        <span class="card-title">Necrose — Infarto Antigo (Onda Q)</span>
+      </div>
+      <div class="ecg-wrap">
+        <svg class="ecg-svg" viewBox="0 0 400 88" preserveAspectRatio="none">
+          <line fill="none" stroke="rgba(100,70,40,0.3)" x1="0" y1="44" x2="400" y2="44" stroke-width="0.5"/>
+          <line class="ecg-line" stroke="#a0391a" stroke-width="1.8" x1="0" y1="44" x2="30" y2="44"/>
+          <path class="ecg-line" stroke="#a0391a" stroke-width="1.8" d="M30,44 Q38,32 46,44"/>
+          <line class="ecg-line" stroke="#a0391a" stroke-width="1.8" x1="46" y1="44" x2="60" y2="44"/>
+          <!-- Pathological Q: wide + deep -->
+          <polyline class="ecg-line" stroke="#a0391a" stroke-width="2.8" points="60,44 68,44 72,74 80,14 86,44"/>
+          <line class="ecg-line" stroke="#a0391a" stroke-width="1.8" x1="86" y1="44" x2="100" y2="44"/>
+          <!-- T inverted (old infarct) -->
+          <path class="ecg-line" stroke="#a0391a" stroke-width="1.8" d="M100,44 L112,47 Q124,62 134,44"/>
+          <line class="ecg-line" stroke="#a0391a" stroke-width="1.8" x1="134" y1="44" x2="185" y2="44"/>
+          <!-- 2nd complex -->
+          <path class="ecg-line" stroke="#a0391a" stroke-width="1.8" d="M185,44 Q193,32 201,44"/>
+          <line class="ecg-line" stroke="#a0391a" stroke-width="1.8" x1="201" y1="44" x2="215" y2="44"/>
+          <polyline class="ecg-line" stroke="#a0391a" stroke-width="2.8" points="215,44 223,44 227,74 235,14 241,44"/>
+          <line class="ecg-line" stroke="#a0391a" stroke-width="1.8" x1="241" y1="44" x2="255" y2="44"/>
+          <path class="ecg-line" stroke="#a0391a" stroke-width="1.8" d="M255,44 L267,47 Q279,62 289,44"/>
+          <line class="ecg-line" stroke="#a0391a" stroke-width="1.8" x1="289" y1="44" x2="400" y2="44"/>
+          <!-- annotations -->
+          <line stroke="#b87c20" stroke-width="0.8" stroke-dasharray="2,2" x1="68" y1="44" x2="80" y2="44"/>
+          <text x="74" y="39" fill="#b87c20" font-size="8" font-family="monospace" text-anchor="middle">≥40ms</text>
+          <line stroke="#b87c20" stroke-width="0.8" stroke-dasharray="2,2" x1="72" y1="74" x2="54" y2="74"/>
+          <text x="42" y="77" fill="#b87c20" font-size="8" font-family="monospace">≥1/3R</text>
+          <text x="72" y="86" fill="#a0391a" font-size="8" font-family="monospace" text-anchor="middle">Q PATOLÓGICA</text>
+        </svg>
+      </div>
+      <div class="details">
+        <ul class="detail-list">
+          <li><span>Onda Q <strong>patológica</strong>: duração ≥ 40 ms e/ou amplitude ≥ 1/3 da onda R</span></li>
+          <li><span>Sinal de <strong>necrose transmural</strong> — "janela elétrica" oposta à área infartada</span></li>
+          <li><span>Localização: inferior (D2,D3,aVF), anterior (V1–V4), lateral (D1,aVL,V5–V6)</span></li>
+          <li><span>ST geralmente isoelétrico; T invertida frequente no infarto antigo</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- SAE -->
+    <div class="card">
+      <div class="card-header">
+        <span class="tag" style="background:#deeaf5;color:#2a5a7a;">Câmaras</span>
+        <span class="card-title">Sobrecarga Atrial Esquerda (SAE)</span>
+      </div>
+      <div class="ecg-wrap">
+        <svg class="ecg-svg" viewBox="0 0 400 88" preserveAspectRatio="none">
+          <line fill="none" stroke="rgba(100,70,40,0.3)" x1="0" y1="44" x2="400" y2="44" stroke-width="0.5"/>
+          <line class="ecg-line" stroke="#3d7a78" stroke-width="1.8" x1="0" y1="44" x2="18" y2="44"/>
+          <!-- P mitrale: notched, broad -->
+          <path class="ecg-line" stroke="#3d7a78" stroke-width="2.4" d="M18,44 Q24,29 34,36 Q42,29 50,44"/>
+          <line stroke="#b87c20" stroke-width="0.8" stroke-dasharray="2,2" x1="18" y1="82" x2="50" y2="82"/>
+          <text x="34" y="88" fill="#b87c20" font-size="8" font-family="monospace" text-anchor="middle">≥120ms</text>
+          <line class="ecg-line" stroke="#3d7a78" stroke-width="1.8" x1="50" y1="44" x2="66" y2="44"/>
+          <polyline class="ecg-line" stroke="#3d7a78" stroke-width="2" points="66,44 70,18 74,70 78,18 82,44"/>
+          <line class="ecg-line" stroke="#3d7a78" stroke-width="1.8" x1="82" y1="44" x2="94" y2="44"/>
+          <path class="ecg-line" stroke="#3d7a78" stroke-width="1.8" d="M94,44 Q104,28 114,44"/>
+          <line class="ecg-line" stroke="#3d7a78" stroke-width="1.8" x1="114" y1="44" x2="155" y2="44"/>
+          <text x="34" y="8" fill="#3d7a78" font-size="8" font-family="monospace" text-anchor="middle">DII — P mitrale</text>
+          <!-- divider -->
+          <line stroke="#c9b49a" stroke-width="1" x1="168" y1="0" x2="168" y2="88"/>
+          <!-- V1 biphasic P with deep terminal negative -->
+          <text x="290" y="8" fill="#3d7a78" font-size="8" font-family="monospace" text-anchor="middle">V1 — Morris (+)</text>
+          <line class="ecg-line" stroke="#3d7a78" stroke-width="1.8" x1="178" y1="44" x2="198" y2="44"/>
+          <path class="ecg-line" stroke="#3d7a78" stroke-width="2.4" d="M198,44 Q205,34 212,44 Q218,62 230,44"/>
+          <line class="ecg-line" stroke="#3d7a78" stroke-width="1.8" x1="230" y1="44" x2="246" y2="44"/>
+          <polyline class="ecg-line" stroke="#3d7a78" stroke-width="2" points="246,44 250,66 256,18 262,44"/>
+          <line class="ecg-line" stroke="#3d7a78" stroke-width="1.8" x1="262" y1="44" x2="277" y2="44"/>
+          <path class="ecg-line" stroke="#3d7a78" stroke-width="1.8" d="M277,44 Q285,30 293,44"/>
+          <line class="ecg-line" stroke="#3d7a78" stroke-width="1.8" x1="293" y1="44" x2="400" y2="44"/>
+          <line stroke="#b87c20" stroke-width="0.8" stroke-dasharray="2,2" x1="212" y1="62" x2="230" y2="62"/>
+          <text x="221" y="76" fill="#b87c20" font-size="7" font-family="monospace" text-anchor="middle">larga+profunda</text>
+        </svg>
+      </div>
+      <div class="details">
+        <ul class="detail-list">
+          <li><span>DII: P <strong>≥ 120 ms</strong>, entalhada — <strong>"P mitrale"</strong></span></li>
+          <li><span>V1: <strong>Índice de Morris</strong> — fase terminal negativa ≥ 40 ms e ≥ 1 mm (área ≥ 0,04 mm·s)</span></li>
+          <li><span>Causas: estenose mitral, HAS, IC com disfunção diastólica</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- SVE -->
+    <div class="card">
+      <div class="card-header">
+        <span class="tag" style="background:#f2e4f0;color:#6a2a5a;">Câmaras</span>
+        <span class="card-title">Sobrecarga Ventricular Esquerda (SVE)</span>
+      </div>
+      <div class="ecg-wrap">
+        <svg class="ecg-svg" viewBox="0 0 400 88" preserveAspectRatio="none">
+          <line fill="none" stroke="rgba(100,70,40,0.3)" x1="0" y1="44" x2="400" y2="44" stroke-width="0.5"/>
+          <line class="ecg-line" stroke="#8c5c6e" stroke-width="1.8" x1="0" y1="44" x2="20" y2="44"/>
+          <path class="ecg-line" stroke="#8c5c6e" stroke-width="1.8" d="M20,44 Q28,33 36,44"/>
+          <line class="ecg-line" stroke="#8c5c6e" stroke-width="1.8" x1="36" y1="44" x2="50" y2="44"/>
+          <!-- Tall R V5 -->
+          <polyline class="ecg-line" stroke="#8c5c6e" stroke-width="2.8" points="50,44 54,44 56,70 62,2 68,44"/>
+          <!-- ST depression + asymmetric T inversion (strain) -->
+          <path class="ecg-line" stroke="#8c5c6e" stroke-width="1.8" d="M68,44 L82,50 Q94,66 106,44"/>
+          <line class="ecg-line" stroke="#8c5c6e" stroke-width="1.8" x1="106" y1="44" x2="145" y2="44"/>
+          <!-- V1 deep S -->
+          <path class="ecg-line" stroke="#8c5c6e" stroke-width="1.8" d="M145,44 Q153,33 161,44"/>
+          <line class="ecg-line" stroke="#8c5c6e" stroke-width="1.8" x1="161" y1="44" x2="175" y2="44"/>
+          <polyline class="ecg-line" stroke="#8c5c6e" stroke-width="2.8" points="175,44 178,18 184,76 190,44"/>
+          <line class="ecg-line" stroke="#8c5c6e" stroke-width="1.8" x1="190" y1="44" x2="205" y2="44"/>
+          <path class="ecg-line" stroke="#8c5c6e" stroke-width="1.8" d="M205,44 Q213,33 221,44"/>
+          <line class="ecg-line" stroke="#8c5c6e" stroke-width="1.8" x1="221" y1="44" x2="400" y2="44"/>
+          <!-- annotations -->
+          <line stroke="#b87c20" stroke-width="0.8" stroke-dasharray="2,2" x1="62" y1="2" x2="62" y2="44"/>
+          <text x="62" y="0" fill="#b87c20" font-size="7" font-family="monospace" text-anchor="middle">RV5</text>
+          <line stroke="#b87c20" stroke-width="0.8" stroke-dasharray="2,2" x1="184" y1="76" x2="184" y2="44"/>
+          <text x="184" y="85" fill="#b87c20" font-size="7" font-family="monospace" text-anchor="middle">SV1</text>
+          <text x="122" y="30" fill="#b87c20" font-size="8" font-family="monospace" text-anchor="middle">SV1+RV5 ≥ 35mm</text>
+          <text x="88" y="68" fill="#8c5c6e" font-size="8" font-family="monospace">strain ↓</text>
+        </svg>
+      </div>
+      <div class="details">
+        <ul class="detail-list">
+          <li><span><strong>Sokolow-Lyon:</strong> SV1 + RV5 (ou V6) <strong>≥ 35 mm</strong></span></li>
+          <li><span><strong>Cornell:</strong> RaVL + SV3 &gt; 28 mm (♂) ou &gt; 20 mm (♀)</span></li>
+          <li><span><strong>Strain pattern:</strong> ST ↓ + T invertida assimétrica em V5-V6, D1, aVL</span></li>
+          <li><span>Desvio do eixo para esquerda; tempo de deflexão intrinsecoide &gt; 50 ms</span></li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- SECTION: Eletrolítico e Isquemia Crítica -->
+  <div class="section-title">Distúrbios Eletrolíticos e Isquemia Crítica</div>
+
+  <div class="cards-grid">
+
+    <!-- Hipercalemia -->
+    <div class="card">
+      <div class="card-header">
+        <span class="tag" style="background:#fdf0dc;color:#7a4a10;">Eletrolítico</span>
+        <span class="card-title">Hipercalemia — Progressão por Nível</span>
+      </div>
+      <div class="ecg-wrap">
+        <svg class="ecg-svg" viewBox="0 0 400 88" preserveAspectRatio="none">
+          <line fill="none" stroke="rgba(100,70,40,0.3)" x1="0" y1="44" x2="400" y2="44" stroke-width="0.5"/>
+          <!-- Stage 1: peaked T only -->
+          <line class="ecg-line" stroke="#c4a055" stroke-width="1.8" x1="0" y1="44" x2="14" y2="44"/>
+          <path class="ecg-line" stroke="#c4a055" stroke-width="1.8" d="M14,44 Q20,35 26,44"/>
+          <line class="ecg-line" stroke="#c4a055" stroke-width="1.8" x1="26" y1="44" x2="36" y2="44"/>
+          <polyline class="ecg-line" stroke="#c4a055" stroke-width="2" points="36,44 38,40 40,44"/>
+          <line class="ecg-line" stroke="#c4a055" stroke-width="1.8" x1="40" y1="44" x2="50" y2="44"/>
+          <!-- tall symmetric T -->
+          <polyline class="ecg-line" stroke="#c4a055" stroke-width="2.8" points="50,44 56,4 62,44"/>
+          <line class="ecg-line" stroke="#c4a055" stroke-width="1.8" x1="62" y1="44" x2="90" y2="44"/>
+          <text x="56" y="1" fill="#c4a055" font-size="7" font-family="monospace" text-anchor="middle">T em tenda</text>
+          <!-- Stage 2: flat P + wide QRS -->
+          <path class="ecg-line" stroke="#b87c20" stroke-width="1.5" d="M90,44 Q97,42 104,44"/>
+          <line class="ecg-line" stroke="#b87c20" stroke-width="1.8" x1="104" y1="44" x2="116" y2="44"/>
+          <polyline class="ecg-line" stroke="#b87c20" stroke-width="2.4" points="116,44 120,44 124,64 132,18 140,44"/>
+          <line class="ecg-line" stroke="#b87c20" stroke-width="1.8" x1="140" y1="44" x2="152" y2="44"/>
+          <polyline class="ecg-line" stroke="#b87c20" stroke-width="2.4" points="152,44 158,10 164,44"/>
+          <line class="ecg-line" stroke="#b87c20" stroke-width="1.8" x1="164" y1="44" x2="195" y2="44"/>
+          <text x="128" y="86" fill="#b87c20" font-size="7" font-family="monospace" text-anchor="middle">P achatada+QRS largo</text>
+          <!-- Stage 3: sine wave -->
+          <path class="ecg-line" stroke="#a0391a" stroke-width="2.5" d="M195,44 Q210,8 225,44 Q240,80 255,44 Q270,8 285,44 Q300,80 315,44 Q330,8 345,44 L400,44"/>
+          <text x="270" y="86" fill="#a0391a" font-size="7" font-family="monospace" text-anchor="middle">padrão sinusoidal ⚠</text>
+          <!-- width marker -->
+          <line stroke="#b87c20" stroke-width="0.8" stroke-dasharray="2,2" x1="116" y1="80" x2="140" y2="80"/>
+        </svg>
+      </div>
+      <div class="details">
+        <ul class="detail-list">
+          <li><span><strong>K⁺ 5,5–6,5:</strong> T altas, <strong>simétricas, "em tenda"</strong> — precoce</span></li>
+          <li><span><strong>K⁺ 6,5–8,0:</strong> P achatada/ausente; alargamento do QRS</span></li>
+          <li><span><strong>K⁺ &gt; 8,0:</strong> padrão sinusoidal — risco iminente de FV</span></li>
+          <li><span>PR alargado; bloqueios; ritmos de escape nas fases avançadas</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Wellens + Winters WIDE -->
+    <div class="card wide">
+      <div class="card-header">
+        <span class="tag" style="background:#fce8e0;color:#7a2a10;">Isquemia Crítica</span>
+        <span class="card-title">Wellens Tipo A, Wellens Tipo B e Padrão de Winters — DA proximal em risco</span>
+      </div>
+
+      <div class="multi-ecg">
+        <!-- Wellens A -->
+        <div class="mini-ecg">
+          <span class="mini-label">Wellens Tipo A — V2/V3</span>
+          <svg viewBox="0 0 130 78" style="width:100%;height:78px;">
+            <line x1="0" y1="39" x2="130" y2="39" stroke="rgba(100,70,40,0.25)" stroke-width="0.5"/>
+            <line class="ecg-line" stroke="#a0391a" stroke-width="1.8" x1="0" y1="39" x2="14" y2="39"/>
+            <path class="ecg-line" stroke="#a0391a" stroke-width="1.8" d="M14,39 Q19,31 24,39"/>
+            <line class="ecg-line" stroke="#a0391a" stroke-width="1.8" x1="24" y1="39" x2="34" y2="39"/>
+            <polyline class="ecg-line" stroke="#a0391a" stroke-width="1.8" points="34,39 37,27 40,39"/>
+            <!-- Biphasic T: pos then neg -->
+            <path class="ecg-line" stroke="#a0391a" stroke-width="2.4" d="M40,39 L44,37 Q48,27 52,39 Q56,56 64,39"/>
+            <line class="ecg-line" stroke="#a0391a" stroke-width="1.8" x1="64" y1="39" x2="130" y2="39"/>
+            <text x="52" y="72" fill="#a0391a" font-size="7" font-family="monospace" text-anchor="middle">T bifásica (+/−)</text>
+            <text x="52" y="10" fill="#a0391a" font-size="7" font-family="monospace" text-anchor="middle">J ≤1mm · Ponto J</text>
+          </svg>
+        </div>
+
+        <!-- Wellens B -->
+        <div class="mini-ecg">
+          <span class="mini-label">Wellens Tipo B — V2/V3</span>
+          <svg viewBox="0 0 130 78" style="width:100%;height:78px;">
+            <line x1="0" y1="39" x2="130" y2="39" stroke="rgba(100,70,40,0.25)" stroke-width="0.5"/>
+            <line class="ecg-line" stroke="#a0391a" stroke-width="1.8" x1="0" y1="39" x2="14" y2="39"/>
+            <path class="ecg-line" stroke="#a0391a" stroke-width="1.8" d="M14,39 Q19,31 24,39"/>
+            <line class="ecg-line" stroke="#a0391a" stroke-width="1.8" x1="24" y1="39" x2="34" y2="39"/>
+            <polyline class="ecg-line" stroke="#a0391a" stroke-width="1.8" points="34,39 37,27 40,39"/>
+            <!-- Deep symmetric T inversion, ST isoelectric -->
+            <path class="ecg-line" stroke="#a0391a" stroke-width="2.4" d="M40,39 L48,39 Q55,72 64,39"/>
+            <line class="ecg-line" stroke="#a0391a" stroke-width="1.8" x1="64" y1="39" x2="130" y2="39"/>
+            <text x="52" y="10" fill="#a0391a" font-size="7" font-family="monospace" text-anchor="middle">ST isoelétrico</text>
+            <text x="52" y="74" fill="#a0391a" font-size="7" font-family="monospace" text-anchor="middle">T invertida profunda</text>
+          </svg>
+        </div>
+
+        <!-- Winters -->
+        <div class="mini-ecg">
+          <span class="mini-label">Padrão de Winters — V1–V4</span>
+          <svg viewBox="0 0 130 78" style="width:100%;height:78px;">
+            <line x1="0" y1="39" x2="130" y2="39" stroke="rgba(100,70,40,0.25)" stroke-width="0.5"/>
+            <line class="ecg-line" stroke="#7a4a28" stroke-width="1.8" x1="0" y1="39" x2="12" y2="39"/>
+            <path class="ecg-line" stroke="#7a4a28" stroke-width="1.8" d="M12,39 Q17,32 22,39"/>
+            <line class="ecg-line" stroke="#7a4a28" stroke-width="1.8" x1="22" y1="39" x2="30" y2="39"/>
+            <!-- QRS with upsloping ST depression -->
+            <polyline class="ecg-line" stroke="#7a4a28" stroke-width="2.4" points="30,39 33,39 36,57 43,14 49,47"/>
+            <!-- ST ↓ upsloping + tall symmetric T positive -->
+            <path class="ecg-line" stroke="#7a4a28" stroke-width="2.4" d="M49,47 Q56,52 62,47 Q70,8 78,47"/>
+            <line class="ecg-line" stroke="#7a4a28" stroke-width="1.8" x1="78" y1="39" x2="130" y2="39"/>
+            <text x="46" y="66" fill="#7a4a28" font-size="7" font-family="monospace" text-anchor="middle">ST↓ ascendente</text>
+            <text x="70" y="7" fill="#7a4a28" font-size="7" font-family="monospace" text-anchor="middle">T alta +</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="legend-bar">
+        <div class="legend-item">
+          <div class="legend-dash" style="background:#a0391a;"></div>
+          <span><strong>Wellens A:</strong> T bifásica (+/−) em V2–V3, ponto J com elevação ≤ 1 mm — padrão de reperfusão com lesão residual crítica</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dash" style="background:#a0391a;"></div>
+          <span><strong>Wellens B:</strong> T profundamente invertida e simétrica em V2–V3, ST isoelétrico — sem Q patológica, sem elevação relevante</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dash" style="background:#7a4a28;"></div>
+          <span><strong>Winters:</strong> ST ↓ ≥ 1 mm ascendente em V1–V4 + T alta e simétrica. <strong>Equivalente de STEMI</strong> — DA proximal ocluída. Cateterismo urgente</span>
+        </div>
+      </div>
+
+      <div class="details">
+        <ul class="detail-list">
+          <li><span><strong>Wellens A e B:</strong> sinal de lesão crítica da DA proximal capturado entre episódios de dor. Alto risco de infarto iminente — <strong>não realizar teste ergométrico</strong></span></li>
+          <li><span><strong>Winters:</strong> ausência de supradesnivelamento de ST — pode não cumprir critério convencional de STEMI, mas exige cineangiocoronariografia de emergência</span></li>
+          <li><span>Em todos: <strong>emergência coronariana</strong>. AAS, anticoagulação e ativação de hemodinâmica sem demora</span></li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- SECTION: Pré-excitação e Diagnóstico Diferencial -->
+  <div class="section-title">Pré-excitação Ventricular e Diagnóstico Diferencial</div>
+
+  <div class="cards-grid">
+
+    <!-- WPW wide card -->
+    <div class="card wide">
+      <div class="card-header">
+        <span class="tag" style="background:#e8f0da;color:#3a5010;">Pré-excitação</span>
+        <span class="card-title">Síndrome de Wolff-Parkinson-White (WPW) — Tipos A e B + Diferencial com SVD</span>
+      </div>
+
+      <!-- ECG lado a lado: WPW A, WPW B, SVD -->
+      <div class="multi-ecg">
+
+        <!-- WPW Tipo A -->
+        <div class="mini-ecg">
+          <span class="mini-label">WPW Tipo A — via acessória esquerda</span>
+          <svg viewBox="0 0 130 80" style="width:100%;height:80px;">
+            <line x1="0" y1="40" x2="130" y2="40" stroke="rgba(100,70,40,0.25)" stroke-width="0.5"/>
+            <line class="ecg-line" stroke="#6b7a3a" stroke-width="1.8" x1="0" y1="40" x2="8" y2="40"/>
+            <!-- P normal curta -->
+            <path class="ecg-line" stroke="#6b7a3a" stroke-width="1.8" d="M8,40 Q13,33 18,40"/>
+            <!-- PR CURTO -->
+            <line class="ecg-line" stroke="#6b7a3a" stroke-width="1.5" x1="18" y1="40" x2="24" y2="40"/>
+            <!-- Delta + QRS: início empastado (rampa lenta) depois R dominante (V1 tipo A) -->
+            <path class="ecg-line" stroke="#6b7a3a" stroke-width="2.5" d="
+              M24,40
+              L28,40
+              Q31,36 35,28
+              L40,12
+              L45,40
+            "/>
+            <!-- ST e T normais -->
+            <line class="ecg-line" stroke="#6b7a3a" stroke-width="1.8" x1="45" y1="40" x2="54" y2="40"/>
+            <path class="ecg-line" stroke="#6b7a3a" stroke-width="1.8" d="M54,40 Q60,30 66,40"/>
+            <line class="ecg-line" stroke="#6b7a3a" stroke-width="1.8" x1="66" y1="40" x2="130" y2="40"/>
+            <!-- PR marker -->
+            <line stroke="#b87c20" stroke-width="0.8" stroke-dasharray="2,2" x1="18" y1="70" x2="24" y2="70"/>
+            <text x="21" y="78" fill="#b87c20" font-size="6.5" font-family="monospace" text-anchor="middle">&lt;120ms</text>
+            <!-- delta marker -->
+            <line stroke="#b87c20" stroke-width="0.8" stroke-dasharray="2,2" x1="24" y1="55" x2="35" y2="55"/>
+            <text x="29" y="63" fill="#b87c20" font-size="6.5" font-family="monospace" text-anchor="middle">Δ delta</text>
+            <!-- R dom label -->
+            <text x="40" y="8" fill="#6b7a3a" font-size="7" font-family="monospace" text-anchor="middle">R dom. V1</text>
+          </svg>
+        </div>
+
+        <!-- WPW Tipo B -->
+        <div class="mini-ecg">
+          <span class="mini-label">WPW Tipo B — via acessória direita</span>
+          <svg viewBox="0 0 130 80" style="width:100%;height:80px;">
+            <line x1="0" y1="40" x2="130" y2="40" stroke="rgba(100,70,40,0.25)" stroke-width="0.5"/>
+            <line class="ecg-line" stroke="#6b7a3a" stroke-width="1.8" x1="0" y1="40" x2="8" y2="40"/>
+            <path class="ecg-line" stroke="#6b7a3a" stroke-width="1.8" d="M8,40 Q13,33 18,40"/>
+            <!-- PR CURTO -->
+            <line class="ecg-line" stroke="#6b7a3a" stroke-width="1.5" x1="18" y1="40" x2="24" y2="40"/>
+            <!-- Delta negativa + QS em V1 (padrão tipo B: via direita → V1 negativo) -->
+            <path class="ecg-line" stroke="#6b7a3a" stroke-width="2.5" d="
+              M24,40
+              L28,40
+              Q30,44 33,50
+              L38,68
+              L44,40
+            "/>
+            <line class="ecg-line" stroke="#6b7a3a" stroke-width="1.8" x1="44" y1="40" x2="54" y2="40"/>
+            <path class="ecg-line" stroke="#6b7a3a" stroke-width="1.8" d="M54,40 Q60,30 66,40"/>
+            <line class="ecg-line" stroke="#6b7a3a" stroke-width="1.8" x1="66" y1="40" x2="130" y2="40"/>
+            <!-- PR marker -->
+            <line stroke="#b87c20" stroke-width="0.8" stroke-dasharray="2,2" x1="18" y1="22" x2="24" y2="22"/>
+            <text x="21" y="18" fill="#b87c20" font-size="6.5" font-family="monospace" text-anchor="middle">&lt;120ms</text>
+            <!-- delta negativa -->
+            <line stroke="#b87c20" stroke-width="0.8" stroke-dasharray="2,2" x1="24" y1="52" x2="34" y2="52"/>
+            <text x="29" y="60" fill="#b87c20" font-size="6.5" font-family="monospace" text-anchor="middle">Δ neg.</text>
+            <text x="38" y="78" fill="#6b7a3a" font-size="7" font-family="monospace" text-anchor="middle">QS em V1</text>
+          </svg>
+        </div>
+
+        <!-- SVD para comparação -->
+        <div class="mini-ecg">
+          <span class="mini-label">SVD — para comparação (V1)</span>
+          <svg viewBox="0 0 130 80" style="width:100%;height:80px;">
+            <line x1="0" y1="40" x2="130" y2="40" stroke="rgba(100,70,40,0.25)" stroke-width="0.5"/>
+            <line class="ecg-line" stroke="#8c5c6e" stroke-width="1.8" x1="0" y1="40" x2="8" y2="40"/>
+            <path class="ecg-line" stroke="#8c5c6e" stroke-width="1.8" d="M8,40 Q13,33 18,40"/>
+            <!-- PR NORMAL — diferencial chave -->
+            <line class="ecg-line" stroke="#8c5c6e" stroke-width="1.8" x1="18" y1="40" x2="30" y2="40"/>
+            <!-- QRS estreito com início limpo (sem delta) + R dominante V1 -->
+            <polyline class="ecg-line" stroke="#8c5c6e" stroke-width="2.5" points="30,40 33,40 36,65 42,12 48,40"/>
+            <!-- T invertida V1 -->
+            <line class="ecg-line" stroke="#8c5c6e" stroke-width="1.8" x1="48" y1="40" x2="58" y2="40"/>
+            <path class="ecg-line" stroke="#8c5c6e" stroke-width="1.8" d="M58,40 L64,43 Q70,56 76,40"/>
+            <line class="ecg-line" stroke="#8c5c6e" stroke-width="1.8" x1="76" y1="40" x2="130" y2="40"/>
+            <!-- PR normal marker -->
+            <line stroke="#8c5c6e" stroke-width="0.8" stroke-dasharray="2,2" x1="18" y1="22" x2="30" y2="22"/>
+            <text x="24" y="18" fill="#8c5c6e" font-size="6.5" font-family="monospace" text-anchor="middle">PR normal</text>
+            <!-- sem delta -->
+            <text x="32" y="78" fill="#8c5c6e" font-size="6.5" font-family="monospace" text-anchor="middle">início limpo</text>
+            <text x="42" y="8" fill="#8c5c6e" font-size="7" font-family="monospace" text-anchor="middle">R dom. V1</text>
+          </svg>
+        </div>
+      </div>
+
+      <!-- tabela diferencial WPW x SVD -->
+      <div style="padding:10px 12px;border-bottom:1px solid var(--border2);background:var(--cream);">
+        <div style="font-family:'Lora',serif;font-size:11px;font-weight:700;color:var(--text-mid);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">
+          Diagnóstico Diferencial: WPW tipo A vs SVD — ambos têm R dominante em V1
+        </div>
+        <div style="display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:0;border:1px solid var(--border2);border-radius:4px;overflow:hidden;font-size:11.5px;">
+          <!-- header -->
+          <div style="background:#ede0cc;padding:6px 10px;font-weight:700;color:var(--text-mid);border-right:1px solid var(--border2);">Achado</div>
+          <div style="background:#e8f0da;padding:6px 10px;font-weight:700;color:#4a5e20;border-right:1px solid var(--border2);">WPW tipo A</div>
+          <div style="background:#f2e4f0;padding:6px 10px;font-weight:700;color:#6a2a5a;">SVD</div>
+          <!-- row 1 -->
+          <div style="padding:6px 10px;border-top:1px solid var(--border2);border-right:1px solid var(--border2);font-weight:600;color:var(--text);">PR</div>
+          <div style="padding:6px 10px;border-top:1px solid var(--border2);border-right:1px solid var(--border2);color:#4a5e20;font-weight:700;">⚡ &lt; 120 ms — CURTO</div>
+          <div style="padding:6px 10px;border-top:1px solid var(--border2);color:var(--text-mid);">Normal (120–200 ms)</div>
+          <!-- row 2 -->
+          <div style="padding:6px 10px;border-top:1px solid var(--border2);border-right:1px solid var(--border2);font-weight:600;color:var(--text);">Onda delta</div>
+          <div style="padding:6px 10px;border-top:1px solid var(--border2);border-right:1px solid var(--border2);color:#4a5e20;font-weight:700;">✅ Presente — início do QRS empastado</div>
+          <div style="padding:6px 10px;border-top:1px solid var(--border2);color:var(--text-mid);">❌ Ausente — início limpo e rápido</div>
+          <!-- row 3 -->
+          <div style="padding:6px 10px;border-top:1px solid var(--border2);border-right:1px solid var(--border2);font-weight:600;color:var(--text);">R dominante em V1</div>
+          <div style="padding:6px 10px;border-top:1px solid var(--border2);border-right:1px solid var(--border2);color:var(--text-mid);">✅ Presente (via esquerda → vetor→D)</div>
+          <div style="padding:6px 10px;border-top:1px solid var(--border2);color:var(--text-mid);">✅ Presente (HVD)</div>
+          <!-- row 4 -->
+          <div style="padding:6px 10px;border-top:1px solid var(--border2);border-right:1px solid var(--border2);font-weight:600;color:var(--text);">Eixo elétrico</div>
+          <div style="padding:6px 10px;border-top:1px solid var(--border2);border-right:1px solid var(--border2);color:var(--text-mid);">Variável / pode ser normal</div>
+          <div style="padding:6px 10px;border-top:1px solid var(--border2);color:var(--text-mid);">Desvio direito marcado (&gt;+90°)</div>
+          <!-- row 5 -->
+          <div style="padding:6px 10px;border-top:1px solid var(--border2);border-right:1px solid var(--border2);font-weight:600;color:var(--text);">QRS</div>
+          <div style="padding:6px 10px;border-top:1px solid var(--border2);border-right:1px solid var(--border2);color:var(--text-mid);">Alargado por pré-excitação (delta fundida)</div>
+          <div style="padding:6px 10px;border-top:1px solid var(--border2);color:var(--text-mid);">Normal ou pouco alargado (BRD associado → rSR')</div>
+          <!-- row 6 -->
+          <div style="padding:6px 10px;border-top:1px solid var(--border2);border-right:1px solid var(--border2);font-weight:600;color:var(--text);">Contexto clínico</div>
+          <div style="padding:6px 10px;border-top:1px solid var(--border2);border-right:1px solid var(--border2);color:var(--text-mid);">Palpitações, taquiarritmias (TSVP, FA pré-excitada)</div>
+          <div style="padding:6px 10px;border-top:1px solid var(--border2);color:var(--text-mid);">HP, cardiopatia congênita, TEP</div>
+        </div>
+      </div>
+
+      <!-- ── Ilustração geométrica Delta vs SVD ── -->
+      <div style="padding:12px 14px 10px;border-bottom:1px solid var(--border2);background:#f9f1e4;">
+        <div style="font-family:'Lora',serif;font-size:11px;font-weight:700;color:var(--text-mid);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:10px;">
+          Referência Visual — Geometria do QRS: onde fica a delta e onde fica o strain
+        </div>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 420" style="width:100%;max-width:780px;display:block;margin:0 auto;" font-family="Georgia, serif">
+          <rect width="780" height="420" fill="#faf4ea"/>
+          <defs>
+            <pattern id="sg" width="10" height="10" patternUnits="userSpaceOnUse">
+              <path d="M 10 0 L 0 0 0 10" fill="none" stroke="#e8d8c0" stroke-width="0.4"/>
+            </pattern>
+            <pattern id="bg" width="50" height="50" patternUnits="userSpaceOnUse">
+              <rect width="50" height="50" fill="url(#sg)"/>
+              <path d="M 50 0 L 0 0 0 50" fill="none" stroke="#d4bfa0" stroke-width="0.8"/>
+            </pattern>
+            <marker id="aw-t" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#b85c2a"/></marker>
+            <marker id="aw-o" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#6b7a3a"/></marker>
+            <marker id="aw-m" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#8c5c6e"/></marker>
+          </defs>
+          <!-- grid panels -->
+          <rect x="30" y="60" width="330" height="300" fill="url(#bg)" rx="4"/>
+          <rect x="420" y="60" width="330" height="300" fill="url(#bg)" rx="4"/>
+          <rect x="30" y="60" width="330" height="300" fill="none" stroke="#c9b49a" stroke-width="1.5" rx="4"/>
+          <rect x="420" y="60" width="330" height="300" fill="none" stroke="#c9b49a" stroke-width="1.5" rx="4"/>
+          <!-- title -->
+          <text x="390" y="32" text-anchor="middle" font-size="16" font-weight="700" fill="#3a2a1c">Onda Delta vs SVD/HVD — Diferencial Visual em V1</text>
+          <line x1="80" y1="40" x2="700" y2="40" stroke="#b85c2a" stroke-width="1.5"/>
+          <!-- LEFT: WPW -->
+          <rect x="30" y="60" width="330" height="30" fill="#e8f0da" rx="4"/>
+          <text x="195" y="79" text-anchor="middle" font-size="13" font-weight="700" fill="#4a5e20">WPW — Onda Delta</text>
+          <line x1="55" y1="290" x2="340" y2="290" stroke="#8a7060" stroke-width="1" stroke-dasharray="4,3"/>
+          <!-- ECG WPW trace -->
+          <line x1="55" y1="250" x2="95" y2="250" stroke="#6b7a3a" stroke-width="2.8" stroke-linecap="round"/>
+          <path d="M95,250 Q108,228 121,250" fill="none" stroke="#6b7a3a" stroke-width="2.8" stroke-linecap="round"/>
+          <line x1="121" y1="250" x2="138" y2="250" stroke="#6b7a3a" stroke-width="2.8" stroke-linecap="round"/>
+          <path d="M138,250 L155,242 L175,120 L188,330 L200,250" fill="none" stroke="#6b7a3a" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+          <line x1="200" y1="250" x2="220" y2="255" stroke="#6b7a3a" stroke-width="2.8" stroke-linecap="round"/>
+          <path d="M220,255 Q240,285 260,250" fill="none" stroke="#6b7a3a" stroke-width="2.8" stroke-linecap="round"/>
+          <line x1="260" y1="250" x2="340" y2="250" stroke="#6b7a3a" stroke-width="2.8" stroke-linecap="round"/>
+          <!-- delta zone shading -->
+          <polygon points="138,250 155,242 175,120 138,120" fill="#6b7a3a" opacity="0.09"/>
+          <polygon points="138,250 155,242 175,120 138,120" fill="none" stroke="#6b7a3a" stroke-width="1" stroke-dasharray="3,2" opacity="0.6"/>
+          <!-- annotations WPW -->
+          <line x1="80" y1="190" x2="145" y2="236" stroke="#b85c2a" stroke-width="1.5" marker-end="url(#aw-t)"/>
+          <text x="28" y="175" font-size="11" font-weight="700" fill="#b85c2a">① DELTA</text>
+          <text x="28" y="189" font-size="10" fill="#5c3f2a">cunha oblíqua</text>
+          <text x="28" y="202" font-size="10" fill="#5c3f2a">20–40 ms lenta</text>
+          <line x1="121" y1="270" x2="138" y2="270" stroke="#b87c20" stroke-width="1.5"/>
+          <line x1="121" y1="266" x2="121" y2="274" stroke="#b87c20" stroke-width="1.5"/>
+          <line x1="138" y1="266" x2="138" y2="274" stroke="#b87c20" stroke-width="1.5"/>
+          <text x="129" y="284" text-anchor="middle" font-size="9.5" font-weight="700" fill="#b87c20">PR &lt;120ms</text>
+          <line x1="138" y1="308" x2="200" y2="308" stroke="#3d7a78" stroke-width="1.5"/>
+          <line x1="138" y1="303" x2="138" y2="313" stroke="#3d7a78" stroke-width="1.5"/>
+          <line x1="200" y1="303" x2="200" y2="313" stroke="#3d7a78" stroke-width="1.5"/>
+          <text x="169" y="323" text-anchor="middle" font-size="9.5" fill="#3d7a78">QRS alargado</text>
+          <text x="169" y="334" text-anchor="middle" font-size="9" fill="#3d7a78">(delta + His fundidos)</text>
+          <line x1="305" y1="150" x2="190" y2="130" stroke="#6b7a3a" stroke-width="1.5" marker-end="url(#aw-o)"/>
+          <text x="308" y="145" font-size="10" fill="#5c3f2a">② R dom.</text>
+          <text x="308" y="158" font-size="10" fill="#5c3f2a">V1 (tipo A)</text>
+          <rect x="75" y="340" width="185" height="16" rx="3" fill="#e8f0da"/>
+          <text x="167" y="352" text-anchor="middle" font-size="10.5" font-weight="700" fill="#4a5e20">⚡ início empastado = DELTA</text>
+          <path d="M138,250 Q148,247 152,240" fill="none" stroke="#b85c2a" stroke-width="1.2"/>
+          <text x="154" y="237" font-size="8.5" fill="#b85c2a" font-style="italic">α oblíquo</text>
+          <!-- RIGHT: SVD -->
+          <rect x="420" y="60" width="330" height="30" fill="#f2e4f0" rx="4"/>
+          <text x="585" y="79" text-anchor="middle" font-size="13" font-weight="700" fill="#6a2a5a">SVD / HVD — Sem Delta</text>
+          <line x1="445" y1="290" x2="730" y2="290" stroke="#8a7060" stroke-width="1" stroke-dasharray="4,3"/>
+          <!-- ECG SVD trace -->
+          <line x1="445" y1="250" x2="485" y2="250" stroke="#8c5c6e" stroke-width="2.8" stroke-linecap="round"/>
+          <path d="M485,250 Q498,228 511,250" fill="none" stroke="#8c5c6e" stroke-width="2.8" stroke-linecap="round"/>
+          <line x1="511" y1="250" x2="540" y2="250" stroke="#8c5c6e" stroke-width="2.8" stroke-linecap="round"/>
+          <path d="M540,250 L543,250 L543,120 L558,330 L570,250" fill="none" stroke="#8c5c6e" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+          <line x1="570" y1="250" x2="590" y2="258" stroke="#8c5c6e" stroke-width="2.8" stroke-linecap="round"/>
+          <path d="M590,258 Q615,295 640,250" fill="none" stroke="#8c5c6e" stroke-width="2.8" stroke-linecap="round"/>
+          <line x1="640" y1="250" x2="730" y2="250" stroke="#8c5c6e" stroke-width="2.8" stroke-linecap="round"/>
+          <!-- annotations SVD -->
+          <line x1="543" y1="120" x2="543" y2="250" stroke="#b85c2a" stroke-width="2" stroke-dasharray="5,3" opacity="0.7"/>
+          <line x1="475" y1="185" x2="535" y2="205" stroke="#b85c2a" stroke-width="1.5" marker-end="url(#aw-t)"/>
+          <text x="420" y="175" font-size="11" font-weight="700" fill="#b85c2a">① SEM delta</text>
+          <text x="420" y="189" font-size="10" fill="#5c3f2a">subida vertical</text>
+          <text x="420" y="202" font-size="10" fill="#5c3f2a">e imediata</text>
+          <line x1="511" y1="270" x2="540" y2="270" stroke="#b87c20" stroke-width="1.5"/>
+          <line x1="511" y1="266" x2="511" y2="274" stroke="#b87c20" stroke-width="1.5"/>
+          <line x1="540" y1="266" x2="540" y2="274" stroke="#b87c20" stroke-width="1.5"/>
+          <text x="525" y="284" text-anchor="middle" font-size="9.5" font-weight="700" fill="#b87c20">PR normal</text>
+          <line x1="540" y1="308" x2="570" y2="308" stroke="#3d7a78" stroke-width="1.5"/>
+          <line x1="540" y1="303" x2="540" y2="313" stroke="#3d7a78" stroke-width="1.5"/>
+          <line x1="570" y1="303" x2="570" y2="313" stroke="#3d7a78" stroke-width="1.5"/>
+          <text x="555" y="323" text-anchor="middle" font-size="9.5" fill="#3d7a78">QRS normal</text>
+          <text x="555" y="334" text-anchor="middle" font-size="9" fill="#3d7a78">ou pouco alarg.</text>
+          <line x1="700" y1="300" x2="628" y2="278" stroke="#8c5c6e" stroke-width="1.5" marker-end="url(#aw-m)"/>
+          <text x="668" y="315" font-size="10" fill="#6a2a5a">② T invertida</text>
+          <text x="668" y="328" font-size="10" fill="#6a2a5a">strain pattern</text>
+          <rect x="460" y="340" width="165" height="16" rx="3" fill="#f2e4f0"/>
+          <text x="542" y="352" text-anchor="middle" font-size="10.5" font-weight="700" fill="#6a2a5a">✓ início limpo = SVD</text>
+          <rect x="543" y="240" width="8" height="8" fill="none" stroke="#b85c2a" stroke-width="1.2"/>
+          <text x="554" y="252" font-size="8.5" fill="#b85c2a" font-style="italic">90°</text>
+          <!-- VS circle -->
+          <circle cx="390" cy="210" r="22" fill="#b85c2a"/>
+          <text x="390" y="215" text-anchor="middle" font-size="14" font-weight="700" fill="#faf4ea">VS</text>
+          <!-- bottom rule -->
+          <rect x="30" y="374" width="720" height="36" rx="4" fill="#fdf0dc" stroke="#c9b49a" stroke-width="1"/>
+          <text x="390" y="389" text-anchor="middle" font-size="11" font-weight="700" fill="#7a4a10">REGRA PRÁTICA:</text>
+          <text x="390" y="403" text-anchor="middle" font-size="11" fill="#5c3f2a">Viu R dominante em V1 → meça o PR → procure a cunha no INÍCIO do QRS → sem cunha e PR normal = SVD. Com cunha + PR curto = WPW.</text>
+        </svg>
+      </div>
+
+      <div class="details">
+        <ul class="detail-list">
+          <li><span><strong>Regra prática:</strong> viu R dominante em V1 → meça o PR primeiro. Se PR &lt; 120 ms + início do QRS empastado = WPW, não SVD</span></li>
+          <li><span><strong>WPW tipo A:</strong> via acessória esquerda → pré-excitação do VD → R dominante em V1, semelhante a SVD ou HVD. Pode ser confundido com BRD</span></li>
+          <li><span><strong>WPW tipo B:</strong> via acessória direita → pré-excitação do VE → QS ou rS em V1 e V2, semelhante a BRE ou IAM anterior</span></li>
+          <li><span><strong>Risco na FA:</strong> se FA com WPW → condução pela via acessória sem filtro do nó AV → resposta ventricular altíssima → FV. <strong>Não usar betabloqueador, diltiazem ou digoxina</strong></span></li>
+          <li><span>Confirmação: estudo eletrofisiológico. Tratamento definitivo: ablação por cateter da via acessória</span></li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    ECG · 25 mm/s · 10 mm/mV · referência para PSA e prova de residência médica
+  </footer>
+
+  </div><!-- /tab-padroes -->
+
+  <!-- ══════ TAB 2: R DOMINANTE ══════ -->
+  <div class="tab-panel" id="tab-rdominante">
+
+    <p class="r-sub">R/S ≥ 1 em V1 é sempre patológico → identificar o padrão antes de concluir</p>
+
+    <div class="tree-root-r">R/S ≥ 1 em V1 — cinco causas principais</div>
+    <div class="tree-trunk-r"></div>
+
+    <div class="r-cards">
+
+      <!-- ① WPW Tipo A -->
+      <div class="r-branch">
+        <div class="r-branch-line" style="background:var(--olive);"></div>
+        <div class="r-card" style="border-top:3px solid var(--olive);">
+          <div class="r-card-top">
+            <div class="r-card-tag" style="background:#e8f0da;color:#4a5e20;">Pré-excitação</div>
+            <div class="r-card-title" style="color:var(--olive);">WPW Tipo A</div>
+          </div>
+          <div class="r-ecg-box">
+            <svg viewBox="0 0 160 80" height="80">
+              <line x1="0" y1="42" x2="160" y2="42" stroke="rgba(100,70,40,0.2)" stroke-width="0.5"/>
+              <line fill="none" stroke-linecap="round" stroke-linejoin="round" stroke="#6b7a3a" stroke-width="2" x1="0" y1="42" x2="10" y2="42"/>
+              <path fill="none" stroke-linecap="round" stroke="#6b7a3a" stroke-width="2" d="M10,42 Q18,30 26,42"/>
+              <line fill="none" stroke-linecap="round" stroke="#6b7a3a" stroke-width="2" x1="26" y1="42" x2="34" y2="42"/>
+              <path fill="none" stroke-linecap="round" stroke-linejoin="round" stroke="#6b7a3a" stroke-width="2.8" d="M34,42 L40,42 Q44,36 50,20 L56,42"/>
+              <line fill="none" stroke-linecap="round" stroke="#6b7a3a" stroke-width="2" x1="56" y1="42" x2="68" y2="42"/>
+              <path fill="none" stroke-linecap="round" stroke="#6b7a3a" stroke-width="2" d="M68,42 Q78,28 88,42"/>
+              <line fill="none" stroke-linecap="round" stroke="#6b7a3a" stroke-width="2" x1="88" y1="42" x2="160" y2="42"/>
+              <line x1="26" y1="68" x2="34" y2="68" stroke="#b87c20" stroke-width="1.2"/>
+              <line x1="26" y1="65" x2="26" y2="71" stroke="#b87c20" stroke-width="1.2"/>
+              <line x1="34" y1="65" x2="34" y2="71" stroke="#b87c20" stroke-width="1.2"/>
+              <text x="30" y="78" text-anchor="middle" font-size="7.5" fill="#b87c20" font-family="monospace">PR &lt;120</text>
+              <polygon points="34,42 40,42 50,20 34,20" fill="#6b7a3a" opacity="0.1"/>
+              <text x="42" y="16" text-anchor="middle" font-size="7" fill="#6b7a3a" font-family="monospace">Δ delta</text>
+              <text x="50" y="10" text-anchor="middle" font-size="7.5" fill="#6b7a3a" font-family="monospace" font-weight="bold">R dom.</text>
+            </svg>
+          </div>
+          <div class="r-key" style="color:var(--olive);"><div class="r-key-dot" style="background:var(--olive);"></div>PR curto + onda delta</div>
+          <ul class="r-details">
+            <li><span>Via acessória <strong>esquerda</strong> → pré-excita VD</span></li>
+            <li><span>Cunha oblíqua no <strong>início</strong> do QRS</span></li>
+            <li><span>QRS alargado por fusão com His</span></li>
+            <li><span>Risco: FA pré-excitada → FV</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- ② SVD / HVD -->
+      <div class="r-branch">
+        <div class="r-branch-line" style="background:var(--mauve);"></div>
+        <div class="r-card" style="border-top:3px solid var(--mauve);">
+          <div class="r-card-top">
+            <div class="r-card-tag" style="background:#f2e4f0;color:#6a2a5a;">Câmaras</div>
+            <div class="r-card-title" style="color:var(--mauve);">SVD / HVD</div>
+          </div>
+          <div class="r-ecg-box">
+            <svg viewBox="0 0 160 80" height="80">
+              <line x1="0" y1="42" x2="160" y2="42" stroke="rgba(100,70,40,0.2)" stroke-width="0.5"/>
+              <line fill="none" stroke-linecap="round" stroke="#8c5c6e" stroke-width="2" x1="0" y1="42" x2="10" y2="42"/>
+              <path fill="none" stroke-linecap="round" stroke="#8c5c6e" stroke-width="2" d="M10,42 Q18,30 26,42"/>
+              <line fill="none" stroke-linecap="round" stroke="#8c5c6e" stroke-width="2" x1="26" y1="42" x2="42" y2="42"/>
+              <polyline fill="none" stroke-linecap="round" stroke-linejoin="round" stroke="#8c5c6e" stroke-width="2.8" points="42,42 45,42 45,16 52,60 60,42"/>
+              <line fill="none" stroke-linecap="round" stroke="#8c5c6e" stroke-width="2" x1="60" y1="42" x2="70" y2="44"/>
+              <path fill="none" stroke-linecap="round" stroke="#8c5c6e" stroke-width="2.2" d="M70,44 Q80,62 90,42"/>
+              <line fill="none" stroke-linecap="round" stroke="#8c5c6e" stroke-width="2" x1="90" y1="42" x2="160" y2="42"/>
+              <line x1="26" y1="68" x2="42" y2="68" stroke="#b87c20" stroke-width="1.2"/>
+              <line x1="26" y1="65" x2="26" y2="71" stroke="#b87c20" stroke-width="1.2"/>
+              <line x1="42" y1="65" x2="42" y2="71" stroke="#b87c20" stroke-width="1.2"/>
+              <text x="34" y="78" text-anchor="middle" font-size="7.5" fill="#b87c20" font-family="monospace">PR normal</text>
+              <line x1="45" y1="16" x2="45" y2="42" stroke="#b85c2a" stroke-width="1.2" stroke-dasharray="2,2" opacity="0.7"/>
+              <text x="45" y="12" text-anchor="middle" font-size="7" fill="#b85c2a" font-family="monospace">90°</text>
+              <text x="80" y="70" text-anchor="middle" font-size="7.5" fill="#8c5c6e" font-family="monospace">T inv. strain</text>
+            </svg>
+          </div>
+          <div class="r-key" style="color:var(--mauve);"><div class="r-key-dot" style="background:var(--mauve);"></div>PR normal + eixo direito</div>
+          <ul class="r-details">
+            <li><span>Início do QRS <strong>limpo e vertical</strong></span></li>
+            <li><span>Eixo <strong>&gt; +90°</strong> (desvio direito)</span></li>
+            <li><span>T invertida V1–V4 (strain)</span></li>
+            <li><span>Contexto: HP, TEP, congênita</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- ③ IAM Posterior -->
+      <div class="r-branch">
+        <div class="r-branch-line" style="background:var(--rust);"></div>
+        <div class="r-card" style="border-top:3px solid var(--rust);">
+          <div class="r-card-top">
+            <div class="r-card-tag" style="background:#fce8e0;color:#7a2a10;">Isquemia</div>
+            <div class="r-card-title" style="color:var(--rust);">IAM Posterior</div>
+          </div>
+          <div class="r-ecg-box">
+            <svg viewBox="0 0 160 80" height="80">
+              <line x1="0" y1="42" x2="160" y2="42" stroke="rgba(100,70,40,0.2)" stroke-width="0.5"/>
+              <line fill="none" stroke-linecap="round" stroke="#a0391a" stroke-width="2" x1="0" y1="42" x2="10" y2="42"/>
+              <path fill="none" stroke-linecap="round" stroke="#a0391a" stroke-width="2" d="M10,42 Q18,30 26,42"/>
+              <line fill="none" stroke-linecap="round" stroke="#a0391a" stroke-width="2" x1="26" y1="42" x2="36" y2="42"/>
+              <path fill="none" stroke-linecap="round" stroke-linejoin="round" stroke="#a0391a" stroke-width="2.8" d="M36,42 L40,42 L44,14 L54,42"/>
+              <path fill="none" stroke-linecap="round" stroke="#a0391a" stroke-width="2.2" d="M54,42 Q62,54 72,54 Q84,54 92,42"/>
+              <path fill="none" stroke-linecap="round" stroke="#a0391a" stroke-width="2.2" d="M92,42 Q104,18 116,42"/>
+              <line fill="none" stroke-linecap="round" stroke="#a0391a" stroke-width="2" x1="116" y1="42" x2="160" y2="42"/>
+              <line x1="36" y1="42" x2="116" y2="42" stroke="#a0391a" stroke-width="0.6" stroke-dasharray="3,2" opacity="0.5"/>
+              <text x="72" y="72" text-anchor="middle" font-size="7.5" fill="#a0391a" font-family="monospace">ST↓ recíproco</text>
+              <text x="44" y="10" text-anchor="middle" font-size="7.5" fill="#a0391a" font-family="monospace">R larga</text>
+              <text x="104" y="14" text-anchor="middle" font-size="7.5" fill="#a0391a" font-family="monospace">T+ alta</text>
+            </svg>
+          </div>
+          <div class="r-key" style="color:var(--rust);"><div class="r-key-dot" style="background:var(--rust);"></div>R larga + ST↓ + T positiva</div>
+          <ul class="r-details">
+            <li><span>"<strong>Q espelhada</strong>" — recíproca de V7–V9</span></li>
+            <li><span>R larga (&gt;40ms) = Q patol. refletida</span></li>
+            <li><span>ST ↓ = supra refletido em V8/V9</span></li>
+            <li><span>Confirmar com <strong>derivações posteriores</strong></span></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- ④ BRD -->
+      <div class="r-branch">
+        <div class="r-branch-line" style="background:var(--teal);"></div>
+        <div class="r-card" style="border-top:3px solid var(--teal);">
+          <div class="r-card-top">
+            <div class="r-card-tag" style="background:#deeaf5;color:#2a5a7a;">Condução</div>
+            <div class="r-card-title" style="color:var(--teal);">BRD</div>
+          </div>
+          <div class="r-ecg-box">
+            <svg viewBox="0 0 160 80" height="80">
+              <line x1="0" y1="42" x2="160" y2="42" stroke="rgba(100,70,40,0.2)" stroke-width="0.5"/>
+              <line fill="none" stroke-linecap="round" stroke="#3d7a78" stroke-width="2" x1="0" y1="42" x2="10" y2="42"/>
+              <path fill="none" stroke-linecap="round" stroke="#3d7a78" stroke-width="2" d="M10,42 Q18,30 26,42"/>
+              <line fill="none" stroke-linecap="round" stroke="#3d7a78" stroke-width="2" x1="26" y1="42" x2="34" y2="42"/>
+              <polyline fill="none" stroke-linecap="round" stroke-linejoin="round" stroke="#3d7a78" stroke-width="2.8" points="34,42 36,42 40,28 44,42 48,58 56,42 62,42 68,14 74,42"/>
+              <line fill="none" stroke-linecap="round" stroke="#3d7a78" stroke-width="2" x1="74" y1="42" x2="82" y2="44"/>
+              <path fill="none" stroke-linecap="round" stroke="#3d7a78" stroke-width="2" d="M82,44 Q92,62 102,42"/>
+              <line fill="none" stroke-linecap="round" stroke="#3d7a78" stroke-width="2" x1="102" y1="42" x2="160" y2="42"/>
+              <text x="40" y="24" text-anchor="middle" font-size="8" fill="#3d7a78" font-family="monospace" font-weight="bold">r</text>
+              <text x="48" y="68" text-anchor="middle" font-size="8" fill="#3d7a78" font-family="monospace" font-weight="bold">S</text>
+              <text x="68" y="10" text-anchor="middle" font-size="9" fill="#3d7a78" font-family="monospace" font-weight="bold">R'</text>
+              <text x="52" y="78" text-anchor="middle" font-size="7.5" fill="#3d7a78" font-family="monospace">R' &gt; r → rSR'</text>
+              <line x1="34" y1="70" x2="74" y2="70" stroke="#b87c20" stroke-width="1"/>
+              <line x1="34" y1="67" x2="34" y2="73" stroke="#b87c20" stroke-width="1"/>
+              <line x1="74" y1="67" x2="74" y2="73" stroke="#b87c20" stroke-width="1"/>
+            </svg>
+          </div>
+          <div class="r-key" style="color:var(--teal);"><div class="r-key-dot" style="background:var(--teal);"></div>rSR' em V1 — "orelhas de coelho"</div>
+          <ul class="r-details">
+            <li><span>QRS <strong>≥ 120 ms</strong></span></li>
+            <li><span>R' <strong>maior</strong> que o r inicial</span></li>
+            <li><span>S largo em D1 e V6</span></li>
+            <li><span>T invertida <strong>discordante</strong> V1–V3</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- ⑤ DPOC / Rotação -->
+      <div class="r-branch">
+        <div class="r-branch-line" style="background:var(--sand);"></div>
+        <div class="r-card" style="border-top:3px solid var(--sand);">
+          <div class="r-card-top">
+            <div class="r-card-tag" style="background:#fdf0dc;color:#7a4a10;">Rotação</div>
+            <div class="r-card-title" style="color:var(--umber);">DPOC / Rot. Anti-horária</div>
+          </div>
+          <div class="r-ecg-box">
+            <svg viewBox="0 0 160 80" height="80">
+              <line x1="0" y1="42" x2="160" y2="42" stroke="rgba(100,70,40,0.2)" stroke-width="0.5"/>
+              <line fill="none" stroke-linecap="round" stroke="#c4a055" stroke-width="2" x1="0" y1="42" x2="10" y2="42"/>
+              <path fill="none" stroke-linecap="round" stroke="#c4a055" stroke-width="2" d="M10,42 Q18,32 26,42"/>
+              <line fill="none" stroke-linecap="round" stroke="#c4a055" stroke-width="2" x1="26" y1="42" x2="34" y2="42"/>
+              <polyline fill="none" stroke-linecap="round" stroke-linejoin="round" stroke="#c4a055" stroke-width="2.8" points="34,42 36,42 38,60 44,18 50,42"/>
+              <line fill="none" stroke-linecap="round" stroke="#c4a055" stroke-width="2" x1="50" y1="42" x2="62" y2="42"/>
+              <path fill="none" stroke-linecap="round" stroke="#c4a055" stroke-width="2" d="M62,42 Q72,30 82,42"/>
+              <line fill="none" stroke-linecap="round" stroke="#c4a055" stroke-width="2" x1="82" y1="42" x2="120" y2="42"/>
+              <path fill="none" stroke-linecap="round" stroke="#c4a055" stroke-width="1.5" stroke-dasharray="2,1" d="M120,42 Q126,36 130,42"/>
+              <line fill="none" stroke-linecap="round" stroke="#c4a055" stroke-width="1.5" stroke-dasharray="2,1" x1="130" y1="42" x2="136" y2="42"/>
+              <polyline fill="none" stroke-linecap="round" stroke-linejoin="round" stroke="#c4a055" stroke-width="1.5" stroke-dasharray="2,1" points="136,42 138,42 140,58 143,28 146,42"/>
+              <line fill="none" stroke-linecap="round" stroke="#c4a055" stroke-width="1.5" stroke-dasharray="2,1" x1="146" y1="42" x2="160" y2="42"/>
+              <text x="44" y="12" text-anchor="middle" font-size="7.5" fill="#c4a055" font-family="monospace">R precoce V1</text>
+              <text x="143" y="22" text-anchor="middle" font-size="7" fill="#c4a055" font-family="monospace">R↓ V4-V6</text>
+              <text x="56" y="72" text-anchor="middle" font-size="7.5" fill="#7a4a28" font-family="monospace">T+ (sem strain)</text>
+            </svg>
+          </div>
+          <div class="r-key" style="color:var(--umber);"><div class="r-key-dot" style="background:var(--sand);"></div>Transição precoce + progressão pobre</div>
+          <ul class="r-details">
+            <li><span>Transição em <strong>V1–V2</strong> (normal: V3–V4)</span></li>
+            <li><span>Progressão R <strong>invertida</strong> ou pobre</span></li>
+            <li><span>Sem strain, sem delta, PR normal</span></li>
+            <li><span>DPOC: P pulmonale + eixo direito</span></li>
+          </ul>
+        </div>
+      </div>
+
+    </div><!-- /r-cards -->
+
+    <!-- PROGRESSÃO PRECORDIAIS -->
+    <div class="r-progression">
+      <div class="r-prog-header">Progressão Normal da Onda R nas Precordiais — Zona de Transição em V3/V4</div>
+      <div style="padding:14px 18px 10px;background:#f9f1e4;
+        background-image:
+          linear-gradient(rgba(180,120,60,0.12) 1px,transparent 1px),
+          linear-gradient(90deg,rgba(180,120,60,0.12) 1px,transparent 1px),
+          linear-gradient(rgba(180,120,60,0.05) 1px,transparent 1px),
+          linear-gradient(90deg,rgba(180,120,60,0.05) 1px,transparent 1px);
+        background-size:40px 40px,40px 40px,8px 8px,8px 8px;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1020 180" style="width:100%;display:block;">
+          <defs>
+            <marker id="rp-a" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto"><path d="M0,0 L0,7 L7,3.5 z" fill="#b85c2a"/></marker>
+            <marker id="rp-ar" markerWidth="7" markerHeight="7" refX="2" refY="3.5" orient="auto"><path d="M7,0 L7,7 L0,3.5 z" fill="#b85c2a"/></marker>
+            <marker id="rp-g" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto"><path d="M0,0 L0,7 L7,3.5 z" fill="#6b7a3a"/></marker>
+          </defs>
+          <line x1="10" y1="100" x2="1010" y2="100" stroke="#c4a06060" stroke-width="1" stroke-dasharray="5,4"/>
+          <!-- V1 rS -->
+          <line fill="none" stroke-linecap="round" stroke="#3a2a1c" stroke-width="2" x1="10" y1="100" x2="30" y2="100"/>
+          <polyline fill="none" stroke-linecap="round" stroke-linejoin="round" stroke="#3a2a1c" stroke-width="2.5" points="30,100 34,100 38,86 42,124 48,100"/>
+          <line fill="none" stroke-linecap="round" stroke="#3a2a1c" stroke-width="2" x1="48" y1="100" x2="68" y2="100"/>
+          <path fill="none" stroke-linecap="round" stroke="#3a2a1c" stroke-width="2" d="M68,100 Q76,86 84,100"/>
+          <line fill="none" stroke-linecap="round" stroke="#3a2a1c" stroke-width="2" x1="84" y1="100" x2="108" y2="100"/>
+          <text x="56" y="140" text-anchor="middle" font-size="11" font-weight="700" fill="#3a2a1c">V1</text>
+          <text x="56" y="153" text-anchor="middle" font-size="9.5" fill="#5c3f2a">rS</text>
+          <text x="56" y="165" text-anchor="middle" font-size="9" fill="#8a7060">r &lt; S</text>
+          <!-- V2 rS bigger -->
+          <line fill="none" stroke-linecap="round" stroke="#3a2a1c" stroke-width="2" x1="118" y1="100" x2="136" y2="100"/>
+          <polyline fill="none" stroke-linecap="round" stroke-linejoin="round" stroke="#3a2a1c" stroke-width="2.5" points="136,100 140,100 146,78 152,128 158,100"/>
+          <line fill="none" stroke-linecap="round" stroke="#3a2a1c" stroke-width="2" x1="158" y1="100" x2="174" y2="100"/>
+          <path fill="none" stroke-linecap="round" stroke="#3a2a1c" stroke-width="2" d="M174,100 Q182,84 190,100"/>
+          <line fill="none" stroke-linecap="round" stroke="#3a2a1c" stroke-width="2" x1="190" y1="100" x2="218" y2="100"/>
+          <text x="168" y="140" text-anchor="middle" font-size="11" font-weight="700" fill="#3a2a1c">V2</text>
+          <text x="168" y="153" text-anchor="middle" font-size="9.5" fill="#5c3f2a">rS</text>
+          <text x="168" y="165" text-anchor="middle" font-size="9" fill="#8a7060">r cresce</text>
+          <!-- V3 RS transition -->
+          <line fill="none" stroke-linecap="round" stroke="#b85c2a" stroke-width="2.2" x1="228" y1="100" x2="246" y2="100"/>
+          <polyline fill="none" stroke-linecap="round" stroke-linejoin="round" stroke="#b85c2a" stroke-width="3" points="246,100 250,100 256,62 262,138 268,100"/>
+          <line fill="none" stroke-linecap="round" stroke="#b85c2a" stroke-width="2.2" x1="268" y1="100" x2="282" y2="100"/>
+          <path fill="none" stroke-linecap="round" stroke="#b85c2a" stroke-width="2.2" d="M282,100 Q292,80 302,100"/>
+          <line fill="none" stroke-linecap="round" stroke="#b85c2a" stroke-width="2.2" x1="302" y1="100" x2="328" y2="100"/>
+          <text x="278" y="140" text-anchor="middle" font-size="11" font-weight="700" fill="#b85c2a">V3</text>
+          <text x="278" y="153" text-anchor="middle" font-size="9.5" fill="#b85c2a">RS</text>
+          <text x="278" y="165" text-anchor="middle" font-size="9" fill="#b85c2a">R = S</text>
+          <!-- V4 Rs -->
+          <line fill="none" stroke-linecap="round" stroke="#b85c2a" stroke-width="2.2" x1="338" y1="100" x2="356" y2="100"/>
+          <polyline fill="none" stroke-linecap="round" stroke-linejoin="round" stroke="#b85c2a" stroke-width="3" points="356,100 360,100 366,50 374,116 380,100"/>
+          <line fill="none" stroke-linecap="round" stroke="#b85c2a" stroke-width="2.2" x1="380" y1="100" x2="394" y2="100"/>
+          <path fill="none" stroke-linecap="round" stroke="#b85c2a" stroke-width="2.2" d="M394,100 Q404,76 414,100"/>
+          <line fill="none" stroke-linecap="round" stroke="#b85c2a" stroke-width="2.2" x1="414" y1="100" x2="438" y2="100"/>
+          <text x="388" y="140" text-anchor="middle" font-size="11" font-weight="700" fill="#b85c2a">V4</text>
+          <text x="388" y="153" text-anchor="middle" font-size="9.5" fill="#b85c2a">Rs</text>
+          <text x="388" y="165" text-anchor="middle" font-size="9" fill="#b85c2a">R &gt; S</text>
+          <!-- V5 R -->
+          <line fill="none" stroke-linecap="round" stroke="#3a2a1c" stroke-width="2" x1="448" y1="100" x2="466" y2="100"/>
+          <polyline fill="none" stroke-linecap="round" stroke-linejoin="round" stroke="#3a2a1c" stroke-width="2.5" points="466,100 470,100 476,36 486,110 492,100"/>
+          <line fill="none" stroke-linecap="round" stroke="#3a2a1c" stroke-width="2" x1="492" y1="100" x2="508" y2="100"/>
+          <path fill="none" stroke-linecap="round" stroke="#3a2a1c" stroke-width="2" d="M508,100 Q518,74 528,100"/>
+          <line fill="none" stroke-linecap="round" stroke="#3a2a1c" stroke-width="2" x1="528" y1="100" x2="548" y2="100"/>
+          <text x="498" y="140" text-anchor="middle" font-size="11" font-weight="700" fill="#3a2a1c">V5</text>
+          <text x="498" y="153" text-anchor="middle" font-size="9.5" fill="#5c3f2a">Rs</text>
+          <text x="498" y="165" text-anchor="middle" font-size="9" fill="#8a7060">R máxima</text>
+          <!-- V6 R -->
+          <line fill="none" stroke-linecap="round" stroke="#3a2a1c" stroke-width="2" x1="558" y1="100" x2="576" y2="100"/>
+          <polyline fill="none" stroke-linecap="round" stroke-linejoin="round" stroke="#3a2a1c" stroke-width="2.5" points="576,100 580,100 586,42 594,108 600,100"/>
+          <line fill="none" stroke-linecap="round" stroke="#3a2a1c" stroke-width="2" x1="600" y1="100" x2="614" y2="100"/>
+          <path fill="none" stroke-linecap="round" stroke="#3a2a1c" stroke-width="2" d="M614,100 Q624,78 634,100"/>
+          <line fill="none" stroke-linecap="round" stroke="#3a2a1c" stroke-width="2" x1="634" y1="100" x2="658" y2="100"/>
+          <text x="608" y="140" text-anchor="middle" font-size="11" font-weight="700" fill="#3a2a1c">V6</text>
+          <text x="608" y="153" text-anchor="middle" font-size="9.5" fill="#5c3f2a">R</text>
+          <text x="608" y="165" text-anchor="middle" font-size="9" fill="#8a7060">R pura</text>
+          <!-- transition arrow -->
+          <line x1="228" y1="18" x2="438" y2="18" stroke="#b85c2a" stroke-width="1.5" marker-start="url(#rp-ar)" marker-end="url(#rp-a)"/>
+          <text x="333" y="14" text-anchor="middle" font-size="10" font-weight="700" fill="#b85c2a">ZONA DE TRANSIÇÃO (V3–V4)</text>
+          <!-- R growth arrow -->
+          <path d="M 30,72 Q 190,40 590,38" fill="none" stroke="#6b7a3a" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#rp-g)" opacity="0.7"/>
+          <text x="310" y="32" font-size="9" fill="#6b7a3a" font-family="monospace">R cresce progressivamente V1 → V6</text>
+          <!-- dividers -->
+          <line x1="113" y1="15" x2="113" y2="170" stroke="#e0cdb6" stroke-width="1"/>
+          <line x1="223" y1="15" x2="223" y2="170" stroke="#e0cdb6" stroke-width="1"/>
+          <line x1="333" y1="15" x2="333" y2="170" stroke="#e0cdb6" stroke-width="1"/>
+          <line x1="443" y1="15" x2="443" y2="170" stroke="#e0cdb6" stroke-width="1"/>
+          <line x1="553" y1="15" x2="553" y2="170" stroke="#e0cdb6" stroke-width="1"/>
+          <line x1="663" y1="15" x2="663" y2="170" stroke="#e0cdb6" stroke-width="1"/>
+          <!-- pathological box -->
+          <rect x="680" y="30" width="330" height="115" rx="4" fill="#fdf0dc" stroke="#c9b49a" stroke-width="1"/>
+          <text x="845" y="48" text-anchor="middle" font-size="10.5" font-weight="700" fill="#7a4a10">Progressão anormal — quando suspeitar</text>
+          <text x="692" y="65" font-size="10" fill="#5c3f2a">• Transição em V1–V2: WPW tipo A, rot. anti-horária</text>
+          <text x="692" y="80" font-size="10" fill="#5c3f2a">• Transição em V5–V6 (ausente): rot. horária, DPOC</text>
+          <text x="692" y="95" font-size="10" fill="#5c3f2a">• R não cresce de V1 a V4: IAM anterior antigo</text>
+          <text x="692" y="110" font-size="10" fill="#5c3f2a">• R larga V1 + ST↓ + T alta: IAM posterior</text>
+          <text x="692" y="125" font-size="10" fill="#5c3f2a">• rSR' em V1 com QRS ≥120ms: BRD</text>
+          <text x="692" y="140" font-size="10" fill="#5c3f2a">• R dom. V1 + PR curto + delta: WPW tipo A</text>
+        </svg>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--border2);">
+        <div style="padding:8px 12px;border-right:1px solid var(--border2);">
+          <div style="font-size:10px;font-weight:700;color:var(--terra);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:2px;">Zona de transição normal</div>
+          <div style="font-size:11px;color:var(--text-mid);">V3 ou V4 — onde R = S pela primeira vez</div>
+        </div>
+        <div style="padding:8px 12px;border-right:1px solid var(--border2);">
+          <div style="font-size:10px;font-weight:700;color:var(--teal);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:2px;">Rotação anti-horária</div>
+          <div style="font-size:11px;color:var(--text-mid);">Transição precoce (V1–V2) — R domina cedo</div>
+        </div>
+        <div style="padding:8px 12px;">
+          <div style="font-size:10px;font-weight:700;color:var(--umber);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:2px;">Rotação horária / DPOC</div>
+          <div style="font-size:11px;color:var(--text-mid);">Transição tardia ou ausente (V5–V6) — S predomina</div>
+        </div>
+      </div>
+    </div><!-- /r-progression -->
+
+    <footer>ECG · 25 mm/s · 10 mm/mV · referência para PSA e prova de residência médica</footer>
+
+  </div><!-- /tab-rdominante -->
+
+  <!-- ══════ TAB 3: BRUGADA ══════ -->
+  <div class="tab-panel" id="tab-brugada">
+
+    <p class="r-sub">Canalopatia SCN5A · coração estruturalmente normal · risco de FV e morte súbita</p>
+
+    <!-- ── TIPOS LADO A LADO ── -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:20px;">
+
+      <!-- TIPO 1 — COVED -->
+      <div style="background:var(--paper);border:1px solid var(--border);border-top:4px solid #a0391a;border-radius:6px;overflow:hidden;">
+        <div style="background:#fce8e0;padding:8px 12px 7px;border-bottom:1px solid var(--border2);">
+          <div style="font-size:8px;font-weight:700;letter-spacing:0.13em;text-transform:uppercase;background:#fce8e0;color:#7a2a10;display:inline-block;padding:1px 6px;border-radius:2px;margin-bottom:4px;">Diagnóstico</div>
+          <div style="font-family:'Lora',serif;font-size:13px;font-weight:700;color:#a0391a;">Tipo 1 — "Coved" (em cova)</div>
+          <div style="font-size:10px;color:var(--text-dim);margin-top:2px;">Único padrão que confirma diagnóstico</div>
+        </div>
+        <!-- ECG Tipo 1 -->
+        <div style="background:#f9f1e4;padding:12px 10px 8px;border-bottom:1px solid var(--border2);
+          background-image:linear-gradient(rgba(180,120,60,0.12) 1px,transparent 1px),linear-gradient(90deg,rgba(180,120,60,0.12) 1px,transparent 1px),linear-gradient(rgba(180,120,60,0.05) 1px,transparent 1px),linear-gradient(90deg,rgba(180,120,60,0.05) 1px,transparent 1px);
+          background-size:40px 40px,40px 40px,8px 8px,8px 8px;">
+          <svg viewBox="0 0 240 160" style="width:100%;display:block;">
+            <!-- isoelectric -->
+            <line x1="0" y1="100" x2="240" y2="100" stroke="#c4a06050" stroke-width="1" stroke-dasharray="4,3"/>
+            <!-- baseline in -->
+            <line x1="0" y1="100" x2="30" y2="100" stroke="#a0391a" stroke-width="2.2" stroke-linecap="round"/>
+            <!-- P wave -->
+            <path d="M30,100 Q42,82 54,100" fill="none" stroke="#a0391a" stroke-width="2.2" stroke-linecap="round"/>
+            <!-- PR segment -->
+            <line x1="54" y1="100" x2="72" y2="100" stroke="#a0391a" stroke-width="2.2" stroke-linecap="round"/>
+            <!-- QRS + COVED ST: r' then OBLIQUE descent (key!) -->
+            <!-- small q -->
+            <polyline points="72,100 76,100 79,112 84,100" fill="none" stroke="#a0391a" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- r wave up to peak -->
+            <polyline points="84,100 88,100 96,38 102,100" fill="none" stroke="#a0391a" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- COVED: from J point, ST descends OBLIQUELY (no plateau, no saddle) straight down into negative T -->
+            <path d="M102,100 Q106,95 112,88 Q120,80 132,108 Q138,122 144,128 Q150,130 158,100" fill="none" stroke="#a0391a" stroke-width="3" stroke-linecap="round"/>
+            <!-- baseline out -->
+            <line x1="158" y1="100" x2="240" y2="100" stroke="#a0391a" stroke-width="2.2" stroke-linecap="round"/>
+
+            <!-- ST elevation annotation -->
+            <line x1="102" y1="100" x2="240" y2="100" stroke="#a0391a" stroke-width="0.7" stroke-dasharray="3,3" opacity="0.4"/>
+            <line x1="112" y1="88" x2="112" y2="100" stroke="#b87c20" stroke-width="1.2"/>
+            <line x1="108" y1="88" x2="118" y2="88" stroke="#b87c20" stroke-width="1.2"/>
+            <line x1="108" y1="100" x2="118" y2="100" stroke="#b87c20" stroke-width="1.2"/>
+            <text x="124" y="90" font-size="9" fill="#b87c20" font-family="monospace" font-weight="bold">≥2mm</text>
+
+            <!-- Coved shape annotation arrow -->
+            <line x1="190" y1="70" x2="128" y2="105" stroke="#a0391a" stroke-width="1" stroke-dasharray="3,2"/>
+            <text x="192" y="62" font-size="9" fill="#a0391a" font-family="monospace" font-weight="bold">descida</text>
+            <text x="192" y="74" font-size="9" fill="#a0391a" font-family="monospace">oblíqua</text>
+
+            <!-- T negative label -->
+            <text x="144" y="145" text-anchor="middle" font-size="9" fill="#a0391a" font-family="monospace" font-weight="bold">T negativa</text>
+
+            <!-- J point dot -->
+            <circle cx="102" cy="100" r="3.5" fill="#b87c20"/>
+            <text x="95" y="82" font-size="8.5" fill="#b87c20" font-family="monospace">J</text>
+
+            <!-- shape outline hint -->
+            <text x="120" y="20" text-anchor="middle" font-size="10" fill="#a0391a" font-weight="bold" font-family="'Source Sans 3',sans-serif">▼ forma de "abóbada"</text>
+          </svg>
+        </div>
+        <!-- geometric close-up: coved vs saddle -->
+        <div style="background:#fff8f0;padding:10px 12px 8px;border-bottom:1px solid var(--border2);">
+          <div style="font-size:9px;font-weight:700;color:#7a4a10;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;">Geometria do ST — Tipo 1</div>
+          <svg viewBox="0 0 200 70" style="width:100%;display:block;">
+            <!-- J point -->
+            <circle cx="30" cy="25" r="3" fill="#a0391a"/>
+            <text x="30" y="14" text-anchor="middle" font-size="8" fill="#b87c20" font-family="monospace">J</text>
+            <!-- COVED: oblique straight downslope -->
+            <path d="M30,25 L80,55 Q100,65 120,35" fill="none" stroke="#a0391a" stroke-width="2.5" stroke-linecap="round"/>
+            <!-- isoelectric -->
+            <line x1="0" y1="60" x2="200" y2="60" stroke="#c4a06060" stroke-width="1" stroke-dasharray="3,2"/>
+            <!-- baseline before J -->
+            <line x1="0" y1="25" x2="30" y2="25" stroke="#a0391a" stroke-width="1.5" stroke-dasharray="3,2"/>
+            <!-- angle indicator -->
+            <path d="M30,25 Q40,25 42,32" fill="none" stroke="#b87c20" stroke-width="1"/>
+            <text x="48" y="40" font-size="8" fill="#b87c20" font-family="monospace">declive</text>
+            <!-- label -->
+            <text x="75" y="12" text-anchor="middle" font-size="9" fill="#a0391a" font-weight="bold" font-family="'Source Sans 3',sans-serif">ST cai reto → T neg.</text>
+          </svg>
+        </div>
+        <div style="padding:8px 12px 10px;">
+          <ul class="r-details">
+            <li><span>ST ≥ 2 mm em V1 ou V2</span></li>
+            <li><span>Descida <strong>oblíqua</strong> sem plateau — "abóbada"</span></li>
+            <li><span>T <strong>negativa</strong> ao final</span></li>
+            <li><span><strong>Sozinho já confirma</strong> diagnóstico</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- TIPO 2 — SADDLE-BACK -->
+      <div style="background:var(--paper);border:1px solid var(--border);border-top:4px solid #b87c20;border-radius:6px;overflow:hidden;">
+        <div style="background:#fdf0dc;padding:8px 12px 7px;border-bottom:1px solid var(--border2);">
+          <div style="font-size:8px;font-weight:700;letter-spacing:0.13em;text-transform:uppercase;background:#fdf0dc;color:#7a4a10;display:inline-block;padding:1px 6px;border-radius:2px;margin-bottom:4px;">Inconclusivo</div>
+          <div style="font-family:'Lora',serif;font-size:13px;font-weight:700;color:#b87c20;">Tipo 2 — "Saddle-back" (sela)</div>
+          <div style="font-size:10px;color:var(--text-dim);margin-top:2px;">Requer teste farmacológico para confirmar</div>
+        </div>
+        <div style="background:#f9f1e4;padding:12px 10px 8px;border-bottom:1px solid var(--border2);
+          background-image:linear-gradient(rgba(180,120,60,0.12) 1px,transparent 1px),linear-gradient(90deg,rgba(180,120,60,0.12) 1px,transparent 1px),linear-gradient(rgba(180,120,60,0.05) 1px,transparent 1px),linear-gradient(90deg,rgba(180,120,60,0.05) 1px,transparent 1px);
+          background-size:40px 40px,40px 40px,8px 8px,8px 8px;">
+          <svg viewBox="0 0 240 160" style="width:100%;display:block;">
+            <line x1="0" y1="100" x2="240" y2="100" stroke="#c4a06050" stroke-width="1" stroke-dasharray="4,3"/>
+            <line x1="0" y1="100" x2="30" y2="100" stroke="#b87c20" stroke-width="2.2" stroke-linecap="round"/>
+            <path d="M30,100 Q42,82 54,100" fill="none" stroke="#b87c20" stroke-width="2.2" stroke-linecap="round"/>
+            <line x1="54" y1="100" x2="72" y2="100" stroke="#b87c20" stroke-width="2.2" stroke-linecap="round"/>
+            <polyline points="72,100 76,100 79,112 84,100" fill="none" stroke="#b87c20" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <polyline points="84,100 88,100 96,40 102,100" fill="none" stroke="#b87c20" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- SADDLE: from J, ST rises slightly (convex up), then dips into valley, then rises again to T+ -->
+            <path d="M102,100 Q106,94 114,84 Q122,78 130,86 Q136,92 142,86 Q150,80 158,100" fill="none" stroke="#b87c20" stroke-width="3" stroke-linecap="round"/>
+            <line x1="158" y1="100" x2="240" y2="100" stroke="#b87c20" stroke-width="2.2" stroke-linecap="round"/>
+
+            <!-- ST elevation annotation -->
+            <line x1="114" y1="84" x2="114" y2="100" stroke="#a0391a" stroke-width="1.2"/>
+            <line x1="110" y1="84" x2="120" y2="84" stroke="#a0391a" stroke-width="1.2"/>
+            <text x="126" y="82" font-size="9" fill="#a0391a" font-family="monospace" font-weight="bold">≥2mm</text>
+
+            <!-- T positive label -->
+            <text x="158" y="75" text-anchor="middle" font-size="9" fill="#b87c20" font-family="monospace" font-weight="bold">T+ ou ±</text>
+
+            <!-- saddle valley annotation -->
+            <line x1="185" y1="115" x2="136" y2="92" stroke="#b87c20" stroke-width="1" stroke-dasharray="3,2"/>
+            <text x="186" y="108" font-size="8.5" fill="#b87c20" font-family="monospace">vale da</text>
+            <text x="186" y="120" font-size="8.5" fill="#b87c20" font-family="monospace">sela</text>
+
+            <circle cx="102" cy="100" r="3.5" fill="#b87c20"/>
+            <text x="95" y="82" font-size="8.5" fill="#b87c20" font-family="monospace">J</text>
+            <text x="120" y="20" text-anchor="middle" font-size="10" fill="#b87c20" font-weight="bold" font-family="'Source Sans 3',sans-serif">▲ forma de "sela de montar"</text>
+          </svg>
+        </div>
+        <div style="background:#fff8f0;padding:10px 12px 8px;border-bottom:1px solid var(--border2);">
+          <div style="font-size:9px;font-weight:700;color:#7a4a10;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;">Geometria do ST — Tipo 2</div>
+          <svg viewBox="0 0 200 70" style="width:100%;display:block;">
+            <circle cx="30" cy="25" r="3" fill="#b87c20"/>
+            <text x="30" y="14" text-anchor="middle" font-size="8" fill="#b87c20" font-family="monospace">J</text>
+            <!-- SADDLE: up then valley then up again -->
+            <path d="M30,25 Q50,18 70,30 Q85,38 100,28 Q115,20 130,35" fill="none" stroke="#b87c20" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="0" y1="60" x2="200" y2="60" stroke="#c4a06060" stroke-width="1" stroke-dasharray="3,2"/>
+            <line x1="0" y1="25" x2="30" y2="25" stroke="#b87c20" stroke-width="1.5" stroke-dasharray="3,2"/>
+            <!-- valley label -->
+            <line x1="85" y1="38" x2="85" y2="55" stroke="#b87c20" stroke-width="1" stroke-dasharray="2,2"/>
+            <text x="85" y="62" text-anchor="middle" font-size="7.5" fill="#b87c20" font-family="monospace">vale</text>
+            <text x="100" y="12" text-anchor="middle" font-size="9" fill="#b87c20" font-weight="bold" font-family="'Source Sans 3',sans-serif">ST sobe → vale → sobe → T+</text>
+          </svg>
+        </div>
+        <div style="padding:8px 12px 10px;">
+          <ul class="r-details">
+            <li><span>ST ≥ 2 mm com <strong>convexidade</strong> para cima</span></li>
+            <li><span>T positiva ou bifásica</span></li>
+            <li><span><strong>Não fecha diagnóstico</strong> isolado</span></li>
+            <li><span>Converter com ajmalina/flecainida</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- TIPO 3 -->
+      <div style="background:var(--paper);border:1px solid var(--border);border-top:4px solid #8a7060;border-radius:6px;overflow:hidden;">
+        <div style="background:var(--cream);padding:8px 12px 7px;border-bottom:1px solid var(--border2);">
+          <div style="font-size:8px;font-weight:700;letter-spacing:0.13em;text-transform:uppercase;background:#ede0cc;color:#5a4030;display:inline-block;padding:1px 6px;border-radius:2px;margin-bottom:4px;">Inespecífico</div>
+          <div style="font-family:'Lora',serif;font-size:13px;font-weight:700;color:#5a4030;">Tipo 3 — Mínimo</div>
+          <div style="font-size:10px;color:var(--text-dim);margin-top:2px;">ST &lt; 1 mm — sem valor diagnóstico isolado</div>
+        </div>
+        <div style="background:#f9f1e4;padding:12px 10px 8px;border-bottom:1px solid var(--border2);
+          background-image:linear-gradient(rgba(180,120,60,0.12) 1px,transparent 1px),linear-gradient(90deg,rgba(180,120,60,0.12) 1px,transparent 1px),linear-gradient(rgba(180,120,60,0.05) 1px,transparent 1px),linear-gradient(90deg,rgba(180,120,60,0.05) 1px,transparent 1px);
+          background-size:40px 40px,40px 40px,8px 8px,8px 8px;">
+          <svg viewBox="0 0 240 160" style="width:100%;display:block;">
+            <line x1="0" y1="100" x2="240" y2="100" stroke="#c4a06050" stroke-width="1" stroke-dasharray="4,3"/>
+            <line x1="0" y1="100" x2="30" y2="100" stroke="#8a7060" stroke-width="2.2" stroke-linecap="round"/>
+            <path d="M30,100 Q42,82 54,100" fill="none" stroke="#8a7060" stroke-width="2.2" stroke-linecap="round"/>
+            <line x1="54" y1="100" x2="72" y2="100" stroke="#8a7060" stroke-width="2.2" stroke-linecap="round"/>
+            <polyline points="72,100 76,100 79,112 84,100" fill="none" stroke="#8a7060" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <polyline points="84,100 88,100 96,42 102,100" fill="none" stroke="#8a7060" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- TYPE 3: minimal ST elevation <1mm, T positive or flat -->
+            <path d="M102,100 Q108,97 118,95 Q130,94 140,96 Q148,98 158,100" fill="none" stroke="#8a7060" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="158" y1="100" x2="170" y2="100" stroke="#8a7060" stroke-width="2.2" stroke-linecap="round"/>
+            <path d="M170,100 Q180,88 190,100" fill="none" stroke="#8a7060" stroke-width="2.2" stroke-linecap="round"/>
+            <line x1="190" y1="100" x2="240" y2="100" stroke="#8a7060" stroke-width="2.2" stroke-linecap="round"/>
+            <!-- minimal ST annotation -->
+            <line x1="118" y1="95" x2="118" y2="100" stroke="#b87c20" stroke-width="1.2"/>
+            <text x="128" y="90" font-size="9" fill="#b87c20" font-family="monospace">&lt;1mm</text>
+            <circle cx="102" cy="100" r="3.5" fill="#8a7060"/>
+            <text x="120" y="20" text-anchor="middle" font-size="10" fill="#8a7060" font-weight="bold" font-family="'Source Sans 3',sans-serif">↔ alteração mínima</text>
+            <text x="120" y="145" text-anchor="middle" font-size="9" fill="#8a7060" font-family="monospace">T positiva ou plana</text>
+          </svg>
+        </div>
+        <div style="background:#fff8f0;padding:10px 12px 8px;border-bottom:1px solid var(--border2);">
+          <div style="font-size:9px;font-weight:700;color:#7a4a10;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;">Geometria do ST — Tipo 3</div>
+          <svg viewBox="0 0 200 70" style="width:100%;display:block;">
+            <circle cx="30" cy="30" r="3" fill="#8a7060"/>
+            <text x="30" y="18" text-anchor="middle" font-size="8" fill="#8a7060" font-family="monospace">J</text>
+            <!-- minimal: ST barely elevated, essentially flat -->
+            <path d="M30,30 Q60,27 100,28 Q130,28 160,32" fill="none" stroke="#8a7060" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="0" y1="60" x2="200" y2="60" stroke="#c4a06060" stroke-width="1" stroke-dasharray="3,2"/>
+            <line x1="0" y1="30" x2="30" y2="30" stroke="#8a7060" stroke-width="1.5" stroke-dasharray="3,2"/>
+            <line x1="80" y1="28" x2="80" y2="60" stroke="#8a7060" stroke-width="0.8" stroke-dasharray="2,2"/>
+            <text x="100" y="12" text-anchor="middle" font-size="9" fill="#8a7060" font-weight="bold" font-family="'Source Sans 3',sans-serif">ST quase isoelétrico</text>
+          </svg>
+        </div>
+        <div style="padding:8px 12px 10px;">
+          <ul class="r-details">
+            <li><span>ST &lt; 1 mm — qualquer morfologia</span></li>
+            <li><span>T positiva ou plana</span></li>
+            <li><span><strong>Sem valor diagnóstico</strong> isolado</span></li>
+            <li><span>Monitorar com historico familiar/clínico</span></li>
+          </ul>
+        </div>
+      </div>
+
+    </div><!-- /3 tipos -->
+
+    <!-- ── DIAGNÓSTICO VISUAL: COVED vs SADDLE ── -->
+    <div style="background:var(--paper);border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-bottom:16px;">
+      <div style="background:var(--cream);padding:9px 14px;border-bottom:1px solid var(--border2);font-family:'Lora',serif;font-size:12.5px;font-weight:700;color:var(--text);">
+        Comparação Direta — Coved vs Saddle-back — o detalhe que fecha ou abre o diagnóstico
+      </div>
+      <div style="padding:14px 16px 12px;background:#f9f1e4;
+        background-image:linear-gradient(rgba(180,120,60,0.1) 1px,transparent 1px),linear-gradient(90deg,rgba(180,120,60,0.1) 1px,transparent 1px),linear-gradient(rgba(180,120,60,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(180,120,60,0.04) 1px,transparent 1px);
+        background-size:40px 40px,40px 40px,8px 8px,8px 8px;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 200" style="width:100%;display:block;">
+          <defs>
+            <marker id="bg-a" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto"><path d="M0,0 L0,7 L7,3.5 z" fill="#a0391a"/></marker>
+            <marker id="bg-b" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto"><path d="M0,0 L0,7 L7,3.5 z" fill="#b87c20"/></marker>
+          </defs>
+
+          <!-- isoelectric lines -->
+          <line x1="20" y1="120" x2="400" y2="120" stroke="#c4a06050" stroke-width="1" stroke-dasharray="4,3"/>
+          <line x1="460" y1="120" x2="840" y2="120" stroke="#c4a06050" stroke-width="1" stroke-dasharray="4,3"/>
+
+          <!-- LEFT: COVED TYPE 1 full complex -->
+          <text x="210" y="18" text-anchor="middle" font-size="12" font-weight="700" fill="#a0391a" font-family="'Lora',serif">TIPO 1 — Coved ✓ Diagnóstico</text>
+          <!-- trace -->
+          <line x1="20" y1="120" x2="50" y2="120" stroke="#a0391a" stroke-width="2.2" stroke-linecap="round"/>
+          <path d="M50,120 Q62,102 74,120" fill="none" stroke="#a0391a" stroke-width="2.2" stroke-linecap="round"/>
+          <line x1="74" y1="120" x2="92" y2="120" stroke="#a0391a" stroke-width="2.2" stroke-linecap="round"/>
+          <polyline points="92,120 98,120 104,60 112,120" fill="none" stroke="#a0391a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+          <!-- COVED: oblique steep descent, no bump, ends in neg T -->
+          <path d="M112,120 Q118,112 126,104 Q140,95 154,118 Q162,132 172,138 Q180,142 192,120" fill="none" stroke="#a0391a" stroke-width="3.2" stroke-linecap="round"/>
+          <line x1="192" y1="120" x2="400" y2="120" stroke="#a0391a" stroke-width="2.2" stroke-linecap="round"/>
+
+          <!-- COVED annotation: descida oblíqua -->
+          <line x1="112" y1="120" x2="156" y2="120" stroke="#a0391a" stroke-width="0.8" stroke-dasharray="3,2" opacity="0.5"/>
+          <line x1="126" y1="104" x2="310" y2="80" stroke="#a0391a" stroke-width="1" stroke-dasharray="3,2" marker-end="url(#bg-a)"/>
+          <text x="315" y="74" font-size="10" fill="#a0391a" font-family="monospace" font-weight="bold">① ST desce SEM subida</text>
+          <text x="315" y="86" font-size="9.5" fill="#5c3f2a" font-family="monospace">obliquamente até T negativa</text>
+
+          <line x1="172" y1="140" x2="310" y2="105" stroke="#a0391a" stroke-width="1" stroke-dasharray="3,2" marker-end="url(#bg-a)"/>
+          <text x="315" y="100" font-size="10" fill="#a0391a" font-family="monospace" font-weight="bold">② T NEGATIVA</text>
+          <text x="315" y="112" font-size="9.5" fill="#5c3f2a" font-family="monospace">abaixo da linha isoelétrica</text>
+
+          <!-- J point -->
+          <circle cx="112" cy="120" r="4" fill="#b87c20"/>
+          <text x="104" y="140" font-size="9" fill="#b87c20" font-family="monospace">J ≥2mm</text>
+
+          <!-- RIGHT: SADDLE TYPE 2 full complex -->
+          <text x="650" y="18" text-anchor="middle" font-size="12" font-weight="700" fill="#b87c20" font-family="'Lora',serif">TIPO 2 — Saddle-back ✗ Inconclusivo</text>
+          <line x1="460" y1="120" x2="490" y2="120" stroke="#b87c20" stroke-width="2.2" stroke-linecap="round"/>
+          <path d="M490,120 Q502,102 514,120" fill="none" stroke="#b87c20" stroke-width="2.2" stroke-linecap="round"/>
+          <line x1="514" y1="120" x2="532" y2="120" stroke="#b87c20" stroke-width="2.2" stroke-linecap="round"/>
+          <polyline points="532,120 538,120 544,60 552,120" fill="none" stroke="#b87c20" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+          <!-- SADDLE: from J goes UP first (convex), then dips valley, then back up to positive T -->
+          <path d="M552,120 Q558,110 568,96 Q578,88 588,96 Q598,104 606,96 Q616,88 628,120" fill="none" stroke="#b87c20" stroke-width="3.2" stroke-linecap="round"/>
+          <line x1="628" y1="120" x2="840" y2="120" stroke="#b87c20" stroke-width="2.2" stroke-linecap="round"/>
+
+          <!-- SADDLE annotations -->
+          <line x1="568" y1="96" x2="660" y2="70" stroke="#b87c20" stroke-width="1" stroke-dasharray="3,2" marker-end="url(#bg-b)"/>
+          <text x="665" y="65" font-size="10" fill="#b87c20" font-family="monospace" font-weight="bold">① ST SOBE primeiro</text>
+          <text x="665" y="77" font-size="9.5" fill="#5c3f2a" font-family="monospace">convexidade para cima</text>
+
+          <line x1="628" y1="115" x2="665" y2="98" stroke="#b87c20" stroke-width="1" stroke-dasharray="3,2" marker-end="url(#bg-b)"/>
+          <text x="665" y="95" font-size="10" fill="#b87c20" font-family="monospace" font-weight="bold">② T POSITIVA</text>
+          <text x="665" y="107" font-size="9.5" fill="#5c3f2a" font-family="monospace">acima da linha isoelétrica</text>
+
+          <!-- valley annotation -->
+          <line x1="588" y1="96" x2="660" y2="130" stroke="#b87c20" stroke-width="1" stroke-dasharray="3,2" marker-end="url(#bg-b)"/>
+          <text x="665" y="127" font-size="9.5" fill="#b87c20" font-family="monospace">③ "vale" da sela</text>
+
+          <circle cx="552" cy="120" r="4" fill="#b87c20"/>
+          <text x="544" y="140" font-size="9" fill="#b87c20" font-family="monospace">J ≥2mm</text>
+
+          <!-- CENTER divider -->
+          <line x1="430" y1="10" x2="430" y2="190" stroke="#c9b49a" stroke-width="1" stroke-dasharray="5,4"/>
+          <text x="430" y="195" text-anchor="middle" font-size="9" fill="#8a7060" font-family="monospace">vs</text>
+        </svg>
+      </div>
+    </div>
+
+    <!-- ── DERIVAÇÕES ALTAS + FATORES + CONDUTA ── -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;">
+
+      <!-- Derivações altas -->
+      <div style="background:var(--paper);border:1px solid var(--border);border-radius:6px;overflow:hidden;">
+        <div style="background:var(--cream);padding:8px 12px;border-bottom:1px solid var(--border2);font-family:'Lora',serif;font-size:12px;font-weight:700;color:var(--text);">
+          ⚠ Posicionamento das Derivações — V1/V2 Altos
+        </div>
+        <div style="padding:10px 12px 12px;">
+          <ul class="r-details" style="gap:5px;">
+            <li><span>O padrão pode aparecer <strong>somente</strong> com V1–V2 no <strong>2º ou 3º EIC</strong> (uma costela acima do padrão)</span></li>
+            <li><span>Se ECG convencional negativo mas suspeita alta → <strong>repetir com derivações altas</strong></span></li>
+            <li><span>Sensibilidade aumenta substancialmente com posição alta — não dispensar essa manobra</span></li>
+          </ul>
+          <div style="margin-top:10px;background:#fdf0dc;border-radius:4px;padding:8px 10px;font-size:11px;color:#5c3f2a;border-left:3px solid #b87c20;">
+            <strong>V1–V2 convencionais:</strong> 4º EIC<br>
+            <strong>V1–V2 altos:</strong> 2º ou 3º EIC — posição de Brugada
+          </div>
+        </div>
+      </div>
+
+      <!-- Fatores desencadeantes -->
+      <div style="background:var(--paper);border:1px solid var(--border);border-radius:6px;overflow:hidden;">
+        <div style="background:var(--cream);padding:8px 12px;border-bottom:1px solid var(--border2);font-family:'Lora',serif;font-size:12px;font-weight:700;color:var(--text);">
+          🌡 Fatores que Desmascariam / Pioram o Padrão
+        </div>
+        <div style="padding:10px 12px 12px;">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+            <div style="background:#fce8e0;border-radius:4px;padding:6px 8px;font-size:11px;color:#5c3f2a;">
+              <strong style="color:#a0391a;display:block;margin-bottom:2px;">Febre</strong>
+              Inativa Nav1.5 — clássico em crianças. Antitérmico agressivo + monitorização
+            </div>
+            <div style="background:#fce8e0;border-radius:4px;padding:6px 8px;font-size:11px;color:#5c3f2a;">
+              <strong style="color:#a0391a;display:block;margin-bottom:2px;">Cocaína / ADT</strong>
+              Bloqueio do canal de Na — padrão emerge ou piora
+            </div>
+            <div style="background:#fdf0dc;border-radius:4px;padding:6px 8px;font-size:11px;color:#5c3f2a;">
+              <strong style="color:#b87c20;display:block;margin-bottom:2px;">Hipocalemia / Hipercalcemia</strong>
+              Altera potencial de ação ventricular
+            </div>
+            <div style="background:#fdf0dc;border-radius:4px;padding:6px 8px;font-size:11px;color:#5c3f2a;">
+              <strong style="color:#b87c20;display:block;margin-bottom:2px;">Álcool / Refeição copiosa</strong>
+              Mecanismo vagal e direto no canal
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── CONDUTA PSA + CRITÉRIOS ── -->
+    <div style="background:var(--paper);border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-bottom:16px;">
+      <div style="background:var(--cream);padding:9px 14px;border-bottom:1px solid var(--border2);font-family:'Lora',serif;font-size:12.5px;font-weight:700;color:var(--text);">
+        Conduta no PSA e Critérios Diagnósticos (Consenso 2022)
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--border2);">
+        <div style="padding:12px 14px;border-right:1px solid var(--border2);">
+          <div style="font-size:10px;font-weight:700;color:var(--terra);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">Critérios diagnósticos</div>
+          <ul class="r-details">
+            <li><span>Tipo 1 <strong>espontâneo</strong> em V1 ou V2 (posição convencional ou alta) <strong>OU</strong></span></li>
+            <li><span>Tipo 2/3 que converte para tipo 1 com <strong>ajmalina, flecainida ou procainamida</strong></span></li>
+            <li><span><strong>+ ao menos um:</strong> FV/TV polimórfica documentada, síncope arrítmica, morte súbita familiar &lt;45 anos, padrão tipo 1 em familiar 1º grau</span></li>
+          </ul>
+        </div>
+        <div style="padding:12px 14px;">
+          <div style="font-size:10px;font-weight:700;color:var(--terra);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">Conduta imediata</div>
+          <ul class="r-details">
+            <li><span><strong>TV/FV:</strong> desfibrilação → isoproterenol EV (↑ corrente Ca²⁺) → quinidina oral</span></li>
+            <li><span><strong>NÃO usar</strong> amiodarona, ajmalina ou bloqueadores de Na na crise</span></li>
+            <li><span><strong>Febre + padrão tipo 1:</strong> antitérmico agressivo + monitorização contínua em leito</span></li>
+            <li><span><strong>Assintomático + tipo 1:</strong> encaminhar eletrofisiologia; discussão sobre CDI</span></li>
+            <li><span><strong>Tratamento definitivo:</strong> CDI em alto risco — ablação epicárdica em casos refratários</span></li>
+          </ul>
+        </div>
+      </div>
+      <div style="padding:8px 14px;background:#fce8e0;">
+        <span style="font-size:11px;font-weight:700;color:#a0391a;">⚠ Armadilha:</span>
+        <span style="font-size:11px;color:#5c3f2a;"> Padrão tipo 2 ou 3 isolado, sem conversão farmacológica e sem critério clínico = <strong>não é Brugada</strong>. Não alarmar o paciente antes de completar investigação.</span>
+      </div>
+    </div>
+
+    <footer>ECG · 25 mm/s · 10 mm/mV · referência para PSA e prova de residência médica</footer>
+
+  </div><!-- /tab-brugada -->
+
+  <!-- ══════ TAB 4: CASOS CLÍNICOS ══════ -->
+  <div class="tab-panel" id="tab-casos">
+
+    <p class="r-sub">Casos reais discutidos durante o estudo · análise sistemática · diagnóstico fundamentado</p>
+
+    <!-- CASO 01 -->
+    <div style="background:var(--paper);border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-bottom:20px;">
+
+      <!-- caso header -->
+      <div style="background:var(--cream);padding:10px 16px 9px;border-bottom:2px solid #3d7a78;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+        <div style="background:#3d7a78;color:#faf4ea;font-family:'Lora',serif;font-size:11px;font-weight:700;padding:3px 10px;border-radius:3px;letter-spacing:0.05em;">CASO 01</div>
+        <div style="font-family:'Lora',serif;font-size:14px;font-weight:700;color:var(--text);">Bloqueio de Ramo Direito (BRD) Completo</div>
+        <div style="margin-left:auto;font-size:10px;color:var(--text-dim);letter-spacing:0.05em;text-transform:uppercase;">Distúrbio de Condução · Ramo Direito</div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1.1fr 1fr;gap:0;">
+
+        <!-- LEFT: ECG image + achados anotados -->
+        <div style="border-right:1px solid var(--border2);">
+          <div style="padding:12px 14px 8px;border-bottom:1px solid var(--border2);background:#f9f1e4;">
+            <div style="font-size:10px;font-weight:700;color:var(--text-mid);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">Traçado — BRD Completo</div>
+            <img src="/mnt/user-data/uploads/BRE.jpg" alt="ECG BRD Completo" style="width:100%;border-radius:4px;border:1px solid var(--border2);"/>
+          </div>
+
+          <!-- achados por derivação -->
+          <div style="padding:12px 14px;">
+            <div style="font-size:10px;font-weight:700;color:var(--text-mid);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">Achados por Derivação</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+
+              <div style="background:#f9f1e4;border-radius:4px;padding:7px 9px;border-left:3px solid #3d7a78;">
+                <div style="font-size:9px;font-weight:700;color:#2a5a7a;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:3px;">V1 · V2</div>
+                <div style="font-size:11px;color:var(--text-mid);"><strong>rSR'</strong> — "orelhas de coelho". R' maior que r inicial. Critério BRD ✓</div>
+              </div>
+
+              <div style="background:#f9f1e4;border-radius:4px;padding:7px 9px;border-left:3px solid #a0391a;">
+                <div style="font-size:9px;font-weight:700;color:#7a2a10;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:3px;">DI · V5 · V6</div>
+                <div style="font-size:11px;color:var(--text-mid);"><strong>S largo e profundo</strong> — assinatura do BRD nas derivações esquerdas ✓</div>
+              </div>
+
+              <div style="background:#f9f1e4;border-radius:4px;padding:7px 9px;border-left:3px solid #6b7a3a;">
+                <div style="font-size:9px;font-weight:700;color:#4a5e20;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:3px;">V1–V3 — Repolarização</div>
+                <div style="font-size:11px;color:var(--text-mid);">T <strong>invertida</strong> em V1–V3 — discordante com R'. Esperado no BRD ✓</div>
+              </div>
+
+              <div style="background:#f9f1e4;border-radius:4px;padding:7px 9px;border-left:3px solid #8c5c6e;">
+                <div style="font-size:9px;font-weight:700;color:#6a2a5a;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:3px;">QRS</div>
+                <div style="font-size:11px;color:var(--text-mid);"><strong>≥ 120 ms</strong> — alargado. Critério obrigatório para BRD completo ✓</div>
+              </div>
+
+              <div style="background:#fdf0dc;border-radius:4px;padding:7px 9px;border-left:3px solid #b87c20;grid-column:span 2;">
+                <div style="font-size:9px;font-weight:700;color:#7a4a10;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:3px;">⚠️ Armadilha da Questão</div>
+                <div style="font-size:11px;color:var(--text-mid);">O QRS <strong>não estava alargado</strong> no ECG original da questão — isso excluiu BRE e BRD. O diagnóstico correto era pericardite (supra difuso). Ver Caso 02.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: análise sistemática + diagnóstico BRD -->
+        <div style="display:flex;flex-direction:column;">
+
+          <div style="padding:12px 14px;border-bottom:1px solid var(--border2);">
+            <div style="font-size:10px;font-weight:700;color:var(--text-mid);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:10px;">Análise Sistemática</div>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+
+              <div style="display:flex;gap:10px;align-items:flex-start;">
+                <div style="background:#3d7a78;color:#faf4ea;font-size:9px;font-weight:700;padding:2px 7px;border-radius:2px;flex-shrink:0;margin-top:1px;letter-spacing:0.05em;">RITMO</div>
+                <div style="font-size:11.5px;color:var(--text-mid);">Sinusal regular · FC normal</div>
+              </div>
+
+              <div style="display:flex;gap:10px;align-items:flex-start;">
+                <div style="background:#a0391a;color:#faf4ea;font-size:9px;font-weight:700;padding:2px 7px;border-radius:2px;flex-shrink:0;margin-top:1px;letter-spacing:0.05em;">QRS</div>
+                <div style="font-size:11.5px;color:var(--text-mid);"><strong>≥ 120 ms</strong> — alargado · <strong>rSR'</strong> em V1–V2 ("orelhas de coelho") · S largo em DI, V5, V6</div>
+              </div>
+
+              <div style="display:flex;gap:10px;align-items:flex-start;">
+                <div style="background:#b87c20;color:#faf4ea;font-size:9px;font-weight:700;padding:2px 7px;border-radius:2px;flex-shrink:0;margin-top:1px;letter-spacing:0.05em;">ST · T</div>
+                <div style="font-size:11.5px;color:var(--text-mid);">T <strong>invertida</strong> em V1–V3 — repolarização discordante com R'. Esperado no BRD</div>
+              </div>
+
+              <div style="display:flex;gap:10px;align-items:flex-start;">
+                <div style="background:#6b7a3a;color:#faf4ea;font-size:9px;font-weight:700;padding:2px 7px;border-radius:2px;flex-shrink:0;margin-top:1px;letter-spacing:0.05em;">EIXO</div>
+                <div style="font-size:11.5px;color:var(--text-mid);">Normal ou levemente desviado à direita</div>
+              </div>
+
+            </div>
+          </div>
+
+          <div style="padding:12px 14px;border-bottom:1px solid var(--border2);">
+            <div style="font-size:10px;font-weight:700;color:var(--text-mid);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">Diagnóstico Eletrocardiográfico</div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              <div style="background:#deeaf5;border-left:4px solid #3d7a78;border-radius:0 4px 4px 0;padding:8px 12px;">
+                <div style="font-size:11.5px;font-weight:700;color:#2a5a7a;margin-bottom:2px;">🔵 BRD Completo</div>
+                <div style="font-size:11px;color:var(--text-mid);">QRS ≥ 120ms · rSR' em V1/V2 com R' &gt; r · S largo em DI/V5/V6 · T invertida discordante em V1–V3</div>
+              </div>
+              <div style="background:#fdf0dc;border-left:4px solid #b87c20;border-radius:0 4px 4px 0;padding:8px 12px;">
+                <div style="font-size:11.5px;font-weight:700;color:#7a4a10;margin-bottom:2px;">BRD vs BRE — regra rápida</div>
+                <div style="font-size:11px;color:var(--text-mid);">
+                  <strong>BRD:</strong> rSR' em V1 · S largo em DI/V6<br>
+                  <strong>BRE:</strong> QS em V1 · RR' em M em DI/V5/V6<br>
+                  <strong>Ambos:</strong> QRS ≥ 120ms obrigatório
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style="padding:12px 14px;flex:1;">
+            <div style="font-size:10px;font-weight:700;color:var(--text-mid);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">Contexto Clínico</div>
+            <ul class="r-details">
+              <li><span>BRD isolado em jovem assintomático → frequentemente <strong>achado benigno</strong></span></li>
+              <li><span>BRD novo + dor torácica → excluir <strong>TEP</strong> (padrão S1Q3T3 associado)</span></li>
+              <li><span>BRD + desvio do eixo esquerdo → <strong>Bloqueio Bifascicular</strong></span></li>
+              <li><span>BRD + síncope + padrão de Brugada em V1–V2 → investigar <strong>síndrome de Brugada</strong></span></li>
+              <li><span>BRD não impede avaliação de isquemia — diferente do BRE que mascara o ST</span></li>
+            </ul>
+          </div>
+
+        </div>
+      </div><!-- /grid -->
+
+      <div style="border-top:1px solid var(--border2);background:#f9f1e4;padding:10px 16px;">
+        <div style="font-size:10px;font-weight:700;color:var(--text-mid);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;">Conceitos-chave deste caso</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
+          <div style="background:var(--paper);border-radius:4px;padding:8px 10px;border:1px solid var(--border2);">
+            <div style="font-size:10px;font-weight:700;color:#3d7a78;margin-bottom:3px;">rSR' — "Orelhas de coelho"</div>
+            <div style="font-size:10.5px;color:var(--text-mid);">r pequena inicial → S abaixo da linha → R' alta. R' obrigatoriamente <strong>maior que r</strong></div>
+          </div>
+          <div style="background:var(--paper);border-radius:4px;padding:8px 10px;border:1px solid var(--border2);">
+            <div style="font-size:10px;font-weight:700;color:#a0391a;margin-bottom:3px;">S largo em DI e V6</div>
+            <div style="font-size:10.5px;color:var(--text-mid);">Assinatura do BRD nas derivações esquerdas. Procure esse S — ele fecha o diagnóstico</div>
+          </div>
+          <div style="background:var(--paper);border-radius:4px;padding:8px 10px;border:1px solid var(--border2);">
+            <div style="font-size:10px;font-weight:700;color:#b87c20;margin-bottom:3px;">QRS ≥ 120ms — obrigatório</div>
+            <div style="font-size:10.5px;color:var(--text-mid);">Sem alargamento do QRS não há bloqueio de ramo completo — nem BRD, nem BRE</div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /caso 01 -->
+
+    <!-- CASO 02 — PERICARDITE -->
+    <div style="background:var(--paper);border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-bottom:20px;">
+
+      <div style="background:var(--cream);padding:10px 16px 9px;border-bottom:2px solid #b85c2a;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+        <div style="background:#b85c2a;color:#faf4ea;font-family:'Lora',serif;font-size:11px;font-weight:700;padding:3px 10px;border-radius:3px;letter-spacing:0.05em;">CASO 02</div>
+        <div style="font-family:'Lora',serif;font-size:14px;font-weight:700;color:var(--text);">Pericardite Aguda — Supra Difuso × IAM</div>
+        <div style="margin-left:auto;font-size:10px;color:var(--text-dim);letter-spacing:0.05em;text-transform:uppercase;">LES · Desmame de Corticoide</div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1.1fr 1fr;gap:0;">
+
+        <!-- LEFT -->
+        <div style="border-right:1px solid var(--border2);">
+          <div style="padding:12px 14px 8px;border-bottom:1px solid var(--border2);background:#f9f1e4;">
+            <div style="font-size:10px;font-weight:700;color:var(--text-mid);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">Traçado — Pericardite Aguda</div>
+            <img src="/mnt/user-data/uploads/1779122053146_image.png" alt="ECG Pericardite" style="width:100%;border-radius:4px;border:1px solid var(--border2);"/>
+          </div>
+
+          <div style="padding:12px 14px;">
+            <div style="font-size:10px;font-weight:700;color:var(--text-mid);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">Achados por Derivação</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+
+              <div style="background:#fce8e0;border-radius:4px;padding:7px 9px;border-left:3px solid #b85c2a;">
+                <div style="font-size:9px;font-weight:700;color:#7a2a10;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:3px;">DI · DII · aVF</div>
+                <div style="font-size:11px;color:var(--text-mid);">Supra ST <strong>côncavo</strong> ("sorrindo") — paredes diferentes ao mesmo tempo ✓</div>
+              </div>
+
+              <div style="background:#fce8e0;border-radius:4px;padding:7px 9px;border-left:3px solid #b85c2a;">
+                <div style="font-size:9px;font-weight:700;color:#7a2a10;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:3px;">V2 · V3 · V5 · V6</div>
+                <div style="font-size:11px;color:var(--text-mid);">Supra <strong>difuso</strong> nas precordiais — cruza território de múltiplas artérias ✓</div>
+              </div>
+
+              <div style="background:#fdf0dc;border-radius:4px;padding:7px 9px;border-left:3px solid #b87c20;">
+                <div style="font-size:9px;font-weight:700;color:#7a4a10;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:3px;">Onda T</div>
+                <div style="font-size:11px;color:var(--text-mid);">T <strong>positiva</strong> simultaneamente ao supra — no IAM, T inverte precocemente ✓</div>
+              </div>
+
+              <div style="background:#fdf0dc;border-radius:4px;padding:7px 9px;border-left:3px solid #b87c20;">
+                <div style="font-size:9px;font-weight:700;color:#7a4a10;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:3px;">Segmento PR</div>
+                <div style="font-size:11px;color:var(--text-mid);"><strong>Infradesnivelado</strong> em DII — sinal mais específico de pericardite. Reflexo da inflamação atrial</div>
+              </div>
+
+              <div style="background:#e8f0da;border-radius:4px;padding:7px 9px;border-left:3px solid #6b7a3a;grid-column:span 2;">
+                <div style="font-size:9px;font-weight:700;color:#4a5e20;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:3px;">QRS</div>
+                <div style="font-size:11px;color:var(--text-mid);"><strong>Normal</strong> — sem alargamento. Exclui BRE e BRD de imediato. Esta foi a armadilha da questão</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT -->
+        <div style="display:flex;flex-direction:column;">
+
+          <div style="padding:12px 14px;border-bottom:1px solid var(--border2);">
+            <div style="font-size:10px;font-weight:700;color:var(--text-mid);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:10px;">Análise Sistemática</div>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+
+              <div style="display:flex;gap:10px;align-items:flex-start;">
+                <div style="background:#3d7a78;color:#faf4ea;font-size:9px;font-weight:700;padding:2px 7px;border-radius:2px;flex-shrink:0;margin-top:1px;letter-spacing:0.05em;">RITMO</div>
+                <div style="font-size:11.5px;color:var(--text-mid);">Sinusal regular · FC normal</div>
+              </div>
+
+              <div style="display:flex;gap:10px;align-items:flex-start;">
+                <div style="background:#6b7a3a;color:#faf4ea;font-size:9px;font-weight:700;padding:2px 7px;border-radius:2px;flex-shrink:0;margin-top:1px;letter-spacing:0.05em;">QRS</div>
+                <div style="font-size:11.5px;color:var(--text-mid);"><strong>Normal</strong> — exclui todo bloqueio de ramo. Ponto de partida da análise</div>
+              </div>
+
+              <div style="display:flex;gap:10px;align-items:flex-start;">
+                <div style="background:#b85c2a;color:#faf4ea;font-size:9px;font-weight:700;padding:2px 7px;border-radius:2px;flex-shrink:0;margin-top:1px;letter-spacing:0.05em;">ST</div>
+                <div style="font-size:11.5px;color:var(--text-mid);"><strong>Supra difuso e côncavo</strong> em múltiplas derivações de paredes diferentes — impossível num único território coronário</div>
+              </div>
+
+              <div style="display:flex;gap:10px;align-items:flex-start;">
+                <div style="background:#b87c20;color:#faf4ea;font-size:9px;font-weight:700;padding:2px 7px;border-radius:2px;flex-shrink:0;margin-top:1px;letter-spacing:0.05em;">ONDA T</div>
+                <div style="font-size:11.5px;color:var(--text-mid);">Positiva simultaneamente ao supra — no IAM seria <strong>invertida precocemente</strong></div>
+              </div>
+
+              <div style="display:flex;gap:10px;align-items:flex-start;">
+                <div style="background:#a0391a;color:#faf4ea;font-size:9px;font-weight:700;padding:2px 7px;border-radius:2px;flex-shrink:0;margin-top:1px;letter-spacing:0.05em;">PR</div>
+                <div style="font-size:11.5px;color:var(--text-mid);"><strong>Infradesnivelado</strong> em DII — sinal mais específico de pericardite</div>
+              </div>
+
+            </div>
+          </div>
+
+          <div style="padding:12px 14px;border-bottom:1px solid var(--border2);">
+            <div style="font-size:10px;font-weight:700;color:var(--text-mid);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">Diagnóstico · Gabarito E</div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              <div style="background:#fce8e0;border-left:4px solid #b85c2a;border-radius:0 4px 4px 0;padding:8px 12px;">
+                <div style="font-size:11.5px;font-weight:700;color:#a0391a;margin-bottom:2px;">🔴 Pericardite Aguda</div>
+                <div style="font-size:11px;color:var(--text-mid);">Supra difuso côncavo + T positiva + infra de PR + QRS normal + contexto autoimune (LES + desmame de corticoide)</div>
+              </div>
+              <div style="background:#fdf0dc;border-left:4px solid #b87c20;border-radius:0 4px 4px 0;padding:8px 12px;">
+                <div style="font-size:11.5px;font-weight:700;color:#7a4a10;margin-bottom:2px;">Por que não IAM?</div>
+                <div style="font-size:11px;color:var(--text-mid);">Supra do IAM é <strong>convexo, localizado</strong> num território e acompanhado de <strong>T invertida precoce</strong>. Aqui o supra é difuso, côncavo e a T está positiva</div>
+              </div>
+              <div style="background:#e8f0da;border-left:4px solid #6b7a3a;border-radius:0 4px 4px 0;padding:8px 12px;">
+                <div style="font-size:11.5px;font-weight:700;color:#4a5e20;margin-bottom:2px;">Por que não BRE/BRD?</div>
+                <div style="font-size:11px;color:var(--text-mid);"><strong>QRS normal</strong> — qualquer bloqueio de ramo exige QRS ≥ 120ms. A primeira coisa a medir é o QRS</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="padding:12px 14px;flex:1;">
+            <div style="font-size:10px;font-weight:700;color:var(--text-mid);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">Conduta e Contexto</div>
+            <ul class="r-details">
+              <li><span>Paciente <strong>lúpica em desmame de corticoide</strong> — pericardite é manifestação cardíaca do LES</span></li>
+              <li><span>Tratamento: <strong>AINEs + Colchicina</strong> por 3 meses. Retomar/aumentar corticoide se refratário</span></li>
+              <li><span>Ecocardiograma para avaliar <strong>derrame pericárdico</strong></span></li>
+              <li><span>Repouso e restrição de atividade física até resolução</span></li>
+              <li><span>Marcadores de necrose (Tn, CK-MB) para excluir <strong>miopericardite</strong></span></li>
+            </ul>
+          </div>
+
+        </div>
+      </div><!-- /grid -->
+
+      <!-- tabela diferencial Pericardite x IAM -->
+      <div style="border-top:1px solid var(--border2);background:#f9f1e4;padding:12px 16px;">
+        <div style="font-size:10px;font-weight:700;color:var(--text-mid);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">Diferencial Visual — Pericardite vs IAM/STEMI</div>
+        <div style="display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:0;border:1px solid var(--border2);border-radius:4px;overflow:hidden;font-size:11px;">
+          <div style="background:#ede0cc;padding:6px 10px;font-weight:700;color:var(--text-mid);border-right:1px solid var(--border2);">Achado</div>
+          <div style="background:#fce8e0;padding:6px 10px;font-weight:700;color:#a0391a;border-right:1px solid var(--border2);">Pericardite</div>
+          <div style="background:#fdf0dc;padding:6px 10px;font-weight:700;color:#7a4a10;">IAM/STEMI</div>
+
+          <div style="padding:6px 10px;border-top:1px solid var(--border2);border-right:1px solid var(--border2);font-weight:600;">Distribuição do supra</div>
+          <div style="padding:6px 10px;border-top:1px solid var(--border2);border-right:1px solid var(--border2);color:#a0391a;font-weight:700;">Difusa — múltiplas paredes</div>
+          <div style="padding:6px 10px;border-top:1px solid var(--border2);">Localizada — território coronário</div>
+
+          <div style="padding:6px 10px;border-top:1px solid var(--border2);border-right:1px solid var(--border2);font-weight:600;">Morfologia do ST</div>
+          <div style="padding:6px 10px;border-top:1px solid var(--border2);border-right:1px solid var(--border2);color:#a0391a;font-weight:700;">Côncava — "sorri para cima"</div>
+          <div style="padding:6px 10px;border-top:1px solid var(--border2);">Convexa — "abaulada para cima"</div>
+
+          <div style="padding:6px 10px;border-top:1px solid var(--border2);border-right:1px solid var(--border2);font-weight:600;">Onda T</div>
+          <div style="padding:6px 10px;border-top:1px solid var(--border2);border-right:1px solid var(--border2);color:#a0391a;font-weight:700;">Positiva junto ao supra</div>
+          <div style="padding:6px 10px;border-top:1px solid var(--border2);">Inverte precocemente</div>
+
+          <div style="padding:6px 10px;border-top:1px solid var(--border2);border-right:1px solid var(--border2);font-weight:600;">Segmento PR</div>
+          <div style="padding:6px 10px;border-top:1px solid var(--border2);border-right:1px solid var(--border2);color:#a0391a;font-weight:700;">↓ Infradesnivelado (patognomônico)</div>
+          <div style="padding:6px 10px;border-top:1px solid var(--border2);">Normal</div>
+
+          <div style="padding:6px 10px;border-top:1px solid var(--border2);border-right:1px solid var(--border2);font-weight:600;">QRS</div>
+          <div style="padding:6px 10px;border-top:1px solid var(--border2);border-right:1px solid var(--border2);">Normal</div>
+          <div style="padding:6px 10px;border-top:1px solid var(--border2);">Normal (pode ter BRE novo)</div>
+
+          <div style="padding:6px 10px;border-top:1px solid var(--border2);border-right:1px solid var(--border2);font-weight:600;">Amplitude do supra</div>
+          <div style="padding:6px 10px;border-top:1px solid var(--border2);border-right:1px solid var(--border2);">Raramente &gt; 5 mm</div>
+          <div style="padding:6px 10px;border-top:1px solid var(--border2);">Pode ser &gt; 5 mm</div>
+        </div>
+      </div>
+
+    </div><!-- /caso 02 -->
+
+    <!-- CASO 03 — HVE -->
+    <div style="background:var(--paper);border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-bottom:20px;">
+
+      <div style="background:var(--cream);padding:10px 16px 9px;border-bottom:2px solid #8c5c6e;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+        <div style="background:#8c5c6e;color:#faf4ea;font-family:'Lora',serif;font-size:11px;font-weight:700;padding:3px 10px;border-radius:3px;letter-spacing:0.05em;">CASO 03</div>
+        <div style="font-family:'Lora',serif;font-size:14px;font-weight:700;color:var(--text);">Hipertrofia Ventricular Esquerda (HVE)</div>
+        <div style="margin-left:auto;font-size:10px;color:var(--text-dim);letter-spacing:0.05em;text-transform:uppercase;">SVE · Strain Pattern · Critérios de Voltagem</div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1.1fr 1fr;gap:0;">
+
+        <!-- LEFT: imagem + achados -->
+        <div style="border-right:1px solid var(--border2);">
+          <div style="padding:12px 14px 8px;border-bottom:1px solid var(--border2);background:#f9f1e4;">
+            <div style="font-size:10px;font-weight:700;color:var(--text-mid);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">Traçado — HVE com Strain</div>
+            <img src="/mnt/user-data/uploads/ECG-Left-ventricular-hypertrophy-LVH-2-1024x604.jpg"
+                 alt="ECG HVE" style="width:100%;border-radius:4px;border:1px solid var(--border2);"/>
+          </div>
+
+          <!-- achados por derivação -->
+          <div style="padding:12px 14px;">
+            <div style="font-size:10px;font-weight:700;color:var(--text-mid);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">Achados por Derivação</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+
+              <div style="background:#f2e4f0;border-radius:4px;padding:7px 9px;border-left:3px solid #8c5c6e;">
+                <div style="font-size:9px;font-weight:700;color:#6a2a5a;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:3px;">V1 · V2</div>
+                <div style="font-size:11px;color:var(--text-mid);"><strong>S profundíssimo</strong> + supra ST + ondas U proeminentes. SV2 gigante contribui para Sokolow ✓</div>
+              </div>
+
+              <div style="background:#f2e4f0;border-radius:4px;padding:7px 9px;border-left:3px solid #8c5c6e;">
+                <div style="font-size:9px;font-weight:700;color:#6a2a5a;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:3px;">V5 · V6</div>
+                <div style="font-size:11px;color:var(--text-mid);"><strong>R altíssima</strong> + ST deprimido + T invertida assimétrica → <strong>strain pattern</strong> ✓</div>
+              </div>
+
+              <div style="background:#f2e4f0;border-radius:4px;padding:7px 9px;border-left:3px solid #8c5c6e;">
+                <div style="font-size:9px;font-weight:700;color:#6a2a5a;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:3px;">DI · aVL</div>
+                <div style="font-size:11px;color:var(--text-mid);">ST deprimido + T invertida — padrão de sobrecarga lateral alta ✓</div>
+              </div>
+
+              <div style="background:#f2e4f0;border-radius:4px;padding:7px 9px;border-left:3px solid #8c5c6e;">
+                <div style="font-size:9px;font-weight:700;color:#6a2a5a;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:3px;">QRS — tempo de pico</div>
+                <div style="font-size:11px;color:var(--text-mid);">Deflexão intrinsecoide em V5–V6 <strong>&gt; 50 ms</strong> — sinal de hipertrofia ✓</div>
+              </div>
+
+              <div style="background:#fdf0dc;border-radius:4px;padding:7px 9px;border-left:3px solid #b87c20;grid-column:span 2;">
+                <div style="font-size:9px;font-weight:700;color:#7a4a10;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:3px;">Eixo</div>
+                <div style="font-size:11px;color:var(--text-mid);"><strong>Desviado à esquerda</strong> — R dominante em DI, S dominante em DIII → eixo &lt; −30° ✓</div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: análise + diagnóstico -->
+        <div style="display:flex;flex-direction:column;">
+
+          <div style="padding:12px 14px;border-bottom:1px solid var(--border2);">
+            <div style="font-size:10px;font-weight:700;color:var(--text-mid);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:10px;">Análise Sistemática</div>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+
+              <div style="display:flex;gap:10px;align-items:flex-start;">
+                <div style="background:#3d7a78;color:#faf4ea;font-size:9px;font-weight:700;padding:2px 7px;border-radius:2px;flex-shrink:0;margin-top:1px;">RITMO</div>
+                <div style="font-size:11.5px;color:var(--text-mid);">Sinusal regular</div>
+              </div>
+
+              <div style="display:flex;gap:10px;align-items:flex-start;">
+                <div style="background:#8c5c6e;color:#faf4ea;font-size:9px;font-weight:700;padding:2px 7px;border-radius:2px;flex-shrink:0;margin-top:1px;">VOLTAGEM</div>
+                <div style="font-size:11.5px;color:var(--text-mid);"><strong>SV1 + RV5 enorme</strong> — Sokolow-Lyon ≥ 35 mm amplamente satisfeito. Ondas transbordando o papel</div>
+              </div>
+
+              <div style="display:flex;gap:10px;align-items:flex-start;">
+                <div style="background:#8c5c6e;color:#faf4ea;font-size:9px;font-weight:700;padding:2px 7px;border-radius:2px;flex-shrink:0;margin-top:1px;">QRS</div>
+                <div style="font-size:11.5px;color:var(--text-mid);">Alargado discretamente · <strong>deflexão intrinsecoide &gt; 50 ms</strong> em V5–V6 · eixo desviado à esquerda</div>
+              </div>
+
+              <div style="display:flex;gap:10px;align-items:flex-start;">
+                <div style="background:#b87c20;color:#faf4ea;font-size:9px;font-weight:700;padding:2px 7px;border-radius:2px;flex-shrink:0;margin-top:1px;">ST · T</div>
+                <div style="font-size:11.5px;color:var(--text-mid);"><strong>Strain pattern</strong> em I, aVL, V5–V6: ST ↓ descendente + T invertida assimétrica. Supra ST em V1–V3 (discordante com S)</div>
+              </div>
+
+              <div style="display:flex;gap:10px;align-items:flex-start;">
+                <div style="background:#6b7a3a;color:#faf4ea;font-size:9px;font-weight:700;padding:2px 7px;border-radius:2px;flex-shrink:0;margin-top:1px;">ONDA U</div>
+                <div style="font-size:11.5px;color:var(--text-mid);"><strong>Proeminente em V1–V3</strong> — associada a HVE e hipocalemia. Aqui reflexo da hipertrofia</div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- diagnóstico -->
+          <div style="padding:12px 14px;border-bottom:1px solid var(--border2);">
+            <div style="font-size:10px;font-weight:700;color:var(--text-mid);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">Diagnóstico Eletrocardiográfico</div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+
+              <div style="background:#f2e4f0;border-left:4px solid #8c5c6e;border-radius:0 4px 4px 0;padding:8px 12px;">
+                <div style="font-size:11.5px;font-weight:700;color:#6a2a5a;margin-bottom:2px;">🟣 HVE com Strain Pattern</div>
+                <div style="font-size:11px;color:var(--text-mid);">Voltagens gigantes (Sokolow ≥ 35 mm) + deflexão intrinsecoide &gt; 50 ms em V5–V6 + ST↓ e T invertida assimétrica em I, aVL, V5–V6 + eixo à esquerda</div>
+              </div>
+
+              <!-- critérios em grid -->
+              <div style="background:#f9f1e4;border-radius:4px;padding:8px 10px;border:1px solid var(--border2);">
+                <div style="font-size:9.5px;font-weight:700;color:#6a2a5a;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;">Critérios de Voltagem — satisfeitos neste traçado</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:10.5px;color:var(--text-mid);">
+                  <div style="background:var(--paper);padding:5px 8px;border-radius:3px;border:1px solid var(--border2);">
+                    <strong style="color:#8c5c6e;">Sokolow-Lyon</strong><br>SV1 + RV5 ≥ 35 mm
+                  </div>
+                  <div style="background:var(--paper);padding:5px 8px;border-radius:3px;border:1px solid var(--border2);">
+                    <strong style="color:#8c5c6e;">Cornell ♂</strong><br>RaVL + SV3 &gt; 28 mm
+                  </div>
+                  <div style="background:var(--paper);padding:5px 8px;border-radius:3px;border:1px solid var(--border2);">
+                    <strong style="color:#8c5c6e;">Cornell ♀</strong><br>RaVL + SV3 &gt; 20 mm
+                  </div>
+                  <div style="background:var(--paper);padding:5px 8px;border-radius:3px;border:1px solid var(--border2);">
+                    <strong style="color:#8c5c6e;">RaVL isolada</strong><br>&gt; 11 mm (simplificado)
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- contexto -->
+          <div style="padding:12px 14px;flex:1;">
+            <div style="font-size:10px;font-weight:700;color:var(--text-mid);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">Contexto Clínico e Próximos Passos</div>
+            <ul class="r-details">
+              <li><span>Causas mais comuns: <strong>HAS</strong> (principal), estenose aórtica, CMH, insuficiência mitral</span></li>
+              <li><span><strong>Ecocardiograma</strong> obrigatório — ECG tem sensibilidade ~50%, eco confirma e quantifica a hipertrofia</span></li>
+              <li><span>Strain pattern = <strong>hipertrofia com sobrecarga de pressão</strong> — distinguir de isquemia subendocárdica</span></li>
+              <li><span>Onda U proeminente + HVE → afastar <strong>hipocalemia</strong> como fator agravante</span></li>
+              <li><span>HVE é fator de risco independente para IC, FA, AVC e morte súbita — tratar a etiologia</span></li>
+            </ul>
+          </div>
+
+        </div>
+      </div><!-- /grid -->
+
+      <!-- conceitos-chave -->
+      <div style="border-top:1px solid var(--border2);background:#f9f1e4;padding:10px 16px;">
+        <div style="font-size:10px;font-weight:700;color:var(--text-mid);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;">Conceitos-chave deste caso</div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;">
+
+          <div style="background:var(--paper);border-radius:4px;padding:8px 10px;border:1px solid var(--border2);">
+            <div style="font-size:10px;font-weight:700;color:#8c5c6e;margin-bottom:3px;">Strain pattern</div>
+            <div style="font-size:10.5px;color:var(--text-mid);">ST↓ + T invertida <strong>assimétrica</strong> nas derivações com R alta. Sinal de sobrecarga crônica de pressão</div>
+          </div>
+
+          <div style="background:var(--paper);border-radius:4px;padding:8px 10px;border:1px solid var(--border2);">
+            <div style="font-size:10px;font-weight:700;color:#8c5c6e;margin-bottom:3px;">Deflexão intrinsecoide</div>
+            <div style="font-size:10.5px;color:var(--text-mid);">Tempo do início do QRS até o pico da R em V5–V6. Normal &lt; 50 ms. Mede a espessura do miocárdio</div>
+          </div>
+
+          <div style="background:var(--paper);border-radius:4px;padding:8px 10px;border:1px solid var(--border2);">
+            <div style="font-size:10px;font-weight:700;color:#b85c2a;margin-bottom:3px;">Strain vs Isquemia</div>
+            <div style="font-size:10.5px;color:var(--text-mid);">Strain: T <strong>assimétrica</strong>, volta lentamente. Isquemia: T invertida <strong>simétrica</strong>, ponta afiada</div>
+          </div>
+
+          <div style="background:var(--paper);border-radius:4px;padding:8px 10px;border:1px solid var(--border2);">
+            <div style="font-size:10px;font-weight:700;color:#3d7a78;margin-bottom:3px;">Supra em V1–V3 na HVE</div>
+            <div style="font-size:10.5px;color:var(--text-mid);">Discordante com o S profundo — padrão esperado. <strong>Não é STEMI anterior</strong>. Contexto é chave</div>
+          </div>
+
+        </div>
+      </div>
+
+    </div><!-- /caso 03 -->
+
+    <!-- CASO 04 — WELLENS -->
+    <div style="background:var(--paper);border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-bottom:20px;">
+
+      <div style="background:var(--cream);padding:10px 16px 9px;border-bottom:2px solid #a0391a;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+        <div style="background:#a0391a;color:#faf4ea;font-family:'Lora',serif;font-size:11px;font-weight:700;padding:3px 10px;border-radius:3px;letter-spacing:0.05em;">CASO 04</div>
+        <div style="font-family:'Lora',serif;font-size:14px;font-weight:700;color:var(--text);">Síndrome de Wellens — Tipos A e B</div>
+        <div style="margin-left:auto;font-size:10px;color:var(--text-dim);letter-spacing:0.05em;text-transform:uppercase;">DA proximal crítica · Infarto iminente</div>
+      </div>
+
+      <!-- dois traçados lado a lado -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;border-bottom:1px solid var(--border2);">
+        <div style="padding:12px 14px 10px;border-right:1px solid var(--border2);background:#f9f1e4;">
+          <div style="font-size:9px;font-weight:700;color:#a0391a;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;">Tipo A — T bifásica (+/−)</div>
+          <img src="/mnt/user-data/uploads/Wellens-Syndrome-Type-A-Pattern--1024x410.jpg"
+               alt="Wellens Tipo A" style="width:100%;border-radius:4px;border:1px solid var(--border2);"/>
+          <div style="margin-top:7px;font-size:10.5px;color:var(--text-mid);">
+            T inicialmente <strong>positiva</strong> depois <strong>negativa</strong> em V2–V3. Ponto J com elevação ≤ 1mm.
+          </div>
+        </div>
+        <div style="padding:12px 14px 10px;background:#f9f1e4;">
+          <div style="font-size:9px;font-weight:700;color:#a0391a;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;">Tipo B — T profundamente invertida</div>
+          <img src="/mnt/user-data/uploads/Wellens-Syndrome-Type-B-Pattern-1024x404.jpg"
+               alt="Wellens Tipo B" style="width:100%;border-radius:4px;border:1px solid var(--border2);"/>
+          <div style="margin-top:7px;font-size:10.5px;color:var(--text-mid);">
+            T <strong>profunda e simétrica</strong> em V2–V3. ST isoelétrico. Sem onda Q. Progressão de R preservada.
+          </div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;">
+
+        <!-- LEFT: achados -->
+        <div style="border-right:1px solid var(--border2);padding:12px 14px;">
+          <div style="font-size:10px;font-weight:700;color:var(--text-mid);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">Critérios Diagnósticos — todos devem estar presentes</div>
+          <div style="display:flex;flex-direction:column;gap:5px;">
+
+            <div style="background:#fce8e0;border-radius:4px;padding:7px 10px;border-left:3px solid #a0391a;font-size:11px;color:var(--text-mid);">
+              <strong style="color:#a0391a;">T bifásica ou profundamente invertida</strong> em V2–V3 (pode estender-se a V1–V6)
+            </div>
+            <div style="background:#fce8e0;border-radius:4px;padding:7px 10px;border-left:3px solid #a0391a;font-size:11px;color:var(--text-mid);">
+              <strong style="color:#a0391a;">ECG obtido em estado indolor</strong> — paciente sem dor no momento
+            </div>
+            <div style="background:#fce8e0;border-radius:4px;padding:7px 10px;border-left:3px solid #a0391a;font-size:11px;color:var(--text-mid);">
+              <strong style="color:#a0391a;">ST isoelétrico</strong> ou minimamente elevado (&lt; 1 mm)
+            </div>
+            <div style="background:#fce8e0;border-radius:4px;padding:7px 10px;border-left:3px solid #a0391a;font-size:11px;color:var(--text-mid);">
+              <strong style="color:#a0391a;">Ausência de ondas Q</strong> precordiais
+            </div>
+            <div style="background:#fce8e0;border-radius:4px;padding:7px 10px;border-left:3px solid #a0391a;font-size:11px;color:var(--text-mid);">
+              <strong style="color:#a0391a;">Progressão da onda R preservada</strong> — descarta necrose anterior
+            </div>
+            <div style="background:#fce8e0;border-radius:4px;padding:7px 10px;border-left:3px solid #a0391a;font-size:11px;color:var(--text-mid);">
+              <strong style="color:#a0391a;">Histórico recente de angina</strong> · Enzimas normais ou discretamente elevadas
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: conduta + armadilha -->
+        <div style="padding:12px 14px;display:flex;flex-direction:column;gap:10px;">
+          <div>
+            <div style="font-size:10px;font-weight:700;color:var(--text-mid);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">Diagnóstico e Conduta</div>
+            <div style="background:#fce8e0;border-left:4px solid #a0391a;border-radius:0 4px 4px 0;padding:8px 12px;margin-bottom:6px;">
+              <div style="font-size:11.5px;font-weight:700;color:#a0391a;margin-bottom:2px;">🔴 Estenose crítica da DA proximal</div>
+              <div style="font-size:11px;color:var(--text-mid);">Padrão de <strong>reperfusão espontânea</strong> com lesão residual grave. Alto risco de IAM extenso anterior nos dias/semanas seguintes</div>
+            </div>
+            <ul class="r-details">
+              <li><span><strong>Internação imediata</strong> + monitorização contínua</span></li>
+              <li><span><strong>Cineangiocoronariografia urgente</strong> — não aguardar piora</span></li>
+              <li><span>Anticoagulação + antiagregação dupla</span></li>
+              <li><span><strong>Não realizar teste ergométrico</strong> — risco de FV e IAM durante o esforço</span></li>
+            </ul>
+          </div>
+
+          <div style="background:#fdf0dc;border-radius:4px;padding:10px 12px;border:1px solid var(--border2);">
+            <div style="font-size:10px;font-weight:700;color:#7a4a10;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;">⚠️ Armadilha Clássica</div>
+            <div style="font-size:11px;color:var(--text-mid);line-height:1.6;">
+              Paciente chega <strong>sem dor</strong>, ECG sem supra, enzimas normais → parece baixo risco.<br>
+              A inversão de T em V2–V3 é o único sinal. Quem não conhece Wellens libera o paciente.<br>
+              <strong style="color:#a0391a;">Erro fatal.</strong>
+            </div>
+          </div>
+
+          <!-- tipo A vs tipo B -->
+          <div style="background:#f9f1e4;border-radius:4px;padding:10px 12px;border:1px solid var(--border2);">
+            <div style="font-size:9.5px;font-weight:700;color:#5c3f2a;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;">Tipo A vs Tipo B</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:10.5px;">
+              <div>
+                <strong style="color:#a0391a;">Tipo A</strong><br>
+                T bifásica (+/−)<br>
+                Mais raro (~25%)<br>
+                Fase mais precoce
+              </div>
+              <div>
+                <strong style="color:#a0391a;">Tipo B</strong><br>
+                T profunda simétrica<br>
+                Mais comum (~75%)<br>
+                Fase mais estabelecida
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /grid -->
+
+      <div style="border-top:1px solid var(--border2);background:#f9f1e4;padding:10px 16px;">
+        <div style="font-size:10px;font-weight:700;color:var(--text-mid);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;">Conceitos-chave</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
+          <div style="background:var(--paper);border-radius:4px;padding:8px 10px;border:1px solid var(--border2);">
+            <div style="font-size:10px;font-weight:700;color:#a0391a;margin-bottom:3px;">Padrão de reperfusão</div>
+            <div style="font-size:10.5px;color:var(--text-mid);">A T invertida é sinal de que houve isquemia e houve reperfusão espontânea — mas a lesão crítica persiste</div>
+          </div>
+          <div style="background:var(--paper);border-radius:4px;padding:8px 10px;border:1px solid var(--border2);">
+            <div style="font-size:10px;font-weight:700;color:#a0391a;margin-bottom:3px;">Sem Q, sem supra</div>
+            <div style="font-size:10.5px;color:var(--text-mid);">A ausência de Q e supra é o que torna invisível para quem não procura. A T em V2–V3 é o único achado</div>
+          </div>
+          <div style="background:var(--paper);border-radius:4px;padding:8px 10px;border:1px solid var(--border2);">
+            <div style="font-size:10px;font-weight:700;color:#b85c2a;margin-bottom:3px;">Wellens vs Isquemia ativa</div>
+            <div style="font-size:10.5px;color:var(--text-mid);">Na isquemia ativa: dor + supra. No Wellens: <strong>sem dor</strong>, sem supra, T invertida — estado pós-isquemia</div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /caso 04 -->
+
+    <!-- CASO 05 — DE WINTER -->
+    <div style="background:var(--paper);border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-bottom:20px;">
+
+      <div style="background:var(--cream);padding:10px 16px 9px;border-bottom:2px solid #7a4a28;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+        <div style="background:#7a4a28;color:#faf4ea;font-family:'Lora',serif;font-size:11px;font-weight:700;padding:3px 10px;border-radius:3px;letter-spacing:0.05em;">CASO 05</div>
+        <div style="font-family:'Lora',serif;font-size:14px;font-weight:700;color:var(--text);">Padrão de De Winter (Ondas T de Winter)</div>
+        <div style="margin-left:auto;font-size:10px;color:var(--text-dim);letter-spacing:0.05em;text-transform:uppercase;">Equivalente STEMI · DA proximal ocluída</div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1.1fr 1fr;gap:0;">
+
+        <!-- LEFT -->
+        <div style="border-right:1px solid var(--border2);">
+          <div style="padding:12px 14px 8px;border-bottom:1px solid var(--border2);background:#f9f1e4;">
+            <div style="font-size:10px;font-weight:700;color:var(--text-mid);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">Traçado — De Winter</div>
+            <img src="/mnt/user-data/uploads/ECG-De-Winter-T-Waves-1-1024x491.jpg"
+                 alt="De Winter ECG" style="width:100%;border-radius:4px;border:1px solid var(--border2);"/>
+          </div>
+
+          <div style="padding:12px 14px;">
+            <div style="font-size:10px;font-weight:700;color:var(--text-mid);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">Achados por Derivação</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+
+              <div style="background:#fdf0dc;border-radius:4px;padding:7px 9px;border-left:3px solid #7a4a28;">
+                <div style="font-size:9px;font-weight:700;color:#5a3010;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:3px;">V2–V6 — ST</div>
+                <div style="font-size:11px;color:var(--text-mid);"><strong>Infradesnivelamento ascendente</strong> ≥ 1mm no ponto J. Ramo de subida da T começa <strong>abaixo da linha de base</strong> ✓</div>
+              </div>
+
+              <div style="background:#fdf0dc;border-radius:4px;padding:7px 9px;border-left:3px solid #7a4a28;">
+                <div style="font-size:9px;font-weight:700;color:#5a3010;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:3px;">V2–V6 — Onda T</div>
+                <div style="font-size:11px;color:var(--text-mid);"><strong>T positiva, alta e pontiaguda</strong> — simétricas. Amplitude aumentada ✓</div>
+              </div>
+
+              <div style="background:#fdf0dc;border-radius:4px;padding:7px 9px;border-left:3px solid #7a4a28;">
+                <div style="font-size:9px;font-weight:700;color:#5a3010;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:3px;">aVR</div>
+                <div style="font-size:11px;color:var(--text-mid);">Supra ST discreto <strong>&gt; 0,5 mm</strong> — sinal que acompanha o padrão ✓</div>
+              </div>
+
+              <div style="background:#e8f0da;border-radius:4px;padding:7px 9px;border-left:3px solid #6b7a3a;">
+                <div style="font-size:9px;font-weight:700;color:#4a5e20;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:3px;">Ausente</div>
+                <div style="font-size:11px;color:var(--text-mid);">Sem supradesnivelamento de ST precordial — <strong>por isso passa despercebido</strong> como STEMI</div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT -->
+        <div style="display:flex;flex-direction:column;">
+
+          <div style="padding:12px 14px;border-bottom:1px solid var(--border2);">
+            <div style="font-size:10px;font-weight:700;color:var(--text-mid);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:10px;">Análise Sistemática</div>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+
+              <div style="display:flex;gap:10px;align-items:flex-start;">
+                <div style="background:#7a4a28;color:#faf4ea;font-size:9px;font-weight:700;padding:2px 7px;border-radius:2px;flex-shrink:0;margin-top:1px;">ST</div>
+                <div style="font-size:11.5px;color:var(--text-mid);"><strong>Infra ascendente</strong> em V1–V6. Ramo de subida da T inicia abaixo do isoelétrico — sinal patognomônico</div>
+              </div>
+
+              <div style="display:flex;gap:10px;align-items:flex-start;">
+                <div style="background:#7a4a28;color:#faf4ea;font-size:9px;font-weight:700;padding:2px 7px;border-radius:2px;flex-shrink:0;margin-top:1px;">ONDA T</div>
+                <div style="font-size:11.5px;color:var(--text-mid);">Alta, simétrica e pontiaguda em V2–V6. Lembra a T da hipercalemia mas <strong>no contexto de dor torácica</strong></div>
+              </div>
+
+              <div style="display:flex;gap:10px;align-items:flex-start;">
+                <div style="background:#6b7a3a;color:#faf4ea;font-size:9px;font-weight:700;padding:2px 7px;border-radius:2px;flex-shrink:0;margin-top:1px;">aVR</div>
+                <div style="font-size:11.5px;color:var(--text-mid);">Supra &gt; 0,5 mm — reflexo da lesão anterosseptal extensa pela DA proximal</div>
+              </div>
+
+              <div style="display:flex;gap:10px;align-items:flex-start;">
+                <div style="background:#b85c2a;color:#faf4ea;font-size:9px;font-weight:700;padding:2px 7px;border-radius:2px;flex-shrink:0;margin-top:1px;">SUPRA</div>
+                <div style="font-size:11.5px;color:var(--text-mid);">Ausente nas precordiais — <strong>por isso não preenche critério convencional de STEMI</strong> e é ignorado</div>
+              </div>
+
+            </div>
+          </div>
+
+          <div style="padding:12px 14px;border-bottom:1px solid var(--border2);">
+            <div style="font-size:10px;font-weight:700;color:var(--text-mid);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">Diagnóstico · Equivalente STEMI</div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              <div style="background:#fdf0dc;border-left:4px solid #7a4a28;border-radius:0 4px 4px 0;padding:8px 12px;">
+                <div style="font-size:11.5px;font-weight:700;color:#5a3010;margin-bottom:2px;">🟫 Padrão de De Winter — DA proximal ocluída</div>
+                <div style="font-size:11px;color:var(--text-mid);">Infra ST ascendente + T alta pontiaguda V2–V6 + supra aVR. Equivalente a STEMI anterior — reperfusão imediata mesmo sem supra</div>
+              </div>
+              <div style="background:#fce8e0;border-left:4px solid #a0391a;border-radius:0 4px 4px 0;padding:8px 12px;">
+                <div style="font-size:11.5px;font-weight:700;color:#a0391a;margin-bottom:2px;">⚠️ Não aguardar supra para agir</div>
+                <div style="font-size:11px;color:var(--text-mid);">Muitas diretrizes já incluem De Winter como indicação de <strong>reperfusão imediata</strong>. Ativar cateterismo sem esperar critério clássico de STEMI</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="padding:12px 14px;flex:1;">
+            <div style="font-size:10px;font-weight:700;color:var(--text-mid);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">Conduta Imediata</div>
+            <ul class="r-details">
+              <li><span>Tratar como <strong>STEMI equivalente</strong> — ativar hemodinâmica de emergência</span></li>
+              <li><span>AAS + inibidor P2Y12 (ticagrelor ou clopidogrel) + anticoagulação</span></li>
+              <li><span><strong>Não aguardar</strong> evolução do ECG ou nova dosagem de troponina</span></li>
+              <li><span>Distinguir de hipercalemia: contexto clínico (dor torácica vs disfunção renal)</span></li>
+            </ul>
+          </div>
+
+        </div>
+      </div><!-- /grid -->
+
+      <!-- comparativo De Winter vs STEMI vs Wellens -->
+      <div style="border-top:1px solid var(--border2);background:#f9f1e4;padding:12px 16px;">
+        <div style="font-size:10px;font-weight:700;color:var(--text-mid);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">Diferencial Rápido — De Winter · STEMI · Wellens · Hipercalemia</div>
+        <div style="display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr;gap:0;border:1px solid var(--border2);border-radius:4px;overflow:hidden;font-size:10.5px;">
+
+          <div style="background:#ede0cc;padding:5px 9px;font-weight:700;color:var(--text-mid);border-right:1px solid var(--border2);">Achado</div>
+          <div style="background:#fdf0dc;padding:5px 9px;font-weight:700;color:#5a3010;border-right:1px solid var(--border2);">De Winter</div>
+          <div style="background:#fce8e0;padding:5px 9px;font-weight:700;color:#a0391a;border-right:1px solid var(--border2);">Wellens</div>
+          <div style="background:#fdf0dc;padding:5px 9px;font-weight:700;color:#7a4a10;">Hipercalemia</div>
+
+          <div style="padding:5px 9px;border-top:1px solid var(--border2);border-right:1px solid var(--border2);font-weight:600;">ST precordial</div>
+          <div style="padding:5px 9px;border-top:1px solid var(--border2);border-right:1px solid var(--border2);font-weight:700;color:#7a4a28;">↓ Infra ascendente</div>
+          <div style="padding:5px 9px;border-top:1px solid var(--border2);border-right:1px solid var(--border2);">Isoelétrico</div>
+          <div style="padding:5px 9px;border-top:1px solid var(--border2);">Normal</div>
+
+          <div style="padding:5px 9px;border-top:1px solid var(--border2);border-right:1px solid var(--border2);font-weight:600;">Onda T</div>
+          <div style="padding:5px 9px;border-top:1px solid var(--border2);border-right:1px solid var(--border2);font-weight:700;color:#7a4a28;">+ Alta pontiaguda</div>
+          <div style="padding:5px 9px;border-top:1px solid var(--border2);border-right:1px solid var(--border2);">Invertida ou bifásica</div>
+          <div style="padding:5px 9px;border-top:1px solid var(--border2);">+ Alta simétrica "em tenda"</div>
+
+          <div style="padding:5px 9px;border-top:1px solid var(--border2);border-right:1px solid var(--border2);font-weight:600;">Dor no momento</div>
+          <div style="padding:5px 9px;border-top:1px solid var(--border2);border-right:1px solid var(--border2);font-weight:700;color:#7a4a28;">Sim</div>
+          <div style="padding:5px 9px;border-top:1px solid var(--border2);border-right:1px solid var(--border2);">Não (pós-dor)</div>
+          <div style="padding:5px 9px;border-top:1px solid var(--border2);">Variável</div>
+
+          <div style="padding:5px 9px;border-top:1px solid var(--border2);border-right:1px solid var(--border2);font-weight:600;">aVR</div>
+          <div style="padding:5px 9px;border-top:1px solid var(--border2);border-right:1px solid var(--border2);font-weight:700;color:#7a4a28;">Supra &gt; 0,5mm</div>
+          <div style="padding:5px 9px;border-top:1px solid var(--border2);border-right:1px solid var(--border2);">Normal</div>
+          <div style="padding:5px 9px;border-top:1px solid var(--border2);">Normal</div>
+
+          <div style="padding:5px 9px;border-top:1px solid var(--border2);border-right:1px solid var(--border2);font-weight:600;">Conduta</div>
+          <div style="padding:5px 9px;border-top:1px solid var(--border2);border-right:1px solid var(--border2);font-weight:700;color:#a0391a;">Cateterismo imediato</div>
+          <div style="padding:5px 9px;border-top:1px solid var(--border2);border-right:1px solid var(--border2);font-weight:700;color:#a0391a;">Cateterismo urgente</div>
+          <div style="padding:5px 9px;border-top:1px solid var(--border2);">Tratar K⁺</div>
+
+        </div>
+      </div>
+
+    </div><!-- /caso 05 -->
+
+    <!-- placeholder para próximos casos -->
+    <div style="background:var(--paper);border:1px dashed var(--border);border-radius:6px;padding:20px;text-align:center;color:var(--text-dim);">
+      <div style="font-family:'Lora',serif;font-size:13px;font-weight:600;margin-bottom:4px;">+ Novos casos serão adicionados aqui</div>
+      <div style="font-size:11px;">Cada ECG discutido durante o estudo vira um caso documentado com análise completa</div>
+    </div>
+
+    <footer>ECG · 25 mm/s · 10 mm/mV · referência para PSA e prova de residência médica</footer>
+
+  </div><!-- /tab-casos -->
+
+  <script>
+    function switchTab(id, btn) {
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('tab-' + id).classList.add('active');
+      btn.classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  </script>
+
+</div>
+</body>
+</html>
