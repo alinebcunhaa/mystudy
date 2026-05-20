@@ -599,6 +599,10 @@ footer {
       Casos Clínicos
       <span class="tab-badge" style="background:#deeaf5;color:#2a5a7a;">PSA</span>
     </button>
+    <button class="tab-btn" onclick="switchTab('geometria', this)">
+      Geometria do ECG
+      <span class="tab-badge" style="background:#f2e4f0;color:#6a2a5a;">Mnemônico</span>
+    </button>
   </nav>
 
   <!-- ══════ TAB 1: PADRÕES ══════ -->
@@ -2981,7 +2985,981 @@ footer {
 
     <footer>ECG · 25 mm/s · 10 mm/mV · referência para PSA e prova de residência médica</footer>
 
+
   </div><!-- /tab-casos -->
+
+  <!-- ══════ TAB 5: GEOMETRIA DO ECG ══════ -->
+  <div class="tab-panel" id="tab-geometria">
+
+    <style>
+/* ── GEOMETRIA TAB SPECIFIC STYLES ── */
+#tab-geometria {
+  --dome:    #8b2020;
+  --smile:   #1a5c3a;
+  --ramp:    #6b4010;
+  --slide:   #1a3a6b;
+  --saddle:  #4a6b8b;
+  --tent:    #7a4a8b;
+  --wave:    #8b5a20;
+  --valley:  #6b1a2a;
+  --wedge:   #2a6b50;
+  --mshape:  #3d5c2a;
+  --mnt:     #5a3a6b;
+}
+
+0,900;1,700&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+
+
+
+
+
+
+/* warm grid overlay */
+
+
+.page {
+  position: relative; z-index: 1;
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 32px 20px 60px;
+}
+
+/* ── HEADER ── */
+.page-header {
+  margin-bottom: 32px;
+  border-bottom: 3px solid var(--text);
+  padding-bottom: 16px;
+}
+
+.page-header h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 32px;
+  font-weight: 900;
+  color: var(--text);
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+}
+
+.page-header h1 em {
+  font-style: italic;
+  color: #8b2020;
+}
+
+.page-header .lead {
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--dim);
+  font-weight: 400;
+  letter-spacing: 0.03em;
+  max-width: 680px;
+}
+
+/* ── INTRO RULE ── */
+.intro-rule {
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-left: 5px solid var(--text);
+  border-radius: 0 6px 6px 0;
+  padding: 14px 18px;
+  margin-bottom: 28px;
+  font-size: 13px;
+  color: var(--mid);
+  line-height: 1.7;
+}
+
+.intro-rule strong { color: var(--text); }
+
+/* ── SECTION TITLES ── */
+.section-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--dim);
+  margin-bottom: 12px;
+  margin-top: 32px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.section-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border2);
+}
+
+/* ── SHAPE GRID ── */
+.shape-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+@media (max-width: 800px) { .shape-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 500px) { .shape-grid { grid-template-columns: 1fr; } }
+
+.shape-card {
+  background: var(--paper);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.shape-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(44,26,14,0.12);
+}
+
+.shape-card .color-bar {
+  height: 5px;
+  width: 100%;
+}
+
+.shape-card .card-inner {
+  padding: 14px;
+}
+
+/* shape name badge */
+.shape-name {
+  font-family: 'DM Mono', monospace;
+  font-size: 9.5px;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 2px;
+  display: inline-block;
+  margin-bottom: 8px;
+  color: #faf4ea;
+}
+
+.shape-card h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.15;
+  margin-bottom: 4px;
+}
+
+.shape-card .diagnosis {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border2);
+}
+
+/* SVG ecg area */
+.ecg-area {
+  background: #f7f0e3;
+  background-image:
+    linear-gradient(rgba(160,100,40,0.12) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(160,100,40,0.12) 1px, transparent 1px),
+    linear-gradient(rgba(160,100,40,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(160,100,40,0.05) 1px, transparent 1px);
+  background-size: 32px 32px, 32px 32px, 8px 8px, 8px 8px;
+  padding: 12px 8px 10px;
+  border-radius: 4px;
+  margin-bottom: 12px;
+}
+
+.ecg-area svg { display: block; width: 100%; }
+
+/* key rule */
+.key-rule {
+  font-size: 12px;
+  color: var(--mid);
+  line-height: 1.55;
+}
+
+.key-rule .rule-line {
+  display: flex;
+  gap: 7px;
+  align-items: baseline;
+  margin-bottom: 3px;
+}
+
+.key-rule .rule-line::before {
+  content: '▸';
+  font-size: 10px;
+  flex-shrink: 0;
+  opacity: 0.5;
+}
+
+.key-rule strong { color: var(--text); }
+
+/* memory tag */
+.mem-tag {
+  margin-top: 10px;
+  padding: 7px 10px;
+  border-radius: 4px;
+  font-size: 11.5px;
+  font-weight: 600;
+  font-family: 'DM Mono', monospace;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  letter-spacing: 0.02em;
+}
+
+/* ── DECISION TREE ── */
+.tree-section {
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  margin-top: 14px;
+}
+
+.tree-header {
+  background: var(--text);
+  color: var(--bg);
+  padding: 12px 18px;
+  font-family: 'Playfair Display', serif;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.tree-
+
+/* ── LOOKUP TABLE ── */
+.lookup {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  margin-top: 14px;
+}
+
+.lookup th {
+  background: var(--text);
+  color: var(--bg);
+  padding: 8px 12px;
+  text-align: left;
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.lookup td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border2);
+  color: var(--mid);
+  vertical-align: top;
+}
+
+.lookup tr:last-child td { border-bottom: none; }
+.lookup tr:nth-child(even) td { background: var(--cream); }
+
+.lookup .shape-col {
+  font-family: 'Playfair Display', serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.lookup .diag-col {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.lookup .where-col {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+}
+
+.lookup .mem-col {
+  font-style: italic;
+  font-size: 11px;
+}
+
+footer {
+  margin-top: 40px;
+  text-align: center;
+  font-size: 10px;
+  color: var(--dim);
+  font-family: 'DM Mono', monospace;
+  letter-spacing: 0.08em;
+  padding-top: 16px;
+  border-top: 1px solid var(--border2);
+}
+
+    </style>
+
+    <div class="intro-rule">
+    <strong>O princípio:</strong> O ECG é um gráfico. O que você vê é geometria — curvas, ângulos, slopes, simetrias. Em vez de memorizar listas, memorize a <strong>forma</strong>. A forma leva ao diagnóstico. O diagnóstico leva à conduta.
+    Toda análise começa com duas perguntas: <strong>(1) O QRS é largo ou estreito?</strong> (≥ 3 quadradinhos = ≥ 120ms = bloqueio de ramo) e <strong>(2) O ST está desnivelado e qual a sua curva?</strong>
+  </div>
+
+  <div class="section-label">Biblioteca de Formas — ST e Onda T</div>
+
+  <div class="shape-grid">
+
+    <!-- 1. DOME — IAM -->
+    <div class="shape-card">
+      <div class="color-bar" style="background:var(--dome);"></div>
+      <div class="card-inner">
+        <span class="shape-name" style="background:var(--dome);">Forma 1</span>
+        <h3 style="color:var(--dome);">A Cúpula</h3>
+        <div class="diagnosis" style="color:var(--dome);">IAM / STEMI — Oclusão coronária aguda</div>
+        <div class="ecg-area">
+          <svg viewBox="0 0 220 90" height="90">
+            <line x1="0" y1="56" x2="220" y2="56" stroke="rgba(120,70,30,0.2)" stroke-width="0.7" stroke-dasharray="4,3"/>
+            <line x1="0" y1="56" x2="40" y2="56" stroke="#8b2020" stroke-width="2.2" stroke-linecap="round"/>
+            <path d="M40,56 Q50,40 60,56" fill="none" stroke="#8b2020" stroke-width="2.2" stroke-linecap="round"/>
+            <line x1="60" y1="56" x2="72" y2="56" stroke="#8b2020" stroke-width="2.2" stroke-linecap="round"/>
+            <!-- QRS -->
+            <polyline points="72,56 76,56 80,72 86,20 92,56" fill="none" stroke="#8b2020" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- DOME ST: convex arch upward, T still positive -->
+            <path d="M92,56 Q100,30 116,26 Q130,24 140,36 Q148,46 152,56" fill="none" stroke="#8b2020" stroke-width="3.2" stroke-linecap="round"/>
+            <!-- T wave now inverted early (IAM) -->
+            <path d="M152,56 Q162,70 174,56" fill="none" stroke="#8b2020" stroke-width="2.2" stroke-linecap="round"/>
+            <line x1="174" y1="56" x2="220" y2="56" stroke="#8b2020" stroke-width="2.2" stroke-linecap="round"/>
+            <!-- geometry annotation: convex arc -->
+            <path d="M96,30 Q116,18 144,30" fill="none" stroke="#8b202060" stroke-width="1" stroke-dasharray="3,2"/>
+            <text x="116" y="14" text-anchor="middle" font-size="8" fill="#8b2020" font-family="'DM Mono',monospace" font-weight="500">CONVEXO ↑</text>
+            <text x="116" y="82" text-anchor="middle" font-size="7.5" fill="#8b2020" font-family="'DM Mono',monospace">T inverte precocemente</text>
+          </svg>
+        </div>
+        <div class="key-rule">
+          <div class="rule-line"><span>ST <strong>convexo para cima</strong> — "abaulado"</span></div>
+          <div class="rule-line"><span><strong>Localizado</strong> num território coronário</span></div>
+          <div class="rule-line"><span>T inverte <strong>junto com</strong> o supra</span></div>
+          <div class="rule-line"><span>Derivações: D2D3aVF / V1-V4 / D1aVL</span></div>
+        </div>
+        <div class="mem-tag" style="background:#fce8e0;color:#8b2020;">
+          🔴 Cúpula = coronária ocluída. Convexa = perigosa.
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. SMILE — PERICARDITE -->
+    <div class="shape-card">
+      <div class="color-bar" style="background:var(--smile);"></div>
+      <div class="card-inner">
+        <span class="shape-name" style="background:var(--smile);">Forma 2</span>
+        <h3 style="color:var(--smile);">O Sorriso</h3>
+        <div class="diagnosis" style="color:var(--smile);">Pericardite Aguda</div>
+        <div class="ecg-area">
+          <svg viewBox="0 0 220 90" height="90">
+            <line x1="0" y1="60" x2="220" y2="60" stroke="rgba(120,70,30,0.2)" stroke-width="0.7" stroke-dasharray="4,3"/>
+            <line x1="0" y1="60" x2="35" y2="60" stroke="#1a5c3a" stroke-width="2.2" stroke-linecap="round"/>
+            <path d="M35,60 Q45,44 55,60" fill="none" stroke="#1a5c3a" stroke-width="2.2" stroke-linecap="round"/>
+            <line x1="55" y1="60" x2="67" y2="60" stroke="#1a5c3a" stroke-width="2.2" stroke-linecap="round"/>
+            <polyline points="67,60 71,60 75,72 81,24 87,60" fill="none" stroke="#1a5c3a" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- SMILE ST: concave upward = "smiling" -->
+            <path d="M87,60 Q94,50 106,44 Q118,40 130,44 Q142,48 148,60" fill="none" stroke="#1a5c3a" stroke-width="3.2" stroke-linecap="round"/>
+            <!-- T still positive (key diff from IAM) -->
+            <path d="M148,60 Q160,38 172,60" fill="none" stroke="#1a5c3a" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="172" y1="60" x2="220" y2="60" stroke="#1a5c3a" stroke-width="2.2" stroke-linecap="round"/>
+            <!-- concave arc annotation -->
+            <path d="M90,52 Q118,68 148,52" fill="none" stroke="#1a5c3a60" stroke-width="1" stroke-dasharray="3,2"/>
+            <text x="118" y="78" text-anchor="middle" font-size="8" fill="#1a5c3a" font-family="'DM Mono',monospace" font-weight="500">CÔNCAVO ↑ = sorriso</text>
+            <text x="118" y="16" text-anchor="middle" font-size="7.5" fill="#1a5c3a" font-family="'DM Mono',monospace">T positiva → difuso</text>
+            <!-- PR depression indicator -->
+            <line x1="55" y1="60" x2="67" y2="62" stroke="#1a5c3a" stroke-width="1.5" stroke-dasharray="2,1"/>
+            <text x="61" y="72" text-anchor="middle" font-size="7" fill="#1a5c3a" font-family="'DM Mono',monospace">PR↓</text>
+          </svg>
+        </div>
+        <div class="key-rule">
+          <div class="rule-line"><span>ST <strong>côncavo para cima</strong> — "sorrindo"</span></div>
+          <div class="rule-line"><span><strong>Difuso</strong> — várias paredes simultâneas</span></div>
+          <div class="rule-line"><span>T <strong>positiva</strong> junto com o supra</span></div>
+          <div class="rule-line"><span>Infra do PR — o sinal mais específico</span></div>
+        </div>
+        <div class="mem-tag" style="background:#e0f0e8;color:#1a5c3a;">
+          🟢 Sorriso = pericardite. Côncavo = inflamação, não infarto.
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. RAMP — DE WINTER -->
+    <div class="shape-card">
+      <div class="color-bar" style="background:var(--ramp);"></div>
+      <div class="card-inner">
+        <span class="shape-name" style="background:var(--ramp);">Forma 3</span>
+        <h3 style="color:var(--ramp);">A Rampa Subterrânea</h3>
+        <div class="diagnosis" style="color:var(--ramp);">De Winter — Equivalente STEMI</div>
+        <div class="ecg-area">
+          <svg viewBox="0 0 220 90" height="90">
+            <line x1="0" y1="55" x2="220" y2="55" stroke="rgba(120,70,30,0.2)" stroke-width="0.7" stroke-dasharray="4,3"/>
+            <line x1="0" y1="55" x2="30" y2="55" stroke="#6b4010" stroke-width="2.2" stroke-linecap="round"/>
+            <path d="M30,55 Q40,40 50,55" fill="none" stroke="#6b4010" stroke-width="2.2" stroke-linecap="round"/>
+            <line x1="50" y1="55" x2="62" y2="55" stroke="#6b4010" stroke-width="2.2" stroke-linecap="round"/>
+            <!-- QRS with ST depression at J point -->
+            <polyline points="62,55 66,55 70,70 78,22 86,68" fill="none" stroke="#6b4010" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- KEY: ascending ramp from BELOW baseline, then tall T -->
+            <path d="M86,68 Q100,65 112,55 Q120,46 128,20 Q134,8 140,18 Q146,30 152,55" fill="none" stroke="#6b4010" stroke-width="3.2" stroke-linecap="round"/>
+            <line x1="152" y1="55" x2="220" y2="55" stroke="#6b4010" stroke-width="2.2" stroke-linecap="round"/>
+            <!-- below-baseline annotation -->
+            <line x1="86" y1="55" x2="112" y2="55" stroke="#6b4010" stroke-width="0.8" stroke-dasharray="3,2" opacity="0.5"/>
+            <line x1="86" y1="68" x2="86" y2="55" stroke="#6b4010" stroke-width="1.2"/>
+            <line x1="82" y1="68" x2="90" y2="68" stroke="#6b4010" stroke-width="1.2"/>
+            <text x="68" y="80" font-size="7.5" fill="#6b4010" font-family="'DM Mono',monospace">J abaixo</text>
+            <text x="132" y="6" text-anchor="middle" font-size="8" fill="#6b4010" font-family="'DM Mono',monospace" font-weight="500">T alta +</text>
+            <!-- ascending slope line -->
+            <line x1="86" y1="68" x2="112" y2="55" stroke="#6b401080" stroke-width="1.5" stroke-dasharray="4,2"/>
+            <text x="185" y="45" font-size="7.5" fill="#6b4010" font-family="'DM Mono',monospace">aVR supra</text>
+          </svg>
+        </div>
+        <div class="key-rule">
+          <div class="rule-line"><span>ST desce no ponto J — <strong>abaixo da linha de base</strong></span></div>
+          <div class="rule-line"><span>Sobe em rampa oblíqua — T nasce <strong>subterrânea</strong></span></div>
+          <div class="rule-line"><span>T alta, simétrica e pontiaguda em V2–V6</span></div>
+          <div class="rule-line"><span>Supra em aVR &gt; 0,5mm. <strong>Sem supra precordial</strong></span></div>
+        </div>
+        <div class="mem-tag" style="background:#f5e8d0;color:#6b4010;">
+          🟫 Rampa subterrânea = T nasce abaixo do isoelétrico. DA ocluída.
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. SLIDE — BRUGADA T1 -->
+    <div class="shape-card">
+      <div class="color-bar" style="background:var(--slide);"></div>
+      <div class="card-inner">
+        <span class="shape-name" style="background:var(--slide);">Forma 4</span>
+        <h3 style="color:var(--slide);">O Tobogã</h3>
+        <div class="diagnosis" style="color:var(--slide);">Brugada Tipo 1 — Coved</div>
+        <div class="ecg-area">
+          <svg viewBox="0 0 220 90" height="90">
+            <line x1="0" y1="58" x2="220" y2="58" stroke="rgba(120,70,30,0.2)" stroke-width="0.7" stroke-dasharray="4,3"/>
+            <line x1="0" y1="58" x2="32" y2="58" stroke="#1a3a6b" stroke-width="2.2" stroke-linecap="round"/>
+            <path d="M32,58 Q42,42 52,58" fill="none" stroke="#1a3a6b" stroke-width="2.2" stroke-linecap="round"/>
+            <line x1="52" y1="58" x2="64" y2="58" stroke="#1a3a6b" stroke-width="2.2" stroke-linecap="round"/>
+            <!-- QRS with r' -->
+            <polyline points="64,58 68,58 72,70 78,24 84,58" fill="none" stroke="#1a3a6b" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- COVED: oblique STRAIGHT descent from J — no plateau, lands in negative T -->
+            <path d="M84,58 Q90,50 98,42 Q112,32 126,52 Q134,64 140,72 Q146,78 154,58" fill="none" stroke="#1a3a6b" stroke-width="3.2" stroke-linecap="round"/>
+            <line x1="154" y1="58" x2="220" y2="58" stroke="#1a3a6b" stroke-width="2.2" stroke-linecap="round"/>
+            <!-- straight oblique descent line annotation -->
+            <line x1="84" y1="58" x2="112" y2="40" stroke="#1a3a6b80" stroke-width="1.5" stroke-dasharray="4,2"/>
+            <!-- angle marker -->
+            <path d="M84,58 Q92,58 94,52" fill="none" stroke="#1a3a6b" stroke-width="1"/>
+            <text x="98" y="36" font-size="8" fill="#1a3a6b" font-family="'DM Mono',monospace" font-weight="500">declive reto</text>
+            <text x="148" y="80" text-anchor="middle" font-size="8" fill="#1a3a6b" font-family="'DM Mono',monospace" font-weight="500">T negativa</text>
+            <!-- ≥2mm annotation -->
+            <line x1="94" y1="42" x2="94" y2="58" stroke="#b87c20" stroke-width="1.2"/>
+            <text x="100" y="54" font-size="7" fill="#b87c20" font-family="'DM Mono',monospace">≥2mm</text>
+          </svg>
+        </div>
+        <div class="key-rule">
+          <div class="rule-line"><span>ST desce em <strong>linha oblíqua reta</strong> — sem subida, sem platô</span></div>
+          <div class="rule-line"><span>Termina em T <strong>negativa</strong> (abaixo da linha)</span></div>
+          <div class="rule-line"><span>Elevação ≥ 2mm em V1 ou V2</span></div>
+          <div class="rule-line"><span>Este padrão <strong>sozinho confirma</strong> Brugada</span></div>
+        </div>
+        <div class="mem-tag" style="background:#e0e8f5;color:#1a3a6b;">
+          🔵 Tobogã = desce reto e não volta. T fica embaixo.
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. SADDLE — BRUGADA T2 -->
+    <div class="shape-card">
+      <div class="color-bar" style="background:var(--saddle);"></div>
+      <div class="card-inner">
+        <span class="shape-name" style="background:var(--saddle);">Forma 5</span>
+        <h3 style="color:var(--saddle);">A Sela de Montar</h3>
+        <div class="diagnosis" style="color:var(--saddle);">Brugada Tipo 2 — Saddle-back</div>
+        <div class="ecg-area">
+          <svg viewBox="0 0 220 90" height="90">
+            <line x1="0" y1="58" x2="220" y2="58" stroke="rgba(120,70,30,0.2)" stroke-width="0.7" stroke-dasharray="4,3"/>
+            <line x1="0" y1="58" x2="32" y2="58" stroke="#4a6b8b" stroke-width="2.2" stroke-linecap="round"/>
+            <path d="M32,58 Q42,42 52,58" fill="none" stroke="#4a6b8b" stroke-width="2.2" stroke-linecap="round"/>
+            <line x1="52" y1="58" x2="64" y2="58" stroke="#4a6b8b" stroke-width="2.2" stroke-linecap="round"/>
+            <polyline points="64,58 68,58 72,70 78,22 84,58" fill="none" stroke="#4a6b8b" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- SADDLE: goes UP first (convex), dips valley, up again to T+ -->
+            <path d="M84,58 Q90,48 100,38 Q110,32 118,38 Q126,46 132,40 Q140,32 148,58" fill="none" stroke="#4a6b8b" stroke-width="3.2" stroke-linecap="round"/>
+            <line x1="148" y1="58" x2="220" y2="58" stroke="#4a6b8b" stroke-width="2.2" stroke-linecap="round"/>
+            <!-- valley annotation -->
+            <line x1="118" y1="38" x2="118" y2="72" stroke="#4a6b8b" stroke-width="0.8" stroke-dasharray="2,2"/>
+            <text x="118" y="80" text-anchor="middle" font-size="7.5" fill="#4a6b8b" font-family="'DM Mono',monospace">vale</text>
+            <!-- saddle shape hint -->
+            <text x="116" y="18" text-anchor="middle" font-size="8" fill="#4a6b8b" font-family="'DM Mono',monospace" font-weight="500">sobe → vale → sobe</text>
+            <text x="154" y="44" font-size="7.5" fill="#4a6b8b" font-family="'DM Mono',monospace">T+</text>
+          </svg>
+        </div>
+        <div class="key-rule">
+          <div class="rule-line"><span>ST <strong>sobe primeiro</strong> (convexo), depois desce em vale</span></div>
+          <div class="rule-line"><span>Sobe novamente — forma o <strong>"assento da sela"</strong></span></div>
+          <div class="rule-line"><span>T <strong>positiva ou bifásica</strong></span></div>
+          <div class="rule-line"><span><strong>Não confirma</strong> Brugada — precisa de teste farmacológico</span></div>
+        </div>
+        <div class="mem-tag" style="background:#e8eef5;color:#4a6b8b;">
+          🔷 Sela = tem vale no meio. Inconclusivo sem ajmalina.
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. TENT — HIPERCALEMIA -->
+    <div class="shape-card">
+      <div class="color-bar" style="background:var(--tent);"></div>
+      <div class="card-inner">
+        <span class="shape-name" style="background:var(--tent);">Forma 6</span>
+        <h3 style="color:var(--tent);">A Tenda — Triângulo Isósceles</h3>
+        <div class="diagnosis" style="color:var(--tent);">Hipercalemia Precoce</div>
+        <div class="ecg-area">
+          <svg viewBox="0 0 220 90" height="90">
+            <line x1="0" y1="60" x2="220" y2="60" stroke="rgba(120,70,30,0.2)" stroke-width="0.7" stroke-dasharray="4,3"/>
+            <line x1="0" y1="60" x2="30" y2="60" stroke="#7a4a8b" stroke-width="2.2" stroke-linecap="round"/>
+            <!-- P flat/absent -->
+            <path d="M30,60 Q38,57 46,60" fill="none" stroke="#7a4a8b" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="46" y1="60" x2="56" y2="60" stroke="#7a4a8b" stroke-width="2.2" stroke-linecap="round"/>
+            <polyline points="56,60 59,60 62,68 66,48 70,60" fill="none" stroke="#7a4a8b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            <line x1="70" y1="60" x2="80" y2="60" stroke="#7a4a8b" stroke-width="2.2" stroke-linecap="round"/>
+            <!-- TENT T: perfectly symmetric isósceles triangle -->
+            <path d="M80,60 L100,8 L120,60" fill="none" stroke="#7a4a8b" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <line x1="120" y1="60" x2="160" y2="60" stroke="#7a4a8b" stroke-width="2.2" stroke-linecap="round"/>
+            <!-- geometry: symmetric annotation -->
+            <line x1="80" y1="72" x2="100" y2="72" stroke="#7a4a8b" stroke-width="1"/>
+            <line x1="100" y1="72" x2="120" y2="72" stroke="#7a4a8b" stroke-width="1"/>
+            <line x1="80" y1="69" x2="80" y2="75" stroke="#7a4a8b" stroke-width="1"/>
+            <line x1="120" y1="69" x2="120" y2="75" stroke="#7a4a8b" stroke-width="1"/>
+            <line x1="100" y1="69" x2="100" y2="75" stroke="#7a4a8b" stroke-width="1" stroke-dasharray="2,1"/>
+            <text x="100" y="84" text-anchor="middle" font-size="7.5" fill="#7a4a8b" font-family="'DM Mono',monospace">simétrica — lados iguais</text>
+            <!-- isósceles lines -->
+            <line x1="80" y1="60" x2="100" y2="8" stroke="#7a4a8b50" stroke-width="1" stroke-dasharray="3,2"/>
+            <line x1="120" y1="60" x2="100" y2="8" stroke="#7a4a8b50" stroke-width="1" stroke-dasharray="3,2"/>
+            <text x="100" y="6" text-anchor="middle" font-size="8" fill="#7a4a8b" font-family="'DM Mono',monospace" font-weight="500">pico estreito</text>
+            <text x="42" y="52" font-size="7" fill="#7a4a8b" font-family="'DM Mono',monospace">P achatada</text>
+          </svg>
+        </div>
+        <div class="key-rule">
+          <div class="rule-line"><span>T <strong>perfeitamente simétrica</strong> — lados iguais (isósceles)</span></div>
+          <div class="rule-line"><span>Alta, estreita e <strong>com pico</strong></span></div>
+          <div class="rule-line"><span>P achatada ou ausente na fase avançada</span></div>
+          <div class="rule-line"><span>Progressão: Tenda → QRS largo → sinusoidal → FV</span></div>
+        </div>
+        <div class="mem-tag" style="background:#f0e8f5;color:#7a4a8b;">
+          🟣 Triângulo isósceles = K⁺ alto. Simétrico = iônico.
+        </div>
+      </div>
+    </div>
+
+    <!-- 7. WAVE — WELLENS A -->
+    <div class="shape-card">
+      <div class="color-bar" style="background:var(--wave);"></div>
+      <div class="card-inner">
+        <span class="shape-name" style="background:var(--wave);">Forma 7</span>
+        <h3 style="color:var(--wave);">A Onda que Atravessa</h3>
+        <div class="diagnosis" style="color:var(--wave);">Wellens Tipo A — V2/V3</div>
+        <div class="ecg-area">
+          <svg viewBox="0 0 220 90" height="90">
+            <line x1="0" y1="52" x2="220" y2="52" stroke="rgba(120,70,30,0.2)" stroke-width="0.7" stroke-dasharray="4,3"/>
+            <line x1="0" y1="52" x2="28" y2="52" stroke="#8b5a20" stroke-width="2.2" stroke-linecap="round"/>
+            <path d="M28,52 Q38,36 48,52" fill="none" stroke="#8b5a20" stroke-width="2.2" stroke-linecap="round"/>
+            <line x1="48" y1="52" x2="60" y2="52" stroke="#8b5a20" stroke-width="2.2" stroke-linecap="round"/>
+            <polyline points="60,52 64,52 67,62 72,26 77,52" fill="none" stroke="#8b5a20" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <line x1="77" y1="52" x2="86" y2="52" stroke="#8b5a20" stroke-width="2.2" stroke-linecap="round"/>
+            <!-- BIPHASIC T: goes up then crosses BELOW the line -->
+            <path d="M86,52 Q92,40 100,44 Q108,52 114,64 Q118,72 126,52" fill="none" stroke="#8b5a20" stroke-width="3.2" stroke-linecap="round"/>
+            <line x1="126" y1="52" x2="220" y2="52" stroke="#8b5a20" stroke-width="2.2" stroke-linecap="round"/>
+            <!-- zero crossing annotation -->
+            <circle cx="108" cy="52" r="3.5" fill="none" stroke="#8b5a20" stroke-width="1.5"/>
+            <text x="108" y="42" text-anchor="middle" font-size="8" fill="#8b5a20" font-family="'DM Mono',monospace" font-weight="500">cruza zero</text>
+            <text x="92" y="34" font-size="7.5" fill="#8b5a20" font-family="'DM Mono',monospace">+</text>
+            <text x="118" y="74" font-size="7.5" fill="#8b5a20" font-family="'DM Mono',monospace">−</text>
+            <text x="60" y="16" font-size="8" fill="#8b5a20" font-family="'DM Mono',monospace" font-weight="500">ST ≤ 1mm · sem dor</text>
+          </svg>
+        </div>
+        <div class="key-rule">
+          <div class="rule-line"><span>T bifásica: <strong>positiva depois negativa</strong> em V2–V3</span></div>
+          <div class="rule-line"><span>T <strong>atravessa</strong> a linha isoelétrica</span></div>
+          <div class="rule-line"><span>ST isoelétrico ou ≤ 1mm. <strong>Sem onda Q</strong></span></div>
+          <div class="rule-line"><span>Paciente <strong>sem dor</strong> no momento. Enzimas normais</span></div>
+        </div>
+        <div class="mem-tag" style="background:#f5ead8;color:#8b5a20;">
+          🟠 Onda que atravessa o zero = Wellens A. DA crítica silenciosa.
+        </div>
+      </div>
+    </div>
+
+    <!-- 8. VALLEY — WELLENS B -->
+    <div class="shape-card">
+      <div class="color-bar" style="background:var(--valley);"></div>
+      <div class="card-inner">
+        <span class="shape-name" style="background:var(--valley);">Forma 8</span>
+        <h3 style="color:var(--valley);">O Abismo Simétrico</h3>
+        <div class="diagnosis" style="color:var(--valley);">Wellens Tipo B — V2/V3</div>
+        <div class="ecg-area">
+          <svg viewBox="0 0 220 90" height="90">
+            <line x1="0" y1="44" x2="220" y2="44" stroke="rgba(120,70,30,0.2)" stroke-width="0.7" stroke-dasharray="4,3"/>
+            <line x1="0" y1="44" x2="28" y2="44" stroke="#6b1a2a" stroke-width="2.2" stroke-linecap="round"/>
+            <path d="M28,44 Q38,28 48,44" fill="none" stroke="#6b1a2a" stroke-width="2.2" stroke-linecap="round"/>
+            <line x1="48" y1="44" x2="60" y2="44" stroke="#6b1a2a" stroke-width="2.2" stroke-linecap="round"/>
+            <polyline points="60,44 64,44 67,54 72,18 77,44" fill="none" stroke="#6b1a2a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <line x1="77" y1="44" x2="88" y2="44" stroke="#6b1a2a" stroke-width="2.2" stroke-linecap="round"/>
+            <!-- DEEP SYMMETRIC INVERSION: perfectly symmetric deep T below line -->
+            <path d="M88,44 L104,80 L120,44" fill="none" stroke="#6b1a2a" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <line x1="120" y1="44" x2="220" y2="44" stroke="#6b1a2a" stroke-width="2.2" stroke-linecap="round"/>
+            <!-- symmetry annotation -->
+            <line x1="88" y1="82" x2="104" y2="82" stroke="#6b1a2a" stroke-width="1"/>
+            <line x1="104" y1="82" x2="120" y2="82" stroke="#6b1a2a" stroke-width="1"/>
+            <line x1="88" y1="79" x2="88" y2="85" stroke="#6b1a2a" stroke-width="1"/>
+            <line x1="120" y1="79" x2="120" y2="85" stroke="#6b1a2a" stroke-width="1"/>
+            <line x1="104" y1="79" x2="104" y2="85" stroke="#6b1a2a" stroke-width="1" stroke-dasharray="2,1"/>
+            <text x="104" y="90" text-anchor="middle" font-size="7.5" fill="#6b1a2a" font-family="'DM Mono',monospace">simétrica e profunda</text>
+            <text x="60" y="14" font-size="8" fill="#6b1a2a" font-family="'DM Mono',monospace" font-weight="500">ST iso · sem Q · sem dor</text>
+            <!-- depth line -->
+            <line x1="130" y1="44" x2="130" y2="80" stroke="#6b1a2a" stroke-width="1" stroke-dasharray="2,2"/>
+            <text x="140" y="65" font-size="7.5" fill="#6b1a2a" font-family="'DM Mono',monospace">profunda</text>
+          </svg>
+        </div>
+        <div class="key-rule">
+          <div class="rule-line"><span>T <strong>profundamente invertida e simétrica</strong> em V2–V3</span></div>
+          <div class="rule-line"><span>ST <strong>isoelétrico</strong> — sem supra, sem infra</span></div>
+          <div class="rule-line"><span>Sem Q precordial. Progressão de R <strong>preservada</strong></span></div>
+          <div class="rule-line"><span>Mais comum (75%) · fase mais estabelecida que o tipo A</span></div>
+        </div>
+        <div class="mem-tag" style="background:#f5e0e4;color:#6b1a2a;">
+          🔻 Abismo simétrico = Wellens B. Infarto iminente da parede anterior.
+        </div>
+      </div>
+    </div>
+
+    <!-- 9. WEDGE — WPW -->
+    <div class="shape-card">
+      <div class="color-bar" style="background:var(--wedge);"></div>
+      <div class="card-inner">
+        <span class="shape-name" style="background:var(--wedge);">Forma 9</span>
+        <h3 style="color:var(--wedge);">A Cunha Inicial</h3>
+        <div class="diagnosis" style="color:var(--wedge);">WPW — Onda Delta</div>
+        <div class="ecg-area">
+          <svg viewBox="0 0 220 90" height="90">
+            <line x1="0" y1="52" x2="220" y2="52" stroke="rgba(120,70,30,0.2)" stroke-width="0.7" stroke-dasharray="4,3"/>
+            <line x1="0" y1="52" x2="26" y2="52" stroke="#2a6b50" stroke-width="2.2" stroke-linecap="round"/>
+            <path d="M26,52 Q36,36 46,52" fill="none" stroke="#2a6b50" stroke-width="2.2" stroke-linecap="round"/>
+            <!-- PR CURTO -->
+            <line x1="46" y1="52" x2="54" y2="52" stroke="#2a6b50" stroke-width="2.2" stroke-linecap="round"/>
+            <!-- WEDGE: oblique slow ramp (delta) then fast R -->
+            <path d="M54,52 L62,52 Q68,44 76,26 L82,52" fill="none" stroke="#2a6b50" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+            <line x1="82" y1="52" x2="94" y2="52" stroke="#2a6b50" stroke-width="2.2" stroke-linecap="round"/>
+            <path d="M94,52 Q104,36 114,52" fill="none" stroke="#2a6b50" stroke-width="2.2" stroke-linecap="round"/>
+            <line x1="114" y1="52" x2="220" y2="52" stroke="#2a6b50" stroke-width="2.2" stroke-linecap="round"/>
+            <!-- wedge shading -->
+            <polygon points="54,52 62,52 76,26 54,26" fill="#2a6b5015"/>
+            <polygon points="54,52 62,52 76,26 54,26" fill="none" stroke="#2a6b5060" stroke-width="1" stroke-dasharray="3,2"/>
+            <!-- oblique angle annotation -->
+            <path d="M54,52 Q62,52 64,46" fill="none" stroke="#2a6b50" stroke-width="1"/>
+            <text x="68" y="40" font-size="8" fill="#2a6b50" font-family="'DM Mono',monospace" font-weight="500">α oblíquo = delta</text>
+            <!-- PR bracket -->
+            <line x1="46" y1="66" x2="54" y2="66" stroke="#b87c20" stroke-width="1.2"/>
+            <line x1="46" y1="63" x2="46" y2="69" stroke="#b87c20" stroke-width="1.2"/>
+            <line x1="54" y1="63" x2="54" y2="69" stroke="#b87c20" stroke-width="1.2"/>
+            <text x="50" y="78" text-anchor="middle" font-size="7" fill="#b87c20" font-family="'DM Mono',monospace">PR &lt;120ms</text>
+            <text x="160" y="38" font-size="7.5" fill="#2a6b50" font-family="'DM Mono',monospace">QRS alargado</text>
+          </svg>
+        </div>
+        <div class="key-rule">
+          <div class="rule-line"><span>Cunha oblíqua no <strong>início</strong> do QRS — antes do pico</span></div>
+          <div class="rule-line"><span>PR <strong>&lt; 120ms</strong> — sinal obrigatório</span></div>
+          <div class="rule-line"><span>QRS alargado (delta fundida com His)</span></div>
+          <div class="rule-line"><span>Onda R dominante em V1 (tipo A) ou QS em V1 (tipo B)</span></div>
+        </div>
+        <div class="mem-tag" style="background:#e0f0ec;color:#2a6b50;">
+          🟢 Cunha no início = pré-excitação. Sem cunha = não é WPW.
+        </div>
+      </div>
+    </div>
+
+    <!-- 10. M SHAPE — BRD/BRE -->
+    <div class="shape-card">
+      <div class="color-bar" style="background:var(--mshape);"></div>
+      <div class="card-inner">
+        <span class="shape-name" style="background:var(--mshape);">Forma 10</span>
+        <h3 style="color:var(--mshape);">O M e o V — Bloqueios de Ramo</h3>
+        <div class="diagnosis" style="color:var(--mshape);">BRD (M em V1) · BRE (M em DI)</div>
+        <div class="ecg-area">
+          <svg viewBox="0 0 220 90" height="90">
+            <line x1="0" y1="52" x2="220" y2="52" stroke="rgba(120,70,30,0.2)" stroke-width="0.7" stroke-dasharray="4,3"/>
+            <!-- BRD left side: rSR' in V1 = M shape -->
+            <text x="50" y="10" text-anchor="middle" font-size="8" fill="#3d5c2a" font-family="'DM Mono',monospace" font-weight="500">BRD — V1</text>
+            <line x1="0" y1="52" x2="14" y2="52" stroke="#3d5c2a" stroke-width="2.2" stroke-linecap="round"/>
+            <!-- rSR' = r small, S below, R' tall -->
+            <polyline points="14,52 18,52 22,42 26,52 30,64 38,52 44,52 50,24 56,52" fill="none" stroke="#3d5c2a" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- label r, S, R' -->
+            <text x="22" y="38" text-anchor="middle" font-size="8" fill="#3d5c2a" font-family="'DM Mono',monospace">r</text>
+            <text x="30" y="74" text-anchor="middle" font-size="8" fill="#3d5c2a" font-family="'DM Mono',monospace">S</text>
+            <text x="50" y="20" text-anchor="middle" font-size="9" fill="#3d5c2a" font-family="'DM Mono',monospace" font-weight="500">R'</text>
+            <line x1="14" y1="78" x2="56" y2="78" stroke="#b87c20" stroke-width="1"/>
+            <line x1="14" y1="75" x2="14" y2="81" stroke="#b87c20" stroke-width="1"/>
+            <line x1="56" y1="75" x2="56" y2="81" stroke="#b87c20" stroke-width="1"/>
+            <text x="35" y="89" text-anchor="middle" font-size="7" fill="#b87c20" font-family="'DM Mono',monospace">≥120ms</text>
+
+            <!-- divider -->
+            <line x1="110" y1="5" x2="110" y2="85" stroke="#d4b896" stroke-width="1"/>
+
+            <!-- BRE right side: RR' notched in DI -->
+            <text x="165" y="10" text-anchor="middle" font-size="8" fill="#3d5c2a" font-family="'DM Mono',monospace" font-weight="500">BRE — DI</text>
+            <line x1="115" y1="52" x2="126" y2="52" stroke="#3d5c2a" stroke-width="2.2" stroke-linecap="round"/>
+            <!-- RR' notched: broad R with notch = M -->
+            <path d="M126,52 L132,52 Q138,28 144,36 Q150,20 156,52" fill="none" stroke="#3d5c2a" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- label R, notch, R' -->
+            <text x="138" y="22" text-anchor="middle" font-size="9" fill="#3d5c2a" font-family="'DM Mono',monospace" font-weight="500">R</text>
+            <text x="144" y="30" font-size="8" fill="#3d5c2a" font-family="'DM Mono',monospace">entalhe</text>
+            <text x="156" y="46" font-size="9" fill="#3d5c2a" font-family="'DM Mono',monospace" font-weight="500">R'</text>
+            <line x1="156" y1="52" x2="170" y2="52" stroke="#3d5c2a" stroke-width="2.2" stroke-linecap="round"/>
+            <!-- ST discordant, T inv -->
+            <path d="M170,52 Q178,64 190,52" fill="none" stroke="#3d5c2a" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="key-rule">
+          <div class="rule-line"><span><strong>BRD:</strong> rSR' em V1 (M com R' &gt; r) + S largo em DI/V6</span></div>
+          <div class="rule-line"><span><strong>BRE:</strong> RR' entalhado em DI/V5–V6 + QS em V1</span></div>
+          <div class="rule-line"><span><strong>Ambos:</strong> QRS ≥ 120ms obrigatório</span></div>
+          <div class="rule-line"><span>Repolarização sempre <strong>discordante</strong> em ambos</span></div>
+        </div>
+        <div class="mem-tag" style="background:#e8f0e0;color:#3d5c2a;">
+          🟢 M em V1 = BRD · M em DI = BRE · Sem M = sem bloqueio completo
+        </div>
+      </div>
+    </div>
+
+    <!-- 11. MOUNTAIN — HVE STRAIN -->
+    <div class="shape-card">
+      <div class="color-bar" style="background:var(--mnt);"></div>
+      <div class="card-inner">
+        <span class="shape-name" style="background:var(--mnt);">Forma 11</span>
+        <h3 style="color:var(--mnt);">A Montanha Assimétrica</h3>
+        <div class="diagnosis" style="color:var(--mnt);">HVE — Strain Pattern</div>
+        <div class="ecg-area">
+          <svg viewBox="0 0 220 90" height="90">
+            <line x1="0" y1="60" x2="220" y2="60" stroke="rgba(120,70,30,0.2)" stroke-width="0.7" stroke-dasharray="4,3"/>
+            <line x1="0" y1="60" x2="22" y2="60" stroke="#5a3a6b" stroke-width="2.2" stroke-linecap="round"/>
+            <path d="M22,60 Q32,44 42,60" fill="none" stroke="#5a3a6b" stroke-width="2.2" stroke-linecap="round"/>
+            <line x1="42" y1="60" x2="52" y2="60" stroke="#5a3a6b" stroke-width="2.2" stroke-linecap="round"/>
+            <!-- R very tall (HVE) -->
+            <polyline points="52,60 56,60 60,74 64,8 70,60" fill="none" stroke="#5a3a6b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- ST descending + ASYMMETRIC T inversion: fast up, slow down -->
+            <path d="M70,60 Q78,66 90,70 Q102,72 116,66 Q128,58 138,60" fill="none" stroke="#5a3a6b" stroke-width="3" stroke-linecap="round"/>
+            <!-- Asymmetric T inv annotation -->
+            <path d="M138,60 Q148,68 162,72 Q172,68 176,60" fill="none" stroke="#5a3a6b" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="176" y1="60" x2="220" y2="60" stroke="#5a3a6b" stroke-width="2.2" stroke-linecap="round"/>
+            <!-- asymmetric annotation -->
+            <!-- fast descent line -->
+            <line x1="138" y1="60" x2="162" y2="72" stroke="#5a3a6b60" stroke-width="1.2" stroke-dasharray="3,2"/>
+            <!-- slow descent -->
+            <line x1="162" y1="72" x2="176" y2="60" stroke="#5a3a6b60" stroke-width="1.2" stroke-dasharray="3,2"/>
+            <text x="142" y="82" font-size="7.5" fill="#5a3a6b" font-family="'DM Mono',monospace">lenta</text>
+            <text x="170" y="56" font-size="7.5" fill="#5a3a6b" font-family="'DM Mono',monospace">rápida</text>
+            <text x="64" y="4" text-anchor="middle" font-size="8" fill="#5a3a6b" font-family="'DM Mono',monospace" font-weight="500">R gigante</text>
+            <text x="100" y="78" text-anchor="middle" font-size="7.5" fill="#5a3a6b" font-family="'DM Mono',monospace">ST↓ descendente</text>
+          </svg>
+        </div>
+        <div class="key-rule">
+          <div class="rule-line"><span>R <strong>gigante</strong> em V5 + S profunda em V1 (Sokolow ≥35mm)</span></div>
+          <div class="rule-line"><span>ST descendente + T invertida <strong>assimétrica</strong> (sobe lento, desce rápido)</span></div>
+          <div class="rule-line"><span>T assimétrica = strain · T simétrica = isquemia</span></div>
+          <div class="rule-line"><span>Eixo à esquerda · deflexão intrinsecoide &gt; 50ms em V5</span></div>
+        </div>
+        <div class="mem-tag" style="background:#ece0f5;color:#5a3a6b;">
+          🟣 Montanha assimétrica = HVE strain. Simétrica = isquemia.
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /shape-grid -->
+
+  <!-- LOOKUP TABLE -->
+  <div class="section-label">Tabela de Consulta Rápida — Forma → Diagnóstico</div>
+
+  <div style="background:var(--paper);border:1px solid var(--border);border-radius:8px;overflow:hidden;">
+    <table class="lookup">
+      <thead>
+        <tr>
+          <th>Forma Geométrica</th>
+          <th>Onde ver</th>
+          <th>Diagnóstico</th>
+          <th>Diferencial imediato</th>
+          <th>Regra de ouro</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="shape-col" style="color:var(--dome);">🔴 Cúpula convexa</td>
+          <td class="where-col">ST — território coronário</td>
+          <td class="diag-col">IAM / STEMI</td>
+          <td>Pericardite, HVE</td>
+          <td class="mem-col">Convexa + localizado + T inverte = IAM</td>
+        </tr>
+        <tr>
+          <td class="shape-col" style="color:var(--smile);">🟢 Sorriso côncavo</td>
+          <td class="where-col">ST — difuso, múltiplas paredes</td>
+          <td class="diag-col">Pericardite aguda</td>
+          <td>IAM, HVE</td>
+          <td class="mem-col">Côncavo + difuso + PR↓ + T+ = Pericardite</td>
+        </tr>
+        <tr>
+          <td class="shape-col" style="color:var(--ramp);">🟫 Rampa subterrânea</td>
+          <td class="where-col">ST infra + T alta V2–V6</td>
+          <td class="diag-col">De Winter (STEMI equiv.)</td>
+          <td>Hipercalemia</td>
+          <td class="mem-col">T nasce abaixo da linha + aVR supra = De Winter</td>
+        </tr>
+        <tr>
+          <td class="shape-col" style="color:var(--slide);">🔵 Tobogã oblíquo</td>
+          <td class="where-col">ST em V1/V2 — tobogã reto</td>
+          <td class="diag-col">Brugada Tipo 1</td>
+          <td>BRD, HVD</td>
+          <td class="mem-col">Desce reto ≥2mm + T negativa = diagnóstico</td>
+        </tr>
+        <tr>
+          <td class="shape-col" style="color:var(--saddle);">🔷 Sela de montar</td>
+          <td class="where-col">ST em V1/V2 — com vale</td>
+          <td class="diag-col">Brugada Tipo 2</td>
+          <td>BRD, repolarização precoce</td>
+          <td class="mem-col">Sobe → vale → sobe + T+ = inconclusivo</td>
+        </tr>
+        <tr>
+          <td class="shape-col" style="color:var(--tent);">🟣 Triângulo isósceles</td>
+          <td class="where-col">Onda T — simétrica alta</td>
+          <td class="diag-col">Hipercalemia</td>
+          <td>De Winter, Wellens B</td>
+          <td class="mem-col">T simétrica + P achatada = K⁺ alto</td>
+        </tr>
+        <tr>
+          <td class="shape-col" style="color:var(--wave);">🟠 Onda bifásica</td>
+          <td class="where-col">T em V2–V3 — cruza zero</td>
+          <td class="diag-col">Wellens Tipo A</td>
+          <td>Wellens B, isquemia</td>
+          <td class="mem-col">T cruza zero + sem dor + ST iso = Wellens A</td>
+        </tr>
+        <tr>
+          <td class="shape-col" style="color:var(--valley);">🔻 Abismo simétrico</td>
+          <td class="where-col">T em V2–V3 — profunda inv.</td>
+          <td class="diag-col">Wellens Tipo B</td>
+          <td>Hipercalemia, isquemia</td>
+          <td class="mem-col">T inv. simétrica + ST iso + sem Q = Wellens B</td>
+        </tr>
+        <tr>
+          <td class="shape-col" style="color:var(--wedge);">🟢 Cunha inicial</td>
+          <td class="where-col">Início do QRS — oblíquo</td>
+          <td class="diag-col">WPW — onda delta</td>
+          <td>BRE, SVD</td>
+          <td class="mem-col">Cunha + PR curto = WPW. Sem cunha = não é</td>
+        </tr>
+        <tr>
+          <td class="shape-col" style="color:var(--mshape);">🟢 M em V1 / M em DI</td>
+          <td class="where-col">QRS — duplo pico</td>
+          <td class="diag-col">BRD (V1) · BRE (DI)</td>
+          <td>WPW, HVE</td>
+          <td class="mem-col">QRS ≥120ms obrigatório para qualquer bloqueio</td>
+        </tr>
+        <tr>
+          <td class="shape-col" style="color:var(--mnt);">🟣 Montanha assimétrica</td>
+          <td class="where-col">T invertida + R gigante</td>
+          <td class="diag-col">HVE — Strain pattern</td>
+          <td>Isquemia subendocárdica</td>
+          <td class="mem-col">Assimétrica = strain · Simétrica = isquemia</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- DECISION TREE -->
+  <div class="section-label">Fluxo de Raciocínio — Dois Passos Antes de Qualquer Diagnóstico</div>
+
+  <div class="tree-section">
+    <div class="tree-header">Geometria em 2 Perguntas — aplique antes de qualquer conclusão</div>
+    <div class="tree-body">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 340" style="width:100%;display:block;">
+        <defs>
+          <marker id="ta" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#2c1a0e"/></marker>
+          <marker id="ta2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#8b2020"/></marker>
+        </defs>
+
+        <!-- START -->
+        <rect x="360" y="10" width="240" height="44" rx="6" fill="#2c1a0e"/>
+        <text x="480" y="28" text-anchor="middle" font-size="11" fill="#f5ede0" font-family="'DM Mono',monospace" font-weight="500">VER O ECG</text>
+        <text x="480" y="44" text-anchor="middle" font-size="10" fill="#f5ede0" font-family="'DM Mono',monospace">Contexto clínico já em mente</text>
+
+        <!-- Arrow down -->
+        <line x1="480" y1="54" x2="480" y2="74" stroke="#2c1a0e" stroke-width="1.5" marker-end="url(#ta)"/>
+
+        <!-- Q1: QRS largo? -->
+        <rect x="330" y="75" width="300" height="44" rx="6" fill="#f5ede0" stroke="#2c1a0e" stroke-width="2"/>
+        <text x="480" y="93" text-anchor="middle" font-size="12" fill="#2c1a0e" font-family="'DM Mono',monospace" font-weight="500">PERGUNTA 1</text>
+        <text x="480" y="109" text-anchor="middle" font-size="11" fill="#2c1a0e" font-family="'DM Mono',monospace">QRS ≥ 120 ms (≥ 3 quadradinhos)?</text>
+
+        <!-- SIM branch left -->
+        <line x1="330" y1="97" x2="210" y2="97" stroke="#2c1a0e" stroke-width="1.5"/>
+        <line x1="210" y1="97" x2="210" y2="150" stroke="#2c1a0e" stroke-width="1.5" marker-end="url(#ta)"/>
+        <text x="270" y="90" text-anchor="middle" font-size="10" fill="#2c1a0e" font-family="'DM Mono',monospace">SIM</text>
+
+        <!-- NÃO branch right -->
+        <line x1="630" y1="97" x2="750" y2="97" stroke="#2c1a0e" stroke-width="1.5"/>
+        <line x1="750" y1="97" x2="750" y2="150" stroke="#2c1a0e" stroke-width="1.5" marker-end="url(#ta)"/>
+        <text x="690" y="90" text-anchor="middle" font-size="10" fill="#2c1a0e" font-family="'DM Mono',monospace">NÃO</text>
+
+        <!-- SIM box -->
+        <rect x="110" y="150" width="200" height="55" rx="5" fill="#e8f0e0" stroke="#3d5c2a" stroke-width="1.5"/>
+        <text x="210" y="168" text-anchor="middle" font-size="10" font-weight="600" fill="#3d5c2a" font-family="'DM Mono',monospace">BLOQUEIO DE RAMO</text>
+        <text x="210" y="182" text-anchor="middle" font-size="9" fill="#3d5c2a" font-family="'DM Mono',monospace">M em V1 → BRD</text>
+        <text x="210" y="195" text-anchor="middle" font-size="9" fill="#3d5c2a" font-family="'DM Mono',monospace">M em DI → BRE</text>
+
+        <!-- wedge sub-branch from SIM -->
+        <line x1="210" y1="205" x2="210" y2="230" stroke="#3d5c2a" stroke-width="1.2" stroke-dasharray="4,2" marker-end="url(#ta)"/>
+        <rect x="130" y="230" width="160" height="40" rx="4" fill="#e0f0ec" stroke="#2a6b50" stroke-width="1"/>
+        <text x="210" y="246" text-anchor="middle" font-size="9" fill="#2a6b50" font-family="'DM Mono',monospace">Cunha no início?</text>
+        <text x="210" y="260" text-anchor="middle" font-size="9" font-weight="600" fill="#2a6b50" font-family="'DM Mono',monospace">→ WPW (delta)</text>
+
+        <!-- NÃO box: ST analysis -->
+        <rect x="650" y="150" width="200" height="55" rx="5" fill="#f5ede0" stroke="#2c1a0e" stroke-width="1.5"/>
+        <text x="750" y="168" text-anchor="middle" font-size="10" font-weight="600" fill="#2c1a0e" font-family="'DM Mono',monospace">PERGUNTA 2</text>
+        <text x="750" y="182" text-anchor="middle" font-size="9" fill="#2c1a0e" font-family="'DM Mono',monospace">ST desnivelado?</text>
+        <text x="750" y="195" text-anchor="middle" font-size="9" fill="#2c1a0e" font-family="'DM Mono',monospace">Qual a FORMA da curva?</text>
+
+        <!-- ST branches -->
+        <!-- Supra -->
+        <line x1="650" y1="177" x2="530" y2="177" stroke="#2c1a0e" stroke-width="1.2"/>
+        <line x1="530" y1="177" x2="530" y2="230" stroke="#2c1a0e" stroke-width="1.2" marker-end="url(#ta)"/>
+        <text x="590" y="170" text-anchor="middle" font-size="9" fill="#2c1a0e" font-family="'DM Mono',monospace">SUPRA</text>
+
+        <rect x="430" y="230" width="200" height="70" rx="5" fill="#fce8e0" stroke="#8b2020" stroke-width="1.5"/>
+        <text x="530" y="248" text-anchor="middle" font-size="9" font-weight="600" fill="#8b2020" font-family="'DM Mono',monospace">Qual curva?</text>
+        <text x="530" y="263" text-anchor="middle" font-size="9" fill="#8b2020" font-family="'DM Mono',monospace">🔴 Cúpula convexa = IAM</text>
+        <text x="530" y="277" text-anchor="middle" font-size="9" fill="#1a5c3a" font-family="'DM Mono',monospace">🟢 Sorriso côncavo = Pericardite</text>
+        <text x="530" y="291" text-anchor="middle" font-size="9" fill="#1a3a6b" font-family="'DM Mono',monospace">🔵 Tobogã reto = Brugada T1</text>
+
+        <!-- Infra -->
+        <line x1="850" y1="177" x2="870" y2="177" stroke="#2c1a0e" stroke-width="1.2"/>
+        <line x1="870" y1="177" x2="870" y2="230" stroke="#2c1a0e" stroke-width="1.2" marker-end="url(#ta)"/>
+        <text x="858" y="170" text-anchor="middle" font-size="9" fill="#2c1a0e" font-family="'DM Mono',monospace">INFRA</text>
+
+        <rect x="800" y="230" width="155" height="55" rx="5" fill="#fdf0dc" stroke="#6b4010" stroke-width="1.5"/>
+        <text x="877" y="248" text-anchor="middle" font-size="9" font-weight="600" fill="#6b4010" font-family="'DM Mono',monospace">Rampa subterrânea?</text>
+        <text x="877" y="262" text-anchor="middle" font-size="9" fill="#6b4010" font-family="'DM Mono',monospace">🟫 = De Winter</text>
+        <text x="877" y="276" text-anchor="middle" font-size="9" fill="#6b4010" font-family="'DM Mono',monospace">(STEMI equivalente)</text>
+
+        <!-- T wave only -->
+        <line x1="750" y1="205" x2="750" y2="230" stroke="#2c1a0e" stroke-width="1.2" marker-end="url(#ta)"/>
+        <text x="756" y="222" font-size="9" fill="#2c1a0e" font-family="'DM Mono',monospace">ST iso</text>
+
+        <rect x="668" y="230" width="164" height="70" rx="5" fill="#f5f0fa" stroke="#5a3a6b" stroke-width="1.5"/>
+        <text x="750" y="248" text-anchor="middle" font-size="9" font-weight="600" fill="#5a3a6b" font-family="'DM Mono',monospace">Olha só a T</text>
+        <text x="750" y="263" text-anchor="middle" font-size="9" fill="#7a4a8b" font-family="'DM Mono',monospace">🟣 Isósceles = Hipercal.</text>
+        <text x="750" y="277" text-anchor="middle" font-size="9" fill="#8b5a20" font-family="'DM Mono',monospace">🟠 Cruza zero = Wellens A</text>
+        <text x="750" y="291" text-anchor="middle" font-size="9" fill="#6b1a2a" font-family="'DM Mono',monospace">🔻 Abismo sim. = Wellens B</text>
+
+      </svg>
+    </div>
+  </div>
+
+  <footer>
+    ECG Geometria · 25 mm/s · 10 mm/mV · referência para PSA e prova de residência
+  </footer>
+
+  </div><!-- /tab-geometria -->
 
   <script>
     function switchTab(id, btn) {
