@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Escalas de Avaliação da Dor</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f7f4f0;--card:#fff;--border:#e5e0da;--ink:#2c2825;--ink-soft:#6b6460;--ink-light:#a09890;
+  --ok:#2d7a50;--ok-bg:#eaf5ee;--warn:#8a6000;--warn-bg:#fdf5e0;--danger:#a03030;--danger-bg:#fdecea;
+  --uni:#c96a40;--uni-bg:#fdf0ea;--uni-sidebar:#f9e9e1;
+  --c-geral:#3a6e99;--c-geral-bg:#eaf2f9;
+  --c-neuro:#7a449a;--c-neuro-bg:#f3edfb;
+  --c-qv:#2e7a5a;--c-qv-bg:#e8f5f0;
+  --c-psico:#8a6200;--c-psico-bg:#fdf5e0;
+  --c-esp:#40509a;--c-esp-bg:#ebeef9;
+  --sidebar-w:240px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh}
+
+/* ── TOP HEADER ── */
+.top-header{
+  background:var(--card);border-bottom:1px solid var(--border);
+  padding:18px 28px 16px;position:sticky;top:0;z-index:100;
+  display:flex;align-items:center;gap:16px;
+}
+.top-header h1{font-family:'DM Serif Display',serif;font-size:20px;line-height:1}
+.top-header h1 em{font-style:italic;color:var(--uni)}
+.top-header .sub{font-size:12px;color:var(--ink-light);font-weight:300}
+
+/* ── LAYOUT ── */
+.app{display:grid;grid-template-columns:var(--sidebar-w) 1fr;min-height:calc(100vh - 57px)}
+
+/* ── SIDEBAR ── */
+.sidebar{
+  background:var(--card);border-right:1px solid var(--border);
+  position:sticky;top:57px;height:calc(100vh - 57px);overflow-y:auto;
+  padding:12px 0 24px;
+}
+.sidebar::-webkit-scrollbar{width:4px}
+.sidebar::-webkit-scrollbar-track{background:transparent}
+.sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+
+.sb-group-label{
+  font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-light);padding:14px 16px 6px;
+}
+.sb-sub-label{
+  font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--ink-light);padding:10px 16px 4px 20px;opacity:.7;
+}
+.sb-item{
+  display:flex;align-items:center;gap:8px;padding:7px 16px;
+  cursor:pointer;transition:background .15s;border-radius:0;
+  font-size:13px;font-weight:400;color:var(--ink-soft);border:none;background:none;
+  width:100%;text-align:left;
+}
+.sb-item:hover{background:var(--bg)}
+.sb-item.active{font-weight:600;color:var(--ink)}
+.sb-item.active.uni{background:var(--uni-sidebar);color:var(--uni)}
+.sb-item.active.geral{background:var(--c-geral-bg);color:var(--c-geral)}
+.sb-item.active.neuro{background:var(--c-neuro-bg);color:var(--c-neuro)}
+.sb-item.active.qv{background:var(--c-qv-bg);color:var(--c-qv)}
+.sb-item.active.psico{background:var(--c-psico-bg);color:var(--c-psico)}
+.sb-item.active.esp{background:var(--c-esp-bg);color:var(--c-esp)}
+.sb-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.dot-uni{background:var(--uni)}
+.dot-geral{background:var(--c-geral)}
+.dot-neuro{background:var(--c-neuro)}
+.dot-qv{background:var(--c-qv)}
+.dot-psico{background:var(--c-psico)}
+.dot-esp{background:var(--c-esp)}
+.sb-acronym{font-weight:600;font-size:12px;min-width:54px}
+.sb-divider{height:1px;background:var(--border);margin:8px 16px}
+
+/* ── CONTENT ── */
+.content{overflow-y:auto;padding:28px}
+.panel{display:none;max-width:720px;animation:fadeUp .25s ease}
+.panel.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── CARD ── */
+.card{background:var(--card);border-radius:14px;padding:22px 24px;margin-bottom:14px;box-shadow:0 1px 6px rgba(0,0,0,.05)}
+
+/* ── SCALE HERO ── */
+.hero{display:flex;gap:16px;align-items:flex-start}
+.badge{
+  width:56px;height:56px;border-radius:12px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'DM Serif Display',serif;font-size:13px;font-weight:700;
+  text-align:center;line-height:1.2;padding:4px;
+}
+.badge.uni{background:var(--uni-bg);color:var(--uni)}
+.badge.geral{background:var(--c-geral-bg);color:var(--c-geral)}
+.badge.neuro{background:var(--c-neuro-bg);color:var(--c-neuro)}
+.badge.qv{background:var(--c-qv-bg);color:var(--c-qv)}
+.badge.psico{background:var(--c-psico-bg);color:var(--c-psico)}
+.badge.esp{background:var(--c-esp-bg);color:var(--c-esp)}
+.hero-title{font-family:'DM Serif Display',serif;font-size:20px;line-height:1.2;margin-bottom:3px}
+.hero-full{font-size:12px;font-style:italic;color:var(--ink-soft);margin-bottom:8px}
+.hero-pop{
+  display:inline-block;font-size:11px;font-weight:500;padding:3px 10px;
+  border-radius:20px;background:var(--bg);color:var(--ink-soft);margin-bottom:8px;
+}
+.hero-desc{font-size:13.5px;color:var(--ink-soft);line-height:1.6}
+
+/* ── QUANDO USAR ── */
+.quando{border-radius:10px;padding:14px 18px;margin-top:0}
+.quando.uni{background:var(--uni-bg);border-left:3px solid var(--uni)}
+.quando.geral{background:var(--c-geral-bg);border-left:3px solid var(--c-geral)}
+.quando.neuro{background:var(--c-neuro-bg);border-left:3px solid var(--c-neuro)}
+.quando.qv{background:var(--c-qv-bg);border-left:3px solid var(--c-qv)}
+.quando.psico{background:var(--c-psico-bg);border-left:3px solid var(--c-psico)}
+.quando.esp{background:var(--c-esp-bg);border-left:3px solid var(--c-esp)}
+.quando h4{font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;opacity:.65;margin-bottom:8px}
+.quando ul{list-style:none;display:flex;flex-direction:column;gap:5px}
+.quando ul li{font-size:13px;display:flex;gap:7px;line-height:1.5;align-items:flex-start}
+.quando ul li::before{content:'→';opacity:.45;flex-shrink:0;margin-top:1px}
+.quando ul li.no::before{content:'✕';color:var(--danger);opacity:.6}
+
+/* ── SECTION TITLE ── */
+.stitle{
+  font-size:10px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--ink-light);margin-bottom:12px;
+  display:flex;align-items:center;gap:8px;
+}
+.stitle::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* ── STRUCTURE TABLE ── */
+.struct{display:flex;flex-direction:column;gap:6px}
+.srow{
+  display:grid;grid-template-columns:140px 1fr;gap:10px;
+  font-size:12.5px;line-height:1.5;padding:8px 12px;
+  border-radius:8px;background:var(--bg);
+}
+.srow-label{font-weight:500;color:var(--ink-soft)}
+
+/* ── SCORING ── */
+.score-list{display:flex;flex-direction:column;gap:6px}
+.score-row{display:grid;grid-template-columns:110px 1fr;gap:10px;align-items:center}
+.score-range{font-size:12px;font-weight:600;text-align:right}
+.score-bar-wrap{height:24px;border-radius:7px;background:var(--bg);overflow:hidden}
+.score-bar{
+  height:100%;border-radius:7px;display:flex;align-items:center;
+  padding-left:10px;font-size:11px;font-weight:500;color:#fff;white-space:nowrap;
+}
+.score-bar.ok{background:var(--ok)}
+.score-bar.warn{background:var(--warn)}
+.score-bar.danger{background:var(--danger)}
+.score-bar.neutral{background:var(--ink-light)}
+
+/* ── METRICS ── */
+.metrics{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.chip{font-size:11.5px;padding:4px 12px;border-radius:20px;border:1px solid var(--border);color:var(--ink-soft)}
+.chip strong{color:var(--ink)}
+
+/* ── NOTA ── */
+.nota{
+  background:#fffbf2;border:1px solid #e8d888;border-radius:10px;
+  padding:12px 16px;font-size:12.5px;color:var(--ink-soft);line-height:1.6;
+}
+.nota strong{color:var(--ink)}
+
+/* ── REAPP ── */
+.reapp{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:11px;font-weight:500;color:var(--ink-soft);
+  background:var(--bg);border-radius:20px;padding:4px 12px;
+}
+
+/* ── LANDING ── */
+.landing-title{font-family:'DM Serif Display',serif;font-size:28px;margin-bottom:6px}
+.landing-title em{font-style:italic;color:var(--uni)}
+.landing-sub{font-size:14px;color:var(--ink-soft);margin-bottom:24px}
+.landing-section{margin-bottom:28px}
+.landing-section-title{
+  font-size:11px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--ink-light);margin-bottom:12px;display:flex;align-items:center;gap:8px;
+}
+.landing-section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px}
+.grid-card{
+  background:var(--card);border-radius:10px;padding:14px 14px;cursor:pointer;
+  transition:transform .15s,box-shadow .15s;border:1px solid var(--border);
+}
+.grid-card:hover{transform:translateY(-2px);box-shadow:0 4px 14px rgba(0,0,0,.08)}
+.gc-acronym{font-weight:600;font-size:14px;margin-bottom:2px}
+.gc-name{font-size:10.5px;color:var(--ink-soft);line-height:1.4}
+.gc-pop{font-size:10px;color:var(--ink-light);margin-top:5px}
+
+/* ── RESPONSIVE ── */
+@media(max-width:700px){
+  .app{grid-template-columns:1fr}
+  .sidebar{
+    position:static;height:auto;overflow-x:auto;overflow-y:hidden;
+    display:flex;flex-direction:row;padding:8px 0;
+    border-right:none;border-bottom:1px solid var(--border);
+  }
+  .sb-group-label,.sb-sub-label,.sb-divider{display:none}
+  .sb-item{white-space:nowrap;padding:6px 14px;border-radius:20px;margin:0 3px;background:var(--bg);font-size:12px}
+  .sb-item.active{background:var(--ink)!important;color:#fff!important}
+  .sb-dot{display:none}
+  .content{padding:16px}
+  .srow{grid-template-columns:1fr;gap:2px}
+  .score-row{grid-template-columns:90px 1fr}
+  .grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}
+}
+</style>
+</head>
+<body>
+
+<header class="top-header">
+  <div>
+    <h1>Escalas de Avaliação da <em>Dor</em></h1>
+    <div class="sub">Guia de uso clínico · Unidimensionais &amp; Multidimensionais</div>
+  </div>
+</header>
+
+<div class="app">
+  <aside class="sidebar" id="sidebar"></aside>
+  <main class="content" id="content"></main>
+</div>
+
+<script>
+// ──────────────────────────────────────────────────────────────────────────────
+// DATA
+// ──────────────────────────────────────────────────────────────────────────────
+const SCALES = [
+{id:'eva',cat:'uni',sub:null,acronym:'EVA',name:'Escala Visual Analógica',
+ pop:'Adultos e crianças > 7 anos, cognitivamente íntegros',
+ desc:'Linha horizontal de 10 cm com extremidades "Sem dor" e "Dor máxima". O paciente indica sua dor com uma marca. Mais sensível a pequenas variações que a escala numérica.',
+ struct:[
+  {l:'Formato',v:'Linha de 10 cm (ou régua graduada)'},
+  {l:'Aplicação',v:'< 1 min, autoaplicável'},
+  {l:'Pontuação',v:'Medida em cm a partir do zero'},
+ ],
+ scoring:[
+  {r:'0 – 3',lb:'Dor leve — monitorar',lv:'ok',w:30},
+  {r:'4 – 7',lb:'Dor moderada — ajuste analgésico',lv:'warn',w:60},
+  {r:'8 – 10',lb:'Emergência de dor — intervenção imediata',lv:'danger',w:100},
+ ],
+ use:['Monitoramento de dor aguda e crônica em adultos e crianças > 7a','Comparação pré e pós-intervenção analgésica','Pesquisa clínica — maior sensibilidade que EVN','Paciente com capacidade motora preservada para marcar'],
+ no:['Idosos com comprometimento cognitivo ou visuoespacial','Pacientes não verbais ou inconscientes','Crianças < 7 anos (preferir FLACC ou Escala de Faces)'],
+ note:'Versão horizontal é mais confiável que a vertical. Requer habilidade motora e raciocínio abstrato. Ligeiramente superior à EVN em detectar pequenas variações — útil em pesquisa.',
+ reapp:'Reavaliar em até 60 min após intervenção',metrics:[]},
+
+{id:'evn',cat:'uni',sub:null,acronym:'EVN',name:'Escala Visual Numérica',
+ pop:'Adultos e crianças > 7 anos',
+ desc:'Escala de 0 a 10, onde 0 = sem dor e 10 = pior dor imaginável. Pode ser aplicada verbalmente. A mais utilizada na prática clínica pela facilidade de compreensão e aplicação.',
+ struct:[
+  {l:'Formato',v:'Números 0–10 (verbal ou escrito)'},
+  {l:'Aplicação',v:'< 1 min, pode ser verbal ou por telefone'},
+  {l:'Derivação',v:'Escala 0–100 (maior precisão em pesquisa)'},
+ ],
+ scoring:[
+  {r:'0 – 3',lb:'Dor leve — monitorar',lv:'ok',w:30},
+  {r:'4 – 7',lb:'Dor moderada — ajuste analgésico necessário',lv:'warn',w:60},
+  {r:'8 – 10',lb:'Emergência de dor — intervenção imediata',lv:'danger',w:100},
+ ],
+ use:['Triagem rápida em PSA e UPA — pode ser verbal','Monitoramento nos sinais vitais em enfermaria','Reavaliação pós-analgesia','Pacientes com dificuldade motora para marcar a EVA'],
+ no:['Pacientes com comprometimento cognitivo grave','Crianças pré-verbais sem compreensão numérica'],
+ note:'Escala de escolha para uso cotidiano no PSA. EVN ≥ 8 = emergência analgésica. Registrar sempre junto dos outros sinais vitais como 5º sinal vital.',
+ reapp:'Reavaliar em até 60 min após intervenção',metrics:[]},
+
+{id:'nips',cat:'uni',sub:null,acronym:'NIPS',name:'Neonatal Infant Pain Scale',
+ pop:'Recém-nascidos até 1 mês (a termo e pré-termo ≥ 28 sem IG)',
+ desc:'Escala comportamental observacional com 6 indicadores. Avaliada durante 1–2 minutos de observação. Pontuação máxima de 7 pontos.',
+ struct:[
+  {l:'Expressão facial',v:'Relaxada (0) | Contraída (1)'},
+  {l:'Choro',v:'Ausente (0) | Resmungos (1) | Vigoroso (2)'},
+  {l:'Respiração',v:'Relaxada (0) | Diferente do basal (1)'},
+  {l:'Braços',v:'Relaxados (0) | Fletidos/estendidos (1)'},
+  {l:'Pernas',v:'Relaxadas (0) | Fletidas/estendidas (1)'},
+  {l:'Estado de consciência',v:'Dormindo/calmo (0) | Desconfortável (1)'},
+ ],
+ scoring:[
+  {r:'0 – 3',lb:'Sem dor ou dor leve',lv:'ok',w:40},
+  {r:'≥ 4',lb:'Dor presente — intervenção necessária',lv:'danger',w:100},
+ ],
+ use:['Procedimentos em UTIN: punção venosa, heel stick, intubação','Avaliação pós-operatória neonatal','Monitoramento contínuo de RN criticamente doentes'],
+ no:['Crianças > 1 mês (preferir FLACC)','RN paralisados ou com paralisia facial (comprometem itens comportamentais)'],
+ note:'Para prematuros < 32 semanas, considerar o PIPP (Premature Infant Pain Profile), que incorpora idade gestacional e estado comportamental basal. A NIPS é validada a partir de 28 semanas de IG.',
+ reapp:'Antes e depois de cada procedimento',metrics:[{l:'Pontuação máxima',v:'7 pts'},{l:'Corte para dor',v:'≥ 4'}]},
+
+{id:'flacc',cat:'uni',sub:null,acronym:'FLACC',name:'Face, Legs, Activity, Cry, Consolability',
+ pop:'> 1 mês até 7 anos; r-FLACC para crianças com déficit cognitivo',
+ desc:'Escala comportamental com 5 domínios, 0–2 pontos cada, total 0–10. Padrão-ouro para crianças de 2 meses a 7 anos. A versão revisada (r-FLACC) inclui descritores específicos para déficit cognitivo.',
+ struct:[
+  {l:'Face',v:'0: sem expressão | 1: caretas ocasionais | 2: queixo tremendo, mandíbula cerrada'},
+  {l:'Pernas',v:'0: relaxadas | 1: inquietas, tensas | 2: chutando ou esticadas'},
+  {l:'Atividade',v:'0: quieta | 1: contorcendo, tensa | 2: arqueada, rígida, movimentos bruscos'},
+  {l:'Choro',v:'0: sem choro | 1: gemidos ocasionais | 2: choro contínuo, grito'},
+  {l:'Consolabilidade',v:'0: satisfeita | 1: tranquilizada por toque | 2: difícil de consolar'},
+ ],
+ scoring:[
+  {r:'0',lb:'Sem dor / relaxada',lv:'ok',w:10},
+  {r:'1 – 3',lb:'Dor leve — conforto e analgesia leve',lv:'ok',w:30},
+  {r:'4 – 6',lb:'Dor moderada — analgesia indicada',lv:'warn',w:60},
+  {r:'7 – 10',lb:'Dor intensa — intervenção imediata',lv:'danger',w:100},
+ ],
+ use:['Pós-operatório pediátrico (geral, ortopedia, cardíaca)','UTI pediátrica — pacientes intubados ou não cooperativos','Procedimentos dolorosos em crianças pré-verbais'],
+ no:['Neonatos < 1 mês (preferir NIPS)','Crianças > 7a com autorelato preservado (preferir EVN ou Escala de Faces)'],
+ note:'Observar 1–5 min antes de pontuar. Em dor intensa, pode não haver choro (esgotamento). Reavaliar 15–30 min após analgesia. r-FLACC é indicada para crianças com PC e outras condições neurológicas.',
+ reapp:'15–30 min após intervenção',metrics:[{l:'Máximo',v:'10 pts'}]},
+
+{id:'painad',cat:'uni',sub:null,acronym:'PAINAD',name:'Pain Assessment in Advanced Dementia',
+ pop:'Adultos com demência avançada / déficit cognitivo grave; pacientes não verbais',
+ desc:'5 domínios observacionais, 0–2 pontos cada, total 0–10. Validada para demência avançada, UTI geriátrica e cuidados paliativos. Também referida como PNAID na literatura brasileira.',
+ struct:[
+  {l:'Respiração',v:'0: normal | 1: dificuldade ocasional, hiperventilação curta | 2: ruidosa, Cheyne-Stokes'},
+  {l:'Vocalização',v:'0: nenhuma | 1: gemido/suspiro ocasional | 2: grito, chama repetidamente'},
+  {l:'Expressão facial',v:'0: sorriso/inexpressivo | 1: triste/assustado/preocupado | 2: caretas'},
+  {l:'Linguagem corporal',v:'0: relaxado | 1: tenso, inquieto, aflito | 2: rígido, punhos cerrados, agressão'},
+  {l:'Consolabilidade',v:'0: sem necessidade | 1: distraído por voz/toque | 2: incapaz de ser consolado'},
+ ],
+ scoring:[
+  {r:'0 – 2',lb:'Sem dor ou dor leve',lv:'ok',w:20},
+  {r:'3 – 7',lb:'Dor moderada — intervenção analgésica',lv:'warn',w:70},
+  {r:'8 – 10',lb:'Dor intensa — analgesia urgente',lv:'danger',w:100},
+ ],
+ use:['Pacientes com Alzheimer avançado, demência vascular ou frontotemporal','UTI geriátrica — agitação inexplicada pode ser dor não tratada','Cuidados paliativos — final de vida','Avaliação antes e após mobilização e procedimentos'],
+ no:['Pacientes com capacidade de autorelato preservada (preferir EVN)'],
+ note:'Observar em repouso E durante mobilização (diferenças podem orientar analgesia preventiva). Agitação isolada sem outros sinais pode ter outras causas (fome, delírio, retenção urinária). Treinamento da equipe melhora confiabilidade.',
+ reapp:'Antes e depois de cada procedimento e mobilização',metrics:[{l:'Máximo',v:'10 pts'}]},
+
+{id:'bps',cat:'uni',sub:null,acronym:'BPS',name:'Behavioral Pain Scale',
+ pop:'Adultos sedados em VM, inconscientes (UTI adulto)',
+ desc:'3 domínios comportamentais, total 3–12. Desenvolvida para UTI adulto. A versão BPS-NI (não intubado) substitui o item de adaptação à VM por vocalização.',
+ struct:[
+  {l:'Expressão facial',v:'1: relaxada | 2: parcialmente tensa | 3: totalmente tensa | 4: caretas, sulco perilabial, pálpebras ocluídas'},
+  {l:'Membros superiores',v:'1: sem movimento | 2: flexão parcial | 3: flexão total/dedos | 4: retração permanente, totalmente contraídos'},
+  {l:'Adaptação à VM',v:'1: tolera movimentos | 2: tosse com movimentos | 3: briga com ventilador | 4: incapaz de controlar VM'},
+ ],
+ scoring:[
+  {r:'3 – 5',lb:'Sem dor significativa',lv:'ok',w:30},
+  {r:'6 – 11',lb:'Dor presente — ajuste de analgesia/sedação',lv:'warn',w:75},
+  {r:'12',lb:'Dor máxima — intervenção imediata',lv:'danger',w:100},
+ ],
+ use:['UTI adulto: paciente intubado e sedado (trauma, sepse, pós-op)','Titulação de analgesia durante sedação profunda ou superficial','Monitoramento em procedimentos: aspiração, curativo, reposicionamento','BPS-NI para paciente com traqueostomia ou VNI'],
+ no:['Pacientes acordados e comunicativos (preferir EVN)','Pacientes com bloqueio neuromuscular (compromete itens comportamentais)'],
+ note:'Diretriz SCCM/PADIS 2018 recomenda BPS ou CPOT como padrão na UTI adulto. Avaliar em repouso E durante procedimento para analgesia preventiva. Combinar com RASS para manejo integrado de sedoanalgesia.',
+ reapp:'A cada procedimento e a cada 4–8h de rotina',metrics:[{l:'Mínimo',v:'3'},{l:'Máximo',v:'12'},{l:'Corte',v:'≥ 6'}]},
+
+{id:'comfortb',cat:'uni',sub:null,acronym:'Comfort-B',name:'Comfort Behavior Scale',
+ pop:'Crianças em ventilação mecânica — UTIP (0–17 anos)',
+ desc:'7 variáveis comportamentais avaliadas durante 2 minutos de observação. Usada para avaliar dor e sedação integradas em crianças criticamente doentes em VM. Versão comportamental da Comfort Scale original.',
+ struct:[
+  {l:'Nível de consciência',v:'1: sono profundo → 5: hiperalerta'},
+  {l:'Calma / agitação',v:'1: calmo → 5: amedrondado'},
+  {l:'Resposta respiratória (VM)',v:'1: sem tosse → 5: compete com ventilador'},
+  {l:'Choro (respir. espontânea)',v:'1: silencioso → 5: gritando'},
+  {l:'Movimento físico',v:'1: ausente → 5: vigoroso (tronco e cabeça)'},
+  {l:'Tônus muscular',v:'1: totalmente relaxado → 5: rigidez extrema'},
+  {l:'Tensão facial',v:'1: músculos relaxados → 5: face contorcida'},
+ ],
+ scoring:[
+  {r:'6 – 10',lb:'Supersedação — ponderar redução',lv:'warn',w:35},
+  {r:'11 – 22',lb:'Adequadamente sedado/analgesiado',lv:'ok',w:65},
+  {r:'≥ 23',lb:'Pouco sedado / dor presente — aumentar analgesia',lv:'danger',w:100},
+ ],
+ use:['UTIP: crianças intubadas em ventilação mecânica','Avaliação integrada de sedação + analgesia pediátrica','Titulação de opioides e benzodiazepínicos em crianças críticas','Monitoramento durante desmame da sedação'],
+ no:['Crianças acordadas e cooperativas (preferir FLACC ou EVN)','Crianças com bloqueio neuromuscular'],
+ note:'Observar por 2 minutos completos antes de pontuar. Rever analgesia/sedação se escore < 11 ou > 22. Pode ser combinada com EVN no desmame da sedação.',
+ reapp:'A cada 4–8h e a cada procedimento na UTIP',metrics:[{l:'Mínimo',v:'6'},{l:'Máximo',v:'35'},{l:'Janela ideal',v:'11–22'}]},
+
+// ── MULTIDIMENSIONAL ──────────────────────────────────────────────────────────
+{id:'mcgill',cat:'multi',sub:'geral',acronym:'McGill',name:'Questionário de Dor de McGill (MPQ)',
+ pop:'Adultos com dor crônica, cognitivamente íntegros',
+ desc:'Avalia dimensões sensorial, afetiva, avaliativa e miscelânea por meio de descritores verbais. Baseia-se na premissa de que os aspectos multidimensionais da dor estão refletidos na linguagem usada para descrevê-la. SF-McGill: versão reduzida com 15 descritores.',
+ struct:[
+  {l:'Dimensão Sensitiva',v:'Subclasses 1–10 (descritores de qualidade sensorial)'},
+  {l:'Dimensão Afetiva',v:'Subclasses 11–15 (componente emocional da dor)'},
+  {l:'Dimensão Avaliativa',v:'Subclasse 16 (intensidade global)'},
+  {l:'Miscelânea',v:'Subclasses 17–20'},
+  {l:'Índices',v:'NWC (nº descritores escolhidos) + PRI (Pain Rating Index) + VAS atual'},
+ ],
+ scoring:[
+  {r:'NWC',lb:'Número de descritores escolhidos (0–78)',lv:'neutral',w:50},
+  {r:'PRI total',lb:'Somatória dos índices por dimensão — maior = mais intenso',lv:'warn',w:70},
+  {r:'SF-McGill',lb:'Versão breve — 15 descritores + EVA',lv:'ok',w:40},
+ ],
+ use:['Avaliação aprofundada de dor crônica (oncológica, neuropática, musculoesquelética)','Distinção entre tipos de dor pelo perfil de descritores verbais','Avaliação de resposta terapêutica — sensível a diferentes analgesias','Pesquisa clínica em dor'],
+ no:['Baixa escolaridade ou limitação de vocabulário','Triagem rápida (tempo de aplicação ~15–20 min)'],
+ note:'Excelentes propriedades psicométricas. O SF-McGill reduz para 15 descritores + EVA — tempo < 5 min. Sensível a diferentes tipos de tratamento analgésico.',
+ reapp:'30–45 dias para acompanhamento',metrics:[]},
+
+{id:'bpi',cat:'multi',sub:'geral',acronym:'BPI',name:'Breve Inventário de Dor (Brief Pain Inventory)',
+ pop:'Adultos com dor crônica oncológica ou não oncológica',
+ desc:'Avalia intensidade da dor em 4 momentos nas últimas 24h e interferência em 7 domínios funcionais. Inclui diagrama corporal para localização da dor. BPI-SF: versão curta com 9 itens.',
+ struct:[
+  {l:'Intensidade (4 itens)',v:'Pior, menor, média e dor atual — EVN 0–10'},
+  {l:'Interferência (7 itens)',v:'Caminhar, trabalho, humor, prazer de viver, relacionamentos, sono, atividades gerais — EVN 0–10'},
+  {l:'Localização',v:'Diagrama corporal anterior e posterior'},
+ ],
+ scoring:[
+  {r:'0',lb:'Sem dor / sem interferência',lv:'ok',w:10},
+  {r:'1 – 4',lb:'Interferência leve',lv:'ok',w:40},
+  {r:'5 – 7',lb:'Interferência moderada',lv:'warn',w:70},
+  {r:'8 – 10',lb:'Interferência grave — impacto funcional significativo',lv:'danger',w:100},
+ ],
+ use:['Dor oncológica — avaliação padrão em cuidados paliativos','Dor musculoesquelética crônica com impacto funcional','Fibromialgia, artrite, dor lombar crônica','Monitoramento longitudinal do impacto da dor'],
+ no:['Dor aguda isolada (foco é nas últimas 24h)'],
+ note:'Avalia intensidade E impacto funcional — mais informativo que escalas unidimensionais. Versão BPI-SF para uso clínico rotineiro. Amplamente validado em oncologia.',
+ reapp:'Semanal ou quinzenal em dor crônica ativa',metrics:[{l:'Escala',v:'0–10 por item'}]},
+
+{id:'lanss',cat:'multi',sub:'neuro',acronym:'LANSS',name:'Leeds Assessment of Neuropathic Symptoms and Signs',
+ pop:'Adultos com suspeita de dor neuropática, cognitivamente íntegros',
+ desc:'Combina autorrelato do paciente (5 itens) com exame físico do profissional (2 testes: alodinia e limiar por agulha). Avalia mecanismos neuropáticos pela qualidade da dor e achados de sensibilidade.',
+ struct:[
+  {l:'Parte A — Paciente',v:'1: sensação estranha (5pts) | 2: cor da pele (5pts) | 3: hipersensibilidade ao toque (3pts) | 4: crises sem razão (2pts) | 5: temperatura (1pt)'},
+  {l:'Parte B — Profissional',v:'6: alodinia por algodão (5pts) | 7: alteração de limiar por agulha 20G em seringa 2ml (3pts)'},
+ ],
+ scoring:[
+  {r:'< 12',lb:'Mecanismos neuropáticos improváveis',lv:'ok',w:50},
+  {r:'≥ 12 / 24',lb:'Mecanismos neuropáticos provavelmente presentes',lv:'danger',w:100},
+ ],
+ use:['Suspeita de dor neuropática em qualquer etiologia','Quando exame físico neurológico está disponível','Diferenciação nociceptiva vs. neuropática para farmacoterapia','Contexto ambulatorial de dor ou neurologia'],
+ no:['Pacientes não verbais','Sem disponibilidade de exame físico (preferir DN4 ou PainDETECT)'],
+ note:'Sensibilidade ~83%, especificidade ~87%. Mais específica que DN4, mas exige exame físico obrigatório — menos prática no PSA. O exame de alodinia e limiar por agulha pode ser realizado em < 3 min com material simples.',
+ reapp:null,metrics:[{l:'Máximo',v:'24 pts'},{l:'Corte',v:'≥ 12'},{l:'Sensib.',v:'~83%'},{l:'Especif.',v:'~87%'}]},
+
+{id:'dn4',cat:'multi',sub:'neuro',acronym:'DN4',name:'Douleur Neuropathique 4 Questions',
+ pop:'Adultos com dor crônica e suspeita de componente neuropático',
+ desc:'10 itens dicotômicos (sim/não): 7 de entrevista com o paciente + 3 de exame físico simplificado (toque e picada). Instrumento de escolha para rastreio de dor neuropática no Brasil.',
+ struct:[
+  {l:'Entrevista (itens 1–7)',v:'Queimação, frio doloroso, choque elétrico, formigamento, alfinetada/agulhada, adormecimento, coceira'},
+  {l:'Exame (itens 8–10)',v:'Hipoestesia ao toque, hipoestesia à picada de agulha, alodinia por escovação'},
+  {l:'Pontuação',v:'1 ponto por item positivo — máximo 10'},
+ ],
+ scoring:[
+  {r:'< 4',lb:'Dor neuropática improvável',lv:'ok',w:40},
+  {r:'≥ 4 / 10',lb:'Dor neuropática provável',lv:'danger',w:100},
+ ],
+ use:['Triagem de dor neuropática no Brasil — melhor validação local','Lombociatalgia — diferenciar componente radicular neuropático','Neuropatia diabética, neuralgia pós-herpética, SDRC','PSA: triagem rápida com exame físico mínimo (~5 min)','Pré-operatório de coluna'],
+ no:['Pacientes não verbais ou com déficit cognitivo grave'],
+ note:'Sensibilidade ~83%, especificidade ~90%. Exame físico simplificado com algodão e ponta romba — sem equipamento especial. Instrumento de escolha no Brasil por validação local e praticidade.',
+ reapp:null,metrics:[{l:'Máximo',v:'10 pts'},{l:'Corte',v:'≥ 4'},{l:'Sensib.',v:'~83%'},{l:'Especif.',v:'~90%'}]},
+
+{id:'sf36',cat:'multi',sub:'qv',acronym:'SF-36',name:'Questionário de Qualidade de Vida SF-36',
+ pop:'Adultos em geral (período de referência: últimas 4 semanas)',
+ desc:'36 itens em 8 domínios. Gera dois componentes sumários: Físico (PCS) e Mental (MCS). Instrumento genérico de QV, não específico para dor. Validado para o Brasil por Ciconelli (1999).',
+ struct:[
+  {l:'Capacidade funcional',v:'10 itens — limitações em atividades físicas'},
+  {l:'Aspectos físicos',v:'4 itens — interferência no trabalho por problemas físicos'},
+  {l:'Dor',v:'2 itens — intensidade e interferência da dor'},
+  {l:'Estado geral de saúde',v:'5 itens — percepção da saúde atual e futura'},
+  {l:'Vitalidade',v:'4 itens — energia vs. fadiga'},
+  {l:'Aspectos sociais',v:'2 itens — interferência nas relações sociais'},
+  {l:'Aspectos emocionais',v:'3 itens — interferência no trabalho por problemas emocionais'},
+  {l:'Saúde mental',v:'5 itens — ansiedade, depressão, bem-estar geral'},
+ ],
+ scoring:[
+  {r:'0 por domínio',lb:'Pior estado de saúde possível naquele domínio',lv:'danger',w:10},
+  {r:'100 por domínio',lb:'Melhor estado de saúde possível',lv:'ok',w:100},
+ ],
+ use:['Impacto da dor crônica na qualidade de vida global','Fibromialgia, AR, dor lombar crônica, dor oncológica','Pesquisa clínica — comparação entre grupos e desfechos de intervenções'],
+ no:['Condições agudas (período de referência: 4 semanas)','Quando se deseja instrumento específico (preferir BPI, ODI, WOMAC)'],
+ note:'Pontuação 0–100 por domínio — MAIOR = MELHOR QV. Reaplicação: 60 dias. O domínio "Dor" isolado pode ser usado como indicador rápido de impacto álgico.',
+ reapp:'60 dias',metrics:[{l:'Reaplicação',v:'60 dias'},{l:'Escala',v:'0–100/domínio'},{l:'Maior',v:'Melhor QV'}]},
+
+{id:'catastrofizacao',cat:'multi',sub:'psico',acronym:'PCS-Br',name:'Escala de Pensamentos Catastróficos sobre a Dor',
+ pop:'Adultos com dor crônica',
+ desc:'9 cognições automáticas negativas sobre a dor, Likert 0–5. 3 subescalas: Ruminação, Magnificação e Desamparo. Traduzida por Sardá (2008) a partir do Pain Catastrophizing Scale (Sullivan, 1995).',
+ struct:[
+  {l:'Itens',v:'9 pensamentos automáticos sobre dor'},
+  {l:'Escala',v:'Likert 0–5 (quase nunca → quase sempre)'},
+  {l:'Subescalas',v:'Ruminação | Magnificação | Desamparo'},
+  {l:'Cálculo',v:'Soma dos 9 itens ÷ 9 = escore médio (0–5)'},
+ ],
+ scoring:[
+  {r:'< 3,8',lb:'Negativo para catastrofização',lv:'ok',w:40},
+  {r:'≥ 3,8',lb:'Forte evidência de catastrofização — abordagem cognitiva indicada',lv:'danger',w:100},
+ ],
+ use:['Identificar pensamentos catastróficos em dor crônica','Predizer risco de incapacidade e cronificação da dor','Antes de iniciar TCC para dor','Monitorar resposta a intervenções psicológicas'],
+ no:['Dor aguda isolada sem risco de cronificação'],
+ note:'Preditor independente de incapacidade funcional, mesmo controlando intensidade da dor. Alta catastrofização associa-se a pior resposta a tratamentos convencionais. Reaplicação: 45 dias.',
+ reapp:'45 dias',metrics:[{l:'Escala',v:'0–5'},{l:'Corte',v:'≥ 3,8'}]},
+
+{id:'had',cat:'multi',sub:'psico',acronym:'HAD',name:'Escala Hospitalar de Ansiedade e Depressão',
+ pop:'Adultos em contexto clínico geral (não psiquiátrico)',
+ desc:'14 itens divididos em HAD-A (ansiedade, 7 itens) e HAD-D (depressão, 7 itens). Não inclui sintomas somáticos — mais específica para população clínica. Avaliação separada por subescala.',
+ struct:[
+  {l:'HAD-A',v:'7 questões ímpares — ansiedade — Likert 0–3'},
+  {l:'HAD-D',v:'7 questões pares — depressão — Likert 0–3'},
+  {l:'Pontuação',v:'0–21 por subescala (separadas)'},
+ ],
+ scoring:[
+  {r:'0 – 7',lb:'Ausência de sintomas — normal',lv:'ok',w:30},
+  {r:'8 – 10',lb:'Possível caso — avaliar com maior profundidade',lv:'warn',w:60},
+  {r:'11 – 21',lb:'Caso provável — encaminhar para especialidade',lv:'danger',w:100},
+ ],
+ use:['Rastreio de comorbidades psiquiátricas em dor crônica','Identificar ansiedade e depressão que amplificam dor','Ambulatório de dor, oncologia, reumatologia, cardiologia','Pré-intervenção para dor (cirurgia, procedimentos)'],
+ no:['Diagnóstico definitivo de transtornos psiquiátricos (é instrumento de rastreio)','Pacientes em crise psiquiátrica aguda'],
+ note:'Não inclui sintomas somáticos — mais específica que BDI/SRQ-20 para pacientes clínicos. Avaliar HAD-A e HAD-D separadamente. Reaplicação: 45 dias.',
+ reapp:'45 dias',metrics:[{l:'Máximo/subescala',v:'21 pts'},{l:'Rastreio ≥',v:'8'}]},
+
+{id:'odi',cat:'multi',sub:'esp',acronym:'ODI',name:'Índice de Incapacidade de Oswestry',
+ pop:'Adultos com dor lombar (clínica e cirúrgica)',
+ desc:'10 seções cobrindo atividades impactadas pela lombalgia. Gold standard para avaliação de incapacidade em coluna lombar. 6 alternativas por seção (0–5). Resultado em porcentagem.',
+ struct:[
+  {l:'10 seções',v:'Intensidade da dor, cuidados pessoais, levantar pesos, caminhar, sentar, ficar em pé, dormir, vida sexual, vida social, viajar'},
+  {l:'Pontuação',v:'0–5 por seção | Total: (soma / 50) × 100 = %'},
+ ],
+ scoring:[
+  {r:'0 – 20%',lb:'Incapacidade mínima',lv:'ok',w:20},
+  {r:'21 – 40%',lb:'Incapacidade moderada',lv:'ok',w:40},
+  {r:'41 – 60%',lb:'Incapacidade intensa',lv:'warn',w:60},
+  {r:'61 – 80%',lb:'Aleijado — grande limitação funcional',lv:'danger',w:80},
+  {r:'81 – 100%',lb:'Inválido / acamado',lv:'danger',w:100},
+ ],
+ use:['Lombalgia crônica — avaliação funcional e planejamento terapêutico','Pré e pós-operatório de coluna lombar','Critério de indicação e avaliação de resultado cirúrgico','Reabilitação — monitoramento de evolução funcional'],
+ no:['Dor cervical ou torácica isolada','Dor aguda sem comprometimento funcional'],
+ note:'MCID (diferença mínima clinicamente importante): 10–15%. Pós-operatório: 0–20% excelente | 21–40% bom | 41–60% mal sucedido | > 60% piora. Não avalia aspectos psicológicos — combinar com HAD.',
+ reapp:'4–12 semanas após intervenção',metrics:[{l:'Resultado',v:'%'},{l:'MCID',v:'10–15%'}]},
+
+{id:'spadi',cat:'multi',sub:'esp',acronym:'SPADI',name:'Shoulder Pain and Disability Index',
+ pop:'Adultos com dor e disfunção no ombro',
+ desc:'Duas subescalas: Dor (5 itens) e Incapacidade (8 itens), VAS 0–10 cada. Resultado normalizado 0–100 por subescala. Amplamente usado em lesões do manguito rotador e capsulite adesiva.',
+ struct:[
+  {l:'Subescala Dor',v:'5 itens — VAS 0–10 (pior dor em 5 situações)'},
+  {l:'Subescala Incapacidade',v:'8 itens — VAS 0–10 (dificuldade em AVDs)'},
+  {l:'Cálculo',v:'Soma por subescala normalizada para 0–100'},
+ ],
+ scoring:[
+  {r:'0',lb:'Sem dor ou incapacidade',lv:'ok',w:10},
+  {r:'1 – 40',lb:'Comprometimento leve a moderado',lv:'warn',w:55},
+  {r:'> 40',lb:'Comprometimento significativo — indicação de intervenção',lv:'danger',w:100},
+ ],
+ use:['Lesões do manguito rotador — pré e pós-cirúrgico','Capsulite adesiva — seguimento de fisioterapia','Artrite do ombro e tendinopatias','Reabilitação do ombro — monitoramento de resposta'],
+ no:['Dor cervical irradiada sem envolvimento articular do ombro (preferir NULI-20)'],
+ note:'MCID ≈ 13 pontos no SPADI total. Avaliação separada por subescala orienta o planejamento fisioterapêutico. Combinar com goniometria para avaliação completa.',
+ reapp:'4–8 semanas após intervenção',metrics:[{l:'Escala',v:'0–100'},{l:'MCID',v:'~13 pts'}]},
+
+{id:'womac',cat:'multi',sub:'esp',acronym:'WOMAC',name:'Western Ontario and McMaster Osteoarthritis Index',
+ pop:'Adultos com osteoartrite de quadril ou joelho',
+ desc:'3 dimensões: Dor (5 itens), Rigidez (2 itens) e Atividade Física (17 itens). Likert 5 níveis (0–4) ou VAS. Gold standard para OA de quadril e joelho.',
+ struct:[
+  {l:'Dimensão Dor',v:'5 itens — intensidade da dor em diferentes situações'},
+  {l:'Dimensão Rigidez',v:'2 itens — rigidez matinal e após repouso'},
+  {l:'Atividade Física',v:'17 itens — dificuldade em AVDs'},
+  {l:'Escala',v:'Likert 5 níveis: nenhuma → muito intensa (ou VAS 0–10)'},
+ ],
+ scoring:[
+  {r:'Pontuação baixa',lb:'Menor comprometimento funcional e doloroso',lv:'ok',w:30},
+  {r:'Pontuação alta',lb:'Maior comprometimento — pode normalizar 0–100',lv:'danger',w:100},
+ ],
+ use:['OA de quadril e joelho — avaliação funcional e dolorosa','Pré e pós-artroplastia total','Seguimento de tratamento conservador (fisio, AINEs, infiltração)','Ensaios clínicos em OA — desfecho primário validado'],
+ no:['Artrite reumatoide em fase inflamatória ativa (preferir DAS-28)','Dor lombar ou cervical sem OA de MMII'],
+ note:'Gold standard para OA. MCID: ~9 pts (Likert) ou ~15mm (VAS). Rigidez matinal > 30 min pode sugerir componente inflamatório sobreposto (investigar AR).',
+ reapp:'3–6 meses em tratamento conservador',metrics:[{l:'Dimensões',v:'3'},{l:'MCID',v:'~9 pts'}]},
+
+{id:'tampa',cat:'multi',sub:'psico',acronym:'TSK',name:'Escala Tampa para Cinesiofobia',
+ pop:'Adultos com dor crônica musculoesquelética',
+ desc:'17 itens sobre crenças de que o movimento causará dano ou nova lesão. Likert 1–4. Quanto maior o escore, maior o medo do movimento (cinesiofobia). Versão reduzida: TSK-11.',
+ struct:[
+  {l:'Itens',v:'17 questões sobre dor, movimento e crença de dano'},
+  {l:'Escala',v:'Likert 1–4 (discordo totalmente → concordo totalmente)'},
+  {l:'Fatores',v:'Fator 1: Medo da atividade | Fator 2: Evitação de movimento'},
+  {l:'TSK-11',v:'Versão reduzida de 11 itens para maior praticidade'},
+ ],
+ scoring:[
+  {r:'17 – 36',lb:'Cinesiofobia baixa',lv:'ok',w:35},
+  {r:'37 – 44',lb:'Cinesiofobia moderada — avaliar abordagem cognitiva',lv:'warn',w:65},
+  {r:'45 – 68',lb:'Cinesiofobia alta — barreira para reabilitação',lv:'danger',w:100},
+ ],
+ use:['Dor lombar crônica — predizer cronificação e resposta à fisioterapia','Fibromialgia, cervicalgia, síndrome dolorosa miofascial','Antes de indicar exercício terapêutico — identificar barreiras cognitivas','Planejamento de TCC para dor'],
+ no:['Dor aguda pós-traumática recente (cinesiofobia pode ser adaptativa no curto prazo)'],
+ note:'Alta TSK prediz pior prognóstico funcional independente da intensidade da dor. Indicada Terapia de Exposição Gradual (TEG) para TSK elevada antes ou concomitante à fisioterapia. Reaplicação: 45 dias.',
+ reapp:'45 dias',metrics:[{l:'Mínimo',v:'17'},{l:'Máximo',v:'68'},{l:'Corte clínico',v:'> 37–40'}]},
+
+{id:'nuli',cat:'multi',sub:'esp',acronym:'NULI-20',name:'Neck and Upper Limb Index (NULI-20)',
+ pop:'Adultos com cervicalgia e/ou dor em membros superiores',
+ desc:'20 itens avaliando dor e funcionalidade em coluna cervical e membros superiores. Instrumento doença-específico para o complexo cervical e MMSS.',
+ struct:[
+  {l:'Itens',v:'20 questões sobre dor e funcionalidade'},
+  {l:'Domínios',v:'Dor cervical, mobilidade, atividades de vida diária com MMSS'},
+ ],
+ scoring:[
+  {r:'Pontuação menor',lb:'Menor incapacidade cervical/MMSS',lv:'ok',w:30},
+  {r:'Pontuação maior',lb:'Maior incapacidade — monitorar e orientar reabilitação',lv:'danger',w:100},
+ ],
+ use:['Cervicalgia crônica com ou sem irradiação para MMSS','Dorsalgia alta, síndrome do desfiladeiro torácico','Tendinopatias e epicondilalgias de MMSS','Pré e pós-intervenção em coluna cervical'],
+ no:['Dor lombar isolada (preferir ODI)','Ombro como queixa principal isolada (preferir SPADI)'],
+ note:'Específico para o complexo cervical + MMSS. Útil na síndrome cervicobraquial (dor cervical + irradiação para braço/mão). Considerar combinar com SPADI quando ombro também está comprometido.',
+ reapp:'4–8 semanas após intervenção',metrics:[]},
+
+{id:'wpi',cat:'multi',sub:'esp',acronym:'WPI',name:'Índice de Dor Generalizada (Widespread Pain Index)',
+ pop:'Adultos com suspeita ou diagnóstico de fibromialgia (critérios ACR 2010/2016)',
+ desc:'Componente dos critérios diagnósticos revisados de fibromialgia. 19 áreas corporais marcadas nos últimos 7 dias + Escala de Gravidade dos Sintomas (SS: fadiga, sono, cognição, somáticos). Substituiu a palpação de tender points.',
+ struct:[
+  {l:'WPI',v:'19 áreas corporais — marcar com dor nos últimos 7 dias (total 0–19)'},
+  {l:'Escala SS',v:'Fadiga (0–3) + Sono não reparador (0–3) + Cognição (0–3) + Sintomas somáticos (0–3) = 0–12'},
+  {l:'Diagnóstico',v:'Critérios ACR 2010/2016 combinam WPI + SS'},
+ ],
+ scoring:[
+  {r:'WPI ≥ 7 + SS ≥ 5',lb:'Fibromialgia — critério preenchido',lv:'danger',w:100},
+  {r:'WPI 3–6 + SS ≥ 9',lb:'Fibromialgia — critério alternativo preenchido',lv:'danger',w:85},
+  {r:'Não preenche',lb:'Fibromialgia improvável pelos critérios ACR',lv:'ok',w:30},
+ ],
+ use:['Diagnóstico de fibromialgia (critérios ACR 2010/2016)','Rastreio de sensibilização central em dor musculoesquelética difusa','Acompanhamento de resposta terapêutica em fibromialgia'],
+ no:['Dor aguda ou localizada','Usar sempre com avaliação clínica — não substitui exclusão de outras causas'],
+ note:'Redução de ≥ 30% no WPI pode indicar resposta terapêutica. Critérios ACR 2016 também aceitam WPI ≥ 4 + SS ≥ 9. Não há exame laboratorial confirmatório — diagnóstico é clínico.',
+ reapp:'1–3 meses em tratamento ativo',metrics:[{l:'WPI máximo',v:'19'},{l:'SS máximo',v:'12'}]},
+
+{id:'manchester',cat:'multi',sub:'esp',acronym:'MFIDS',name:'Escala de Incapacidade de Dor Orofacial de Manchester',
+ pop:'Adultos com disfunção temporomandibular e dor orofacial crônica',
+ desc:'Instrumento doença-específico para avaliação de incapacidade relacionada à dor orofacial. Abrange DTM, neuralgia trigeminal, dor facial atípica e síndrome da boca ardente.',
+ struct:[
+  {l:'Domínios',v:'Dor, limitação funcional (mastigação, abertura bucal), impacto psicossocial'},
+  {l:'Itens',v:'Incapacidade funcional específica para a região orofacial'},
+ ],
+ scoring:[
+  {r:'Pontuação menor',lb:'Menor incapacidade orofacial',lv:'ok',w:30},
+  {r:'Pontuação maior',lb:'Maior incapacidade — impacto funcional e psicossocial significativo',lv:'danger',w:100},
+ ],
+ use:['Disfunção temporomandibular — avaliação funcional pré e pós-tratamento','Neuralgia trigeminal e dor facial crônica','Síndrome da boca ardente, dor orofacial atípica','Pré e pós-tratamento odontológico/cirúrgico para dor facial'],
+ no:['Dor facial aguda isolada (trauma, odontalgias simples)'],
+ note:'Preenche lacuna dos instrumentos genéricos para dor orofacial. Combinar com RDC/TMD para avaliação diagnóstica completa de DTM. Considerar HAD para rastreio de comorbidades psicológicas associadas.',
+ reapp:'4–8 semanas após tratamento',metrics:[]},
+];
+
+// ──────────────────────────────────────────────────────────────────────────────
+// HELPERS
+// ──────────────────────────────────────────────────────────────────────────────
+const COLOR = {uni:'uni',geral:'geral',neuro:'neuro',qv:'qv',psico:'psico',esp:'esp'};
+function getColor(scale){
+  if(scale.cat==='uni') return 'uni';
+  return {geral:'geral',neuro:'neuro',qv:'qv',psico:'psico',esp:'esp'}[scale.sub]||'geral';
+}
+
+const SUB_LABELS = {geral:'Gerais',neuro:'Dor Neuropática',qv:'Qualidade de Vida',psico:'Psicológicas',esp:'Doença-Específicas'};
+
+// ──────────────────────────────────────────────────────────────────────────────
+// RENDER SIDEBAR
+// ──────────────────────────────────────────────────────────────────────────────
+function renderSidebar(){
+  const sb = document.getElementById('sidebar');
+  let html = '';
+
+  // UNIDIMENSIONAIS
+  html += '<div class="sb-group-label">Unidimensionais</div>';
+  SCALES.filter(s=>s.cat==='uni').forEach(s=>{
+    html += `<button class="sb-item uni" data-id="${s.id}" onclick="nav('${s.id}')">
+      <span class="sb-dot dot-uni"></span>
+      <span class="sb-acronym">${s.acronym}</span>
+      <span style="font-size:11px;color:var(--ink-light)">${s.name.split(' ').slice(0,3).join(' ')}</span>
+    </button>`;
+  });
+
+  html += '<div class="sb-divider"></div>';
+  html += '<div class="sb-group-label">Multidimensionais</div>';
+
+  const subs = ['geral','neuro','qv','psico','esp'];
+  subs.forEach(sub=>{
+    const items = SCALES.filter(s=>s.cat==='multi'&&s.sub===sub);
+    if(!items.length) return;
+    html += `<div class="sb-sub-label">${SUB_LABELS[sub]}</div>`;
+    items.forEach(s=>{
+      html += `<button class="sb-item ${sub}" data-id="${s.id}" onclick="nav('${s.id}')">
+        <span class="sb-dot dot-${sub}"></span>
+        <span class="sb-acronym">${s.acronym}</span>
+        <span style="font-size:11px;color:var(--ink-light)">${s.name.split(' ').slice(0,3).join(' ')}</span>
+      </button>`;
+    });
+  });
+
+  sb.innerHTML = html;
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
+// RENDER PANEL
+// ──────────────────────────────────────────────────────────────────────────────
+function renderPanel(s){
+  const c = getColor(s);
+  const catLabel = s.cat==='uni'
+    ? 'Escala Unidimensional'
+    : `Multidimensional — ${SUB_LABELS[s.sub]}`;
+
+  const structRows = s.struct.map(r=>`
+    <div class="srow">
+      <span class="srow-label">${r.l}</span>
+      <span>${r.v}</span>
+    </div>`).join('');
+
+  const scoreRows = s.scoring.map(r=>`
+    <div class="score-row">
+      <span class="score-range">${r.r}</span>
+      <div class="score-bar-wrap">
+        <div class="score-bar ${r.lv||'neutral'}" style="width:${r.w||50}%">${r.lb}</div>
+      </div>
+    </div>`).join('');
+
+  const useItems = s.use.map(u=>`<li>${u}</li>`).join('');
+  const noItems  = (s.no||[]).map(u=>`<li class="no">${u}</li>`).join('');
+
+  const metrics = s.metrics.length ? `<div class="metrics">${s.metrics.map(m=>`<div class="chip">${m.l}: <strong>${m.v}</strong></div>`).join('')}</div>` : '';
+
+  const reapp = s.reapp ? `<div style="margin-top:10px"><span class="reapp">↺ Reaplicação: ${s.reapp}</span></div>` : '';
+
+  return `
+  <div class="card">
+    <div class="hero">
+      <div class="badge ${c}">${s.acronym}</div>
+      <div>
+        <div class="hero-title">${s.name}</div>
+        <div class="hero-full">${catLabel}</div>
+        <div class="hero-pop">👥 ${s.pop}</div>
+        <div class="hero-desc">${s.desc}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="quando ${c}">
+      <h4>Quando usar</h4>
+      <ul>${useItems}${noItems}</ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="stitle">Estrutura</div>
+    <div class="struct">${structRows}</div>
+  </div>
+
+  <div class="card">
+    <div class="stitle">Interpretação do Escore</div>
+    <div class="score-list">${scoreRows}</div>
+    ${metrics}
+    ${reapp}
+  </div>
+
+  <div class="nota"><strong>⚡ Nota clínica:</strong> ${s.note}</div>
+  `;
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
+// RENDER LANDING
+// ──────────────────────────────────────────────────────────────────────────────
+function renderLanding(){
+  const makeGrid = (list, cls) => list.map(s=>`
+    <div class="grid-card" onclick="nav('${s.id}')">
+      <div class="gc-acronym" style="color:var(--${cls})">${s.acronym}</div>
+      <div class="gc-name">${s.name}</div>
+      <div class="gc-pop">${s.pop.split('(')[0].trim()}</div>
+    </div>`).join('');
+
+  let html = `
+  <div class="landing-title">Avaliação da <em>Dor</em></div>
+  <div class="landing-sub">Selecione uma escala na barra lateral ou abaixo · ${SCALES.length} instrumentos</div>
+
+  <div class="landing-section">
+    <div class="landing-section-title">Unidimensionais (7)</div>
+    <div class="grid">${makeGrid(SCALES.filter(s=>s.cat==='uni'),'uni')}</div>
+  </div>`;
+
+  const subs = ['geral','neuro','qv','psico','esp'];
+  subs.forEach(sub=>{
+    const items = SCALES.filter(s=>s.cat==='multi'&&s.sub===sub);
+    if(!items.length) return;
+    html += `<div class="landing-section">
+      <div class="landing-section-title">Multidimensionais — ${SUB_LABELS[sub]}</div>
+      <div class="grid">${makeGrid(items,`c-${sub}`)}</div>
+    </div>`;
+  });
+
+  return html;
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
+// NAVIGATION
+// ──────────────────────────────────────────────────────────────────────────────
+let currentId = null;
+
+function nav(id){
+  const content = document.getElementById('content');
+  const scale = SCALES.find(s=>s.id===id);
+  if(!scale) return;
+
+  // Sidebar highlight
+  document.querySelectorAll('.sb-item').forEach(el=>{
+    el.classList.remove('active');
+    if(el.dataset.id===id) el.classList.add('active');
+  });
+
+  // Render or show panel
+  let panel = document.getElementById('panel-'+id);
+  if(!panel){
+    panel = document.createElement('div');
+    panel.className = 'panel';
+    panel.id = 'panel-'+id;
+    panel.innerHTML = renderPanel(scale);
+    content.appendChild(panel);
+  }
+
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  panel.classList.add('active');
+  content.scrollTop = 0;
+  currentId = id;
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
+// INIT
+// ──────────────────────────────────────────────────────────────────────────────
+renderSidebar();
+const landing = document.createElement('div');
+landing.className = 'panel active';
+landing.id = 'panel-landing';
+landing.innerHTML = renderLanding();
+document.getElementById('content').appendChild(landing);
+</script>
+</body>
+</html>
