@@ -1,0 +1,1345 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ESWT — Protocolo Clínico</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #faf7f2;
+    --warm-white: #fffef9;
+    --sage: #8da89a;
+    --sage-light: #c8dbd3;
+    --sage-dark: #5a7a6e;
+    --rose: #c9897a;
+    --rose-light: #e8c4bc;
+    --gold: #c4a97a;
+    --gold-light: #e8d9c0;
+    --lavender: #9b8fbb;
+    --lavender-light: #d4cee8;
+    --ink: #2c2825;
+    --ink-light: #5a5450;
+    --ink-muted: #8a8480;
+    --border: #e0d8d0;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    min-height: 100vh;
+  }
+
+  /* TABS */
+  .tab-bar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--warm-white);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    padding: 0 2rem;
+    gap: 0;
+  }
+
+  .tab-btn {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    font-size: 0.82rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 1rem 1.8rem;
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    color: var(--ink-muted);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .tab-btn.active {
+    color: var(--ink);
+    border-bottom-color: var(--sage-dark);
+  }
+
+  .tab-btn:hover { color: var(--ink); }
+
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* HEADER */
+  .page-header {
+    padding: 3rem 3rem 2rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--warm-white);
+  }
+
+  .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--sage-dark);
+    margin-bottom: 0.5rem;
+  }
+
+  .page-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2.4rem;
+    color: var(--ink);
+    line-height: 1.15;
+  }
+
+  .page-subtitle {
+    font-size: 0.9rem;
+    color: var(--ink-muted);
+    margin-top: 0.4rem;
+  }
+
+  /* ═══════════════════════════════════════════
+     FLUXOGRAMA
+  ══════════════════════════════════════════ */
+  .flowchart-container {
+    padding: 2.5rem 3rem;
+    max-width: 900px;
+  }
+
+  .section-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.3rem;
+    color: var(--ink);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .section-title::before {
+    content: '';
+    display: inline-block;
+    width: 18px;
+    height: 3px;
+    background: var(--sage-dark);
+    border-radius: 2px;
+  }
+
+  /* FLOW NODES */
+  .flow {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+
+  .node {
+    width: 100%;
+    max-width: 640px;
+    border-radius: 12px;
+    padding: 1rem 1.4rem;
+    font-size: 0.88rem;
+    line-height: 1.5;
+    position: relative;
+    border: 1.5px solid transparent;
+  }
+
+  .node-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 0.25rem;
+    opacity: 0.7;
+  }
+
+  .node-text {
+    font-weight: 500;
+    color: var(--ink);
+  }
+
+  .node-sub {
+    font-size: 0.8rem;
+    color: var(--ink-light);
+    margin-top: 0.2rem;
+  }
+
+  /* Node types */
+  .node-start {
+    background: var(--ink);
+    color: var(--cream);
+    border-color: var(--ink);
+  }
+  .node-start .node-label, .node-start .node-text, .node-start .node-sub {
+    color: var(--cream);
+    opacity: 1;
+  }
+
+  .node-question {
+    background: var(--warm-white);
+    border-color: var(--gold);
+    border-style: dashed;
+  }
+
+  .node-decision-yes {
+    background: #f0f7f4;
+    border-color: var(--sage);
+  }
+
+  .node-decision-no {
+    background: #fdf4f2;
+    border-color: var(--rose);
+  }
+
+  .node-action {
+    background: var(--warm-white);
+    border-color: var(--lavender);
+  }
+
+  .node-param {
+    background: var(--gold-light);
+    border-color: var(--gold);
+  }
+
+  .node-warn {
+    background: #fff8f0;
+    border-color: #e8a870;
+  }
+
+  .node-end {
+    background: var(--sage-light);
+    border-color: var(--sage-dark);
+  }
+
+  /* Arrow */
+  .arrow {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    padding: 2px 0;
+  }
+
+  .arrow-line {
+    width: 2px;
+    height: 20px;
+    background: var(--ink-muted);
+  }
+
+  .arrow-head {
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 8px solid var(--ink-muted);
+  }
+
+  .arrow-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.05em;
+    color: var(--ink-muted);
+    margin: 2px 0;
+    padding: 1px 8px;
+    background: var(--cream);
+    border-radius: 4px;
+    border: 1px solid var(--border);
+  }
+
+  /* BRANCH */
+  .branch-container {
+    width: 100%;
+    max-width: 800px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin: 0.5rem 0;
+  }
+
+  .branch-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+
+  .branch-header {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.3rem 1rem;
+    border-radius: 20px;
+    margin-bottom: 4px;
+  }
+
+  .branch-yes .branch-header { background: #d4ece4; color: var(--sage-dark); }
+  .branch-no .branch-header { background: var(--rose-light); color: #8c4a3a; }
+
+  .branch-node {
+    width: 100%;
+    border-radius: 10px;
+    padding: 0.9rem 1.1rem;
+    font-size: 0.84rem;
+    line-height: 1.5;
+    border: 1.5px solid;
+  }
+
+  /* PARAM TABLE */
+  .param-box {
+    width: 100%;
+    max-width: 640px;
+    background: var(--warm-white);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin: 0.3rem 0;
+  }
+
+  .param-box-header {
+    background: var(--ink);
+    color: var(--cream);
+    padding: 0.5rem 1rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .param-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .param-row:last-child { border-bottom: none; }
+
+  .param-key {
+    padding: 0.45rem 1rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--ink-light);
+    background: var(--cream);
+    border-right: 1px solid var(--border);
+  }
+
+  .param-val {
+    padding: 0.45rem 1rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--ink);
+  }
+
+  /* LEGEND */
+  .legend {
+    margin-top: 2rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.75rem;
+    color: var(--ink-light);
+  }
+
+  .legend-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+    border: 1.5px solid;
+    flex-shrink: 0;
+  }
+
+  /* ═══════════════════════════════════════════
+     FICHA DE PROTOCOLO
+  ══════════════════════════════════════════ */
+  .ficha-container {
+    padding: 2.5rem 3rem;
+    max-width: 900px;
+  }
+
+  .ficha-paper {
+    background: var(--warm-white);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.04);
+  }
+
+  .ficha-header-bar {
+    background: var(--ink);
+    color: var(--cream);
+    padding: 1.2rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .ficha-title-main {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.4rem;
+  }
+
+  .ficha-title-sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    opacity: 0.6;
+    margin-top: 2px;
+  }
+
+  .ficha-session-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    background: rgba(255,255,255,0.15);
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+  }
+
+  .ficha-body { padding: 1.5rem 2rem; }
+
+  .ficha-section {
+    margin-bottom: 1.6rem;
+  }
+
+  .ficha-section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--sage-dark);
+    margin-bottom: 0.6rem;
+    padding-bottom: 0.3rem;
+    border-bottom: 1px solid var(--sage-light);
+  }
+
+  .field-grid {
+    display: grid;
+    gap: 0.6rem;
+  }
+
+  .field-grid-2 { grid-template-columns: 1fr 1fr; }
+  .field-grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .field-grid-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+
+  .field-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .field-label {
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .field-input {
+    border: none;
+    border-bottom: 1.5px solid var(--border);
+    background: transparent;
+    padding: 0.35rem 0.1rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.2s;
+    width: 100%;
+  }
+
+  .field-input:focus { border-bottom-color: var(--sage-dark); }
+  .field-input::placeholder { color: var(--border); }
+
+  select.field-input {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%238a8480'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.2rem center;
+    padding-right: 1.2rem;
+  }
+
+  textarea.field-input {
+    border: 1.5px solid var(--border);
+    border-radius: 6px;
+    padding: 0.5rem 0.6rem;
+    resize: vertical;
+    min-height: 60px;
+    font-size: 0.84rem;
+    line-height: 1.5;
+  }
+
+  textarea.field-input:focus { border-color: var(--sage-dark); }
+
+  /* PARAM SLIDERS */
+  .param-card {
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem 1.2rem;
+  }
+
+  .param-card-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink-muted);
+    margin-bottom: 0.4rem;
+  }
+
+  .param-card-value {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.6rem;
+    color: var(--ink);
+    line-height: 1;
+  }
+
+  .param-card-unit {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--ink-muted);
+    margin-left: 2px;
+  }
+
+  .param-range {
+    width: 100%;
+    margin-top: 0.4rem;
+    accent-color: var(--sage-dark);
+    cursor: pointer;
+  }
+
+  .param-range-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.65rem;
+    color: var(--ink-muted);
+    font-family: 'JetBrains Mono', monospace;
+    margin-top: 2px;
+  }
+
+  /* EVA */
+  .eva-scale {
+    display: flex;
+    gap: 0.3rem;
+    margin-top: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .eva-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border);
+    background: var(--cream);
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    color: var(--ink-light);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .eva-btn:hover { border-color: var(--sage); }
+  .eva-btn.selected { background: var(--sage-dark); color: white; border-color: var(--sage-dark); }
+  .eva-btn[data-v="7"].selected,
+  .eva-btn[data-v="8"].selected { background: var(--gold); border-color: var(--gold); }
+  .eva-btn[data-v="9"].selected,
+  .eva-btn[data-v="10"].selected { background: var(--rose); border-color: var(--rose); }
+
+  .eva-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.68rem;
+    color: var(--ink-muted);
+    margin-top: 4px;
+  }
+
+  /* CHECKLIST */
+  .checklist {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .check-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    cursor: pointer;
+    padding: 0.4rem 0.6rem;
+    border-radius: 6px;
+    transition: background 0.15s;
+    user-select: none;
+  }
+
+  .check-item:hover { background: var(--cream); }
+
+  .check-box {
+    width: 16px;
+    height: 16px;
+    border: 1.5px solid var(--border);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.15s;
+    background: white;
+  }
+
+  .check-item.checked .check-box {
+    background: var(--sage-dark);
+    border-color: var(--sage-dark);
+  }
+
+  .check-item.checked .check-box::after {
+    content: '✓';
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 700;
+  }
+
+  .check-item.warn-item.checked .check-box {
+    background: var(--rose);
+    border-color: var(--rose);
+  }
+
+  /* SESSÃO COUNTER */
+  .session-counter {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+    margin-top: 0.4rem;
+  }
+
+  .session-dot {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.72rem;
+    font-family: 'JetBrains Mono', monospace;
+    cursor: pointer;
+    transition: all 0.15s;
+    color: var(--ink-muted);
+    background: white;
+  }
+
+  .session-dot:hover { border-color: var(--sage); }
+  .session-dot.done { background: var(--sage-dark); color: white; border-color: var(--sage-dark); }
+  .session-dot.current { border-color: var(--gold); color: var(--gold); border-width: 2px; }
+
+  /* DIVIDER */
+  .ficha-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 1.2rem 0;
+  }
+
+  /* PRINT / EXPORT */
+  .action-bar {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.6rem;
+    padding: 1rem 2rem;
+    border-top: 1px solid var(--border);
+    background: var(--cream);
+  }
+
+  .btn {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 500;
+    padding: 0.55rem 1.2rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s;
+    border: 1.5px solid;
+  }
+
+  .btn-outline {
+    background: transparent;
+    border-color: var(--border);
+    color: var(--ink-light);
+  }
+
+  .btn-outline:hover { border-color: var(--sage); color: var(--ink); }
+
+  .btn-primary {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--cream);
+  }
+
+  .btn-primary:hover { background: var(--sage-dark); border-color: var(--sage-dark); }
+
+  /* CONTRAINDICATION ALERT */
+  .alert-box {
+    background: #fff5f4;
+    border: 1.5px solid var(--rose-light);
+    border-radius: 10px;
+    padding: 0.8rem 1rem;
+    margin-bottom: 1rem;
+    display: flex;
+    gap: 0.6rem;
+    align-items: flex-start;
+    font-size: 0.82rem;
+  }
+
+  .alert-icon {
+    font-size: 1rem;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .alert-text { color: var(--ink-light); line-height: 1.5; }
+  .alert-text strong { color: #8c3a2a; }
+
+  /* STATUS TAG */
+  .status-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.05em;
+  }
+
+  .tag-ok { background: #d4ece4; color: var(--sage-dark); }
+  .tag-warn { background: var(--gold-light); color: #7a5a20; }
+  .tag-stop { background: var(--rose-light); color: #8c3a2a; }
+
+  /* ─── Print ─── */
+  @media print {
+    .tab-bar, .action-bar, #tab-flowchart { display: none !important; }
+    .tab-panel { display: block !important; }
+    body { background: white; }
+    .ficha-paper { box-shadow: none; border: 1px solid #ccc; }
+  }
+
+  @media (max-width: 640px) {
+    .page-header, .flowchart-container, .ficha-container { padding: 1.5rem 1.2rem; }
+    .field-grid-2, .field-grid-3, .field-grid-4 { grid-template-columns: 1fr; }
+    .branch-container { grid-template-columns: 1fr; }
+    .ficha-body { padding: 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TAB BAR -->
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="switchTab('flowchart')">⬡ Fluxograma Decisional</button>
+  <button class="tab-btn" onclick="switchTab('ficha')">◫ Ficha de Protocolo</button>
+</div>
+
+<!-- ═══════════════════════════════════════
+     TAB 1 — FLUXOGRAMA
+═══════════════════════════════════════ -->
+<div id="tab-flowchart" class="tab-panel active">
+  <div class="page-header">
+    <div class="eyebrow">ESWT · Extracorporeal Shock Wave Therapy</div>
+    <div class="page-title">Fluxograma Decisional</div>
+    <div class="page-subtitle">Focal vs. Radial · Titulação de energia · Indicação por condição</div>
+  </div>
+
+  <div class="flowchart-container">
+
+    <div class="section-title">Etapa 1 — Triagem de Indicação</div>
+    <div class="flow">
+
+      <div class="node node-start">
+        <div class="node-label">Início</div>
+        <div class="node-text">Paciente com queixa musculoesquelética crônica (≥ 6 semanas sem melhora)</div>
+      </div>
+
+      <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+
+      <div class="node node-question">
+        <div class="node-label">❓ Triagem de Contraindicações</div>
+        <div class="node-text">Verificar: gestação · neoplasia local · coagulopatia grave · cartilagem de crescimento aberta · TVP · marca-passo · infecção ativa</div>
+      </div>
+
+      <div class="arrow"><div class="arrow-line"></div></div>
+
+      <div class="branch-container">
+        <div class="branch-col branch-yes">
+          <div class="branch-header">✓ Sem contraindicação</div>
+          <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+          <div class="branch-node" style="background:#f0f7f4;border-color:var(--sage);font-size:0.84rem;padding:0.8rem 1rem;">
+            Prosseguir para seleção da modalidade
+          </div>
+        </div>
+        <div class="branch-col branch-no">
+          <div class="branch-header">✗ Contraindicação presente</div>
+          <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+          <div class="branch-node" style="background:#fdf4f2;border-color:var(--rose);font-size:0.84rem;padding:0.8rem 1rem;">
+            <strong>NÃO aplicar ESWT.</strong><br>Encaminhar / tratar causa de base
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div style="height:2rem"></div>
+    <div class="section-title">Etapa 2 — Focal ou Radial?</div>
+
+    <div class="flow">
+      <div class="node node-question">
+        <div class="node-label">❓ Profundidade do tecido-alvo</div>
+        <div class="node-text">O alvo está a mais de 3 cm da superfície cutânea? Ou é uma lesão óssea / calcificação densa?</div>
+      </div>
+
+      <div class="arrow"><div class="arrow-line"></div></div>
+
+      <div class="branch-container">
+        <div class="branch-col branch-yes">
+          <div class="branch-header">✓ SIM — Alvo profundo / ósseo</div>
+          <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+          <div class="branch-node" style="background:#e8f4f0;border-color:var(--sage-dark);font-size:0.83rem;padding:1rem;">
+            <strong>🎯 FOCAL (FSW)</strong><br><br>
+            Indicações típicas:<br>
+            · Pseudoartrose / retardo de consolidação<br>
+            · Tendinopatia calcária do ombro<br>
+            · Necrose avascular femoral<br>
+            · Tendinopatia patelar<br>
+            · Fasciíte plantar refratária
+          </div>
+        </div>
+        <div class="branch-col branch-no">
+          <div class="branch-header">✗ NÃO — Alvo superficial / difuso</div>
+          <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+          <div class="branch-node" style="background:#fef7f0;border-color:var(--gold);font-size:0.83rem;padding:1rem;">
+            <strong>〜 RADIAL (RSW)</strong><br><br>
+            Indicações típicas:<br>
+            · Pontos-gatilho miofasciais<br>
+            · Celulite fibrótica<br>
+            · Espasticidade muscular<br>
+            · Tendinite superficial<br>
+            · Síndrome do piriforme
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="height:2rem"></div>
+    <div class="section-title">Etapa 3 — Titulação de Energia (Focal)</div>
+
+    <div class="flow">
+      <div class="node node-action">
+        <div class="node-label">Passo 1</div>
+        <div class="node-text">Iniciar com EFD baixa: 0,03–0,06 mJ/mm² · Frequência: 1–2 Hz · 200–300 pulsos iniciais</div>
+      </div>
+      <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+
+      <div class="node node-question">
+        <div class="node-label">❓ Resposta do paciente (EVA)</div>
+        <div class="node-text">Paciente refere dor ≤ 4/10 durante aplicação?</div>
+      </div>
+      <div class="arrow"><div class="arrow-line"></div></div>
+
+      <div class="branch-container">
+        <div class="branch-col branch-yes">
+          <div class="branch-header">✓ Tolerando bem (EVA ≤ 4)</div>
+          <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+          <div class="branch-node" style="background:#f0f7f4;border-color:var(--sage);font-size:0.83rem;padding:0.9rem;">
+            ↑ Aumentar EFD gradualmente<br>
+            até o paciente referir <strong>dor 4–6/10</strong><br>
+            (janela terapêutica ideal)<br><br>
+            Manter nessa energia até<br>completar os pulsos da sessão
+          </div>
+        </div>
+        <div class="branch-col branch-no">
+          <div class="branch-header">✗ Dor > 6/10</div>
+          <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+          <div class="branch-node" style="background:#fdf4f2;border-color:var(--rose);font-size:0.83rem;padding:0.9rem;">
+            ↓ Reduzir EFD imediatamente<br><br>
+            Avaliar: gel adequado?<br>
+            Posicionamento correto?<br>
+            Considerar analgesia local<br>
+            antes da sessão seguinte
+          </div>
+        </div>
+      </div>
+
+      <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+
+      <div class="node node-param" style="max-width:640px">
+        <div class="node-label">Referência de EFD por objetivo</div>
+        <div class="node-text" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.4rem;margin-top:0.4rem;">
+          <div style="background:white;border-radius:8px;padding:0.5rem 0.7rem;font-size:0.8rem;">
+            <span style="font-family:monospace;font-weight:700;color:var(--sage-dark)">BAIXA</span><br>
+            &lt; 0,08 mJ/mm²<br>
+            <span style="color:var(--ink-muted);font-size:0.73rem">Analgesia · Anti-inflamatório</span>
+          </div>
+          <div style="background:white;border-radius:8px;padding:0.5rem 0.7rem;font-size:0.8rem;">
+            <span style="font-family:monospace;font-weight:700;color:var(--gold)">MÉDIA</span><br>
+            0,08–0,28 mJ/mm²<br>
+            <span style="color:var(--ink-muted);font-size:0.73rem">Regeneração tendínea · Colágeno</span>
+          </div>
+          <div style="background:white;border-radius:8px;padding:0.5rem 0.7rem;font-size:0.8rem;">
+            <span style="font-family:monospace;font-weight:700;color:var(--rose)">ALTA</span><br>
+            &gt; 0,28 mJ/mm²<br>
+            <span style="color:var(--ink-muted);font-size:0.73rem">Calcificações · Pseudoartrose</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div style="height:2rem"></div>
+    <div class="section-title">Etapa 4 — Reavaliação de Resposta</div>
+
+    <div class="flow">
+      <div class="node node-question">
+        <div class="node-label">❓ Após 3ª sessão</div>
+        <div class="node-text">Houve melhora ≥ 30% na EVA ou na função (escala específica da condição)?</div>
+      </div>
+      <div class="arrow"><div class="arrow-line"></div></div>
+
+      <div class="branch-container">
+        <div class="branch-col branch-yes">
+          <div class="branch-header">✓ Respondedor</div>
+          <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+          <div class="branch-node" style="background:#f0f7f4;border-color:var(--sage);font-size:0.83rem;padding:0.9rem;">
+            Continuar protocolo<br>
+            Completar 3–6 sessões total<br><br>
+            Associar:<br>
+            · Fisioterapia excêntrica<br>
+            · Retorno gradual à atividade
+          </div>
+        </div>
+        <div class="branch-col branch-no">
+          <div class="branch-header">✗ Não respondedor</div>
+          <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+          <div class="branch-node" style="background:#fdf4f2;border-color:var(--rose);font-size:0.83rem;padding:0.9rem;">
+            Revisar: alvo correto?<br>
+            Energia adequada?<br><br>
+            Considerar:<br>
+            · Troca focal → radial (ou vice-versa)<br>
+            · Associar PRP<br>
+            · Avaliação cirúrgica
+          </div>
+        </div>
+      </div>
+
+      <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+
+      <div class="node node-end">
+        <div class="node-label">Alta / Manutenção</div>
+        <div class="node-text">Reavaliação 4–12 semanas pós-última sessão · Retorno se recorrência · Máximo 2 ciclos/ano no mesmo segmento</div>
+      </div>
+
+    </div>
+
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:var(--ink);border-color:var(--ink)"></div> Início/Fim</div>
+      <div class="legend-item"><div class="legend-dot" style="background:white;border-color:var(--gold);border-style:dashed"></div> Pergunta decisional</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#f0f7f4;border-color:var(--sage)"></div> Caminho positivo</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#fdf4f2;border-color:var(--rose)"></div> Caminho de alerta</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--gold-light);border-color:var(--gold)"></div> Parâmetros</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--sage-light);border-color:var(--sage-dark)"></div> Desfecho</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     TAB 2 — FICHA DE PROTOCOLO
+═══════════════════════════════════════ -->
+<div id="tab-ficha" class="tab-panel">
+  <div class="page-header">
+    <div class="eyebrow">ESWT · Registro Clínico</div>
+    <div class="page-title">Ficha de Protocolo</div>
+    <div class="page-subtitle">Preenchimento interativo · Imprimível</div>
+  </div>
+
+  <div class="ficha-container">
+
+    <div class="alert-box">
+      <div class="alert-icon">⚠️</div>
+      <div class="alert-text">
+        <strong>Lembrete clínico:</strong> Não aplicar AINEs nas 48h pós-sessão. Não aplicar gelo local. Orientar repouso relativo do segmento tratado por 24–48h. Dor moderada durante a sessão é esperada e necessária na focal de média-alta energia.
+      </div>
+    </div>
+
+    <div class="ficha-paper">
+
+      <!-- CABEÇALHO DA FICHA -->
+      <div class="ficha-header-bar">
+        <div>
+          <div class="ficha-title-main">Ficha de Onda de Choque — ESWT</div>
+          <div class="ficha-title-sub">PROTOCOLO CLÍNICO · REGISTRO DE SESSÃO</div>
+        </div>
+        <div>
+          <div class="ficha-session-badge">Sessão <span id="session-display">—</span></div>
+        </div>
+      </div>
+
+      <div class="ficha-body">
+
+        <!-- 1. IDENTIFICAÇÃO -->
+        <div class="ficha-section">
+          <div class="ficha-section-label">01 · Identificação</div>
+          <div class="field-grid field-grid-3">
+            <div class="field-item" style="grid-column:1/3">
+              <div class="field-label">Nome do Paciente</div>
+              <input class="field-input" type="text" placeholder="Nome completo">
+            </div>
+            <div class="field-item">
+              <div class="field-label">Data</div>
+              <input class="field-input" type="date">
+            </div>
+            <div class="field-item">
+              <div class="field-label">Idade</div>
+              <input class="field-input" type="number" placeholder="anos">
+            </div>
+            <div class="field-item">
+              <div class="field-label">Profissional</div>
+              <input class="field-input" type="text" placeholder="Nome / CREFITO">
+            </div>
+            <div class="field-item">
+              <div class="field-label">Nº sessão</div>
+              <select class="field-input" onchange="updateSession(this.value)">
+                <option value="">—</option>
+                <option>1ª</option><option>2ª</option><option>3ª</option>
+                <option>4ª</option><option>5ª</option><option>6ª</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="ficha-divider"></div>
+
+        <!-- 2. DIAGNÓSTICO -->
+        <div class="ficha-section">
+          <div class="ficha-section-label">02 · Diagnóstico e Localização</div>
+          <div class="field-grid field-grid-2">
+            <div class="field-item">
+              <div class="field-label">Condição tratada</div>
+              <select class="field-input">
+                <option value="">Selecionar...</option>
+                <option>Tendinopatia calcária do ombro</option>
+                <option>Fascite plantar</option>
+                <option>Tendinopatia patelar</option>
+                <option>Epicondilite lateral</option>
+                <option>Tendinopatia do Aquiles</option>
+                <option>Pseudoartrose / retardo de consolidação</option>
+                <option>Necrose avascular femoral</option>
+                <option>Pontos-gatilho miofasciais</option>
+                <option>Outra</option>
+              </select>
+            </div>
+            <div class="field-item">
+              <div class="field-label">Localização / Segmento</div>
+              <input class="field-input" type="text" placeholder="ex: ombro D, polo inferior patela E">
+            </div>
+            <div class="field-item">
+              <div class="field-label">Tempo de evolução</div>
+              <input class="field-input" type="text" placeholder="ex: 8 semanas">
+            </div>
+            <div class="field-item">
+              <div class="field-label">Tratamentos anteriores</div>
+              <input class="field-input" type="text" placeholder="ex: AINE, fisioterapia, infiltração">
+            </div>
+            <div class="field-item" style="grid-column:1/-1">
+              <div class="field-label">Achados de imagem (USG / RX / RM)</div>
+              <textarea class="field-input" placeholder="Descrever achados relevantes..."></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="ficha-divider"></div>
+
+        <!-- 3. MODALIDADE -->
+        <div class="ficha-section">
+          <div class="ficha-section-label">03 · Modalidade e Equipamento</div>
+          <div class="field-grid field-grid-3">
+            <div class="field-item">
+              <div class="field-label">Tipo de onda</div>
+              <select class="field-input">
+                <option>Focal (FSW)</option>
+                <option>Radial (RSW)</option>
+                <option>Focal + Radial</option>
+              </select>
+            </div>
+            <div class="field-item">
+              <div class="field-label">Gerador / Tecnologia</div>
+              <select class="field-input">
+                <option>Eletromagnético</option>
+                <option>Piezoeléctrico</option>
+                <option>Eletro-hidráulico</option>
+                <option>Pneumático (radial)</option>
+              </select>
+            </div>
+            <div class="field-item">
+              <div class="field-label">Cabeçote / Profundidade focal</div>
+              <input class="field-input" type="text" placeholder="ex: F5, 3cm">
+            </div>
+          </div>
+        </div>
+
+        <div class="ficha-divider"></div>
+
+        <!-- 4. PARÂMETROS -->
+        <div class="ficha-section">
+          <div class="ficha-section-label">04 · Parâmetros da Sessão</div>
+          <div class="field-grid" style="grid-template-columns:1fr 1fr 1fr 1fr;gap:0.8rem;">
+
+            <div class="param-card">
+              <div class="param-card-label">Frequência</div>
+              <div class="param-card-value" id="freq-val">4<span class="param-card-unit">Hz</span></div>
+              <input class="param-range" type="range" min="1" max="21" value="4"
+                oninput="document.getElementById('freq-val').innerHTML=this.value+'<span class=\'param-card-unit\'>Hz</span>'">
+              <div class="param-range-labels"><span>1</span><span>21</span></div>
+            </div>
+
+            <div class="param-card">
+              <div class="param-card-label">EFD (mJ/mm²)</div>
+              <div class="param-card-value" id="efd-val">0.12<span class="param-card-unit">mJ/mm²</span></div>
+              <input class="param-range" type="range" min="3" max="60" value="12"
+                oninput="document.getElementById('efd-val').innerHTML=(this.value/100).toFixed(2)+'<span class=\'param-card-unit\'>mJ/mm²</span>'">
+              <div class="param-range-labels"><span>0.03</span><span>0.60</span></div>
+            </div>
+
+            <div class="param-card">
+              <div class="param-card-label">Nº de pulsos</div>
+              <div class="param-card-value" id="pulsos-val">2000<span class="param-card-unit">pulsos</span></div>
+              <input class="param-range" type="range" min="500" max="4000" step="100" value="2000"
+                oninput="document.getElementById('pulsos-val').innerHTML=this.value+'<span class=\'param-card-unit\'>pulsos</span>'">
+              <div class="param-range-labels"><span>500</span><span>4000</span></div>
+            </div>
+
+            <div class="param-card">
+              <div class="param-card-label">Pressão (bar) *radial</div>
+              <div class="param-card-value" id="bar-val">2.0<span class="param-card-unit">bar</span></div>
+              <input class="param-range" type="range" min="10" max="50" value="20"
+                oninput="document.getElementById('bar-val').innerHTML=(this.value/10).toFixed(1)+'<span class=\'param-card-unit\'>bar</span>'">
+              <div class="param-range-labels"><span>1.0</span><span>5.0</span></div>
+            </div>
+
+          </div>
+
+          <div style="margin-top:1rem">
+            <div class="field-label" style="font-size:0.72rem;color:var(--ink-muted);margin-bottom:0.4rem">Posicionamento do paciente</div>
+            <input class="field-input" type="text" placeholder="ex: decúbito dorsal, joelho em flexão 30°, pé em dorsiflexão passiva">
+          </div>
+        </div>
+
+        <div class="ficha-divider"></div>
+
+        <!-- 5. EVA -->
+        <div class="ficha-section">
+          <div class="ficha-section-label">05 · Escala de Dor — EVA</div>
+          <div class="field-grid field-grid-3">
+            <div class="field-item">
+              <div class="field-label">EVA pré-sessão</div>
+              <div class="eva-scale" id="eva-pre"></div>
+              <div class="eva-labels"><span>Sem dor</span><span>Pior dor</span></div>
+            </div>
+            <div class="field-item">
+              <div class="field-label">EVA durante aplicação</div>
+              <div class="eva-scale" id="eva-during"></div>
+              <div class="eva-labels"><span>0</span><span>10</span></div>
+            </div>
+            <div class="field-item">
+              <div class="field-label">EVA pós-sessão</div>
+              <div class="eva-scale" id="eva-post"></div>
+              <div class="eva-labels"><span>0</span><span>10</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ficha-divider"></div>
+
+        <!-- 6. CHECKLIST PRE -->
+        <div class="ficha-section">
+          <div class="ficha-section-label">06 · Checklist Pré-Sessão</div>
+          <div class="checklist" id="checklist-pre">
+            <div class="check-item" onclick="toggle(this)"><div class="check-box"></div> Confirmação de ausência de contraindicações</div>
+            <div class="check-item" onclick="toggle(this)"><div class="check-box"></div> Alvo confirmado com palpação / imagem</div>
+            <div class="check-item" onclick="toggle(this)"><div class="check-box"></div> Paciente orientado sobre dor esperada durante aplicação</div>
+            <div class="check-item" onclick="toggle(this)"><div class="check-box"></div> Orientação: sem AINEs nas 48h seguintes</div>
+            <div class="check-item" onclick="toggle(this)"><div class="check-box"></div> Orientação: sem gelo local 24–48h</div>
+            <div class="check-item" onclick="toggle(this)"><div class="check-box"></div> Gel acústico aplicado sem bolhas</div>
+            <div class="check-item" onclick="toggle(this)"><div class="check-box"></div> Cabeçote posicionado perpendicularmente</div>
+            <div class="check-item warn-item" onclick="toggle(this)"><div class="check-box"></div> ⚠️ Paciente usando anticoagulante (registrar dose)</div>
+            <div class="check-item warn-item" onclick="toggle(this)"><div class="check-box"></div> ⚠️ Implante metálico próximo à zona de tratamento</div>
+          </div>
+        </div>
+
+        <div class="ficha-divider"></div>
+
+        <!-- 7. EVOLUÇÃO -->
+        <div class="ficha-section">
+          <div class="ficha-section-label">07 · Evolução Clínica e Progressão de Sessões</div>
+
+          <div style="margin-bottom:0.8rem">
+            <div class="field-label" style="font-size:0.72rem;color:var(--ink-muted);margin-bottom:0.5rem">Sessões realizadas (clique para marcar)</div>
+            <div class="session-counter" id="session-dots"></div>
+          </div>
+
+          <div class="field-grid field-grid-2">
+            <div class="field-item">
+              <div class="field-label">Resposta após 3ª sessão</div>
+              <select class="field-input">
+                <option value="">—</option>
+                <option>✓ Respondedor (≥ 30% melhora EVA)</option>
+                <option>~ Resposta parcial</option>
+                <option>✗ Não respondedor</option>
+                <option>Ainda não avaliado</option>
+              </select>
+            </div>
+            <div class="field-item">
+              <div class="field-label">Intervalo entre sessões</div>
+              <select class="field-input">
+                <option>7 dias</option>
+                <option>5–7 dias</option>
+                <option>14 dias</option>
+                <option>21 dias</option>
+                <option>Outro</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="margin-top:0.8rem">
+            <div class="field-label" style="font-size:0.72rem;color:var(--ink-muted);margin-bottom:0.3rem">Observações da sessão / intercorrências</div>
+            <textarea class="field-input" style="min-height:80px" placeholder="ex: paciente relatou dor 7/10 com EFD 0.20 — reduziu para 0.15 com boa tolerância. Resposta de contração local observada no ponto-gatilho do trapézio."></textarea>
+          </div>
+        </div>
+
+        <div class="ficha-divider"></div>
+
+        <!-- 8. TERAPIAS ASSOCIADAS -->
+        <div class="ficha-section">
+          <div class="ficha-section-label">08 · Terapias Associadas e Conduta</div>
+          <div class="checklist">
+            <div class="check-item" onclick="toggle(this)"><div class="check-box"></div> Exercício excêntrico (ex: agachamento decline para tendão patelar)</div>
+            <div class="check-item" onclick="toggle(this)"><div class="check-box"></div> Alongamento supervisionado</div>
+            <div class="check-item" onclick="toggle(this)"><div class="check-box"></div> PRP associado (registrar data)</div>
+            <div class="check-item" onclick="toggle(this)"><div class="check-box"></div> RPG / terapia manual</div>
+            <div class="check-item" onclick="toggle(this)"><div class="check-box"></div> Restrição de atividade esportiva</div>
+            <div class="check-item" onclick="toggle(this)"><div class="check-box"></div> Palmilha / órtese</div>
+          </div>
+          <div style="margin-top:0.8rem">
+            <div class="field-label" style="font-size:0.72rem;color:var(--ink-muted);margin-bottom:0.3rem">Conduta para próxima sessão</div>
+            <textarea class="field-input" placeholder="ex: aumentar EFD para 0.20 se boa tolerância, manter 2000 pulsos, confirmar com USG..."></textarea>
+          </div>
+        </div>
+
+      </div><!-- /ficha-body -->
+
+      <div class="action-bar">
+        <button class="btn btn-outline" onclick="clearForm()">Limpar ficha</button>
+        <button class="btn btn-outline" onclick="window.print()">🖨 Imprimir</button>
+        <button class="btn btn-primary" onclick="saveForm()">Salvar registro</button>
+      </div>
+
+    </div><!-- /ficha-paper -->
+  </div>
+</div>
+
+<script>
+  // TABS
+  function switchTab(tab) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + tab).classList.add('active');
+    event.target.classList.add('active');
+  }
+
+  // CHECKLIST
+  function toggle(el) {
+    el.classList.toggle('checked');
+  }
+
+  // SESSION DOTS
+  const dotContainer = document.getElementById('session-dots');
+  for (let i = 1; i <= 8; i++) {
+    const d = document.createElement('div');
+    d.className = 'session-dot';
+    d.textContent = i;
+    d.dataset.n = i;
+    d.onclick = function() {
+      document.querySelectorAll('.session-dot').forEach(x => x.classList.remove('done', 'current'));
+      for (let j = 1; j <= parseInt(this.dataset.n); j++) {
+        const target = dotContainer.querySelector('[data-n="' + j + '"]');
+        if (j < parseInt(this.dataset.n)) target.classList.add('done');
+        else target.classList.add('current');
+      }
+    };
+    dotContainer.appendChild(d);
+  }
+
+  // EVA SCALES
+  function buildEva(id) {
+    const container = document.getElementById(id);
+    for (let i = 0; i <= 10; i++) {
+      const btn = document.createElement('button');
+      btn.className = 'eva-btn';
+      btn.textContent = i;
+      btn.dataset.v = i;
+      btn.onclick = function() {
+        container.querySelectorAll('.eva-btn').forEach(b => b.classList.remove('selected'));
+        this.classList.add('selected');
+      };
+      container.appendChild(btn);
+    }
+  }
+  buildEva('eva-pre');
+  buildEva('eva-during');
+  buildEva('eva-post');
+
+  // SESSION DISPLAY
+  function updateSession(val) {
+    document.getElementById('session-display').textContent = val || '—';
+  }
+
+  // CLEAR FORM
+  function clearForm() {
+    if (confirm('Limpar todos os campos?')) {
+      document.querySelectorAll('.field-input').forEach(f => { f.value = ''; });
+      document.querySelectorAll('.check-item').forEach(c => c.classList.remove('checked'));
+      document.querySelectorAll('.eva-btn').forEach(b => b.classList.remove('selected'));
+      document.querySelectorAll('.session-dot').forEach(d => d.classList.remove('done','current'));
+      document.getElementById('session-display').textContent = '—';
+      document.getElementById('freq-val').innerHTML = '4<span class="param-card-unit">Hz</span>';
+      document.getElementById('efd-val').innerHTML = '0.12<span class="param-card-unit">mJ/mm²</span>';
+      document.getElementById('pulsos-val').innerHTML = '2000<span class="param-card-unit">pulsos</span>';
+      document.getElementById('bar-val').innerHTML = '2.0<span class="param-card-unit">bar</span>';
+    }
+  }
+
+  // SAVE FORM (localStorage)
+  function saveForm() {
+    const data = {
+      ts: new Date().toLocaleString('pt-BR'),
+      fields: {}
+    };
+    document.querySelectorAll('.field-input').forEach((f, i) => { data.fields['f' + i] = f.value; });
+    try {
+      localStorage.setItem('eswt_last_' + Date.now(), JSON.stringify(data));
+      alert('✓ Registro salvo localmente.\n' + data.ts);
+    } catch(e) {
+      alert('Registro: ' + data.ts + '\n\nUse Ctrl+P / Imprimir para salvar em PDF.');
+    }
+  }
+</script>
+</body>
+</html>

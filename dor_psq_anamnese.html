@@ -1,0 +1,1289 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dor & Psiquiatria — Ficha Clínica</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@300;400;600&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f2ed;
+    --surface: #ede9e2;
+    --card: #ffffff;
+    --border: #ddd8cf;
+    --border-light: #ece8e1;
+    --accent:  #9a6f3a;
+    --accent2: #3a6f9a;
+    --accent3: #9a3a6f;
+    --accent4: #3a9a6f;
+    --warn:    #b85c38;
+    --text:    #1e1c18;
+    --muted:   #7a7568;
+    --dim:     #aba69c;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Lato', sans-serif;
+    font-weight: 300;
+    line-height: 1.6;
+    min-height: 100vh;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  .container { max-width: 1100px; margin: 0 auto; }
+
+  /* ── TABS ── */
+  .tabs {
+    display: flex;
+    gap: 0;
+    margin-bottom: 2rem;
+    border-bottom: 2px solid var(--border);
+    flex-wrap: wrap;
+  }
+
+  .tab-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 0.6rem 1.2rem;
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.2s;
+  }
+
+  .tab-btn:hover { color: var(--accent); }
+
+  .tab-btn.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+    font-weight: 600;
+  }
+
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* ── HEADER ── */
+  header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 1.4rem;
+    margin-bottom: 1.8rem;
+    flex-wrap: wrap; gap: 1rem;
+  }
+
+  .header-left h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    color: var(--text);
+  }
+
+  .header-left h1 span { color: var(--accent); font-style: italic; }
+
+  .header-left p {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--muted);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-top: 0.4rem;
+  }
+
+  .header-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    padding: 0.3rem 0.7rem;
+    border-radius: 2px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  /* ── BIDIR ── */
+  .bidir {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.9rem 1.3rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    border-left: 3px solid var(--accent4);
+  }
+
+  .bidir-box { text-align: center; flex: 1; min-width: 130px; }
+
+  .bidir-box .label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 0.25rem;
+  }
+
+  .bidir-box .val {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.95rem;
+    color: var(--accent4);
+  }
+
+  .bidir-arrow { font-size: 1.1rem; color: var(--dim); flex-shrink: 0; }
+
+  /* ── GRID ── */
+  .main-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.2rem;
+  }
+
+  .full-width { grid-column: 1 / -1; }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1.2rem 1.4rem;
+    position: relative;
+    overflow: hidden;
+    animation: fadeUp 0.4s ease both;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px; height: 100%;
+    background: var(--accent);
+  }
+
+  .card.blue::before  { background: var(--accent2); }
+  .card.pink::before  { background: var(--accent3); }
+  .card.green::before { background: var(--accent4); }
+  .card.warn::before  { background: var(--warn); }
+
+  .card-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .card.blue .card-title  { color: var(--accent2); }
+  .card.pink .card-title  { color: var(--accent3); }
+  .card.green .card-title { color: var(--accent4); }
+  .card.warn .card-title  { color: var(--warn); }
+
+  .card-title::after {
+    content: '';
+    flex: 1; height: 1px;
+    background: var(--border-light);
+  }
+
+  /* ── ANAMNESE ── */
+  .anamnese-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+  }
+
+  .anamnese-block h4 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 0.45rem;
+  }
+
+  .anamnese-block ul { list-style: none; display: flex; flex-direction: column; gap: 0.28rem; }
+
+  .anamnese-block ul li {
+    font-size: 0.81rem;
+    color: var(--text);
+    padding-left: 1rem;
+    position: relative;
+    line-height: 1.4;
+  }
+
+  .anamnese-block ul li::before {
+    content: '›';
+    position: absolute; left: 0;
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  .card.blue  .anamnese-block ul li::before { color: var(--accent2); }
+  .card.pink  .anamnese-block ul li::before { color: var(--accent3); }
+  .card.green .anamnese-block ul li::before { color: var(--accent4); }
+  .card.warn  .anamnese-block ul li::before { color: var(--warn); }
+
+  /* ── CHECK LIST ── */
+  .check-list { display: flex; flex-direction: column; gap: 0.42rem; }
+
+  .check-item { display: flex; align-items: flex-start; gap: 0.6rem; font-size: 0.81rem; line-height: 1.4; }
+
+  .check-box {
+    width: 13px; height: 13px;
+    min-width: 13px;
+    border: 1px solid var(--dim);
+    border-radius: 2px;
+    margin-top: 3px;
+    background: transparent;
+  }
+
+  /* ── MEDS TABLE ── */
+  .meds-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
+
+  .meds-table thead tr { border-bottom: 1px solid var(--border); }
+
+  .meds-table th {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.56rem;
+    letter-spacing: 0.13em;
+    color: var(--muted);
+    text-transform: uppercase;
+    text-align: left;
+    padding: 0 0.7rem 0.6rem;
+    font-weight: 400;
+  }
+
+  .meds-table td {
+    padding: 0.5rem 0.7rem;
+    border-bottom: 1px solid var(--border-light);
+    vertical-align: top;
+    line-height: 1.35;
+  }
+
+  .meds-table tr:last-child td { border-bottom: none; }
+  .meds-table tbody tr:hover td { background: #faf8f4; }
+
+  .drug-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.92rem;
+    color: var(--accent2);
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .drug-class {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.56rem;
+    color: var(--dim);
+    letter-spacing: 0.07em;
+    display: block;
+    margin-top: 1px;
+  }
+
+  .tag {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.52rem;
+    letter-spacing: 0.07em;
+    padding: 1px 5px;
+    border-radius: 2px;
+    text-transform: uppercase;
+    margin: 1px;
+    white-space: nowrap;
+  }
+
+  .tag-pain  { background: rgba(154,111,58,0.1);  color: var(--accent);  border: 1px solid rgba(154,111,58,0.25); }
+  .tag-psych { background: rgba(58,111,154,0.1);  color: var(--accent2); border: 1px solid rgba(58,111,154,0.25); }
+  .tag-warn  { background: rgba(184,92,56,0.1);   color: var(--warn);    border: 1px solid rgba(184,92,56,0.25); }
+  .tag-fda   { background: rgba(58,154,111,0.1);  color: var(--accent4); border: 1px solid rgba(58,154,111,0.25); }
+
+  .dose-note {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.63rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  /* ── FLAGS ── */
+  .flags-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.6rem; }
+
+  .flag-item {
+    background: rgba(184,92,56,0.05);
+    border: 1px solid rgba(184,92,56,0.18);
+    border-radius: 3px;
+    padding: 0.6rem 0.8rem;
+    font-size: 0.79rem;
+    line-height: 1.4;
+  }
+
+  .flag-item strong {
+    display: block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.1em;
+    color: var(--warn);
+    text-transform: uppercase;
+    margin-bottom: 0.2rem;
+  }
+
+  /* ── PEARLS ── */
+  .pearl-list { display: flex; flex-direction: column; gap: 0.8rem; }
+
+  .pearl { display: flex; gap: 0.8rem; align-items: flex-start; }
+
+  .pearl-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    color: var(--accent3);
+    line-height: 1;
+    min-width: 1.6rem;
+    opacity: 0.5;
+  }
+
+  .pearl-text { font-size: 0.81rem; line-height: 1.5; color: var(--text); }
+  .pearl-text strong { color: var(--accent3); font-weight: 700; }
+
+  /* ── REFER ── */
+  .refer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.45rem; }
+
+  .refer-item {
+    background: rgba(58,111,154,0.05);
+    border: 1px solid rgba(58,111,154,0.15);
+    border-radius: 3px;
+    padding: 0.45rem 0.7rem;
+    font-size: 0.78rem;
+    line-height: 1.4;
+  }
+
+  /* ── PROTOCOL ── */
+  .protocol-steps { display: flex; flex-direction: column; gap: 0.42rem; }
+
+  .protocol-step { display: flex; gap: 0.7rem; align-items: flex-start; font-size: 0.8rem; line-height: 1.4; }
+
+  .step-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem;
+    color: var(--warn);
+    background: rgba(184,92,56,0.08);
+    border: 1px solid rgba(184,92,56,0.22);
+    padding: 1px 5px;
+    border-radius: 2px;
+    white-space: nowrap;
+    margin-top: 2px;
+  }
+
+  /* ── NOTE BOXES ── */
+  .note-box {
+    margin-top: 0.8rem;
+    padding: 0.65rem 1rem;
+    border-radius: 3px;
+    font-size: 0.77rem;
+    line-height: 1.5;
+  }
+
+  .note-box.blue-note  { background: rgba(58,111,154,0.06); border: 1px solid rgba(58,111,154,0.15); }
+  .note-box.warn-note  { background: rgba(184,92,56,0.06);  border: 1px solid rgba(184,92,56,0.18); }
+  .note-box.green-note { background: rgba(58,154,111,0.06); border: 1px solid rgba(58,154,111,0.15); }
+
+  .note-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.57rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 0.2rem;
+  }
+
+  .note-box.blue-note  .note-label { color: var(--accent2); }
+  .note-box.warn-note  .note-label { color: var(--warn); }
+  .note-box.green-note .note-label { color: var(--accent4); }
+
+  /* ── FOOTER ── */
+  footer {
+    margin-top: 3rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem;
+    color: var(--dim);
+    letter-spacing: 0.1em;
+    text-align: center;
+  }
+
+  /* ── SCALE ITEMS ── */
+  .scale-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    font-size: 0.79rem;
+    line-height: 1.35;
+    color: var(--text);
+  }
+
+  .scale-item-alert { color: var(--warn); }
+
+  .scale-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem;
+    font-weight: 600;
+    min-width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(58,111,154,0.1);
+    color: var(--accent2);
+    border: 1px solid rgba(58,111,154,0.2);
+    border-radius: 3px;
+    margin-top: 1px;
+    flex-shrink: 0;
+  }
+
+  .scale-num-green {
+    background: rgba(58,154,111,0.1);
+    color: var(--accent4);
+    border-color: rgba(58,154,111,0.2);
+  }
+
+  .scale-num-warn {
+    background: rgba(184,92,56,0.1);
+    color: var(--warn);
+    border-color: rgba(184,92,56,0.2);
+  }
+
+  .scale-num-pink {
+    background: rgba(154,58,111,0.1);
+    color: var(--accent3);
+    border-color: rgba(154,58,111,0.2);
+  }
+
+  .score-row {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.78rem;
+  }
+
+  .score-range {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 3px;
+    min-width: 52px;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .score-label { color: var(--text); line-height: 1.3; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .card:nth-child(1) { animation-delay: 0.04s; }
+  .card:nth-child(2) { animation-delay: 0.08s; }
+  .card:nth-child(3) { animation-delay: 0.12s; }
+  .card:nth-child(4) { animation-delay: 0.16s; }
+  .card:nth-child(5) { animation-delay: 0.20s; }
+  .card:nth-child(6) { animation-delay: 0.24s; }
+
+  @media (max-width: 700px) {
+    .main-grid { grid-template-columns: 1fr; }
+    .full-width { grid-column: 1; }
+    .refer-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-left">
+      <h1>Dor &amp; <span>Psiquiatria</span></h1>
+      <p>Ficha Clínica Integrada — Modelo Biopsicossocial</p>
+    </div>
+    <div class="header-badge">Prof. Alexandre Annes · Einstein · P1384</div>
+  </header>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('anamnese', this)">Anamnese</button>
+    <button class="tab-btn" onclick="switchTab('farma', this)">Farmacologia</button>
+    <button class="tab-btn" onclick="switchTab('perolas', this)">Pérolas &amp; Alertas</button>
+    <button class="tab-btn" onclick="switchTab('escalas', this)">Escalas Clínicas</button>
+  </div>
+
+  <!-- ═══════════ TAB 1: ANAMNESE ═══════════ -->
+  <div class="tab-panel active" id="tab-anamnese">
+
+    <!-- Bidirecionalidade -->
+    <div class="bidir">
+      <div class="bidir-box">
+        <div class="label">Transtornos de Humor / Ansiedade</div>
+        <div class="val">↓ limiar da dor</div>
+      </div>
+      <div class="bidir-arrow">⇄</div>
+      <div class="bidir-box">
+        <div class="label">Dor Crônica</div>
+        <div class="val">exaure reserva emocional</div>
+      </div>
+      <div class="bidir-arrow">→</div>
+      <div class="bidir-box">
+        <div class="label">Sensibilização Central</div>
+        <div class="val">substrato neurobiológico comum</div>
+      </div>
+    </div>
+
+    <div class="main-grid">
+
+      <!-- ANAMNESE COMPLETA -->
+      <div class="card full-width">
+        <div class="card-title">01 — Avaliação Estruturada em 8 Domínios</div>
+        <div class="anamnese-grid">
+
+          <div class="anamnese-block">
+            <h4>🧠 Cognitivo</h4>
+            <ul>
+              <li>Crenças sobre a dor ("nunca vou melhorar")</li>
+              <li>Catastrofização / ruminação</li>
+              <li>Cinesiofobia — medo do movimento</li>
+              <li>Locus de controle (interno/externo)</li>
+              <li>Expectativas realistas do tratamento</li>
+            </ul>
+          </div>
+
+          <div class="anamnese-block">
+            <h4>😔 Humor / Afeto</h4>
+            <ul>
+              <li>Tristeza, anedonia, avolição</li>
+              <li>Irritabilidade (frequentemente predominante!)</li>
+              <li>Desesperança / ideação passiva de morte</li>
+              <li>Distinguir tristeza normal × depressão patológica</li>
+              <li>Episódios de euforia prévia → rastrear TB</li>
+            </ul>
+          </div>
+
+          <div class="anamnese-block">
+            <h4>😰 Ansiedade</h4>
+            <ul>
+              <li>Hipervigilância somática → amplifica nocicepção</li>
+              <li>Ansiedade antecipatória da dor</li>
+              <li>Preocupação excessiva generalizada (TAG)</li>
+              <li>Ataques de pânico</li>
+              <li>Fobia específica (ex.: água → impede fisioterapia)</li>
+            </ul>
+          </div>
+
+          <div class="anamnese-block">
+            <h4>🔁 Comportamental</h4>
+            <ul>
+              <li>Evitação / repouso desproporcional à lesão</li>
+              <li>Busca excessiva por consultas e exames</li>
+              <li>Comportamento de drug-seeking</li>
+              <li>Ganho secundário? Litígio / INSS ativo?</li>
+              <li>O que o paciente <em>parou de fazer</em>?</li>
+            </ul>
+          </div>
+
+          <div class="anamnese-block">
+            <h4>💬 Emoção / Personalidade</h4>
+            <ul>
+              <li>Alexitimia — emoção "vira" dor</li>
+              <li>Regulação emocional: tolera frustração?</li>
+              <li>Contratransferência: raiva/exaustão → investigar TP</li>
+              <li>Padrão de relacionamento com equipe de saúde</li>
+              <li>"Paciente difícil" → suspeitar Borderline / Narcisista</li>
+            </ul>
+          </div>
+
+          <div class="anamnese-block">
+            <h4>🌐 Social / Contextual</h4>
+            <ul>
+              <li>Rede de suporte familiar</li>
+              <li>Afastamento laboral e impacto financeiro</li>
+              <li>Conflito conjugal (dor pélvica crônica)</li>
+              <li>Isolamento social / perda de papel social</li>
+              <li>Crenças culturais sobre dor e tratamento</li>
+            </ul>
+          </div>
+
+          <div class="anamnese-block">
+            <h4>😴 Eixo Sono — Humor — Dor</h4>
+            <ul>
+              <li><strong style="color:var(--accent2)">Insônia inicial</strong> → TAG</li>
+              <li><strong style="color:var(--accent3)">Insônia intermediária</strong> → misto</li>
+              <li><strong style="color:var(--accent)">Insônia terminal</strong> → Depressão (pico cortisol)</li>
+              <li>Dor piora no silêncio noturno?</li>
+              <li><span style="color:var(--warn)">Acordado <em>pela</em> dor = red flag estrutural</span></li>
+            </ul>
+          </div>
+
+          <div class="anamnese-block">
+            <h4>📋 História Psiquiátrica / Trauma</h4>
+            <ul>
+              <li>Abuso físico/sexual → fibromialgia, dor pélvica</li>
+              <li>TEPT — comportamento de esquiva</li>
+              <li>Uso de substâncias: álcool, nicotina, opioides, THC, cafeína</li>
+              <li>Medicações anteriores e resposta</li>
+              <li>Histórico familiar: TB ou suicídio (preditor mais robusto!)</li>
+            </ul>
+          </div>
+
+        </div>
+
+        <!-- CHECKLIST -->
+        <div style="margin-top:1.2rem; padding-top:1rem; border-top:1px solid var(--border-light);">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:0.58rem; letter-spacing:0.14em; color:var(--muted); text-transform:uppercase; margin-bottom:0.7rem;">Checklist funcional — consulta</div>
+          <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:0.4rem;">
+            <div class="check-item"><div class="check-box"></div><span>O que o paciente <strong>parou de fazer</strong> por causa da dor?</span></div>
+            <div class="check-item"><div class="check-box"></div><span>Dor piora no silêncio noturno / <strong>acorda</strong> o paciente?</span></div>
+            <div class="check-item"><div class="check-box"></div><span>Avaliar tratamentos anteriores — desmistificar <strong>"alergias"</strong> (ex.: náusea por opioide)</span></div>
+            <div class="check-item"><div class="check-box"></div><span>Perguntar sobre <strong>ideação suicida</strong> — não induz, valida o sofrimento</span></div>
+            <div class="check-item"><div class="check-box"></div><span><strong>EVA vs funcionalidade real:</strong> "Dor 10" dormindo 6h = descompasso</span></div>
+            <div class="check-item"><div class="check-box"></div><span><strong>Dor abdominal:</strong> spinning cognitivo → preditor de suicidabilidade</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SÍNDROMES PSQ -->
+      <div class="card">
+        <div class="card-title">02 — Síndromes Psiquiátricas na Dor</div>
+        <div class="anamnese-block" style="margin-bottom:0.8rem;">
+          <h4>Transtornos de Humor</h4>
+          <ul>
+            <li>Depressão maior: 30–85% da dor crônica; relação bidirecional (hipocampo, CPF)</li>
+            <li>Transtorno Bipolar: depressão é a fase mais comum; MANIA é a marca registrada</li>
+            <li>Estado Misto: depressão + aceleração → <strong style="color:var(--warn)">emergência psiquiátrica</strong></li>
+          </ul>
+        </div>
+        <div class="anamnese-block" style="margin-bottom:0.8rem;">
+          <h4>Transtornos de Ansiedade</h4>
+          <ul>
+            <li>TAG: 61% dos pacientes referem dor crônica</li>
+            <li>70% dos transtornos do adulto começaram na infância/adolescência</li>
+            <li>Investigar trajetória de vida, não apenas estressor atual</li>
+          </ul>
+        </div>
+        <div class="anamnese-block" style="margin-bottom:0.8rem;">
+          <h4>Transtornos de Personalidade</h4>
+          <ul>
+            <li>35–40% da dor crônica (pode chegar a 70%); TP precede a dor</li>
+            <li>Mais frequentes: Borderline, Dependente, Paranóide, Histriônico</li>
+            <li>Harm-Avoidance (Cloninger): 17% → cinesiofobia grave</li>
+          </ul>
+        </div>
+        <div class="anamnese-block">
+          <h4>Transtorno por Uso de Substâncias</h4>
+          <ul>
+            <li>Álcool, nicotina, opioides, THC, cocaína, cafeína, abuso medicamentoso</li>
+            <li>Automedicação da dor física e emocional</li>
+            <li>Rastrear com AUDIT-C e ORT antes de prescrever opioides</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- INTERFACES -->
+      <div class="card">
+        <div class="card-title">03 — Interfaces Clínicas Dor × Psiquiatria</div>
+        <div class="anamnese-block" style="margin-bottom:0.9rem;">
+          <h4>Categorias de apresentação</h4>
+          <ul>
+            <li><strong style="color:var(--accent4)">Dor SEM comorbidade psiquiátrica</strong> — analgesia padrão</li>
+            <li><strong style="color:var(--accent3)">Dor COM comorbidade psiquiátrica</strong> — plano integrado obrigatório</li>
+            <li><strong style="color:var(--accent2)">Sintomas dolorosos de TA/TH</strong> → tensão muscular (TAG), dor em depressão, somatização</li>
+            <li><strong style="color:var(--accent)">Somatização</strong> → alexitimia, emoção "vira" dor</li>
+          </ul>
+        </div>
+        <div class="anamnese-block">
+          <h4>Quadros específicos</h4>
+          <ul>
+            <li><strong>Fibromialgia:</strong> acorda COM a dor. TDAH comórbido dificulta adesão</li>
+            <li><strong>Dor pélvica crônica:</strong> TEPT + esquiva do parceiro → isolamento conjugal</li>
+            <li><strong>Dor orofacial:</strong> ansiedade severa + somatização</li>
+            <li><strong>Dor abdominal:</strong> spinning cognitivo → suicidabilidade</li>
+            <li><strong>TOC / Tourette:</strong> adjuvante: Risperidona</li>
+          </ul>
+        </div>
+
+        <!-- PLANO TERAPÊUTICO -->
+        <div style="margin-top:1rem; padding-top:0.9rem; border-top:1px solid var(--border-light);">
+          <div class="card-title green" style="margin-bottom:0.7rem;">Plano Terapêutico — Estrutura</div>
+          <div class="check-list">
+            <div class="check-item"><div class="check-box"></div><span><strong>Objetivos pessoais</strong> — funcionalidade, não zerar a dor</span></div>
+            <div class="check-item"><div class="check-box"></div><span><strong>Sono</strong> — higiene + melatonina + tratar insônia específica</span></div>
+            <div class="check-item"><div class="check-box"></div><span><strong>Atividade física</strong> — fisioterapia (a "Arca de Noé"); aquática se cinesiofobia</span></div>
+            <div class="check-item"><div class="check-box"></div><span><strong>TCC</strong> — padrão-ouro; psicoterapia é intervenção biológica</span></div>
+            <div class="check-item"><div class="check-box"></div><span><strong>Polifarmacoterapia racional</strong> — periférico + medular + central</span></div>
+            <div class="check-item"><div class="check-box"></div><span><strong>Comorbidades</strong> — tratar depressão, ansiedade, TB, TUS em paralelo</span></div>
+            <div class="check-item"><div class="check-box"></div><span><strong>Neuromodulação</strong> — TMS / tDCS para casos refratários</span></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- GLOSSÁRIO -->
+    <div style="margin-top:1.2rem; background:#fff; border:1px solid var(--border); border-left:3px solid var(--accent); border-radius:4px; padding:1.1rem 1.4rem;">
+      <div style="font-family:'JetBrains Mono',monospace; font-size:0.62rem; letter-spacing:0.18em; text-transform:uppercase; color:var(--accent); margin-bottom:0.9rem; display:flex; align-items:center; gap:0.5rem;">Glossário de Siglas <span style="flex:1; height:1px; background:var(--border-light); display:block;"></span></div>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:0.3rem 1.5rem;">
+        <div style="font-size:0.78rem; display:flex; gap:0.4rem;"><span style="font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:var(--accent); min-width:60px; font-weight:600;">TAG</span><span>Transtorno de Ansiedade Generalizada</span></div>
+        <div style="font-size:0.78rem; display:flex; gap:0.4rem;"><span style="font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:var(--accent); min-width:60px; font-weight:600;">TB</span><span>Transtorno Bipolar</span></div>
+        <div style="font-size:0.78rem; display:flex; gap:0.4rem;"><span style="font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:var(--accent); min-width:60px; font-weight:600;">TDM</span><span>Transtorno Depressivo Maior</span></div>
+        <div style="font-size:0.78rem; display:flex; gap:0.4rem;"><span style="font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:var(--accent); min-width:60px; font-weight:600;">TEPT</span><span>Transtorno de Estresse Pós-Traumático</span></div>
+        <div style="font-size:0.78rem; display:flex; gap:0.4rem;"><span style="font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:var(--accent); min-width:60px; font-weight:600;">TP</span><span>Transtorno de Personalidade</span></div>
+        <div style="font-size:0.78rem; display:flex; gap:0.4rem;"><span style="font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:var(--accent); min-width:60px; font-weight:600;">TOC</span><span>Transtorno Obsessivo-Compulsivo</span></div>
+        <div style="font-size:0.78rem; display:flex; gap:0.4rem;"><span style="font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:var(--accent); min-width:60px; font-weight:600;">TDAH</span><span>Transtorno do Déficit de Atenção e Hiperatividade</span></div>
+        <div style="font-size:0.78rem; display:flex; gap:0.4rem;"><span style="font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:var(--accent); min-width:60px; font-weight:600;">TUS</span><span>Transtorno por Uso de Substâncias</span></div>
+        <div style="font-size:0.78rem; display:flex; gap:0.4rem;"><span style="font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:var(--accent); min-width:60px; font-weight:600;">TCC</span><span>Terapia Cognitivo-Comportamental</span></div>
+        <div style="font-size:0.78rem; display:flex; gap:0.4rem;"><span style="font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:var(--accent); min-width:60px; font-weight:600;">ACT</span><span>Terapia de Aceitação e Compromisso</span></div>
+        <div style="font-size:0.78rem; display:flex; gap:0.4rem;"><span style="font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:var(--accent); min-width:60px; font-weight:600;">CPF</span><span>Córtex Pré-Frontal</span></div>
+        <div style="font-size:0.78rem; display:flex; gap:0.4rem;"><span style="font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:var(--accent); min-width:60px; font-weight:600;">HPA</span><span>Eixo Hipotálamo-Pituitária-Adrenal</span></div>
+        <div style="font-size:0.78rem; display:flex; gap:0.4rem;"><span style="font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:var(--accent); min-width:60px; font-weight:600;">EVA</span><span>Escala Visual Analógica (dor 0–10)</span></div>
+        <div style="font-size:0.78rem; display:flex; gap:0.4rem;"><span style="font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:var(--accent); min-width:60px; font-weight:600;">BSI</span><span>Beck Scale for Suicidal Ideation (Escala de Ideação Suicida)</span></div>
+        <div style="font-size:0.78rem; display:flex; gap:0.4rem;"><span style="font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:var(--accent); min-width:60px; font-weight:600;">PHQ-9</span><span>Patient Health Questionnaire-9 (rastreio depressão)</span></div>
+        <div style="font-size:0.78rem; display:flex; gap:0.4rem;"><span style="font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:var(--accent); min-width:60px; font-weight:600;">GAD-7</span><span>Generalized Anxiety Disorder-7 (rastreio ansiedade)</span></div>
+        <div style="font-size:0.78rem; display:flex; gap:0.4rem;"><span style="font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:var(--accent); min-width:60px; font-weight:600;">PCS</span><span>Pain Catastrophizing Scale</span></div>
+        <div style="font-size:0.78rem; display:flex; gap:0.4rem;"><span style="font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:var(--accent); min-width:60px; font-weight:600;">TSK</span><span>Tampa Scale of Kinesiophobia (cinesiofobia)</span></div>
+        <div style="font-size:0.78rem; display:flex; gap:0.4rem;"><span style="font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:var(--accent); min-width:60px; font-weight:600;">ORT</span><span>Opioid Risk Tool (risco de abuso de opioides)</span></div>
+        <div style="font-size:0.78rem; display:flex; gap:0.4rem;"><span style="font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:var(--accent); min-width:60px; font-weight:600;">BZD</span><span>Benzodiazepínico</span></div>
+        <div style="font-size:0.78rem; display:flex; gap:0.4rem;"><span style="font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:var(--accent); min-width:60px; font-weight:600;">ISRS</span><span>Inibidor Seletivo de Recaptação de Serotonina</span></div>
+        <div style="font-size:0.78rem; display:flex; gap:0.4rem;"><span style="font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:var(--accent); min-width:60px; font-weight:600;">ISRSN</span><span>Inibidor Seletivo de Recaptação de Serotonina e Noradrenalina</span></div>
+        <div style="font-size:0.78rem; display:flex; gap:0.4rem;"><span style="font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:var(--accent); min-width:60px; font-weight:600;">TMS</span><span>Estimulação Magnética Transcraniana</span></div>
+        <div style="font-size:0.78rem; display:flex; gap:0.4rem;"><span style="font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:var(--accent); min-width:60px; font-weight:600;">tDCS</span><span>Estimulação por Corrente Contínua Transcraniana</span></div>
+        <div style="font-size:0.78rem; display:flex; gap:0.4rem;"><span style="font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:var(--accent); min-width:60px; font-weight:600;">NDP</span><span>Neuropatia Diabética Periférica</span></div>
+        <div style="font-size:0.78rem; display:flex; gap:0.4rem;"><span style="font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:var(--accent); min-width:60px; font-weight:600;">SBAR</span><span>Situation, Background, Assessment, Recommendation</span></div>
+      </div>
+    </div>
+
+  </div><!-- end tab-anamnese -->
+
+  <!-- ═══════════ TAB 2: FARMACOLOGIA ═══════════ -->
+  <div class="tab-panel" id="tab-farma">
+
+    <div class="card full-width blue" style="animation:fadeUp 0.4s ease both;">
+      <div class="card-title">Farmacologia Integrada — Dor + Psiquiatria</div>
+      <table class="meds-table">
+        <thead>
+          <tr>
+            <th style="width:16%">Fármaco</th>
+            <th style="width:18%">Mecanismo</th>
+            <th style="width:24%">Indicações</th>
+            <th style="width:22%">Dose / Titulação</th>
+            <th>Alertas</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="drug-name">Duloxetina</span><span class="drug-class">ISRSN — Dual</span></td>
+            <td>↑ 5HT + NE (periférico, medular, central)</td>
+            <td><span class="tag tag-pain">Fibromialgia</span><span class="tag tag-pain">Dor neuropática</span><span class="tag tag-psych">Depressão</span><span class="tag tag-psych">Ansiedade</span><span class="tag tag-fda">FDA</span></td>
+            <td><span class="dose-note">60mg → efeito dual<br>90–120mg → refratário (↑ NE)</span></td>
+            <td>Náusea inicial; HAS</td>
+          </tr>
+          <tr>
+            <td><span class="drug-name">Venlafaxina</span><span class="drug-class">ISRSN — dose-dependente</span></td>
+            <td>↑ 5HT (baixa dose) + NE (alta dose)</td>
+            <td><span class="tag tag-pain">Dor crônica</span><span class="tag tag-psych">Depressão</span><span class="tag tag-psych">Ansiedade</span></td>
+            <td><span class="dose-note">225–375mg para ação NE analgésica<br>Teto: 375mg</span></td>
+            <td>↓ libido; HAS; síndrome de descontinuação</td>
+          </tr>
+          <tr>
+            <td><span class="drug-name">Amitriptilina</span><span class="drug-class">Tricíclico</span></td>
+            <td>↑ NE + 5HT + bloqueio NaV, H1, M1</td>
+            <td><span class="tag tag-pain">Dor neuropática</span><span class="tag tag-pain">Profilaxia enxaqueca</span><span class="tag tag-psych">Depressão + insônia</span></td>
+            <td><span class="dose-note">10–75mg/noite (analgesia)<br>Até 150mg para psiquiatria</span></td>
+            <td><span class="tag tag-warn">Virada maníaca</span> Anticolinérgico; cardiotóxico em OD</td>
+          </tr>
+          <tr>
+            <td><span class="drug-name">Nortriptilina</span><span class="drug-class">Tricíclico — melhor tolerância</span></td>
+            <td>Preferência NE &gt; Amitriptilina</td>
+            <td><span class="tag tag-pain">Dor neuropática</span><span class="tag tag-psych">Depressão</span></td>
+            <td><span class="dose-note">25–150mg/dia<br>Melhor perfil ECA</span></td>
+            <td>Menos sedação e anticolinérgico</td>
+          </tr>
+          <tr>
+            <td><span class="drug-name">Pregabalina</span><span class="drug-class">Gabapentinoide</span></td>
+            <td>↓ Canais Ca²⁺ voltagem-dependentes</td>
+            <td><span class="tag tag-pain">Fibromialgia</span><span class="tag tag-pain">Neuralgia pós-herpética</span><span class="tag tag-pain">NDP</span><span class="tag tag-psych">TAG</span><span class="tag tag-fda">FDA</span></td>
+            <td><span class="dose-note">Início: 75mg/dia<br>Alvo: 150–600mg/dia<br>Sem metabolismo hepático ✓ alcoólicos</span></td>
+            <td>Sedação; ganho de peso; dependência</td>
+          </tr>
+          <tr>
+            <td><span class="drug-name">Gabapentina</span><span class="drug-class">Gabapentinoide</span></td>
+            <td>↓ Canais Ca²⁺ voltagem-dependentes</td>
+            <td><span class="tag tag-pain">Dor neuropática</span></td>
+            <td><span class="dose-note">900–3600mg/dia<br>Absorção não linear<br>Tentar 3600mg por 2 meses antes de descartar</span></td>
+            <td>Sedação; tonteira; 3 tomadas/dia</td>
+          </tr>
+          <tr>
+            <td><span class="drug-name">Milnaciprano</span><span class="drug-class">ISRSN — NE predominante</span></td>
+            <td>↑ NE &gt; 5HT</td>
+            <td><span class="tag tag-pain">Fibromialgia</span><span class="tag tag-fda">FDA</span></td>
+            <td><span class="dose-note">50–200mg/dia (2×/dia)<br>Indisponível no Brasil</span></td>
+            <td>Alternativa p/ intolerância à Duloxetina</td>
+          </tr>
+          <tr>
+            <td><span class="drug-name">Lamotrigina</span><span class="drug-class">Anticonvulsivante</span></td>
+            <td>Bloqueia canais NaV → ↓ glutamato</td>
+            <td><span class="tag tag-psych">Depressão Bipolar</span><span class="tag tag-pain">Dor em bipolar</span></td>
+            <td><span class="dose-note">Titulação lenta: 25mg/2sem → 200mg<br>(risco DRESS)</span></td>
+            <td><span class="tag tag-warn">Evitar virada maníaca</span> Rash grave (DRESS)</td>
+          </tr>
+          <tr>
+            <td><span class="drug-name">Quetiapina</span><span class="drug-class">Antipsicótico atípico — potencializador</span></td>
+            <td>DA/5HT antagonismo + H1 (sedação)</td>
+            <td><span class="tag tag-psych">Depressão refratária</span><span class="tag tag-psych">Insônia</span><span class="tag tag-psych">Bipolar</span></td>
+            <td><span class="dose-note">25–50mg (sono)<br>150–300mg (antidepressivo)</span></td>
+            <td>Síndrome metabólica; ganho de peso</td>
+          </tr>
+          <tr>
+            <td><span class="drug-name">Risperidona</span><span class="drug-class">Antipsicótico atípico</span></td>
+            <td>Bloqueio D2 + 5HT2</td>
+            <td><span class="tag tag-pain">Dor c/ TOC / Tourette</span><span class="tag tag-psych">Psicose</span></td>
+            <td><span class="dose-note">0.5–2mg/dia (adjuvante)<br>Monitorar prolactina</span></td>
+            <td>Ganho de peso; sedação; ↑ prolactina</td>
+          </tr>
+          <tr>
+            <td><span class="drug-name">Bupropiona</span><span class="drug-class">IRDA + NE</span></td>
+            <td>↑ Dopamina + NE (sem serotonina)</td>
+            <td><span class="tag tag-psych">Depressão anérgica</span><span class="tag tag-psych">Tabagismo</span></td>
+            <td><span class="dose-note">150–300mg/dia<br>Sem efeito analgésico direto</span></td>
+            <td><span class="tag tag-warn">Pode ↑ ansiedade</span> Convulsões em dose alta</td>
+          </tr>
+          <tr>
+            <td><span class="drug-name">Melatonina</span><span class="drug-class">Cronobiótico</span></td>
+            <td>Regulação circadiana (MT1/MT2)</td>
+            <td><span class="tag tag-pain">Insônia + dor</span></td>
+            <td><span class="dose-note">0.5–5mg, 30min antes de dormir</span></td>
+            <td>Segura; sem dependência</td>
+          </tr>
+          <tr>
+            <td><span class="drug-name">Metadona</span><span class="drug-class">Opioide + NMDA antagonista</span></td>
+            <td>Agonista µ-opioide + antagonismo NMDA</td>
+            <td><span class="tag tag-pain">Dor oncológica</span><span class="tag tag-pain">Dor refratária severa</span></td>
+            <td><span class="dose-note">Titulação complexa<br>Meia-vida variável: 24–150h</span></td>
+            <td><span class="tag tag-warn">QTc longo</span> Dependência; interações</td>
+          </tr>
+          <!-- SEPARADOR BZD -->
+          <tr>
+            <td colspan="5" style="padding:0.4rem 0.7rem; background:rgba(184,92,56,0.05); border-bottom:1px solid var(--border);">
+              <span style="font-family:'JetBrains Mono',monospace; font-size:0.58rem; letter-spacing:0.13em; text-transform:uppercase; color:var(--warn);">⚠ Benzodiazepínicos — sem efeito analgésico direto · alto risco de dependência · evitar em dor crônica exceto crises agudas com prazo definido</span>
+            </td>
+          </tr>
+          <tr>
+            <td><span class="drug-name">Alprazolam</span><span class="drug-class">BZD — Rivotril Xanax</span></td>
+            <td>Potencialização GABA-A (↑ frequência abertura Cl⁻)</td>
+            <td><span class="tag tag-psych">Transtorno do pânico</span><span class="tag tag-psych">TAG (curto prazo)</span><span class="tag tag-psych">Ansiedade aguda</span></td>
+            <td><span class="dose-note">0.25–0.5mg 3×/dia<br>Meia-vida: 6–27h (curta-intermediária)<br>Potência alta → equivalência: 0.5mg</span></td>
+            <td><span class="tag tag-warn">Alta dependência</span> Sedação; rebote ansioso; descontinuação difícil</td>
+          </tr>
+          <tr>
+            <td><span class="drug-name">Clonazepam</span><span class="drug-class">BZD — Rivotril</span></td>
+            <td>Potencialização GABA-A</td>
+            <td><span class="tag tag-psych">Transtorno do pânico</span><span class="tag tag-psych">Fobia social</span><span class="tag tag-psych">Epilepsia</span><span class="tag tag-pain">Dor neuropática (adjuvante)</span></td>
+            <td><span class="dose-note">0.5–2mg 2×/dia<br>Meia-vida: 18–50h (longa)<br>Equivalência: 0.5mg ≈ Diazepam 10mg</span></td>
+            <td><span class="tag tag-warn">Dependência</span> Sedação; declínio cognitivo; cuidado em idosos</td>
+          </tr>
+          <tr>
+            <td><span class="drug-name">Diazepam</span><span class="drug-class">BZD — Valium</span></td>
+            <td>Potencialização GABA-A + relaxante muscular central</td>
+            <td><span class="tag tag-psych">Ansiedade aguda</span><span class="tag tag-psych">Abstinência alcoólica</span><span class="tag tag-pain">Espasmo muscular</span></td>
+            <td><span class="dose-note">2–10mg 2–4×/dia<br>Meia-vida: 20–100h + metabólitos ativos<br>Referência de equivalência: <strong>10mg = 1 unidade</strong></span></td>
+            <td><span class="tag tag-warn">Acúmulo em idosos</span> Sedação prolongada; metabólitos ativos</td>
+          </tr>
+          <tr>
+            <td colspan="5" style="padding:0.5rem 0.7rem; background:#fafaf8; border-bottom:1px solid var(--border-light);">
+              <span style="font-family:'JetBrains Mono',monospace; font-size:0.6rem; letter-spacing:0.1em; color:var(--muted); text-transform:uppercase;">Tabela de equivalências BZD (dose diazepam equivalente)</span><br>
+              <div style="display:flex; flex-wrap:wrap; gap:0.5rem; margin-top:0.4rem;">
+                <span style="font-size:0.75rem; background:rgba(184,92,56,0.07); border:1px solid rgba(184,92,56,0.18); border-radius:3px; padding:2px 8px;">Diazepam 10mg = referência</span>
+                <span style="font-size:0.75rem; background:rgba(184,92,56,0.07); border:1px solid rgba(184,92,56,0.18); border-radius:3px; padding:2px 8px;">Clonazepam 0.5mg</span>
+                <span style="font-size:0.75rem; background:rgba(184,92,56,0.07); border:1px solid rgba(184,92,56,0.18); border-radius:3px; padding:2px 8px;">Alprazolam 0.5mg</span>
+                <span style="font-size:0.75rem; background:rgba(184,92,56,0.07); border:1px solid rgba(184,92,56,0.18); border-radius:3px; padding:2px 8px;">Lorazepam 1mg</span>
+                <span style="font-size:0.75rem; background:rgba(184,92,56,0.07); border:1px solid rgba(184,92,56,0.18); border-radius:3px; padding:2px 8px;">Midazolam 7.5mg</span>
+                <span style="font-size:0.75rem; background:rgba(184,92,56,0.07); border:1px solid rgba(184,92,56,0.18); border-radius:3px; padding:2px 8px;">Bromazepam 6mg</span>
+                <span style="font-size:0.75rem; background:rgba(184,92,56,0.07); border:1px solid rgba(184,92,56,0.18); border-radius:3px; padding:2px 8px;">Clobazam 20mg</span>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="note-box warn-note" style="margin-top:1rem;">
+        <span class="note-label">⚠️ Fibromialgia — aprovados FDA</span>
+        Duloxetina · Milnaciprano · Pregabalina &nbsp;|&nbsp; Noradrenérgico: efeitos inibitórios em TODOS os níveis (periférico, medular, central) &nbsp;|&nbsp; Manutenção: <strong>12 meses</strong> de remissão completa antes de desmame
+      </div>
+      <div class="note-box blue-note">
+        <span class="note-label">🚫 Mito do Benzo</span>
+        Benzodiazepínicos são "curativos" para ansiedade — <strong>sem efeito analgésico</strong>. Em dor crônica: ↑ dependência e ↓ cognição. Evitar exceto em crises agudas com prazo definido.
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ═══════════ TAB 3: PÉROLAS & ALERTAS ═══════════ -->
+  <div class="tab-panel" id="tab-perolas">
+    <div class="main-grid" style="animation:fadeUp 0.4s ease both;">
+
+      <!-- RED FLAGS -->
+      <div class="card warn">
+        <div class="card-title">Red Flags Psiquiátricas</div>
+        <div class="flags-grid">
+          <div class="flag-item"><strong>Sono</strong>Acordado <em>pela</em> dor = causa estrutural urgente. Insônia terminal = depressão.</div>
+          <div class="flag-item"><strong>Ideação suicida</strong>50% da dor crônica. Risco ↑ 6–9× vs. população geral.</div>
+          <div class="flag-item"><strong>Dor abdominal</strong>Spinning cognitivo → preditor de suicidabilidade &gt; dor lombar.</div>
+          <div class="flag-item"><strong>Estado misto TB</strong>Humor deprimido + aceleração + impulsividade = emergência. Maior risco de suicídio.</div>
+          <div class="flag-item"><strong>Drug-seeking</strong>Analgésicos simples em excesso → cefaleia por uso excessivo + mascara sensibilização central.</div>
+          <div class="flag-item"><strong>Contratransferência</strong>Raiva súbita, exaustão, querer "salvar" = TP Borderline / Narcisista.</div>
+          <div class="flag-item"><strong>Virada maníaca</strong>Bipolar tratado como unipolar + antidepressivo = iatrogenia grave. "Cura" = euforia patológica.</div>
+          <div class="flag-item"><strong>Dor pélvica crônica</strong>Forte associação com TEPT e abuso. Investigar histórico de trauma.</div>
+          <div class="flag-item" style="border-color:rgba(58,111,154,0.3); background:rgba(58,111,154,0.06);"><strong style="color:var(--accent2)">Escala de Beck (BSI)</strong>Escala de Ideação Suicida de Beck: 21 itens, avalia intensidade, extensão e características da ideação. Escore ≥ 1 em ideação ativa = risco. Usar junto ao rastreio verbal para objetivar conduta.</div>
+        </div>
+      </div>
+
+      <!-- PROTOCOLO SUICÍDIO -->
+      <div class="card warn">
+        <div class="card-title">Protocolo — Ideação Suicida</div>
+        <div class="protocol-steps">
+          <div class="protocol-step">
+            <span class="step-num">01</span>
+            <span>Perguntar: <em>"A dor te faz desejar não estar mais aqui?"</em> — não induz ao ato, abre espaço para proteção</span>
+          </div>
+          <div class="protocol-step">
+            <span class="step-num">02</span>
+            <span>Avaliar transição: <strong>ideação passiva → plano ativo → comportamentos preparatórios</strong> (testamento, busca de meios)</span>
+          </div>
+          <div class="protocol-step">
+            <span class="step-num">03</span>
+            <span>Preditores críticos: <strong>insônia grave</strong>, dor generalizada, dor abdominal, TB não diagnosticado</span>
+          </div>
+          <div class="protocol-step">
+            <span class="step-num">EMERGÊNCIA</span>
+            <span>Plano + intenção + meio → <strong>interromper consulta, acionar familiar, encaminhar emergência psiquiátrica imediatamente</strong></span>
+          </div>
+        </div>
+        <div class="note-box warn-note" style="margin-top:0.8rem;">
+          <span class="note-label">📊 Dado crítico</span>
+          75–80% dos que completam suicídio falaram com profissional de saúde nos <strong>últimos 30 dias</strong>
+        </div>
+      </div>
+
+      <!-- QUANDO REFERENCIAR -->
+      <div class="card blue">
+        <div class="card-title">Quando Referenciar à Psiquiatria</div>
+        <div class="refer-grid">
+          <div class="refer-item">Uso longo ou inadequado de opioides</div>
+          <div class="refer-item">Não adesão ou abuso farmacológico</div>
+          <div class="refer-item">Procedimento invasivo maior planejado</div>
+          <div class="refer-item">Incapacidade por dor desproporcional</div>
+          <div class="refer-item">História de abuso físico ou sexual</div>
+          <div class="refer-item">Tentativa de suicídio prévia</div>
+          <div class="refer-item">Sintomas psicóticos ativos</div>
+          <div class="refer-item">Diagnóstico psiquiátrico moderado-severo</div>
+          <div class="refer-item">Habilidades de enfrentamento precárias</div>
+          <div class="refer-item">Hospitalização psiquiátrica prévia</div>
+        </div>
+      </div>
+
+      <!-- PÉROLAS -->
+      <div class="card pink">
+        <div class="card-title">Pérolas Clínicas do Especialista</div>
+        <div class="pearl-list">
+          <div class="pearl">
+            <div class="pearl-num">01</div>
+            <div class="pearl-text"><strong>TB negligenciado:</strong> Diagnosticado apenas no 4º psiquiatra em média. Sempre perguntar história familiar de TB ou suicídio antes de prescrever antidepressivo.</div>
+          </div>
+          <div class="pearl">
+            <div class="pearl-num">02</div>
+            <div class="pearl-text"><strong>Virada maníaca = "cura":</strong> Paciente bipolar tratado como unipolar que "virou" relata que está curado e sem dor. Isso é euforia patológica — sinal de alerta grave.</div>
+          </div>
+          <div class="pearl">
+            <div class="pearl-num">03</div>
+            <div class="pearl-text"><strong>Resiliência protege:</strong> 25% menos probabilidade de morte em 10 anos. Aceitação da dor (sem evitação) promove maior engajamento — objetivo real do tratamento.</div>
+          </div>
+          <div class="pearl">
+            <div class="pearl-num">04</div>
+            <div class="pearl-text"><strong>Meta realista:</strong> O objetivo clínico é funcionalidade e qualidade de vida. "Zerar a dor" é frequentemente irrealista e indutora de iatrogenia medicamentosa.</div>
+          </div>
+          <div class="pearl">
+            <div class="pearl-num">05</div>
+            <div class="pearl-text"><strong>Depressão anérgica:</strong> Antidepressivos como bupropiona e ISRSN podem melhorar o ânimo, mas atenção — podem <em>aumentar a ansiedade</em> se não houver cobertura ansiolítica adequada.</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════ TAB 4: ESCALAS ═══════════ -->
+  <div class="tab-panel" id="tab-escalas">
+    <div style="display:flex; flex-direction:column; gap:1.2rem; animation:fadeUp 0.4s ease both;">
+
+      <!-- PHQ-9 -->
+      <div class="card blue">
+        <div class="card-title">PHQ-9 — Patient Health Questionnaire</div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+          <div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:0.58rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); margin-bottom:0.6rem;">Nas últimas 2 semanas, com que frequência você foi incomodado por:</div>
+            <div style="display:flex; flex-direction:column; gap:0.35rem;">
+              <div class="scale-item"><span class="scale-num">1</span>Pouco interesse ou prazer em fazer as coisas</div>
+              <div class="scale-item"><span class="scale-num">2</span>Se sentir "para baixo", deprimido ou sem perspectiva</div>
+              <div class="scale-item"><span class="scale-num">3</span>Dificuldade para adormecer, continuar dormindo ou dormir demais</div>
+              <div class="scale-item"><span class="scale-num">4</span>Sentir-se cansado ou com pouca energia</div>
+              <div class="scale-item"><span class="scale-num">5</span>Falta de apetite ou comer demais</div>
+              <div class="scale-item"><span class="scale-num">6</span>Sentir-se mal consigo mesmo — ou achar que é um fracasso ou que decepcionou sua família</div>
+              <div class="scale-item"><span class="scale-num">7</span>Dificuldade de concentração (ler, assistir TV, etc.)</div>
+              <div class="scale-item"><span class="scale-num">8</span>Lentidão para se movimentar ou falar, ou agitação/inquietação incomum</div>
+              <div class="scale-item scale-item-alert"><span class="scale-num" style="background:rgba(184,92,56,0.15); color:var(--warn); border-color:rgba(184,92,56,0.3);">9</span>Pensamentos de que seria melhor estar morto ou de se machucar de alguma forma</div>
+            </div>
+            <div style="margin-top:0.6rem; font-size:0.72rem; color:var(--muted); font-family:'JetBrains Mono',monospace;">Resposta: 0 = Nunca · 1 = Vários dias · 2 = Mais da metade dos dias · 3 = Quase todos os dias</div>
+          </div>
+          <div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:0.58rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); margin-bottom:0.6rem;">Interpretação do escore</div>
+            <div style="display:flex; flex-direction:column; gap:0.3rem;">
+              <div class="score-row"><span class="score-range" style="background:rgba(58,154,111,0.12); color:var(--accent4);">0 – 4</span><span class="score-label">Mínimo — sem ação necessária</span></div>
+              <div class="score-row"><span class="score-range" style="background:rgba(154,111,58,0.12); color:var(--accent);">5 – 9</span><span class="score-label">Leve — monitorar, psicoeducação</span></div>
+              <div class="score-row"><span class="score-range" style="background:rgba(184,92,56,0.12); color:var(--warn);">10 – 14</span><span class="score-label">Moderado — considerar tratamento</span></div>
+              <div class="score-row"><span class="score-range" style="background:rgba(184,92,56,0.2); color:var(--warn);">15 – 19</span><span class="score-label">Moderado-grave — tratamento ativo</span></div>
+              <div class="score-row"><span class="score-range" style="background:rgba(154,58,111,0.15); color:var(--accent3);">20 – 27</span><span class="score-label">Grave — encaminhamento urgente</span></div>
+            </div>
+            <div class="note-box blue-note" style="margin-top:0.8rem;">
+              <span class="note-label">Atenção</span>
+              Item 9 positivo (qualquer pontuação) = rastreio de suicidabilidade obrigatório, independente do escore total
+            </div>
+            <div style="margin-top:0.6rem; font-size:0.76rem; color:var(--muted);">Escore máximo: <strong style="color:var(--text);">27 pontos</strong> (9 itens × 3)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- GAD-7 -->
+      <div class="card green">
+        <div class="card-title">GAD-7 — Generalized Anxiety Disorder Scale</div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+          <div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:0.58rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); margin-bottom:0.6rem;">Nas últimas 2 semanas, com que frequência você foi incomodado por:</div>
+            <div style="display:flex; flex-direction:column; gap:0.35rem;">
+              <div class="scale-item"><span class="scale-num scale-num-green">1</span>Sentir-se nervoso, ansioso ou muito tenso</div>
+              <div class="scale-item"><span class="scale-num scale-num-green">2</span>Não conseguir parar ou controlar as preocupações</div>
+              <div class="scale-item"><span class="scale-num scale-num-green">3</span>Preocupar-se demais com várias coisas</div>
+              <div class="scale-item"><span class="scale-num scale-num-green">4</span>Dificuldade em relaxar</div>
+              <div class="scale-item"><span class="scale-num scale-num-green">5</span>Ficar tão agitado que é difícil permanecer sentado</div>
+              <div class="scale-item"><span class="scale-num scale-num-green">6</span>Ficar facilmente aborrecido ou irritável</div>
+              <div class="scale-item"><span class="scale-num scale-num-green">7</span>Sentir medo como se algo terrível fosse acontecer</div>
+            </div>
+            <div style="margin-top:0.6rem; font-size:0.72rem; color:var(--muted); font-family:'JetBrains Mono',monospace;">Resposta: 0 = Nunca · 1 = Vários dias · 2 = Mais da metade dos dias · 3 = Quase todos os dias</div>
+          </div>
+          <div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:0.58rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); margin-bottom:0.6rem;">Interpretação do escore</div>
+            <div style="display:flex; flex-direction:column; gap:0.3rem;">
+              <div class="score-row"><span class="score-range" style="background:rgba(58,154,111,0.12); color:var(--accent4);">0 – 4</span><span class="score-label">Mínimo</span></div>
+              <div class="score-row"><span class="score-range" style="background:rgba(154,111,58,0.12); color:var(--accent);">5 – 9</span><span class="score-label">Leve</span></div>
+              <div class="score-row"><span class="score-range" style="background:rgba(184,92,56,0.12); color:var(--warn);">10 – 14</span><span class="score-label">Moderado — avaliar comprometimento funcional</span></div>
+              <div class="score-row"><span class="score-range" style="background:rgba(154,58,111,0.15); color:var(--accent3);">15 – 21</span><span class="score-label">Grave — tratamento ativo indicado</span></div>
+            </div>
+            <div class="note-box green-note" style="margin-top:0.8rem;">
+              <span class="note-label">Contexto na dor crônica</span>
+              61% dos pacientes com TAG relatam dor crônica. A hipervigilância somática (item 7) amplifica diretamente o sinal nociceptivo — não é apenas ansiedade "psicológica"
+            </div>
+            <div style="margin-top:0.6rem; font-size:0.76rem; color:var(--muted);">Escore máximo: <strong style="color:var(--text);">21 pontos</strong> (7 itens × 3)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BSI -->
+      <div class="card warn">
+        <div class="card-title">BSI — Beck Scale for Suicidal Ideation</div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+          <div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:0.58rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); margin-bottom:0.6rem;">21 itens · escores 0–2 (itens 1–19) · itens 20–21 = histórico</div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:0.6rem; color:var(--warn); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:0.4rem;">Grupo A — Triagem (itens 1–5)</div>
+            <div style="display:flex; flex-direction:column; gap:0.3rem; margin-bottom:0.7rem;">
+              <div class="scale-item"><span class="scale-num scale-num-warn">1</span>Desejo de viver</div>
+              <div class="scale-item"><span class="scale-num scale-num-warn">2</span>Desejo de morrer</div>
+              <div class="scale-item"><span class="scale-num scale-num-warn">3</span>Razões para viver / morrer</div>
+              <div class="scale-item"><span class="scale-num scale-num-warn">4</span>Desejo ativo de suicídio</div>
+              <div class="scale-item"><span class="scale-num scale-num-warn">5</span>Desejo passivo de suicídio</div>
+            </div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:0.6rem; color:var(--warn); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:0.4rem;">Grupo B — Ideação (itens 6–19) — só se 4 ou 5 &gt; 0</div>
+            <div style="display:flex; flex-direction:column; gap:0.3rem;">
+              <div class="scale-item"><span class="scale-num scale-num-warn">6</span>Duração da ideação</div>
+              <div class="scale-item"><span class="scale-num scale-num-warn">7</span>Frequência da ideação</div>
+              <div class="scale-item"><span class="scale-num scale-num-warn">8</span>Atitude em relação à ideação</div>
+              <div class="scale-item"><span class="scale-num scale-num-warn">9</span>Controle sobre o ato suicida</div>
+              <div class="scale-item"><span class="scale-num scale-num-warn">10</span>Fatores inibidores da tentativa</div>
+              <div class="scale-item"><span class="scale-num scale-num-warn">11</span>Motivo da tentativa contemplada</div>
+              <div class="scale-item"><span class="scale-num scale-num-warn">12</span>Especificidade / planejamento do método</div>
+              <div class="scale-item"><span class="scale-num scale-num-warn">13</span>Disponibilidade e oportunidade do método</div>
+              <div class="scale-item"><span class="scale-num scale-num-warn">14</span>Senso de capacidade de executar</div>
+              <div class="scale-item"><span class="scale-num scale-num-warn">15</span>Expectativa de tentativa real</div>
+              <div class="scale-item"><span class="scale-num scale-num-warn">16</span>Preparação efetiva para a tentativa</div>
+              <div class="scale-item"><span class="scale-num scale-num-warn">17</span>Nota de suicídio</div>
+              <div class="scale-item"><span class="scale-num scale-num-warn">18</span>Atos finais em antecipação à morte</div>
+              <div class="scale-item"><span class="scale-num scale-num-warn">19</span>Ocultação da ideação</div>
+            </div>
+            <div style="margin-top:0.6rem; font-family:'JetBrains Mono',monospace; font-size:0.6rem; color:var(--warn); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:0.3rem;">Grupo C — Histórico</div>
+            <div style="display:flex; flex-direction:column; gap:0.3rem;">
+              <div class="scale-item"><span class="scale-num scale-num-warn">20</span>Número de tentativas anteriores</div>
+              <div class="scale-item"><span class="scale-num scale-num-warn">21</span>Seriedade da intenção na tentativa anterior</div>
+            </div>
+          </div>
+          <div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:0.58rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); margin-bottom:0.6rem;">Interpretação e conduta</div>
+            <div style="display:flex; flex-direction:column; gap:0.3rem; margin-bottom:0.8rem;">
+              <div class="score-row"><span class="score-range" style="background:rgba(58,154,111,0.12); color:var(--accent4);">0</span><span class="score-label">Sem ideação — rastreio negativo</span></div>
+              <div class="score-row"><span class="score-range" style="background:rgba(154,111,58,0.12); color:var(--accent);">1 – 5</span><span class="score-label">Ideação passiva leve — monitorar</span></div>
+              <div class="score-row"><span class="score-range" style="background:rgba(184,92,56,0.15); color:var(--warn);">6 – 15</span><span class="score-label">Ideação ativa moderada — avaliação psiquiátrica</span></div>
+              <div class="score-row"><span class="score-range" style="background:rgba(154,58,111,0.2); color:var(--accent3);">≥ 16</span><span class="score-label">Ideação grave com plano — emergência</span></div>
+            </div>
+            <div class="note-box warn-note">
+              <span class="note-label">⚠ Regra de triagem</span>
+              Se itens 4 <strong>e</strong> 5 = 0 → pular itens 6–19. Qualquer escore ≥ 1 em ideação ativa = avaliação imediata
+            </div>
+            <div class="note-box warn-note" style="margin-top:0.5rem;">
+              <span class="note-label">📊 Dor crônica + BSI</span>
+              50% dos pacientes com dor crônica já tiveram ideação suicida. Risco 6–9× maior que população geral. 75–80% falaram com profissional de saúde nos últimos 30 dias antes do suicídio completo
+            </div>
+            <div style="margin-top:0.6rem; font-size:0.76rem; color:var(--muted);">Escore máximo itens 1–19: <strong style="color:var(--text);">38 pontos</strong></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.2rem;">
+
+        <!-- PCS -->
+        <div class="card pink">
+          <div class="card-title">PCS — Pain Catastrophizing Scale</div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:0.58rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); margin-bottom:0.6rem;">"Quando sinto dor, penso ou sinto..." — 0 (nunca) a 4 (sempre) — 13 itens</div>
+
+          <div style="font-family:'JetBrains Mono',monospace; font-size:0.58rem; color:var(--accent3); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:0.3rem;">Subescala: Ruminação (itens 8–11)</div>
+          <div style="display:flex; flex-direction:column; gap:0.28rem; margin-bottom:0.6rem;">
+            <div class="scale-item"><span class="scale-num scale-num-pink">8</span>Fico ansioso para que a dor desapareça</div>
+            <div class="scale-item"><span class="scale-num scale-num-pink">9</span>Não consigo tirar isso da minha mente</div>
+            <div class="scale-item"><span class="scale-num scale-num-pink">10</span>Continuo pensando em como a dor dói</div>
+            <div class="scale-item"><span class="scale-num scale-num-pink">11</span>Continuo pensando em quanto quero que a dor pare</div>
+          </div>
+
+          <div style="font-family:'JetBrains Mono',monospace; font-size:0.58rem; color:var(--accent3); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:0.3rem;">Subescala: Magnificação (itens 6–7, 13)</div>
+          <div style="display:flex; flex-direction:column; gap:0.28rem; margin-bottom:0.6rem;">
+            <div class="scale-item"><span class="scale-num scale-num-pink">6</span>Fico com medo de que a dor piore</div>
+            <div class="scale-item"><span class="scale-num scale-num-pink">7</span>Continuo pensando em outros episódios dolorosos</div>
+            <div class="scale-item"><span class="scale-num scale-num-pink">13</span>Me pergunto se algo sério pode acontecer</div>
+          </div>
+
+          <div style="font-family:'JetBrains Mono',monospace; font-size:0.58rem; color:var(--accent3); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:0.3rem;">Subescala: Desamparo (itens 1–5, 12)</div>
+          <div style="display:flex; flex-direction:column; gap:0.28rem; margin-bottom:0.7rem;">
+            <div class="scale-item"><span class="scale-num scale-num-pink">1</span>Fico preocupado o tempo todo se a dor vai acabar</div>
+            <div class="scale-item"><span class="scale-num scale-num-pink">2</span>Sinto que não consigo continuar</div>
+            <div class="scale-item"><span class="scale-num scale-num-pink">3</span>É terrível e sinto que nunca vai melhorar</div>
+            <div class="scale-item"><span class="scale-num scale-num-pink">4</span>É horrível e me sinto dominado por ela</div>
+            <div class="scale-item"><span class="scale-num scale-num-pink">5</span>Sinto que não aguento mais</div>
+            <div class="scale-item"><span class="scale-num scale-num-pink">12</span>Não há nada que eu possa fazer para reduzir a intensidade</div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; gap:0.28rem;">
+            <div class="score-row"><span class="score-range" style="background:rgba(58,154,111,0.12); color:var(--accent4);">0 – 20</span><span class="score-label">Leve — baixo impacto</span></div>
+            <div class="score-row"><span class="score-range" style="background:rgba(154,111,58,0.12); color:var(--accent);">21 – 29</span><span class="score-label">Moderado — monitorar</span></div>
+            <div class="score-row"><span class="score-range" style="background:rgba(154,58,111,0.2); color:var(--accent3);">≥ 30</span><span class="score-label">Clinicamente significativo — intervir</span></div>
+          </div>
+          <div style="margin-top:0.5rem; font-size:0.74rem; color:var(--muted);">Escore máximo: <strong style="color:var(--text);">52 pontos</strong> · Preditor mais forte de incapacidade e cronificação</div>
+        </div>
+
+        <!-- TSK -->
+        <div class="card">
+          <div class="card-title">TSK — Tampa Scale of Kinesiophobia</div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:0.58rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); margin-bottom:0.6rem;">17 itens · 1 (discordo totalmente) a 4 (concordo totalmente) · itens 4, 8, 12, 16 = pontuação invertida</div>
+          <div style="display:flex; flex-direction:column; gap:0.28rem; margin-bottom:0.7rem;">
+            <div class="scale-item"><span class="scale-num">1</span>Tenho medo de me machucar se fizer exercício</div>
+            <div class="scale-item"><span class="scale-num">2</span>Se tentasse superar a dor, ela aumentaria</div>
+            <div class="scale-item"><span class="scale-num">3</span>Meu corpo está me dizendo que algo perigoso está acontecendo</div>
+            <div class="scale-item" style="opacity:0.65;"><span class="scale-num" style="font-style:italic;">4*</span>As pessoas não levam minha condição a sério <em>(invertido)</em></div>
+            <div class="scale-item"><span class="scale-num">5</span>Minha lesão colocou meu corpo em risco para o resto da vida</div>
+            <div class="scale-item"><span class="scale-num">6</span>A dor sempre significa que me machuquei</div>
+            <div class="scale-item"><span class="scale-num">7</span>Apenas porque algo causa dor não significa que é perigoso</div>
+            <div class="scale-item" style="opacity:0.65;"><span class="scale-num" style="font-style:italic;">8*</span>Não tenho medo de me machucar acidentalmente <em>(invertido)</em></div>
+            <div class="scale-item"><span class="scale-num">9</span>A melhor forma de prevenir mais dor é ser cuidadoso e evitar movimentos</div>
+            <div class="scale-item"><span class="scale-num">10</span>Não me machucaria mais se tentasse superar a dor</span></div>
+            <div class="scale-item"><span class="scale-num">11</span>Não teria tanto problema de saúde se algo não tivesse acontecido</div>
+            <div class="scale-item" style="opacity:0.65;"><span class="scale-num" style="font-style:italic;">12*</span>Apesar da dor, me sairia melhor se ficasse ativo <em>(invertido)</em></div>
+            <div class="scale-item"><span class="scale-num">13</span>A dor me informa quando parar para não me machucar</div>
+            <div class="scale-item"><span class="scale-num">14</span>Não é seguro para alguém com minha condição ser ativo</div>
+            <div class="scale-item"><span class="scale-num">15</span>Não consigo fazer o que as pessoas normais fazem — é fácil me machucar</div>
+            <div class="scale-item" style="opacity:0.65;"><span class="scale-num" style="font-style:italic;">16*</span>Mesmo que cause muita dor, não acho perigoso <em>(invertido)</em></div>
+            <div class="scale-item"><span class="scale-num">17</span>Ninguém deveria se exercitar quando sente dor</div>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:0.28rem;">
+            <div class="score-row"><span class="score-range" style="background:rgba(58,154,111,0.12); color:var(--accent4);">17 – 28</span><span class="score-label">Baixa cinesiofobia</span></div>
+            <div class="score-row"><span class="score-range" style="background:rgba(154,111,58,0.12); color:var(--accent);">29 – 37</span><span class="score-label">Moderada — reforçar educação em dor</span></div>
+            <div class="score-row"><span class="score-range" style="background:rgba(154,58,111,0.2); color:var(--accent3);">≥ 37</span><span class="score-label">Alta — indica TCC + fisioterapia supervisionada</span></div>
+          </div>
+          <div style="margin-top:0.5rem; font-size:0.74rem; color:var(--muted);">Escore máximo: <strong style="color:var(--text);">68 pontos</strong> · Mínimo: 17 · Itens 4, 8, 12, 16 pontuação invertida</div>
+        </div>
+
+      </div>
+
+      <!-- QUADRO RESUMO -->
+      <div style="background:#fff; border:1px solid var(--border); border-left:3px solid var(--accent); border-radius:4px; padding:1.1rem 1.4rem;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:0.62rem; letter-spacing:0.18em; text-transform:uppercase; color:var(--accent); margin-bottom:0.9rem; display:flex; align-items:center; gap:0.5rem;">Resumo — Quando usar cada escala <span style="flex:1; height:1px; background:var(--border-light); display:block;"></span></div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:0.5rem;">
+          <div style="background:rgba(58,111,154,0.05); border:1px solid rgba(58,111,154,0.15); border-radius:3px; padding:0.6rem 0.8rem;">
+            <div style="font-family:'JetBrains Mono',monospace; font-size:0.62rem; color:var(--accent2); font-weight:600; margin-bottom:0.3rem;">PHQ-9</div>
+            <div style="font-size:0.78rem; line-height:1.4;">Rastreio de depressão em qualquer paciente com dor crônica. Repetir a cada consulta.</div>
+          </div>
+          <div style="background:rgba(58,154,111,0.05); border:1px solid rgba(58,154,111,0.15); border-radius:3px; padding:0.6rem 0.8rem;">
+            <div style="font-family:'JetBrains Mono',monospace; font-size:0.62rem; color:var(--accent4); font-weight:600; margin-bottom:0.3rem;">GAD-7</div>
+            <div style="font-size:0.78rem; line-height:1.4;">Rastreio de ansiedade. Aplicar em paralelo ao PHQ-9 — alta comorbidade na dor crônica.</div>
+          </div>
+          <div style="background:rgba(184,92,56,0.05); border:1px solid rgba(184,92,56,0.15); border-radius:3px; padding:0.6rem 0.8rem;">
+            <div style="font-family:'JetBrains Mono',monospace; font-size:0.62rem; color:var(--warn); font-weight:600; margin-bottom:0.3rem;">BSI</div>
+            <div style="font-size:0.78rem; line-height:1.4;">Quando há suspeita de ideação suicida — PHQ-9 item 9 positivo, dor intratável, estado misto.</div>
+          </div>
+          <div style="background:rgba(154,58,111,0.05); border:1px solid rgba(154,58,111,0.15); border-radius:3px; padding:0.6rem 0.8rem;">
+            <div style="font-family:'JetBrains Mono',monospace; font-size:0.62rem; color:var(--accent3); font-weight:600; margin-bottom:0.3rem;">PCS</div>
+            <div style="font-size:0.78rem; line-height:1.4;">Antes de procedimentos intervencionistas e para guiar TCC. Preditor de resposta ao tratamento.</div>
+          </div>
+          <div style="background:rgba(154,111,58,0.05); border:1px solid rgba(154,111,58,0.15); border-radius:3px; padding:0.6rem 0.8rem;">
+            <div style="font-family:'JetBrains Mono',monospace; font-size:0.62rem; color:var(--accent); font-weight:600; margin-bottom:0.3rem;">TSK</div>
+            <div style="font-size:0.78rem; line-height:1.4;">Quando há comportamento de evitação ou recusa de fisioterapia. Direciona reabilitação funcional.</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <footer>
+    Dor &amp; Psiquiatria — Ficha Clínica Integrada · Prof. Alexandre Annes / Einstein · P1384 · Compilado por Aline
+  </footer>
+
+</div>
+
+<script>
+  function switchTab(id, btn) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + id).classList.add('active');
+    btn.classList.add('active');
+  }
+</script>
+</body>
+</html>
