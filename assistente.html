@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Assistente IA — MedStudy</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f8f5f2;
+      --card: #ffffff;
+      --rose: #e8b4b8;
+      --sage: #a8c5b5;
+      --lavender: #c5b8e8;
+      --peach: #f0c9a0;
+      --text: #3a3340;
+      --muted: #8a7f92;
+      --border: #e8e2f0;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      font-family: 'DM Sans', sans-serif;
+      color: var(--text);
+      min-height: 100vh;
+      padding: 24px 16px 48px;
+    }
+
+    /* Back link */
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: var(--muted);
+      text-decoration: none;
+      margin-bottom: 24px;
+      transition: color 0.2s;
+    }
+    .back-link:hover { color: var(--text); }
+
+    /* Header */
+    .header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    .header-label {
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .header h1 {
+      font-family: 'Lora', serif;
+      font-size: 26px;
+      font-weight: 400;
+      color: var(--text);
+      letter-spacing: -0.02em;
+    }
+    .header-line {
+      width: 40px;
+      height: 2px;
+      background: linear-gradient(90deg, var(--rose), var(--lavender));
+      margin: 10px auto 0;
+      border-radius: 2px;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 6px;
+      background: var(--border);
+      border-radius: 14px;
+      padding: 4px;
+      max-width: 520px;
+      margin: 0 auto 20px;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 9px 6px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 12px;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 400;
+      background: transparent;
+      color: var(--muted);
+      transition: all 0.2s;
+    }
+    .tab-btn.active {
+      background: var(--card);
+      color: var(--text);
+      font-weight: 600;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+
+    /* Card */
+    .card {
+      max-width: 520px;
+      margin: 0 auto;
+      background: var(--card);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 4px 24px rgba(58,51,64,0.07);
+      border: 1px solid var(--border);
+    }
+
+    /* Panel */
+    .panel { display: none; animation: fadeIn 0.3s ease; }
+    .panel.active { display: block; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .panel-desc {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 14px;
+      line-height: 1.6;
+    }
+
+    /* Inputs */
+    textarea, input, select {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      color: var(--text);
+      background: var(--bg);
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+    }
+    textarea { resize: vertical; min-height: 100px; }
+    textarea:focus, input:focus, select:focus {
+      border-color: var(--lavender);
+      box-shadow: 0 0 0 3px rgba(197,184,232,0.2);
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .field-label {
+      font-size: 11px;
+      color: var(--muted);
+      display: block;
+      margin-bottom: 4px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    .hint {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+    .mb-10 { margin-bottom: 10px; }
+
+    /* Submit */
+    .submit-btn {
+      width: 100%;
+      margin-top: 16px;
+      padding: 13px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      background: linear-gradient(135deg, var(--rose), var(--lavender));
+      color: #fff;
+      transition: all 0.2s;
+      letter-spacing: 0.02em;
+    }
+    .submit-btn:hover { filter: brightness(0.95); transform: translateY(-1px); }
+    .submit-btn:active { transform: translateY(0); }
+    .submit-btn:disabled {
+      background: var(--border);
+      color: var(--muted);
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Loading dots */
+    .dots { display: inline-flex; gap: 4px; align-items: center; }
+    .dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--muted);
+      animation: bounce 1.2s ease-in-out infinite;
+    }
+    .dot:nth-child(2) { animation-delay: 0.2s; }
+    .dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes bounce {
+      0%, 80%, 100% { transform: translateY(0); }
+      40% { transform: translateY(-7px); }
+    }
+
+    /* Error */
+    .error {
+      margin-top: 14px;
+      padding: 10px 14px;
+      background: #fdecea;
+      border-radius: 10px;
+      font-size: 13px;
+      color: #c0392b;
+    }
+
+    /* Response */
+    .response-box {
+      margin-top: 20px;
+      padding: 18px 20px;
+      background: var(--bg);
+      border-radius: 14px;
+      border: 1.5px solid var(--border);
+      animation: fadeIn 0.4s ease;
+    }
+    .response-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    .response-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--rose), var(--lavender));
+    }
+    .response-label {
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .response-content {
+      font-size: 14px;
+      line-height: 1.75;
+      color: var(--text);
+    }
+    .response-content strong { font-weight: 600; }
+    .response-content em { font-style: italic; }
+    .response-content h2 {
+      font-family: 'Lora', serif;
+      font-size: 15px;
+      margin: 14px 0 6px;
+      color: var(--text);
+    }
+    .response-content h3 {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin: 12px 0 4px;
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      margin-top: 24px;
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+
+  <a href="/mystudy/" class="back-link">← Voltar ao início</a>
+
+  <div class="header">
+    <div class="header-label">MedStudy</div>
+    <h1>Assistente IA</h1>
+    <div class="header-line"></div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('qa', this)">🩺 Q&A Médico</button>
+    <button class="tab-btn" onclick="switchTab('cases', this)">📋 Casos Clínicos</button>
+    <button class="tab-btn" onclick="switchTab('corrector', this)">✏️ Corretor</button>
+  </div>
+
+  <!-- Card -->
+  <div class="card">
+
+    <!-- QA Panel -->
+    <div id="panel-qa" class="panel active">
+      <p class="panel-desc">Pergunte sobre qualquer tema médico. Respostas baseadas em Harrison, Hajjar e diretrizes atualizadas.</p>
+      <textarea id="qa-input" placeholder="Ex: Qual o mecanismo da hiperkalemia na insuficiência renal? Como tratar?"></textarea>
+      <div class="hint">Ctrl+Enter para enviar</div>
+    </div>
+
+    <!-- Cases Panel -->
+    <div id="panel-cases" class="panel">
+      <p class="panel-desc">Gere casos clínicos completos com gabarito comentado para treino de residência.</p>
+      <div class="grid-2">
+        <div>
+          <label class="field-label">Especialidade</label>
+          <select id="cases-specialty">
+            <option>Clínica Médica</option>
+            <option>Pediatria</option>
+            <option>Cirurgia Geral</option>
+            <option>GO</option>
+            <option>Anestesiologia</option>
+            <option>Cardiologia</option>
+            <option>Neurologia</option>
+            <option>Pneumologia</option>
+            <option>Nefrologia</option>
+            <option>Emergência</option>
+          </select>
+        </div>
+        <div>
+          <label class="field-label">Nível</label>
+          <select id="cases-difficulty">
+            <option>R1 (Geral)</option>
+            <option>R2 (Especialidade)</option>
+            <option>Alta complexidade</option>
+          </select>
+        </div>
+      </div>
+      <input id="cases-theme" placeholder="Tema específico (opcional) — ex: Cetoacidose diabética..." />
+    </div>
+
+    <!-- Corrector Panel -->
+    <div id="panel-corrector" class="panel">
+      <p class="panel-desc">Cole uma questão de residência e sua resposta para análise detalhada.</p>
+      <textarea id="corrector-question" placeholder="Cole aqui a questão completa com as alternativas..." class="mb-10"></textarea>
+      <input id="corrector-answer" placeholder="Sua resposta (opcional) — ex: Alternativa B" />
+    </div>
+
+    <!-- Button -->
+    <button class="submit-btn" id="submit-btn" onclick="handleSubmit()">
+      Perguntar
+    </button>
+
+    <!-- Error -->
+    <div class="error" id="error-box" style="display:none"></div>
+
+    <!-- Response -->
+    <div class="response-box" id="response-box" style="display:none">
+      <div class="response-header">
+        <div class="response-dot"></div>
+        <span class="response-label">Resposta IA</span>
+      </div>
+      <div class="response-content" id="response-content"></div>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    Baseado em Harrison 26ª ed · Hajjar 2024 · SAESP 10ª ed · Diretrizes atualizadas
+  </div>
+
+  <script>
+    const WORKER_URL = "https://medstudy-ai-proxy.alinebcunhaa.workers.dev";
+    let currentTab = "qa";
+
+    const SYSTEM_PROMPTS = {
+      qa: `Você é um assistente médico didático para estudantes de medicina brasileiros preparando para residência. 
+Responda com base em Harrison, Medicina de Emergência (Hajjar), SAESP e diretrizes atualizadas. 
+Seja preciso, cite mecanismos fisiopatológicos quando relevante, use linguagem técnica-médica adequada. 
+Organize a resposta com clareza. Foque em informações práticas e testáveis em provas de residência.`,
+
+      cases: `Você é um gerador de casos clínicos para treino de residência médica no Brasil. 
+Gere casos realistas e didáticos. Estruture SEMPRE assim:
+**CASO CLÍNICO**
+[Apresentação do paciente]
+**DADOS VITAIS**
+[Sinais vitais detalhados]
+**EXAME FÍSICO**
+[Achados relevantes]
+**EXAMES COMPLEMENTARES**
+[Resultados pertinentes]
+**QUESTÕES PARA REFLEXÃO**
+1. [diagnóstico]
+2. [conduta]
+3. [fisiopatologia]
+**GABARITO COMENTADO**
+[Respostas detalhadas]`,
+
+      corrector: `Você é um corretor especializado em questões de residência médica brasileira (R1/R2). 
+Estruture sempre assim:
+**ANÁLISE DA QUESTÃO**
+[Tema central e área cobrada]
+**RESPOSTA CORRETA:** [alternativa]
+**Justificativa:** [explicação detalhada]
+**ANÁLISE DAS ALTERNATIVAS**
+[Por que cada alternativa está certa ou errada]
+**PONTO-CHAVE PARA PROVA**
+[O que memorizar]
+**REFERÊNCIA**
+[Diretriz/capítulo relevante]`
+    };
+
+    const LABELS = { qa: "Perguntar", cases: "Gerar Caso Clínico", corrector: "Corrigir Questão" };
+
+    function switchTab(tab, btn) {
+      currentTab = tab;
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+      document.getElementById('panel-' + tab).classList.add('active');
+      document.getElementById('submit-btn').textContent = LABELS[tab];
+      document.getElementById('response-box').style.display = 'none';
+      document.getElementById('error-box').style.display = 'none';
+    }
+
+    function getUserMessage() {
+      if (currentTab === 'qa') {
+        return document.getElementById('qa-input').value.trim();
+      } else if (currentTab === 'cases') {
+        const s = document.getElementById('cases-specialty').value;
+        const d = document.getElementById('cases-difficulty').value;
+        const t = document.getElementById('cases-theme').value.trim();
+        return `Gere um caso clínico de ${s} com dificuldade ${d}${t ? ', tema: ' + t : ''}. Realista e desafiador para prova de residência.`;
+      } else {
+        const q = document.getElementById('corrector-question').value.trim();
+        const a = document.getElementById('corrector-answer').value.trim();
+        if (!q) return null;
+        return `QUESTÃO:\n${q}\n\n${a ? 'RESPOSTA DO ALUNO: ' + a + '\n\n' : ''}Analise essa questão.`;
+      }
+    }
+
+    function formatResponse(text) {
+      return text
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.+?)\*/g, '<em>$1</em>')
+        .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+        .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+        .replace(/\n/g, '<br/>');
+    }
+
+    async function handleSubmit() {
+      const message = getUserMessage();
+      if (!message) return;
+
+      const btn = document.getElementById('submit-btn');
+      const errorBox = document.getElementById('error-box');
+      const responseBox = document.getElementById('response-box');
+      const responseContent = document.getElementById('response-content');
+
+      btn.disabled = true;
+      btn.innerHTML = '<span class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span>';
+      errorBox.style.display = 'none';
+      responseBox.style.display = 'none';
+
+      try {
+        const res = await fetch(WORKER_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            messages: [
+              { role: 'system', content: SYSTEM_PROMPTS[currentTab] },
+              { role: 'user', content: message }
+            ]
+          })
+        });
+
+        const data = await res.json();
+        const text = data.choices?.[0]?.message?.content || '';
+
+        if (!text) throw new Error('Resposta vazia');
+
+        responseContent.innerHTML = formatResponse(text);
+        responseBox.style.display = 'block';
+        responseBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+      } catch (e) {
+        errorBox.textContent = 'Erro ao conectar com a IA. Verifique sua conexão e tente novamente.';
+        errorBox.style.display = 'block';
+      } finally {
+        btn.disabled = false;
+        btn.textContent = LABELS[currentTab];
+      }
+    }
+
+    // Ctrl+Enter no textarea de Q&A
+    document.getElementById('qa-input').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && e.ctrlKey) handleSubmit();
+    });
+  </script>
+
+</body>
+</html>
