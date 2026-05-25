@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<title>PSA Board</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg: #faf7f4;
+  --surface: #ffffff;
+  --surface2: #f5f0eb;
+  --border: rgba(180,160,140,0.25);
+  --text: #3d3530;
+  --muted: #a89585;
+  --triagem: #7aafc4;
+  --triagem-bg: rgba(122,175,196,0.18);
+  --med: #c9967a;
+  --med-bg: rgba(201,150,122,0.18);
+  --reav: #d4a96a;
+  --reav-bg: rgba(212,169,106,0.18);
+  --internar: #d4827e;
+  --internar-bg: rgba(212,130,126,0.18);
+  --alta: #7ab89a;
+  --alta-bg: rgba(122,184,154,0.18);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;}
+
+/* ── LOGIN ── */
+#loginScreen {
+  min-height:100vh;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;padding:24px;
+  background: radial-gradient(ellipse 600px 400px at 50% 30%, rgba(122,175,196,0.18) 0%, transparent 70%),
+              radial-gradient(ellipse 400px 300px at 80% 80%, rgba(122,184,154,0.12) 0%, transparent 60%),
+              var(--bg);
+}
+.login-logo{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.2em;color:var(--muted);text-transform:uppercase;margin-bottom:8px;}
+.login-title{font-family:'Syne',sans-serif;font-size:32px;font-weight:800;color:var(--text);margin-bottom:4px;letter-spacing:-0.02em;}
+.login-sub{font-size:13px;color:var(--muted);margin-bottom:40px;}
+.login-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:32px;width:100%;max-width:340px;}
+.login-input{
+  width:100%;padding:14px 16px;background:var(--bg);border:1.5px solid var(--border);
+  border-radius:12px;font-family:'DM Sans',sans-serif;font-size:15px;color:var(--text);
+  outline:none;transition:border-color 0.2s;letter-spacing:0.1em;text-align:center;
+  font-weight:600;
+}
+.login-input:focus{border-color:var(--triagem);}
+.login-btn{
+  width:100%;margin-top:14px;padding:14px;background:var(--triagem);
+  border:none;border-radius:12px;font-family:'Syne',sans-serif;font-size:14px;
+  font-weight:700;color:white;cursor:pointer;letter-spacing:0.05em;
+  transition:opacity 0.2s,transform 0.15s;
+}
+.login-btn:hover{opacity:0.88;transform:scale(1.01);}
+.login-error{color:var(--internar);font-size:12px;text-align:center;margin-top:10px;display:none;}
+
+/* ── APP ── */
+#app{display:none;min-height:100vh;flex-direction:column;}
+
+/* HEADER */
+header{
+  position:sticky;top:0;z-index:50;
+  background:rgba(250,247,244,0.94);backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+  padding:0 16px;height:56px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.header-left{display:flex;align-items:center;gap:10px;}
+.header-icon{font-size:18px;}
+.header-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;letter-spacing:-0.01em;}
+.header-date{font-size:11px;color:var(--muted);margin-top:1px;}
+.header-right{display:flex;align-items:center;gap:8px;}
+.btn-new{
+  display:flex;align-items:center;gap:6px;
+  padding:8px 14px;background:var(--triagem);
+  border:none;border-radius:10px;font-family:'DM Sans',sans-serif;
+  font-size:13px;font-weight:600;color:white;cursor:pointer;
+  transition:opacity 0.2s,transform 0.15s;
+}
+.btn-new:hover{opacity:0.88;transform:scale(1.02);}
+.btn-logout{
+  width:32px;height:32px;border-radius:8px;border:1px solid var(--border);
+  background:var(--surface);color:var(--muted);font-size:13px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;transition:background 0.2s;
+}
+.btn-logout:hover{background:var(--surface2);}
+
+/* BOARD */
+#board{flex:1;padding:16px;display:flex;flex-direction:column;gap:12px;overflow-y:auto;}
+
+/* COLUMN */
+.col{border-radius:16px;border:1px solid var(--border);overflow:hidden;}
+.col-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 16px;cursor:pointer;user-select:none;
+}
+.col-left{display:flex;align-items:center;gap:10px;}
+.col-icon{font-size:16px;}
+.col-name{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;letter-spacing:0.1em;}
+.col-count{
+  font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;
+  min-width:22px;text-align:center;
+}
+.col-chevron{font-size:12px;color:var(--muted);transition:transform 0.2s;}
+.col-chevron.open{transform:rotate(180deg);}
+.col-body{padding:0 12px 12px;display:flex;flex-direction:column;gap:8px;}
+.col-empty{text-align:center;padding:20px;font-size:12px;color:var(--muted);font-style:italic;}
+
+/* TRIAGEM */
+.col-triagem{background:var(--triagem-bg);}
+.col-triagem .col-header{border-bottom:1px solid rgba(108,142,191,0.2);}
+.col-triagem .col-name{color:var(--triagem);}
+.col-triagem .col-count{background:rgba(108,142,191,0.2);color:var(--triagem);}
+
+/* MEDICAÇÃO */
+.col-med{background:var(--med-bg);}
+.col-med .col-header{border-bottom:1px solid rgba(232,147,90,0.2);}
+.col-med .col-name{color:var(--med);}
+.col-med .col-count{background:rgba(232,147,90,0.2);color:var(--med);}
+
+/* REAVALIAR */
+.col-reav{background:var(--reav-bg);}
+.col-reav .col-header{border-bottom:1px solid rgba(232,197,90,0.2);}
+.col-reav .col-name{color:var(--reav);}
+.col-reav .col-count{background:rgba(232,197,90,0.2);color:var(--reav);}
+
+/* INTERNAR */
+.col-internar{background:var(--internar-bg);}
+.col-internar .col-header{border-bottom:1px solid rgba(232,122,122,0.2);}
+.col-internar .col-name{color:var(--internar);}
+.col-internar .col-count{background:rgba(232,122,122,0.2);color:var(--internar);}
+
+/* ALTA */
+.col-alta{background:var(--alta-bg);}
+.col-alta .col-header{border-bottom:1px solid rgba(106,191,142,0.2);}
+.col-alta .col-name{color:var(--alta);}
+.col-alta .col-count{background:rgba(106,191,142,0.2);color:var(--alta);}
+
+/* PATIENT CARD */
+.patient-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:12px;
+  overflow:hidden;transition:transform 0.15s;
+}
+.patient-card:active{transform:scale(0.98);}
+.card-summary{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 14px;cursor:pointer;gap:8px;
+}
+.card-info{flex:1;min-width:0;}
+.card-name{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--text);}
+.card-queixa{font-size:11px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.card-time{font-size:10px;color:var(--muted);white-space:nowrap;flex-shrink:0;}
+.card-chevron{font-size:11px;color:var(--muted);transition:transform 0.2s;flex-shrink:0;}
+.card-chevron.open{transform:rotate(180deg);}
+
+.card-detail{
+  padding:0 14px 14px;
+  border-top:1px solid var(--border);
+  display:none;
+}
+.card-detail.open{display:block;}
+.detail-row{margin-top:10px;}
+.detail-label{font-size:10px;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:3px;}
+.detail-val{font-size:13px;color:var(--text);line-height:1.4;}
+.detail-val.empty{color:var(--muted);font-style:italic;font-size:12px;}
+
+.card-actions{
+  display:flex;flex-wrap:wrap;gap:6px;margin-top:14px;padding-top:12px;
+  border-top:1px solid var(--border);
+}
+.action-btn{
+  display:flex;align-items:center;gap:4px;
+  padding:6px 10px;border-radius:8px;border:1px solid var(--border);
+  background:var(--surface2);color:var(--text);font-family:'DM Sans',sans-serif;
+  font-size:11px;font-weight:500;cursor:pointer;transition:background 0.15s;
+  white-space:nowrap;
+}
+.action-btn:hover{background:rgba(255,255,255,0.08);}
+.action-btn.copy{background:rgba(106,191,142,0.15);border-color:rgba(106,191,142,0.3);color:var(--alta);}
+.action-btn.edit{background:rgba(122,175,196,0.18);border-color:rgba(108,142,191,0.3);color:var(--triagem);}
+.action-btn.del{background:rgba(232,122,122,0.12);border-color:rgba(232,122,122,0.25);color:var(--internar);}
+
+.move-btns{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;}
+.move-btn{
+  padding:5px 10px;border-radius:7px;border:1px solid var(--border);
+  background:var(--bg);font-family:'DM Sans',sans-serif;font-size:11px;
+  color:var(--muted);cursor:pointer;transition:all 0.15s;white-space:nowrap;
+}
+.move-btn:hover{background:var(--surface2);color:var(--text);}
+
+/* MODAL */
+.overlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);
+  z-index:100;align-items:flex-end;justify-content:center;
+  padding:0;
+}
+.overlay.active{display:flex;}
+.modal{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:24px 24px 0 0;width:100%;max-width:480px;
+  max-height:92vh;overflow-y:auto;
+  padding:24px 20px 40px;
+  animation:slideUp 0.3s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes slideUp{from{transform:translateY(100%);}to{transform:translateY(0);}}
+.modal-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 20px;}
+.modal-title{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;margin-bottom:20px;}
+.form-group{margin-bottom:14px;}
+.form-label{font-size:11px;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase;display:block;margin-bottom:6px;}
+.form-input,.form-select,.form-textarea{
+  width:100%;padding:12px 14px;background:var(--bg);
+  border:1.5px solid var(--border);border-radius:10px;
+  font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);
+  outline:none;transition:border-color 0.2s;
+}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--triagem);}
+.form-select{cursor:pointer;}
+.form-textarea{resize:vertical;min-height:70px;}
+.form-select option{background:var(--surface);}
+.modal-actions{display:flex;gap:10px;margin-top:20px;}
+.btn-save{
+  flex:1;padding:14px;background:var(--triagem);border:none;border-radius:12px;
+  font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:white;
+  cursor:pointer;transition:opacity 0.2s;
+}
+.btn-save:hover{opacity:0.88;}
+.btn-cancel{
+  padding:14px 20px;background:var(--surface2);border:1px solid var(--border);
+  border-radius:12px;font-family:'DM Sans',sans-serif;font-size:14px;
+  color:var(--muted);cursor:pointer;transition:background 0.2s;
+}
+.btn-cancel:hover{background:var(--bg);}
+
+/* TOAST */
+.toast{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);
+  background:var(--alta);color:#ffffff;padding:10px 20px;border-radius:10px;
+  font-size:13px;font-weight:600;z-index:200;opacity:0;
+  transition:all 0.3s cubic-bezier(.34,1.56,.64,1);white-space:nowrap;
+}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+
+@media(min-width:600px){
+  .overlay{align-items:center;}
+  .modal{border-radius:24px;max-height:85vh;}
+  @keyframes slideUp{from{transform:scale(0.9);opacity:0;}to{transform:scale(1);opacity:1;}}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login-logo">PSA Board</div>
+  <div class="login-title">Sala de Medicação</div>
+  <div class="login-sub">Acesso restrito — insira a senha</div>
+  <div class="login-card">
+    <input type="password" class="login-input" id="pwInput" placeholder="••••••" maxlength="20"
+      onkeydown="if(event.key==='Enter')tryLogin()"/>
+    <button class="login-btn" onclick="tryLogin()">ENTRAR</button>
+    <div class="login-error" id="loginError">Senha incorreta</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <header>
+    <div class="header-left">
+      <div class="header-icon">🩺</div>
+      <div>
+        <div class="header-title">PSA Board</div>
+        <div class="header-date" id="headerDate"></div>
+      </div>
+    </div>
+    <div class="header-right">
+      <button class="btn-new" onclick="openModal()">+ Paciente</button>
+      <button class="btn-logout" onclick="logout()" title="Sair">⎋</button>
+    </div>
+  </header>
+
+  <div id="board"></div>
+</div>
+
+<!-- MODAL PACIENTE -->
+<div class="overlay" id="modalOverlay" onclick="closeOnBg(event)">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="modalTitle">Novo Paciente</div>
+    <input type="hidden" id="editId"/>
+
+    <div class="form-group">
+      <label class="form-label">Nome / Identificador</label>
+      <input type="text" class="form-input" id="fNome" placeholder="Ex: A.B.C. ou João S." autocomplete="off"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Nº Atendimento</label>
+      <input type="text" class="form-input" id="fAtend" placeholder="Número do atendimento" inputmode="numeric"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Queixa Principal</label>
+      <input type="text" class="form-input" id="fQueixa" placeholder="Ex: Cefaleia, dor torácica..."/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Exame Alterado</label>
+      <input type="text" class="form-input" id="fExame" placeholder="Ex: PA 180/110, FC 120..."/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Medicação administrada</label>
+      <input type="text" class="form-input" id="fMed" placeholder="Ex: Dipirona 1g EV, Ondansetrona..."/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Uso contínuo</label>
+      <input type="text" class="form-input" id="fUsoCont" placeholder="Medicações de uso contínuo"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Diagnóstico</label>
+      <input type="text" class="form-input" id="fDiag" placeholder="Hipótese diagnóstica"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Status</label>
+      <select class="form-select" id="fStatus">
+        <option value="triagem">Triagem</option>
+        <option value="med" selected>Medicação</option>
+        <option value="reav">Reavaliar</option>
+        <option value="internar">Internar</option>
+        <option value="alta">Alta</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Observações</label>
+      <textarea class="form-textarea" id="fObs" placeholder="Anotações livres..."></textarea>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+      <button class="btn-save" onclick="savePatient()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const PASSWORD = 'LOLA';
+const COLS = [
+  {id:'triagem', name:'TRIAGEM',   icon:'🔵', cls:'triagem'},
+  {id:'med',     name:'MEDICAÇÃO', icon:'💊', cls:'med'},
+  {id:'reav',    name:'REAVALIAR', icon:'🔄', cls:'reav'},
+  {id:'internar',name:'INTERNAR',  icon:'🚨', cls:'internar'},
+  {id:'alta',    name:'ALTA',      icon:'✅', cls:'alta'},
+];
+const MOVE_LABELS = {triagem:'Triagem',med:'Medicação',reav:'Reavaliar',internar:'Internar',alta:'Alta'};
+
+// ── AUTH ──
+function tryLogin(){
+  const v = document.getElementById('pwInput').value.toUpperCase().trim();
+  if(v === PASSWORD){
+    document.getElementById('loginScreen').style.display='none';
+    document.getElementById('app').style.display='flex';
+    initApp();
+  } else {
+    document.getElementById('loginError').style.display='block';
+    document.getElementById('pwInput').value='';
+    document.getElementById('pwInput').focus();
+  }
+}
+function logout(){
+  if(confirm('Sair do PSA Board?')){
+    document.getElementById('app').style.display='none';
+    document.getElementById('loginScreen').style.display='flex';
+    document.getElementById('pwInput').value='';
+  }
+}
+
+// ── STORAGE (cloud sync) ──
+const API_URL = 'https://psa-board-api.alinebcunhaa.workers.dev';
+let _patients = [];
+let _syncTimer = null;
+
+function todayKey(){ return new Date().toISOString().slice(0,10); }
+
+async function fetchPatients(){
+  try{
+    const r = await fetch(API_URL+'?day='+todayKey());
+    _patients = await r.json();
+  }catch{
+    try{_patients=JSON.parse(localStorage.getItem('psa_'+todayKey())||'[]');}catch{_patients=[];}
+  }
+  return _patients;
+}
+
+function loadPatients(){ return _patients; }
+
+function savePatients(pts){
+  _patients = pts;
+  localStorage.setItem('psa_'+todayKey(), JSON.stringify(pts));
+  clearTimeout(_syncTimer);
+  _syncTimer = setTimeout(async()=>{
+    try{
+      await fetch(API_URL+'?day='+todayKey(),{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify(pts)
+      });
+    }catch{ /* offline - saved locally */ }
+  }, 600);
+}
+
+// ── TIME ──
+function timeAgo(ts){
+  const d=Math.floor((Date.now()-ts)/60000);
+  if(d<1)return 'agora';
+  if(d<60)return d+'min';
+  return Math.floor(d/60)+'h'+(d%60?String(d%60).padStart(2,'0'):'');
+}
+function fmtTime(ts){
+  const d=new Date(ts);
+  return d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+}
+
+// ── INIT ──
+async function initApp(){
+  const now=new Date();
+  document.getElementById('headerDate').textContent=
+    now.toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'short'});
+  showToast('🔄 Sincronizando...');
+  await fetchPatients();
+  setInterval(async()=>{await fetchPatients();renderBoard();},30000);
+  renderBoard();
+}
+
+// ── RENDER ──
+function renderBoard(){
+  const pts=loadPatients();
+  const board=document.getElementById('board');
+  board.innerHTML='';
+
+  COLS.forEach(col=>{
+    const colPts=pts.filter(p=>p.status===col.id);
+    const open = localStorage.getItem('col_open_'+col.id)!=='0';
+
+    const el=document.createElement('div');
+    el.className=`col col-${col.cls}`;
+    el.innerHTML=`
+      <div class="col-header" onclick="toggleCol('${col.id}')">
+        <div class="col-left">
+          <span class="col-icon">${col.icon}</span>
+          <span class="col-name">${col.name}</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="col-count">${colPts.length}</span>
+          <span class="col-chevron ${open?'open':''}">▼</span>
+        </div>
+      </div>
+      <div class="col-body" id="body-${col.id}" style="${open?'':'display:none'}">
+        ${colPts.length===0?`<div class="col-empty">Sem pacientes</div>`
+          :colPts.map(p=>renderCard(p)).join('')}
+      </div>
+    `;
+    board.appendChild(el);
+  });
+}
+
+function renderCard(p){
+  const detailOpen = localStorage.getItem('card_open_'+p.id)==='1';
+  const moves = COLS.filter(c=>c.id!==p.status)
+    .map(c=>`<button class="move-btn" onclick="movePatient('${p.id}','${c.id}');event.stopPropagation()">→ ${c.name}</button>`)
+    .join('');
+
+  return `
+    <div class="patient-card" id="card-${p.id}">
+      <div class="card-summary" onclick="toggleCard('${p.id}')">
+        <div class="card-info">
+          <div class="card-name">${p.nome||'—'}</div>
+          <div class="card-queixa">${p.queixa||'sem queixa'}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <span class="card-time">${fmtTime(p.ts)}</span>
+          <span class="card-chevron ${detailOpen?'open':''}">▼</span>
+        </div>
+      </div>
+      <div class="card-detail ${detailOpen?'open':''}">
+        ${p.atend?`<div class="detail-row"><div class="detail-label">Nº Atendimento</div><div class="detail-val">${p.atend}</div></div>`:''}
+        ${p.exame?`<div class="detail-row"><div class="detail-label">Exame Alterado</div><div class="detail-val" style="color:#e8c55a">${p.exame}</div></div>`:''}
+        ${p.med?`<div class="detail-row"><div class="detail-label">Medicação</div><div class="detail-val">${p.med}</div></div>`:''}
+        ${p.usocont?`<div class="detail-row"><div class="detail-label">Uso Contínuo</div><div class="detail-val">${p.usocont}</div></div>`:''}
+        ${p.diag?`<div class="detail-row"><div class="detail-label">Diagnóstico</div><div class="detail-val">${p.diag}</div></div>`:''}
+        ${p.obs?`<div class="detail-row"><div class="detail-label">Obs</div><div class="detail-val">${p.obs}</div></div>`:''}
+        <div class="card-actions">
+          <button class="action-btn copy" onclick="copyWA('${p.id}');event.stopPropagation()">📋 Copiar WA</button>
+          <button class="action-btn edit" onclick="editPatient('${p.id}');event.stopPropagation()">✏️ Editar</button>
+          <button class="action-btn del" onclick="deletePatient('${p.id}');event.stopPropagation()">🗑</button>
+        </div>
+        <div class="move-btns">${moves}</div>
+      </div>
+    </div>
+  `;
+}
+
+// ── TOGGLE ──
+function toggleCol(id){
+  const body=document.getElementById('body-'+id);
+  const cur=localStorage.getItem('col_open_'+id)!=='0';
+  localStorage.setItem('col_open_'+id, cur?'0':'1');
+  renderBoard();
+}
+function toggleCard(id){
+  const cur=localStorage.getItem('card_open_'+id)==='1';
+  localStorage.setItem('card_open_'+id,cur?'0':'1');
+  renderBoard();
+}
+
+// ── MODAL ──
+function openModal(data){
+  document.getElementById('modalTitle').textContent=data?'Editar Paciente':'Novo Paciente';
+  document.getElementById('editId').value=data?data.id:'';
+  document.getElementById('fNome').value=data?data.nome:'';
+  document.getElementById('fAtend').value=data?data.atend:'';
+  document.getElementById('fQueixa').value=data?data.queixa:'';
+  document.getElementById('fExame').value=data?data.exame:'';
+  document.getElementById('fMed').value=data?data.med:'';
+  document.getElementById('fUsoCont').value=data?data.usocont:'';
+  document.getElementById('fDiag').value=data?data.diag:'';
+  document.getElementById('fStatus').value=data?data.status:'med';
+  document.getElementById('fObs').value=data?data.obs:'';
+  document.getElementById('modalOverlay').classList.add('active');
+  setTimeout(()=>document.getElementById('fNome').focus(),100);
+}
+function closeModal(){document.getElementById('modalOverlay').classList.remove('active');}
+function closeOnBg(e){if(e.target===document.getElementById('modalOverlay'))closeModal();}
+
+function editPatient(id){
+  const pts=loadPatients();
+  const p=pts.find(x=>x.id===id);
+  if(p)openModal(p);
+}
+
+function savePatient(){
+  const nome=document.getElementById('fNome').value.trim();
+  if(!nome){showToast('⚠️ Nome obrigatório!');return;}
+  const id=document.getElementById('editId').value||'p'+Date.now();
+  const obj={
+    id, ts: document.getElementById('editId').value
+      ? (loadPatients().find(x=>x.id===id)||{}).ts||Date.now()
+      : Date.now(),
+    nome,
+    atend:document.getElementById('fAtend').value.trim(),
+    queixa:document.getElementById('fQueixa').value.trim(),
+    exame:document.getElementById('fExame').value.trim(),
+    med:document.getElementById('fMed').value.trim(),
+    usocont:document.getElementById('fUsoCont').value.trim(),
+    diag:document.getElementById('fDiag').value.trim(),
+    status:document.getElementById('fStatus').value,
+    obs:document.getElementById('fObs').value.trim(),
+  };
+  let pts=loadPatients();
+  if(document.getElementById('editId').value){
+    pts=pts.map(x=>x.id===id?obj:x);
+    showToast('✏️ Atualizado!');
+  } else {
+    pts.push(obj);
+    showToast('✅ Paciente adicionado!');
+  }
+  savePatients(pts);
+  closeModal();
+  renderBoard();
+}
+
+function deletePatient(id){
+  if(!confirm('Remover paciente?'))return;
+  savePatients(loadPatients().filter(x=>x.id!==id));
+  localStorage.removeItem('card_open_'+id);
+  renderBoard();
+  showToast('🗑 Removido');
+}
+
+function movePatient(id,newStatus){
+  const pts=loadPatients().map(x=>x.id===id?{...x,status:newStatus}:x);
+  savePatients(pts);
+  renderBoard();
+  showToast('→ '+MOVE_LABELS[newStatus]);
+}
+
+// ── COPY WA ──
+function copyWA(id){
+  const p=loadPatients().find(x=>x.id===id);
+  if(!p)return;
+  const lines=[];
+  lines.push(`👤 *${p.nome}*`);
+  if(p.atend) lines.push(`📋 Atend: ${p.atend}`);
+  if(p.queixa) lines.push(`🩺 Queixa: ${p.queixa}`);
+  if(p.exame) lines.push(`⚠️ Exame: ${p.exame}`);
+  if(p.med) lines.push(`💊 Med: ${p.med}`);
+  if(p.diag) lines.push(`📌 Dx: ${p.diag}`);
+  if(p.obs) lines.push(`📝 ${p.obs}`);
+  lines.push(`⏰ ${fmtTime(p.ts)} · ${MOVE_LABELS[p.status]}`);
+  const text=lines.join('\n');
+  navigator.clipboard.writeText(text).then(()=>showToast('📋 Copiado!')).catch(()=>{
+    const ta=document.createElement('textarea');
+    ta.value=text;document.body.appendChild(ta);ta.select();
+    document.execCommand('copy');document.body.removeChild(ta);
+    showToast('📋 Copiado!');
+  });
+}
+
+// ── TOAST ──
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2000);
+}
+
+// Enter no login
+document.getElementById('pwInput').addEventListener('keydown',e=>{
+  if(e.key==='Enter')tryLogin();
+});
+</script>
+</body>
+</html>
