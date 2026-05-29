@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cartilhas MS — Residência Médica</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #FBF7F0;
+  --surface: #FFFFFF;
+  --border: #EDE8DF;
+  --border-hover: #D4C9BB;
+  --text: #2C2416;
+  --text-muted: #8A7F72;
+  --text-light: #B5AA9C;
+
+  --sage:    #7FA87A;
+  --sage-bg: #EDF5EC;
+  --rose:    #C07080;
+  --rose-bg: #F8EDEE;
+  --amber:   #C8894A;
+  --amber-bg:#FBF0E3;
+  --blue:    #6A9AB8;
+  --blue-bg: #E8F2F8;
+  --lavender:#9080B8;
+  --lavender-bg:#F0EDF8;
+  --mauve:   #B07898;
+  --mauve-bg:#F7EEF4;
+  --terra:   #A87060;
+  --terra-bg:#F8EDEA;
+  --gold:    #B89840;
+  --gold-bg: #F8F3E2;
+
+  --radius: 14px;
+  --radius-sm: 8px;
+  --shadow: 0 2px 12px rgba(44,36,22,0.07);
+  --shadow-hover: 0 6px 28px rgba(44,36,22,0.13);
+  --shadow-card: 0 1px 4px rgba(44,36,22,0.06), 0 4px 16px rgba(44,36,22,0.06);
+  --transition: 0.22s cubic-bezier(0.4,0,0.2,1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* ─── HEADER ──────────────────────────────────────────────────── */
+.site-header {
+  background: var(--surface);
+  border-bottom: 1.5px solid var(--border);
+  padding: 0 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.header-logo {
+  width: 34px; height: 34px;
+  background: var(--sage);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.header-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.2px;
+}
+.header-sub {
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+.header-right {
+  display: flex; gap: 10px; align-items: center;
+}
+
+/* ─── HERO STRIP ──────────────────────────────────────────────── */
+.hero {
+  background: linear-gradient(105deg, #EEF7ED 0%, #FAF4EC 50%, #F7EEF4 100%);
+  padding: 40px 32px 36px;
+  border-bottom: 1.5px solid var(--border);
+}
+.hero h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--text);
+  letter-spacing: -0.5px;
+}
+.hero h1 em {
+  font-style: italic;
+  color: var(--sage);
+}
+.hero p {
+  margin-top: 10px;
+  color: var(--text-muted);
+  font-size: 13.5px;
+  max-width: 540px;
+}
+.hero-stats {
+  display: flex; gap: 24px; margin-top: 22px;
+}
+.hero-stat {
+  display: flex; flex-direction: column;
+}
+.hero-stat .num {
+  font-family: 'Playfair Display', serif;
+  font-size: 24px; font-weight: 700;
+  color: var(--text);
+  line-height: 1;
+}
+.hero-stat .label {
+  font-size: 11px; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.5px;
+  margin-top: 3px;
+}
+
+/* ─── FILTERS ─────────────────────────────────────────────────── */
+.filter-bar {
+  padding: 18px 32px;
+  display: flex; gap: 8px; flex-wrap: wrap;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+.filter-label {
+  font-size: 11px; text-transform: uppercase;
+  letter-spacing: 0.6px; color: var(--text-muted);
+  font-weight: 600; margin-right: 6px;
+}
+.filter-btn {
+  padding: 5px 13px;
+  border-radius: 20px;
+  border: 1.5px solid var(--border);
+  background: transparent;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: var(--transition);
+}
+.filter-btn:hover { border-color: var(--border-hover); color: var(--text); }
+.filter-btn.active {
+  background: var(--text);
+  border-color: var(--text);
+  color: #fff;
+}
+
+/* ─── GRID ────────────────────────────────────────────────────── */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(540px, 1fr));
+  gap: 22px;
+  padding: 28px 32px 80px;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+.card-hidden { display: none !important; }
+
+/* ─── CARD ────────────────────────────────────────────────────── */
+.card {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+  transition: var(--transition);
+  animation: cardIn 0.35s ease both;
+}
+.card:hover {
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-2px);
+  border-color: var(--border-hover);
+}
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.card-accent {
+  height: 4px;
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+
+.card-header {
+  padding: 18px 20px 14px;
+  display: flex; gap: 12px; align-items: flex-start;
+}
+.cat-badge {
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+.card-titles { flex: 1; }
+.card-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--text);
+  letter-spacing: -0.2px;
+}
+.card-subtitle {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 3px;
+  font-weight: 400;
+}
+.card-relevance {
+  display: flex; gap: 2px;
+  flex-shrink: 0; margin-top: 4px;
+}
+.star { font-size: 13px; }
+
+/* ─── KEY POINTS ──────────────────────────────────────────────── */
+.card-section { padding: 0 20px 14px; }
+.section-label {
+  display: flex; align-items: center; gap: 7px;
+  font-size: 10.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--text-muted);
+  margin-bottom: 9px;
+  padding-bottom: 7px;
+  border-bottom: 1px solid var(--border);
+}
+.section-icon { font-size: 13px; }
+.key-points {
+  list-style: none;
+  display: flex; flex-direction: column; gap: 5px;
+}
+.key-points li {
+  display: flex; gap: 8px;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--text);
+  padding: 5px 8px;
+  border-radius: 6px;
+  transition: var(--transition);
+}
+.key-points li:hover { background: var(--bg); }
+.key-points li::before {
+  content: '▸';
+  font-size: 10px;
+  opacity: 0.5;
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+
+/* ─── IMAGE ZONES ─────────────────────────────────────────────── */
+.card-images {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 0 20px 14px;
+}
+.img-zone {
+  border: 1.5px dashed var(--border-hover);
+  border-radius: var(--radius-sm);
+  min-height: 130px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 7px;
+  cursor: pointer;
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+  background: var(--bg);
+}
+.img-zone:hover { border-color: var(--text-muted); background: #F6F1E8; }
+.img-zone.has-image { border-style: solid; border-color: var(--border); }
+.img-zone .zone-icon { font-size: 22px; opacity: 0.5; }
+.img-zone .zone-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  text-align: center;
+  padding: 0 10px;
+}
+.img-zone .zone-hint {
+  font-size: 10.5px;
+  color: var(--text-light);
+  text-align: center;
+  padding: 0 10px;
+}
+.img-zone img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  position: absolute; inset: 0;
+}
+.zone-overlay {
+  position: absolute; inset: 0;
+  background: rgba(44,36,22,0.55);
+  display: flex; align-items: center; justify-content: center;
+  gap: 10px;
+  opacity: 0;
+  transition: var(--transition);
+  border-radius: calc(var(--radius-sm) - 2px);
+}
+.img-zone:hover .zone-overlay { opacity: 1; }
+.zone-overlay button {
+  background: rgba(255,255,255,0.9);
+  border: none;
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 11px;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--text);
+}
+.zone-type-badge {
+  position: absolute;
+  top: 7px; left: 7px;
+  font-size: 9.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: rgba(255,255,255,0.88);
+  color: var(--text-muted);
+  backdrop-filter: blur(4px);
+}
+
+/* ─── CARD FOOTER ─────────────────────────────────────────────── */
+.card-footer {
+  padding: 11px 20px 14px;
+  border-top: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 10px;
+}
+.card-tags {
+  display: flex; gap: 5px; flex-wrap: wrap; flex: 1;
+}
+.tag {
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 10.5px;
+  font-weight: 500;
+  background: var(--bg);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+}
+.footer-actions { display: flex; gap: 7px; flex-shrink: 0; }
+.btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 6px 13px;
+  border-radius: var(--radius-sm);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  text-decoration: none;
+  border: 1.5px solid transparent;
+}
+.btn-outline {
+  background: transparent;
+  border-color: var(--border);
+  color: var(--text-muted);
+}
+.btn-outline:hover { border-color: var(--text-muted); color: var(--text); }
+.btn-primary {
+  background: var(--text);
+  color: #fff;
+  border-color: var(--text);
+}
+.btn-primary:hover { opacity: 0.85; }
+.btn-pdf {
+  background: var(--rose-bg);
+  color: var(--rose);
+  border-color: transparent;
+}
+.btn-pdf:hover { background: #f3d9dd; }
+
+/* ─── FAB ─────────────────────────────────────────────────────── */
+.fab {
+  position: fixed;
+  bottom: 28px; right: 28px;
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  background: var(--sage);
+  color: #fff;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(127,168,122,0.45);
+  transition: var(--transition);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 200;
+}
+.fab:hover { transform: scale(1.08); background: #6A9665; }
+
+/* ─── MODAL ───────────────────────────────────────────────────── */
+.modal-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(44,36,22,0.35);
+  backdrop-filter: blur(4px);
+  z-index: 300;
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.22s;
+}
+.modal-backdrop.open { opacity: 1; pointer-events: all; }
+.modal {
+  background: var(--surface);
+  border-radius: var(--radius);
+  width: 100%; max-width: 520px;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(44,36,22,0.2);
+  transform: translateY(16px) scale(0.98);
+  transition: transform 0.22s cubic-bezier(0.34,1.56,0.64,1);
+}
+.modal-backdrop.open .modal {
+  transform: translateY(0) scale(1);
+}
+.modal-header {
+  padding: 22px 24px 16px;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+}
+.modal-header h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 18px;
+}
+.modal-close {
+  width: 30px; height: 30px;
+  border-radius: 50%; border: none;
+  background: var(--bg);
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 15px;
+  display: flex; align-items: center; justify-content: center;
+  transition: var(--transition);
+}
+.modal-close:hover { background: var(--border); color: var(--text); }
+.modal-body { padding: 22px 24px; display: flex; flex-direction: column; gap: 16px; }
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-label {
+  font-size: 11.5px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.5px;
+  color: var(--text-muted);
+}
+.form-input, .form-select, .form-textarea {
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 9px 12px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13.5px;
+  color: var(--text);
+  background: var(--bg);
+  transition: var(--transition);
+  outline: none;
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  border-color: var(--sage);
+  background: #fff;
+}
+.form-textarea { resize: vertical; min-height: 100px; }
+.form-hint {
+  font-size: 11px; color: var(--text-light);
+}
+.modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid var(--border);
+  display: flex; justify-content: flex-end; gap: 10px;
+}
+
+/* ─── EMPTY STATE ─────────────────────────────────────────────── */
+.empty-state {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-muted);
+}
+.empty-state .icon { font-size: 40px; margin-bottom: 14px; }
+.empty-state p { font-size: 14px; }
+
+/* ─── SCROLLBAR ───────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+/* hidden file inputs */
+.hidden-input { display: none; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="site-header">
+  <div class="header-left">
+    <div class="header-logo">⚕</div>
+    <div>
+      <div class="header-title">Cartilhas MS</div>
+      <div class="header-sub">Protocolos &amp; PCDTs · Residência Médica</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <button class="btn btn-outline" onclick="exportData()">↓ Exportar</button>
+    <label class="btn btn-outline" style="cursor:pointer;">
+      ↑ Importar<input type="file" accept=".json" class="hidden-input" onchange="importData(event)">
+    </label>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <h1>Protocolos do <em>Ministério da Saúde</em></h1>
+  <p>PCDTs, cartilhas e diretrizes terapêuticas de alta relevância para provas de residência. Adicione infográficos do SUS e suas anotações pessoais.</p>
+  <div class="hero-stats">
+    <div class="hero-stat"><span class="num" id="stat-total">0</span><span class="label">Cartilhas</span></div>
+    <div class="hero-stat"><span class="num" id="stat-imagens">0</span><span class="label">Imagens adicionadas</span></div>
+    <div class="hero-stat"><span class="num" id="stat-pdfs">0</span><span class="label">PDFs vinculados</span></div>
+  </div>
+</section>
+
+<!-- FILTERS -->
+<div class="filter-bar">
+  <span class="filter-label">Área</span>
+  <button class="filter-btn active" data-cat="all">Todas</button>
+  <button class="filter-btn" data-cat="Infectologia">Infectologia</button>
+  <button class="filter-btn" data-cat="Cardiologia">Cardiologia</button>
+  <button class="filter-btn" data-cat="Endocrinologia">Endocrinologia</button>
+  <button class="filter-btn" data-cat="Pneumologia">Pneumologia</button>
+  <button class="filter-btn" data-cat="Saúde Mental">Saúde Mental</button>
+  <button class="filter-btn" data-cat="Saúde da Mulher">Saúde da Mulher</button>
+  <button class="filter-btn" data-cat="Urgência">Urgência</button>
+  <button class="filter-btn" data-cat="Pediatria">Pediatria</button>
+  <button class="filter-btn" data-cat="Gastroenterologia">Gastroenterologia</button>
+</div>
+
+<!-- CARDS GRID -->
+<main class="cards-grid" id="cardsGrid"></main>
+
+<!-- FAB -->
+<button class="fab" title="Adicionar cartilha" onclick="openAddModal()">+</button>
+
+<!-- ADD MODAL -->
+<div class="modal-backdrop" id="addModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Nova Cartilha</h2>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Título *</label>
+        <input class="form-input" id="f-titulo" placeholder="ex: Tuberculose">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Subtítulo / Protocolo</label>
+        <input class="form-input" id="f-subtitulo" placeholder="ex: PCDT – Diagnóstico e Tratamento, 2023">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Categoria *</label>
+        <select class="form-select" id="f-categoria">
+          <option value="Infectologia">Infectologia</option>
+          <option value="Cardiologia">Cardiologia</option>
+          <option value="Endocrinologia">Endocrinologia</option>
+          <option value="Pneumologia">Pneumologia</option>
+          <option value="Saúde Mental">Saúde Mental</option>
+          <option value="Saúde da Mulher">Saúde da Mulher</option>
+          <option value="Urgência">Urgência</option>
+          <option value="Pediatria">Pediatria</option>
+          <option value="Gastroenterologia">Gastroenterologia</option>
+          <option value="Oncologia">Oncologia</option>
+          <option value="Outras">Outras</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Pontos-chave para prova</label>
+        <textarea class="form-textarea" id="f-pontos" placeholder="Um ponto por linha. Ex:&#10;Esquema RHZE: 2 meses intensivo + 4 meses manutenção&#10;TRM-TB como primeira linha diagnóstica"></textarea>
+        <span class="form-hint">Um ponto por linha</span>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Link do PDF oficial (opcional)</label>
+        <input class="form-input" id="f-pdf" placeholder="https://www.gov.br/saude/...">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tags (separadas por vírgula)</label>
+        <input class="form-input" id="f-tags" placeholder="PCDT, Notificação, Alta frequência">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Relevância para prova</label>
+        <select class="form-select" id="f-relevancia">
+          <option value="3">⭐⭐⭐ Alta</option>
+          <option value="2">⭐⭐ Média</option>
+          <option value="1">⭐ Baixa</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="addCard()">Adicionar cartilha</button>
+    </div>
+  </div>
+</div>
+
+<!-- HIDDEN FILE INPUT (shared) -->
+<input type="file" accept="image/*" class="hidden-input" id="imgInput">
+
+<script>
+// ──────────────────────────────────────────────
+// PALETTE MAP
+// ──────────────────────────────────────────────
+const catStyles = {
+  'Infectologia':   { color: '#7FA87A', bg: '#EDF5EC', icon: '🦠' },
+  'Cardiologia':    { color: '#C07080', bg: '#F8EDEE', icon: '❤️' },
+  'Endocrinologia': { color: '#C8894A', bg: '#FBF0E3', icon: '🔬' },
+  'Pneumologia':    { color: '#6A9AB8', bg: '#E8F2F8', icon: '🫁' },
+  'Saúde Mental':   { color: '#9080B8', bg: '#F0EDF8', icon: '🧠' },
+  'Saúde da Mulher':{ color: '#B07898', bg: '#F7EEF4', icon: '🌸' },
+  'Urgência':       { color: '#B89840', bg: '#F8F3E2', icon: '⚡' },
+  'Pediatria':      { color: '#6AAA88', bg: '#E8F5EE', icon: '👶' },
+  'Gastroenterologia': { color: '#6E9E8A', bg: '#E6F4EF', icon: '🫀' },
+  'Oncologia':      { color: '#A87060', bg: '#F8EDEA', icon: '🎗️' },
+  'Outras':         { color: '#8A7F72', bg: '#F3EFE8', icon: '📋' },
+};
+
+// ──────────────────────────────────────────────
+// DEFAULT DATA
+// ──────────────────────────────────────────────
+const defaultData = [
+  {
+    id: 'tuberculose',
+    titulo: 'Tuberculose',
+    subtitulo: 'PCDT – Diagnóstico e Tratamento · MS 2023',
+    categoria: 'Infectologia',
+    relevancia: 3,
+    pontos: [
+      'Esquema básico RHZE: Rifampicina + Isoniazida + Pirazinamida + Etambutol por 2 meses (intensivo)',
+      'Fase de manutenção: Rifampicina + Isoniazida por 4 meses → total 6 meses',
+      'TRM-TB (Xpert MTB/RIF): primeira linha diagnóstica — sensibilidade ~89%, detecta resistência a Rifampicina',
+      'ILTB: isoniazida 270 doses (6 meses) ou rifampicina 4 meses — iniciar após descartar TB ativa',
+      'Coinfecção HIV: TARV após 2–8 semanas do início do esquema anti-TB; se CD4 <50, iniciar em 2 semanas',
+      'Notificação compulsória imediata (até 24h) — estratégia TDO obrigatória no SUS',
+    ],
+    pdfUrl: 'https://bvsms.saude.gov.br/bvs/publicacoes/manual_recomendacoes_controle_tuberculose_brasil_2_ed.pdf',
+    tags: ['Manual MS 2ª ed.', 'Notificação compulsória', 'Alta frequência em prova'],
+    imgSus: null,
+    imgNota: null,
+  },
+  {
+    id: 'hipertensao',
+    titulo: 'Hipertensão Arterial Sistêmica',
+    subtitulo: '7ª Diretriz SBH / Linha de Cuidado MS · 2024',
+    categoria: 'Cardiologia',
+    relevancia: 3,
+    pontos: [
+      'Diagnóstico: PA ≥140/90 mmHg em ≥2 aferições em ≥2 ocasiões — ou PA ≥180/110 na 1ª consulta',
+      'PA normal: <120/80; Pré-HAS: 120–139/80–89 mmHg (risco aumentado)',
+      'Iniciar fármaco: PA ≥140/90 em risco baixo-moderado; ≥130/80 em alto risco (DM, DRC, DCV estabelecida)',
+      'Primeira linha: IECA ou BRA + BCC di-hidropiridínico + Tiazídico/tiazídico-símile (clortalidona preferida)',
+      'HAS + DM ou DRC com proteinúria: IECA ou BRA obrigatório',
+      'HAS resistente: 4 drogas incluindo espironolactona 25–50 mg/dia → suspeitar HAS secundária',
+      'Crise hipertensiva: urgência (s/ lesão orgânica) — reduzir 25% em 24h; emergência — nitroprussiato IV',
+    ],
+    pdfUrl: 'https://www.gov.br/conitec/pt-br/midias/protocolos/pcdt-hipertensao-arterial-sistemica.pdf',
+    tags: ['PCDT CONITEC 2025', 'Alta frequência'],
+    imgSus: null,
+    imgNota: null,
+  },
+  {
+    id: 'diabetes',
+    titulo: 'Diabetes Mellitus Tipo 2',
+    subtitulo: 'PCDT DM2 · MS 2022 + SBD 2024',
+    categoria: 'Endocrinologia',
+    relevancia: 3,
+    pontos: [
+      'Diagnóstico: glicemia jejum ≥126 mg/dL (x2), TOTG-2h ≥200, HbA1c ≥6,5% ou glicemia aleatória ≥200 + sintomas',
+      'Meta glicêmica geral: HbA1c <7%; idosos frágeis/comorbilidades: <8%; gravidez: <6%',
+      'Início: Metformina 500 mg/dia (se TFG ≥30) — titular até 2g/dia',
+      'Se DCV estabelecida ou alto risco: adicionar ISGLT-2 (empagliflozina, dapagliflozina) ou GLP-1 RA',
+      'Se IC ou DRC: ISGLT-2 preferencial (reduz hospitalizações e progressão renal)',
+      'Se obesidade predominante: GLP-1 RA (semaglutida, liraglutida)',
+      'Rastreamento: retina (anual), microalbuminúria (anual), neuropatia, pé diabético — a partir do diagnóstico',
+    ],
+    pdfUrl: 'https://www.gov.br/conitec/pt-br/midias/protocolos/PCDTDM2.pdf',
+    tags: ['PCDT CONITEC 2024', 'SBD 2024', 'Alta frequência'],
+    imgSus: null,
+    imgNota: null,
+  },
+  {
+    id: 'dpoc',
+    titulo: 'DPOC',
+    subtitulo: 'PCDT DPOC · MS 2022 + GOLD 2024',
+    categoria: 'Pneumologia',
+    relevancia: 3,
+    pontos: [
+      'Diagnóstico espirométrico: VEF₁/CVF < 0,70 pós broncodilatador (critério fixo GOLD)',
+      'Classificação GOLD: I (VEF₁≥80%), II (50–79%), III (30–49%), IV (<30%)',
+      'Grupos GOLD 2024: A (poucos sintomas, baixo risco) · B (mais sintomas/exacerbação)',
+      'Tratamento grupo B: LABA + LAMA desde o início (dupla broncodilatação); adicionar ICS se eosinófilos ≥300/μL ou asma coexistente',
+      'Exacerbação moderada-grave: salbutamol + ipratrópio nebulizados, corticoide sistêmico 40mg/5 dias, ATB se expectora purulentas + dispneia ou ↑secreção',
+      'O₂ domiciliar: PaO₂ ≤55 mmHg ou SpO₂ ≤88% — ≥15 h/dia; meta SpO₂ 88–92% (cuidado com hipercapnia)',
+      'Reabilitação pulmonar: indicada grupos B — maior impacto na dispneia e qualidade de vida',
+    ],
+    pdfUrl: 'https://www.gov.br/saude/pt-br/assuntos/saude-de-a-a-z/d/dpoc',
+    tags: ['PCDT 2022', 'GOLD 2024', 'Espirometria'],
+    imgSus: null,
+    imgNota: null,
+  },
+  {
+    id: 'sepse',
+    titulo: 'Sepse e Choque Séptico',
+    subtitulo: 'Protocolo Sepse MS · Surviving Sepsis Campaign 2021',
+    categoria: 'Urgência',
+    relevancia: 3,
+    pontos: [
+      'Sepse-3: disfunção orgânica (SOFA ≥2) ameaçadora à vida por resposta desregulada à infecção',
+      'Choque séptico: sepse + vasopressor + lactato >2 mmol/L (mortalidade >40%)',
+      'qSOFA (triagem): FR ≥22 ipm + alt. consciência + PAS ≤100 mmHg — 2 critérios = investigar',
+      'Bundle 1h: hemoculturas (≥2 pares) → lactato → antibiótico de amplo espectro → cristaloide 30 mL/kg se hipoperfusão',
+      'Antibiótico em ≤1h: empiricamente baseado no foco + flora local (β-lactâmico antipseudomonas ± cobertura gram-positiva)',
+      'Vasopressor: noradrenalina 1ª escolha, PAM alvo ≥65 mmHg; adicionar vasopressina se dose alta',
+      'Hidrocortisona 200 mg/dia: choque refratário a noradrenalina >0,25 μg/kg/min',
+    ],
+    pdfUrl: 'https://www.gov.br/saude/pt-br/assuntos/saude-de-a-a-z/s/sepse',
+    tags: ['Sepse-3', 'Bundle 1h', 'UTI'],
+    imgSus: null,
+    imgNota: null,
+  },
+  {
+    id: 'prenatal',
+    titulo: 'Pré-natal de Baixo Risco',
+    subtitulo: 'Atenção ao Pré-natal · MS 2022 (PHPN)',
+    categoria: 'Saúde da Mulher',
+    relevancia: 3,
+    pontos: [
+      'Mínimo 6 consultas: 1 no 1º tri (até 12 sem), 2 no 2º tri, 3 no 3º tri — meta: 7+ consultas',
+      'Exames obrigatórios 1ª consulta: hemograma, tipagem sanguínea, sorologia HIV/sífilis/HBV/toxoplasmose, urina I, glicemia, citopatológico, US morfológico',
+      'Sulfato ferroso 40 mg/dia + ácido fólico 5 mg/dia: iniciar antes ou logo na 1ª consulta',
+      'Rastreio pré-eclâmpsia 1º tri (combinado): PA, Doppler uterino, PAPP-A, PlGF — se risco ≥1:100: AAS 150 mg/dia até 36 sem',
+      'Vacinação: dTpa (27–36 sem a cada gestação) + influenza (qualquer trimestre) + hepatite B (se não imunizada)',
+      'Classificação de risco: PHPN define encaminhamento ao pré-natal de alto risco (HAS, DM, gemelar, histórico de prematuridade)',
+    ],
+    pdfUrl: 'https://bvsms.saude.gov.br/bvs/publicacoes/cadernos_atencao_basica_32_prenatal.pdf',
+    tags: ['CAB nº32', 'Atenção Básica', 'Obrigatório prova'],
+    imgSus: null,
+    imgNota: null,
+  },
+  {
+    id: 'hanseniase',
+    titulo: 'Hanseníase',
+    subtitulo: 'PCDT · PT SCTIE/MS nº 67, 07/07/2022',
+    categoria: 'Infectologia',
+    relevancia: 3,
+    pontos: [
+      '3 sinais cardinais: lesão/área com alt. sensibilidade (térmica/dolorosa/tátil) + espessamento de nervo periférico + M. leprae em baciloscopia ou biópsia',
+      'Classificação operacional: Paucibacilar (PB) = 1–5 lesões + baciloscopia negativa; Multibacilar (MB) = >5 lesões ou baciloscopia positiva',
+      'Formas clínicas (Madrid): Indeterminada → Tuberculoide (polo resistente) → Dimorfa (forma mais incapacitante) → Virchowiana (polo susceptível, alta carga bacilar)',
+      'Tratamento PQT-U: Rifampicina + Dapsona + Clofazimina — PB: 6 meses; MB: 12 meses (não prorrogável)',
+      'Reação tipo 1 (Reversa): dimorfos, mediada Th1 → Prednisona; Reação tipo 2 (ENH): MB/virchowiana → Talidomida (absolutamente contraindicada na gestação)',
+      'Notificação compulsória — principal doença NC que causa incapacidade física permanente no Brasil',
+      'Contatos domiciliares dos últimos 5 anos: avaliação clínica + BCG (se não vacinado ou apenas 1 dose)',
+      'Investigar resistência primária: se IB >2,0 no diagnóstico ou IB inalterado/aumentado ao fim da PQT-U',
+    ],
+    pdfUrl: 'https://www.gov.br/conitec/pt-br/midias/protocolos/20220818_pcdt_hanseniase.pdf',
+    tags: ['PCDT 2022', 'Notificação compulsória', 'Incapacidade física'],
+    imgSus: null,
+    imgNota: null,
+  },
+  {
+    id: 'hiv-criancas',
+    titulo: 'HIV em Crianças e Adolescentes',
+    subtitulo: 'PCDT Módulo 2 · PT SAES/SECTICS/MS nº 75, 28/12/2023',
+    categoria: 'Infectologia',
+    relevancia: 3,
+    pontos: [
+      'TARV indicada para TODOS os pacientes independente de CD4, carga viral ou estágio clínico — iniciar precocemente sem esperar genotipagem',
+      'Genotipagem pré-TARV obrigatória (RENAGENO) — não atrasar início, ajustar esquema depois conforme resultado',
+      'Esquema inicial: 2 ITRN + INI preferencial — Dolutegravir 5 mg dispersível a partir do 2º mês de vida (peso ≥3 kg)',
+      'Faixas etárias: 1º mês → AZT+3TC+RAL; 2 meses–3 anos → ABC+3TC+DTG; >6 anos/20kg → TDF+3TC+DTG 50mg',
+      'Falha virológica: 2 CV detectáveis, intervalo de 4 semanas, última CV >500 cópias/mL → genotipagem RENAGENO',
+      'Revelação diagnóstica individualizada; adolescente ≥12 anos pode realizar e conhecer resultado sem responsável se tiver discernimento',
+      'PEP: até 72h após exposição, 28 dias; PrEP: ≥15 anos, peso ≥35 kg, sexualmente ativo com risco aumentado',
+      'Transição pediátrica→adulto: gradual, não definida só por idade — avaliar maturidade, autocuidado e adesão',
+    ],
+    pdfUrl: 'https://www.gov.br/conitec/pt-br/midias/protocolos/protocolo-clinico-e-diretrizes-terapeuticas-para-manejo-da-infeccao-pelo-hiv-em-criancas-e-adolescentes-modulo-2-diagnostico-manejo-e-tratamento-de-criancas-e-adolescentes-vivendo-com-hiv.pdf',
+    tags: ['PCDT 2023', 'Pediatria', 'TARV'],
+    imgSus: null,
+    imgNota: null,
+  },
+  {
+    id: 'rcu',
+    titulo: 'Retocolite Ulcerativa',
+    subtitulo: 'PCDT · PT SAES/SECTICS/MS nº 9, 12/09/2024',
+    categoria: 'Gastroenterologia',
+    relevancia: 3,
+    pontos: [
+      'Diagnóstico: clínico + colonoscopia (acometimento contínuo desde a margem anal) + histopatologia (distorção de criptas + plasmocitose basal)',
+      'Extensão (Montreal): Proctite (limitada ao reto) | Colite esquerda (até flexura esplênica) | Pancolite (proximal à flexura)',
+      'Gravidade (Truelove-Witts): Leve (<3 evac/dia ± sangue, VSG normal) | Moderada (>4, mínimo sistêmico) | Grave (>6 + sangue + febre/taquicardia/anemia/VSG>30)',
+      'Colite aguda grave: Hidrocortisona 100 mg IV 6/6h por 7–10 dias; critério de Oxford no 3º dia: >8 evac/dia + PCR>45 mg/dL = 85% risco de colectomia',
+      'Biológicos (moderada-grave refratária a sintéticos): Infliximabe 5 mg/kg (sem 0, 2, 6 → a cada 8 sem) ou Vedolizumabe 300 mg',
+      'Tofacitinibe (JAKi oral): falha/toxicidade a sintético convencional OU a biológico — contraindicado <18 anos e gestação',
+      'Manutenção: mesalazina ou sulfassalazina VO; azatioprina 2–2,5 mg/kg/dia se >2 agudizações/ano ou dependência de corticoide',
+      'Ciclosporina IV 2 mg/kg/dia: alternativa ao infliximabe na colite grave refratária a corticoide IV',
+    ],
+    pdfUrl: 'https://www.gov.br/conitec/pt-br/midias/protocolos/pcdt-de-retocolite-ulcerativa',
+    tags: ['PCDT 2024', 'DII', 'Truelove-Witts'],
+    imgSus: null,
+    imgNota: null,
+  },
+];
+
+// ──────────────────────────────────────────────
+// STATE
+// ──────────────────────────────────────────────
+let cartilhas = [];
+let currentFilter = 'all';
+let pendingImgCardId = null;
+let pendingImgType = null;  // 'sus' | 'nota'
+
+function loadState() {
+  try {
+    const saved = localStorage.getItem('cartilhas-ms-v3');
+    if (saved) {
+      cartilhas = JSON.parse(saved);
+    } else {
+      cartilhas = JSON.parse(JSON.stringify(defaultData));
+    }
+  } catch(e) {
+    cartilhas = JSON.parse(JSON.stringify(defaultData));
+  }
+}
+
+function saveState() {
+  try {
+    localStorage.setItem('cartilhas-ms-v3', JSON.stringify(cartilhas));
+  } catch(e) {
+    alert('⚠️ Armazenamento local cheio. Exporte seus dados antes de adicionar mais imagens.');
+  }
+}
+
+// ──────────────────────────────────────────────
+// RENDER
+// ──────────────────────────────────────────────
+function getStyle(cat) {
+  return catStyles[cat] || catStyles['Outras'];
+}
+
+function renderStars(n) {
+  return Array.from({length: 3}, (_,i) =>
+    `<span class="star" style="opacity:${i < n ? 1 : 0.2}">★</span>`
+  ).join('');
+}
+
+function renderCard(c) {
+  const st = getStyle(c.categoria);
+  const pontos = (c.pontos || []).map(p =>
+    `<li>${p}</li>`
+  ).join('');
+  const tags = (c.tags || []).map(t =>
+    `<span class="tag">${t}</span>`
+  ).join('');
+  const pdfBtn = c.pdfUrl
+    ? `<a class="btn btn-pdf" href="${c.pdfUrl}" target="_blank" rel="noopener">📄 Cartilha MS</a>`
+    : `<button class="btn btn-outline" onclick="setPdf('${c.id}')">+ PDF</button>`;
+
+  // SUS image zone
+  const susZone = c.imgSus
+    ? `<div class="img-zone has-image" onclick="openImgZone('${c.id}','sus')">
+         <img src="${c.imgSus}" alt="Infográfico SUS">
+         <span class="zone-type-badge">🏥 Infográfico SUS</span>
+         <div class="zone-overlay">
+           <button onclick="event.stopPropagation();removeImg('${c.id}','sus')">🗑 Remover</button>
+           <button onclick="event.stopPropagation();openImgZone('${c.id}','sus')">↺ Trocar</button>
+         </div>
+       </div>`
+    : `<div class="img-zone" onclick="openImgZone('${c.id}','sus')">
+         <span class="zone-icon">🏥</span>
+         <span class="zone-label">Infográfico SUS</span>
+         <span class="zone-hint">Clique para adicionar</span>
+       </div>`;
+
+  // Nota zone
+  const notaZone = c.imgNota
+    ? `<div class="img-zone has-image" onclick="openImgZone('${c.id}','nota')">
+         <img src="${c.imgNota}" alt="Anotação pessoal">
+         <span class="zone-type-badge">✏️ Minha anotação</span>
+         <div class="zone-overlay">
+           <button onclick="event.stopPropagation();removeImg('${c.id}','nota')">🗑 Remover</button>
+           <button onclick="event.stopPropagation();openImgZone('${c.id}','nota')">↺ Trocar</button>
+         </div>
+       </div>`
+    : `<div class="img-zone" onclick="openImgZone('${c.id}','nota')">
+         <span class="zone-icon">✏️</span>
+         <span class="zone-label">Minha anotação</span>
+         <span class="zone-hint">Foto, desenho ou scan</span>
+       </div>`;
+
+  const hidden = (currentFilter !== 'all' && currentFilter !== c.categoria) ? 'card-hidden' : '';
+
+  return `
+  <article class="card ${hidden}" id="card-${c.id}" data-cat="${c.categoria}" style="animation-delay:${Math.random()*0.18}s">
+    <div class="card-accent" style="background:${st.color}"></div>
+    <div class="card-header">
+      <div>
+        <span class="cat-badge" style="background:${st.bg};color:${st.color}">${st.icon} ${c.categoria}</span>
+      </div>
+      <div class="card-titles">
+        <div class="card-title">${c.titulo}</div>
+        <div class="card-subtitle">${c.subtitulo || ''}</div>
+      </div>
+      <div class="card-relevance">${renderStars(c.relevancia || 3)}</div>
+    </div>
+
+    <div class="card-section">
+      <div class="section-label">
+        <span class="section-icon">📋</span> Pontos-chave para prova
+      </div>
+      <ul class="key-points">${pontos}</ul>
+    </div>
+
+    <div class="card-images">
+      ${susZone}
+      ${notaZone}
+    </div>
+
+    <div class="card-footer">
+      <div class="card-tags">${tags}</div>
+      <div class="footer-actions">
+        ${pdfBtn}
+        <button class="btn btn-outline" onclick="deleteCard('${c.id}')" title="Remover cartilha">✕</button>
+      </div>
+    </div>
+  </article>`;
+}
+
+function render() {
+  const grid = document.getElementById('cardsGrid');
+  const filtered = currentFilter === 'all'
+    ? cartilhas
+    : cartilhas.filter(c => c.categoria === currentFilter);
+
+  if (filtered.length === 0) {
+    grid.innerHTML = `<div class="empty-state">
+      <div class="icon">📂</div>
+      <p>Nenhuma cartilha nesta categoria.<br>Clique em <strong>+</strong> para adicionar.</p>
+    </div>`;
+  } else {
+    grid.innerHTML = cartilhas.map(renderCard).join('');
+  }
+  updateStats();
+}
+
+function updateStats() {
+  document.getElementById('stat-total').textContent = cartilhas.length;
+  document.getElementById('stat-imagens').textContent =
+    cartilhas.filter(c => c.imgSus || c.imgNota).length;
+  document.getElementById('stat-pdfs').textContent =
+    cartilhas.filter(c => c.pdfUrl).length;
+}
+
+// ──────────────────────────────────────────────
+// FILTER
+// ──────────────────────────────────────────────
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentFilter = btn.dataset.cat;
+    render();
+  });
+});
+
+// ──────────────────────────────────────────────
+// IMAGE UPLOAD
+// ──────────────────────────────────────────────
+const imgInput = document.getElementById('imgInput');
+
+function openImgZone(id, type) {
+  pendingImgCardId = id;
+  pendingImgType = type;
+  imgInput.click();
+}
+
+imgInput.addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (!file || !pendingImgCardId) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const card = cartilhas.find(c => c.id === pendingImgCardId);
+    if (!card) return;
+    if (pendingImgType === 'sus') card.imgSus = ev.target.result;
+    else card.imgNota = ev.target.result;
+    saveState();
+    render();
+    pendingImgCardId = null;
+    pendingImgType = null;
+    imgInput.value = '';
+  };
+  reader.readAsDataURL(file);
+});
+
+function removeImg(id, type) {
+  const card = cartilhas.find(c => c.id === id);
+  if (!card) return;
+  if (type === 'sus') card.imgSus = null;
+  else card.imgNota = null;
+  saveState();
+  render();
+}
+
+// ──────────────────────────────────────────────
+// MODAL
+// ──────────────────────────────────────────────
+function openAddModal() {
+  document.getElementById('addModal').classList.add('open');
+  document.getElementById('f-titulo').focus();
+}
+function closeModal() {
+  document.getElementById('addModal').classList.remove('open');
+  ['f-titulo','f-subtitulo','f-pontos','f-pdf','f-tags'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('f-categoria').value = 'Infectologia';
+  document.getElementById('f-relevancia').value = '3';
+}
+document.getElementById('addModal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeModal();
+});
+
+function addCard() {
+  const titulo = document.getElementById('f-titulo').value.trim();
+  if (!titulo) { alert('Por favor, informe o título.'); return; }
+  const id = 'card-' + Date.now();
+  const pontosRaw = document.getElementById('f-pontos').value.trim();
+  const pontos = pontosRaw ? pontosRaw.split('\n').map(p => p.trim()).filter(Boolean) : [];
+  const tagsRaw = document.getElementById('f-tags').value.trim();
+  const tags = tagsRaw ? tagsRaw.split(',').map(t => t.trim()).filter(Boolean) : [];
+  const newCard = {
+    id,
+    titulo,
+    subtitulo: document.getElementById('f-subtitulo').value.trim(),
+    categoria: document.getElementById('f-categoria').value,
+    relevancia: parseInt(document.getElementById('f-relevancia').value),
+    pontos,
+    pdfUrl: document.getElementById('f-pdf').value.trim(),
+    tags,
+    imgSus: null,
+    imgNota: null,
+  };
+  cartilhas.push(newCard);
+  saveState();
+  closeModal();
+  render();
+}
+
+// ──────────────────────────────────────────────
+// DELETE
+// ──────────────────────────────────────────────
+function deleteCard(id) {
+  if (!confirm('Remover esta cartilha?')) return;
+  cartilhas = cartilhas.filter(c => c.id !== id);
+  saveState();
+  render();
+}
+
+// ──────────────────────────────────────────────
+// SET PDF
+// ──────────────────────────────────────────────
+function setPdf(id) {
+  const url = prompt('Cole o link do PDF ou página oficial:');
+  if (!url) return;
+  const card = cartilhas.find(c => c.id === id);
+  if (card) { card.pdfUrl = url; saveState(); render(); }
+}
+
+// ──────────────────────────────────────────────
+// EXPORT / IMPORT
+// ──────────────────────────────────────────────
+function exportData() {
+  const blob = new Blob([JSON.stringify(cartilhas, null, 2)], {type: 'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `cartilhas-ms-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+}
+function importData(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const data = JSON.parse(ev.target.result);
+      if (!Array.isArray(data)) throw new Error();
+      if (!confirm(`Importar ${data.length} cartilhas? Isso substituirá os dados atuais.`)) return;
+      cartilhas = data;
+      saveState();
+      render();
+    } catch(err) {
+      alert('Arquivo inválido.');
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+}
+
+// ──────────────────────────────────────────────
+// INIT
+// ──────────────────────────────────────────────
+loadState();
+render();
+</script>
+</body>
+</html>

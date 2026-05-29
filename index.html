@@ -321,7 +321,6 @@
   <div class="nav-links">
     <button class="nav-link active" onclick="scrollToSection('home',this)">Início</button>
     <button class="nav-link" onclick="scrollToSection('library',this)">Biblioteca</button>
-    <button class="nav-link" onclick="scrollToSection('mapas',this)">Mapas Mentais</button>
     <button class="nav-link" onclick="scrollToSection('links',this)">Links</button>
     <a href="/mystudy/assistente.html" class="nav-link" style="background:linear-gradient(135deg,var(--rose-light),var(--lavender-light));border:1px solid var(--lavender);color:var(--text-dark);text-decoration:none;font-weight:500;">🤖 IA</a>
   </div>
@@ -348,7 +347,7 @@
       <button class="subject-chip" style="background:var(--pos-bg);border-color:var(--pos);color:var(--pos);" onclick="goToLibrary('pos')"><div class="chip-dot" style="background:var(--pos)"></div>PÓS</button>
       <button class="subject-chip" style="background:var(--psa-bg);border-color:var(--psa);color:var(--psa);" onclick="goToLibrary('psa')"><div class="chip-dot" style="background:var(--psa)"></div>PSA</button>
       <button class="subject-chip" style="background:var(--geral-bg);border-color:var(--geral);color:var(--geral);" onclick="goToLibrary('geral')"><div class="chip-dot" style="background:var(--geral)"></div>Geral</button>
-      <button class="subject-chip" style="background:#f5e8e8;border-color:#d4a5a5;color:var(--gineco);" onclick="scrollToSection('mapas',null)"><div class="chip-dot" style="background:#d4a5a5"></div>Mapas Mentais</button>
+      <button class="subject-chip" style="background:#f5e8e8;border-color:#d4a5a5;color:var(--gineco);" onclick="goToLibrary('mapas')"><div class="chip-dot" style="background:#d4a5a5"></div>Mapas Mentais</button>
       <button class="subject-chip" style="background:#e8f0e8;border-color:#6a9e60;color:#4a7040;" onclick="scrollToSection('links',null)"><div class="chip-dot" style="background:#6a9e60"></div>Links & Recursos</button>
       <a href="/mystudy/assistente.html" class="subject-chip" style="background:linear-gradient(135deg,var(--rose-light),var(--lavender-light));border-color:var(--lavender);color:var(--text-dark);text-decoration:none;font-weight:500;"><div class="chip-dot" style="background:var(--lavender)"></div>Assistente IA ✨</a>
     </div>
@@ -368,95 +367,13 @@
     <button class="filter-btn" data-cat="gineco" onclick="filterCategory('gineco',this)"><div class="filter-dot" style="background:var(--gineco)"></div>GO</button>
     <button class="filter-btn" data-cat="pediatria" onclick="filterCategory('pediatria',this)"><div class="filter-dot" style="background:var(--pediatria)"></div>Pediatria</button>
     <button class="filter-btn" data-cat="geral" onclick="filterCategory('geral',this)"><div class="filter-dot" style="background:var(--geral)"></div>Geral</button>
+    <button class="filter-btn" data-cat="mapas" onclick="filterCategory('mapas',this)"><div class="filter-dot" style="background:#d4a5a5"></div>Mapas Mentais</button>
     <div class="filter-spacer"></div>
     <div class="search-box"><span style="color:var(--text-light);font-size:13px">🔍</span><input type="text" placeholder="Buscar..." id="searchInput" oninput="renderCards()"></div>
   </div>
   <div class="library-meta"><div class="total-count" id="totalCount"></div></div>
   <div class="cards-grid" id="cardsGrid"></div>
 </section>
-
-<div class="section-divider"><div class="divider-label">Mapas <span>Mentais</span></div></div>
-
-<section id="mapas">
-  <div class="mapas-header">
-    <div>
-      <div class="mapas-main-title">Minha coleção de <span>Mapas Mentais</span></div>
-      <div class="mapas-count" id="mapasCount"></div>
-    </div>
-    <div class="mapas-actions">
-      <button class="btn-action" onclick="exportEdits()">💾 Exportar edições</button>
-      <button class="btn-action" onclick="document.getElementById('importInput').click()">📂 Importar</button>
-      <button class="btn-add-mapa" onclick="openMapaModal(null,'new')">＋ Adicionar mapa</button>
-      <input type="file" id="importInput" accept=".json" style="display:none" onchange="importEdits(event)">
-    </div>
-  </div>
-
-  <div class="mapas-filter-bar">
-    <div class="mapas-search"><span style="color:var(--text-light);font-size:13px">🔍</span><input type="text" placeholder="Buscar mapa mental..." id="mapasSearch" oninput="renderMapas()"></div>
-    <select class="area-filter" id="mapasArea" onchange="renderMapas()">
-      <option value="">Todas as áreas</option>
-      <option value="Clínica Médica">Clínica Médica</option>
-      <option value="Cirurgia">Cirurgia</option>
-      <option value="Preventiva">Preventiva</option>
-      <option value="GO">GO</option>
-      <option value="Pediatria">Pediatria</option>
-      <option value="PÓS">PÓS</option>
-      <option value="PSA">PSA</option>
-      <option value="Geral">Geral</option>
-    </select>
-  </div>
-
-  <div id="mapasList"></div>
-</section>
-
-<!-- MODAL -->
-<div class="overlay" id="mapaOverlay" onclick="closeOnOverlay(event)">
-  <div class="modal">
-    <button class="modal-close" onclick="closeMapaModal()">✕</button>
-    <div class="modal-title" id="mapaModalTitle">Editar Mapa Mental</div>
-    <div class="modal-sub">Cole o link e ajuste as informações</div>
-    <input type="hidden" id="mapaEditId">
-    <input type="hidden" id="mapaEditType">
-    <div class="form-group">
-      <label class="form-label">Nome do mapa mental</label>
-      <input type="text" class="form-input" id="mapaNome" placeholder="Ex: Ciclo Cardíaco">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Área</label>
-      <select class="form-select" id="mapaArea">
-        <option value="Clínica Médica">Clínica Médica</option>
-        <option value="Cirurgia">Cirurgia</option>
-        <option value="Preventiva">Preventiva</option>
-        <option value="GO">GO</option>
-        <option value="Pediatria">Pediatria</option>
-        <option value="PÓS">PÓS</option>
-        <option value="PSA">PSA</option>
-        <option value="Geral">Geral</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Subárea</label>
-      <input type="text" class="form-input" id="mapaSubarea" placeholder="Ex: Cardiologia">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Link</label>
-      <input type="text" class="form-input" id="mapaLink" placeholder="https://drive.google.com/... ou OneDrive..." oninput="previewLink()">
-      <div class="form-hint">✅ Google Drive · OneDrive · qualquer link de imagem</div>
-      <div class="link-preview" id="linkPreview">
-        <img id="linkPreviewImg" src="" alt="preview" onerror="this.parentElement.classList.remove('show')">
-      </div>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Anotações (opcional)</label>
-      <textarea class="form-textarea" id="mapaNote" placeholder="Observações sobre este mapa..."></textarea>
-    </div>
-    <div class="modal-actions">
-      <button class="btn-danger" id="btnDel" onclick="delMapa()" style="display:none">🗑 Excluir</button>
-      <button class="btn-secondary" onclick="closeMapaModal()">Cancelar</button>
-      <button class="btn-primary" onclick="saveMapa()">Salvar</button>
-    </div>
-  </div>
-</div>
 
 <div class="section-divider"><div class="divider-label">Links & <span>Recursos</span></div></div>
 
@@ -574,9 +491,70 @@
     {name:'PSA Board',category:'psa',file:'psa-board.html',desc:'Controle de pacientes da sala de medicação com cópia para WhatsApp',type:'local'},
     {name:'Cardiotocografia',category:'gineco',file:'ctg_tutorial_v2.html',desc:'Tutorial de cardiotocografia fetal',type:'local'},
     {name:'Caderno de Erros',category:'geral',file:'erros_prova.html',desc:'Registro e revisão dos erros de prova',type:'local'},
+    {name:'Flash Card',category:'geral',file:'flashcard-med.html',desc:'Flashcards para revisão rápida de conteúdo',type:'local'},
+    {name:'Protocolos',category:'geral',file:'cartilhas-ms.html',desc:'Protocolos e cartilhas do Ministério da Saúde',type:'local'},
     {name:'Evolução do SUS',category:'preventiva',file:'sus-timeline.html',desc:'Timeline da evolução histórica do SUS',type:'local'},
     {name:'SUS — Notificações, Calendário Vacinal e Rastreamento',category:'preventiva',file:'sus- notificacao, calendario, rastreamento.html',desc:'Notificação, calendário vacinal e rastreamento',type:'local'},
     {name:'Atenção Básica de Saúde',category:'preventiva',file:'atencao_basica_saude.html',desc:'Atenção básica e cuidados primários em saúde',type:'local'},
+    {name:'DNPM em Pediatria',category:'pediatria',file:'marco-DNPM.html',desc:'Marcos do desenvolvimento neuropsicomotor',type:'local'},
+    // MAPAS MENTAIS
+    {name:'Período Neonatal — Metabólico',category:'mapas',file:'https://drive.google.com/file/d/1J2lS3Jo2bU79rxSJoyuPCWx0sR6b7TyS/view',desc:'Pediatria · Neonatologia',type:'mapa'},
+    {name:'Período Neonatal — Infecções',category:'mapas',file:'https://drive.google.com/file/d/1C--LIR6AH0ICdhUldjCZtYGABIArOo78/view',desc:'Pediatria · Neonatologia',type:'mapa'},
+    {name:'Doença Hematológica do RN',category:'mapas',file:'https://drive.google.com/file/d/1ROmBLUUTyVjK_S8OV4iZjb5SUk2G71bj/view',desc:'Pediatria · Neonatologia',type:'mapa'},
+    {name:'Distúrbio Metabólico do RN',category:'mapas',file:'https://drive.google.com/file/d/1aLjDWOHV3Y06Q_p6jjJdvR1NSclNH7pb/view',desc:'Pediatria · Neonatologia',type:'mapa'},
+    {name:'Distúrbio Respiratório do RN',category:'mapas',file:'https://drive.google.com/file/d/1d5dCldcxS1ZYgQMWDC_hANuaAOEm6JvY/view',desc:'Pediatria · Neonatologia',type:'mapa'},
+    {name:'Sala de Parto',category:'mapas',file:'https://drive.google.com/file/d/1r16Oh6xEU2hcebRpZF8f2gYMBNNj485Q/view',desc:'Pediatria · Neonatologia',type:'mapa'},
+    {name:'Mapa Visual Triagem Neo',category:'mapas',file:'https://drive.google.com/file/d/1wc9twIqf4twc0IiB-6kQZV7WamJknwAI/view',desc:'Pediatria · Triagem Neonatal',type:'mapa'},
+    {name:'Teste do Pezinho',category:'mapas',file:'https://drive.google.com/file/d/1Tvz3NOWptNVbGgZsic1-hJHtycZUUQGx/view',desc:'Pediatria · Triagem Neonatal',type:'mapa'},
+    {name:'Teste da Orelhinha (2)',category:'mapas',file:'https://drive.google.com/file/d/1JciRgmnspci5h2l3humXq1vXXow6SjS9/view',desc:'Pediatria · Triagem Neonatal',type:'mapa'},
+    {name:'Triagem Neonatal (1)',category:'mapas',file:'https://drive.google.com/file/d/1LGxb4Z78FWjUYslSdtSYLXILr_s-q2We/view',desc:'Pediatria · Triagem Neonatal',type:'mapa'},
+    {name:'Triagem Neonatal (2)',category:'mapas',file:'https://drive.google.com/file/d/1drzjw3VjXlY8RSPfp-cZrwUU8cs5sFxd/view',desc:'Pediatria · Triagem Neonatal',type:'mapa'},
+    {name:'Sopro Cardíaco',category:'mapas',file:'https://drive.google.com/file/d/1d57avFfxnwb1D-Sv5YKusifuwtTrNrA-/view',desc:'Clínica Médica · Cardiologia',type:'mapa'},
+    {name:'Bulhas Cardíacas',category:'mapas',file:'https://drive.google.com/file/d/1Y44owE617fskd0Y4wgPmFKwTzr48LK5c/view',desc:'Clínica Médica · Cardiologia',type:'mapa'},
+    {name:'Síndrome Coronariana Aguda',category:'mapas',file:'https://drive.google.com/file/d/1aDA7eMGnkCbSl8pTjBWAItYqMF6jqPYq/view',desc:'Clínica Médica · Cardiologia',type:'mapa'},
+    {name:'Insuficiência Cardíaca',category:'mapas',file:'https://drive.google.com/file/d/1mxDu1PGQ0MF_rmkpmgtvfWkippSeIlWy/view',desc:'Clínica Médica · Cardiologia',type:'mapa'},
+    {name:'Valvopatias e Cardiomiopatias',category:'mapas',file:'https://drive.google.com/file/d/1FlxfCtselyzn3JAA0CP6MyUXQdbKBaJf/view',desc:'Clínica Médica · Cardiologia',type:'mapa'},
+    {name:'Emergência Hipertensiva',category:'mapas',file:'https://drive.google.com/file/d/1cKHpVY4bXJmw9RUMapJ9XT1qu-7ZrAZ3/view',desc:'Clínica Médica · Cardiologia',type:'mapa'},
+    {name:'HAS Secundária',category:'mapas',file:'https://drive.google.com/file/d/1SZ5cfrTI2JiFPHmuLmB4OziSQsTNrhBw/view',desc:'Clínica Médica · Cardiologia',type:'mapa'},
+    {name:'Farmacoterapia HAS (1)',category:'mapas',file:'https://drive.google.com/file/d/1YDy6mpB7SWmbkLSLez0237DXldfvGm8s/view',desc:'Clínica Médica · Cardiologia',type:'mapa'},
+    {name:'Farmacoterapia HAS (2)',category:'mapas',file:'https://drive.google.com/file/d/19YulAAGhoVPycftksLuFtrxQDFV4_Zwp/view',desc:'Clínica Médica · Cardiologia',type:'mapa'},
+    {name:'HAS — Mapa Mental',category:'mapas',file:'https://drive.google.com/file/d/1fqYC2N9kjfpw4hIiKxrECdefytn1mGuY/view',desc:'Clínica Médica · Cardiologia',type:'mapa'},
+    {name:'Diagnóstico de HAS',category:'mapas',file:'https://drive.google.com/file/d/1h1lA5oHyj6WjGqjWUyMy_TNkt2QSGela/view',desc:'Clínica Médica · Cardiologia',type:'mapa'},
+    {name:'Arritmia, Bradi, PCR',category:'mapas',file:'https://drive.google.com/file/d/1-70YU4Fr5A7A04sAhp2Tc2w7MTDlDmzY/view',desc:'Clínica Médica · Cardiologia',type:'mapa'},
+    {name:'Arritmia — Conduta (1)',category:'mapas',file:'https://drive.google.com/file/d/1N1S3PO2AXSpfHxwjFhysxO0Pw2_tTD3m/view',desc:'Clínica Médica · Cardiologia',type:'mapa'},
+    {name:'Arritmias',category:'mapas',file:'https://drive.google.com/file/d/14fgI3GkGOwSMikzsVNdzSTdUOa5XexoN/view',desc:'Clínica Médica · Cardiologia',type:'mapa'},
+    {name:'Taquiarritmias (2)',category:'mapas',file:'https://drive.google.com/file/d/1T-cHF2oTjqUZHUemNteJ75pzY2RkSW_k/view',desc:'Clínica Médica · Cardiologia',type:'mapa'},
+    {name:'Guia Visual de ECG',category:'mapas',file:'https://drive.google.com/file/d/1a8qiG5wv4pgHRgvGQlqL2gNFtrvU3-GO/view',desc:'Clínica Médica · Cardiologia',type:'mapa'},
+    {name:'Pancreatite',category:'mapas',file:'https://drive.google.com/file/d/1FiHegqrm-IPDACS_1X6Fnyi2f4LMO3mj/view',desc:'Clínica Médica · Gastroenterologia',type:'mapa'},
+    {name:'Onco-Hemato',category:'mapas',file:'https://drive.google.com/file/d/1T4l5K1xxJcnewpjUSOu9LYtnFCPBjiYh/view',desc:'Clínica Médica · Onco-Hematologia',type:'mapa'},
+    {name:'Uso de Hemocomponentes no Trauma',category:'mapas',file:'https://drive.google.com/file/d/1XVtFeFcnQSJij91h_jz7boj5DlJT80Jv/view',desc:'Cirurgia · Trauma',type:'mapa'},
+    {name:'ATLS 11 — Atualizações',category:'mapas',file:'https://drive.google.com/file/d/12T_DkweY5hVXrj-mG1Vm9Z1CCtqRzWYR/view',desc:'Cirurgia · Trauma',type:'mapa'},
+    {name:'News ATLS',category:'mapas',file:'https://drive.google.com/file/d/1Amu3GQ-9kCBeNLjo6MPGOLtZlpjCTAMc/view',desc:'Cirurgia · Trauma',type:'mapa'},
+    {name:'Tromboelastograma',category:'mapas',file:'https://drive.google.com/file/d/171gT0uh9pcvYpW-c_m3HKPw0Y_BDrlvY/view',desc:'Cirurgia · Trauma',type:'mapa'},
+    {name:'Trauma Torácico',category:'mapas',file:'https://drive.google.com/file/d/1JYmk362NZroD2LZ7rGjeAYd0brBJVZNs/view',desc:'Cirurgia · Trauma',type:'mapa'},
+    {name:'Trauma de Face e Pescoço',category:'mapas',file:'https://drive.google.com/file/d/1LuE56AjjRx34zyucNFNOy14hklCspXxZ/view',desc:'Cirurgia · Trauma',type:'mapa'},
+    {name:'Abdome Agudo',category:'mapas',file:'https://drive.google.com/file/d/1UB5-YNTbfjLAbIL3-5PDCoPkXy4gbn-F/view',desc:'Cirurgia · Abdome',type:'mapa'},
+    {name:'Sd. Disfágica e Dispéptica',category:'mapas',file:'https://drive.google.com/file/d/12nMs6XtrDSBnhVOSbCdayaKwl24C_0o1/view',desc:'Cirurgia · TGI',type:'mapa'},
+    {name:'Disfagia e Dispepsia',category:'mapas',file:'https://drive.google.com/file/d/1kzTaZUXwTc9l_b5Nq1gweCHLKuNWH-81/view',desc:'Cirurgia · TGI',type:'mapa'},
+    {name:'Mapa Mental TGI',category:'mapas',file:'https://drive.google.com/file/d/1r6FeBiVLdP9BeGS3ncTp0PP_dRIFFaiX/view',desc:'Cirurgia · TGI',type:'mapa'},
+    {name:'Tumores TGI',category:'mapas',file:'https://drive.google.com/file/d/19FF9cILJYAMaHXWe5BPa3tpuW6TVtm6E/view',desc:'Cirurgia · TGI',type:'mapa'},
+    {name:'Tumores Estômago e Esôfago (1)',category:'mapas',file:'https://drive.google.com/file/d/1uOfkiS2nZi4MK5WwSHyFxZUmkMgHuNxa/view',desc:'Cirurgia · Oncologia',type:'mapa'},
+    {name:'CA Gástrico',category:'mapas',file:'https://drive.google.com/file/d/1QH-mCszhDSoA35YJAUSq74xQdgfkOKwx/view',desc:'Cirurgia · Oncologia',type:'mapa'},
+    {name:'Tumores Hepáticos',category:'mapas',file:'https://drive.google.com/file/d/1xpNDRfEV8RD5IPW2pNociFiQwQSb_6KP/view',desc:'Cirurgia · Oncologia',type:'mapa'},
+    {name:'Tumor Pancreático',category:'mapas',file:'https://drive.google.com/file/d/1PgNLdWr2wSE7HNjim7D0vjKjWBPGgcy5/view',desc:'Cirurgia · Oncologia',type:'mapa'},
+    {name:'CA Colorretal',category:'mapas',file:'https://drive.google.com/file/d/1Z6Gy4L3e2T2nXIghZW3A8K2rN_7XI2ol/view',desc:'Cirurgia · Oncologia',type:'mapa'},
+    {name:'Check-list Pólipos Colorretais',category:'mapas',file:'https://drive.google.com/file/d/1265Z9iJLQ5wZgzYKubAtqo4m9sKjZrkc/view',desc:'Cirurgia · Oncologia',type:'mapa'},
+    {name:'Técnica Cirúrgica (1)',category:'mapas',file:'https://drive.google.com/file/d/1qwF9cGyNN7FA8C9yzf8BJ5sWJj7vl3fr/view',desc:'Cirurgia · Técnica',type:'mapa'},
+    {name:'Financiamento do SUS (1)',category:'mapas',file:'https://drive.google.com/file/d/1qyR3Z47qC2iOuwHoAU070H1TvodrsyDp/view',desc:'Preventiva · SUS',type:'mapa'},
+    {name:'Financiamento do SUS (2)',category:'mapas',file:'https://drive.google.com/file/d/1K89PaYR8gE0Sr9sa-4E2tlZZDjMJwHmx/view',desc:'Preventiva · SUS',type:'mapa'},
+    {name:'Evolução do SUS (mapa)',category:'mapas',file:'https://drive.google.com/file/d/12DCJPvI4CGydoylueH7SnBoPKupc120x/view',desc:'Preventiva · SUS',type:'mapa'},
+    {name:'Aspectos Históricos do SUS (1)',category:'mapas',file:'https://drive.google.com/file/d/1nC3HVGsJj-u1CdrFNtJkDnPIndzIU9J3/view',desc:'Preventiva · SUS',type:'mapa'},
+    {name:'Aspectos Históricos do SUS (2)',category:'mapas',file:'https://drive.google.com/file/d/1l8QlrVBNR31ZWVgx6yHuUxdP4B4jcB48/view',desc:'Preventiva · SUS',type:'mapa'},
+    {name:'Princípios Básicos do SUS',category:'mapas',file:'https://drive.google.com/file/d/1Rz5lsPGhArJN11hGfUwUg73xNiA4U0gE/view',desc:'Preventiva · SUS',type:'mapa'},
+    {name:'Revisão — SUS e Suas Bases (1)',category:'mapas',file:'https://drive.google.com/file/d/1jILfg31ZZ8MjiLr9-UCjQ1FnLX3JOW_q/view',desc:'Preventiva · SUS',type:'mapa'},
+    {name:'Ciclo Menstrual',category:'mapas',file:'https://drive.google.com/file/d/1KUNcB_jLKNoYhmcz8vty8syR31FnjS1m/view',desc:'GO · Ginecologia',type:'mapa'},
+    {name:'Gráfico Fluxo Menstrual (1)',category:'mapas',file:'https://drive.google.com/file/d/1LBNLaTDwk8TuYm6NdQO3vymz9-OQZjTT/view',desc:'GO · Ginecologia',type:'mapa'},
+    {name:'Anatomia Pélvica',category:'mapas',file:'https://drive.google.com/file/d/1Ta65GLWg0p2YLxUAEhJGbgjTzmuM7DzR/view',desc:'GO · Anatomia',type:'mapa'},
   ];
 
   const categoryMeta={
@@ -584,6 +562,7 @@
     preventiva:{label:'Preventiva',color:'#4a7fa0'},gineco:{label:'GO',color:'#c26b80'},
     pediatria:{label:'Pediatria',color:'#7a5fa0'},psa:{label:'PSA',color:'#c4b5d4'},
     pos:{label:'PÓS',color:'#a8b89a'},geral:{label:'Geral',color:'#b0a898'},
+    mapas:{label:'Mapas Mentais',color:'#d4a5a5'},
   };
 
   // ── MAPAS FIXOS — links do Google Drive ──
@@ -755,192 +734,11 @@
     grid.innerHTML=filtered.map((f,i)=>{
       const meta=categoryMeta[f.category]||{label:f.category,color:'#b0a898'};
       const safe=f.file.replace(/'/g,"\\'");
-      const badge=f.file.startsWith('http')?`<span class="card-badge badge-lovable">Lovable ↗</span>`:`<span class="card-badge badge-local">Local</span>`;
+      const badge=f.type==='lovable'?`<span class="card-badge badge-lovable">Lovable ↗</span>`:f.type==='mapa'?`<span class="card-badge" style="background:#f5e8e8;color:#c26b80">🗺️ Drive</span>`:`<span class="card-badge badge-local">Local</span>`;
       return`<div class="file-card" style="animation-delay:${i*0.05}s" onclick="openFile('${safe}')"><div class="card-color-bar" style="background:${meta.color}"></div><div class="card-body"><div class="card-category">${meta.label}</div><div class="card-name">${f.name}</div><div class="card-desc">${f.desc||''}</div><div class="card-footer"><button class="card-open-btn" onclick="event.stopPropagation();openFile('${safe}')">Abrir ↗</button>${badge}</div></div></div>`;
     }).join('');
   }
   function openFile(url){window.open(url,'_blank');}
-
-  // ── RENDER MAPAS ──
-  function getMerged(){
-    const edits=loadEdits();
-    const newM=loadNew();
-    const merged=DEFAULT_MAPAS.map(m=>{const e=edits[m.id];return e?{...m,...e}:m;});
-    return[...merged,...newM];
-  }
-
-  function renderMapas(){
-    const query=document.getElementById('mapasSearch').value.toLowerCase();
-    const areaF=document.getElementById('mapasArea').value;
-    const edits=loadEdits();
-    const newM=loadNew();
-    const container=document.getElementById('mapasList');
-
-    let all=getMerged();
-    if(areaF)all=all.filter(m=>m.area===areaF);
-    if(query)all=all.filter(m=>m.nome.toLowerCase().includes(query)||(m.subarea||'').toLowerCase().includes(query)||(m.nota||'').toLowerCase().includes(query));
-
-    const withLink=all.filter(m=>m.link&&m.link.trim()).length;
-    document.getElementById('mapasCount').innerHTML=
-      `<strong>${all.length}</strong> mapas mentais · `+
-      `<span style="color:var(--olive)">${withLink} com imagem</span>`;
-
-    if(!all.length){container.innerHTML=`<div class="mapas-empty">✏️ Nenhum mapa encontrado.</div>`;return;}
-
-    const grouped={};
-    all.forEach(m=>{
-      if(!grouped[m.area])grouped[m.area]={};
-      const sub=m.subarea||'Geral';
-      if(!grouped[m.area][sub])grouped[m.area][sub]=[];
-      grouped[m.area][sub].push(m);
-    });
-
-    const areaOrder=['Clínica Médica','Cirurgia','Preventiva','GO','Pediatria','PÓS','PSA','Geral'];
-    let html='';
-
-    areaOrder.forEach(area=>{
-      if(!grouped[area])return;
-      const ac=areaColors[area]||areaColors['Geral'];
-      const totalArea=Object.values(grouped[area]).flat().length;
-      html+=`<div class="mapas-group">
-        <div class="mapas-group-header">
-          <div class="mapas-group-dot" style="background:${ac.dot}"></div>
-          <div class="mapas-group-name">${area}</div>
-          <span class="mapas-group-count">${totalArea}</span>
-        </div>`;
-
-      Object.keys(grouped[area]).forEach(sub=>{
-        const items=grouped[area][sub];
-        html+=`<div style="margin-bottom:20px">
-          <div class="subarea-label">${sub}</div>
-          <div class="mapas-grid">`;
-
-        items.forEach((m,i)=>{
-          const hasLink=!!(m.link&&m.link.trim());
-          const isNew=!!newM.find(x=>x.id===m.id);
-          const isEdited=!!(edits[m.id]);
-          const thumb=hasLink?getThumbnailUrl(m.link):null;
-          const safeLink=hasLink?(m.link).replace(/'/g,"\\'"):'';
-
-          // Badge
-          const badge=isNew
-            ?`<span class="mapa-badge badge-new">novo</span>`
-            :isEdited
-              ?`<span class="mapa-badge badge-edited">editado</span>`
-              :'';
-
-          // Thumbnail or placeholder
-          let thumbHtml='';
-          if(thumb){
-            thumbHtml=`<img src="${thumb}" alt="${m.nome}" onerror="this.parentElement.innerHTML='<div class=\\'mapa-thumb-placeholder\\'><div class=\\'placeholder-icon\\'>🗺️</div><div class=\\'placeholder-text\\'>Prévia indisponível</div></div>'">`;
-          } else {
-            thumbHtml=`<div class="mapa-thumb-placeholder" style="background:${ac.bg}">
-              <div class="placeholder-icon">🗺️</div>
-              <div class="placeholder-text">${hasLink?'OneDrive / outro':'Sem link — clique em ✏️'}</div>
-            </div>`;
-          }
-
-          const type=isNew?'new':'default';
-
-          html+=`<div class="mapa-card ${hasLink?'has-link':'no-link'}"
-            style="animation-delay:${i*0.04}s"
-            onclick="${hasLink?`openFile('${safeLink}')`:''}" >
-            <div class="mapa-thumb">
-              ${thumbHtml}
-              ${hasLink?`<div class="mapa-thumb-overlay"><button class="thumb-open-btn">Abrir ↗</button></div>`:''}
-            </div>
-            ${badge}
-            <div class="mapa-card-body">
-              <div class="mapa-card-name">${m.nome}</div>
-              <div class="mapa-card-meta">
-                <div class="mapa-card-nota">${m.nota||'&nbsp;'}</div>
-                <button class="mapa-edit-btn" onclick="event.stopPropagation();openMapaModal('${m.id}','${type}')" title="Editar">✏️</button>
-              </div>
-            </div>
-          </div>`;
-        });
-
-        html+=`</div></div>`;
-      });
-      html+=`</div>`;
-    });
-
-    container.innerHTML=html;
-  }
-
-  // MODAL
-  let currentEditId=null,currentEditType=null;
-
-  function openMapaModal(id,type){
-    currentEditId=id; currentEditType=type;
-    const edits=loadEdits();
-    const newM=loadNew();
-    let m=null;
-    if(!id){m=null;}
-    else if(type==='new'){m=newM.find(x=>x.id===id)||null;}
-    else{const base=DEFAULT_MAPAS.find(x=>x.id===id)||{};const e=edits[id]||{};m={...base,...e};}
-    document.getElementById('mapaModalTitle').textContent=id?'Editar Mapa Mental':'Adicionar Mapa Mental';
-    document.getElementById('mapaNome').value=m?m.nome:'';
-    document.getElementById('mapaArea').value=m?m.area:'Clínica Médica';
-    document.getElementById('mapaSubarea').value=m?m.subarea||'':'';
-    document.getElementById('mapaLink').value=m?m.link||'':'';
-    document.getElementById('mapaNote').value=m?m.nota||'':'';
-    document.getElementById('btnDel').style.display=(type==='new'&&id)?'block':'none';
-    document.getElementById('linkPreview').classList.remove('show');
-    // Show preview if link exists
-    if(m&&m.link){previewLink();}
-    document.getElementById('mapaOverlay').classList.add('active');
-  }
-
-  function closeMapaModal(){document.getElementById('mapaOverlay').classList.remove('active');}
-  function closeOnOverlay(e){if(e.target===document.getElementById('mapaOverlay'))closeMapaModal();}
-
-  function saveMapa(){
-    const nome=document.getElementById('mapaNome').value.trim();
-    if(!nome){showToast('⚠️ Nome obrigatório!');return;}
-    const data={nome,area:document.getElementById('mapaArea').value,subarea:document.getElementById('mapaSubarea').value.trim(),link:document.getElementById('mapaLink').value.trim(),nota:document.getElementById('mapaNote').value.trim()};
-    if(!currentEditId){
-      const newM=loadNew();
-      newM.unshift({...data,id:'n'+Date.now()});
-      saveNew(newM); showToast('✅ Mapa adicionado!');
-    } else if(currentEditType==='default'){
-      const edits=loadEdits(); edits[currentEditId]=data; saveEdits(edits); showToast('✏️ Editado!');
-    } else {
-      const newM=loadNew().map(m=>m.id===currentEditId?{...m,...data}:m);
-      saveNew(newM); showToast('✏️ Atualizado!');
-    }
-    closeMapaModal(); renderMapas();
-  }
-
-  function delMapa(){
-    if(!confirm('Remover este mapa?'))return;
-    saveNew(loadNew().filter(m=>m.id!==currentEditId));
-    closeMapaModal(); renderMapas(); showToast('🗑 Removido.');
-  }
-
-  function exportEdits(){
-    const edits=loadEdits();const newM=loadNew();
-    if(!Object.keys(edits).length&&!newM.length){showToast('⚠️ Nenhuma edição ainda.');return;}
-    const blob=new Blob([JSON.stringify({edits,newMapas:newM},null,2)],{type:'application/json'});
-    const url=URL.createObjectURL(blob);
-    const a=document.createElement('a');
-    a.href=url;a.download=`mapas-edits-${new Date().toLocaleDateString('pt-BR').replace(/\//g,'-')}.json`;a.click();
-    URL.revokeObjectURL(url);showToast('💾 Exportado!');
-  }
-
-  function importEdits(event){
-    const file=event.target.files[0];if(!file)return;
-    const reader=new FileReader();
-    reader.onload=function(e){
-      try{
-        const data=JSON.parse(e.target.result);
-        if(data.edits)saveEdits({...loadEdits(),...data.edits});
-        if(data.newMapas){const ex=loadNew();const ids=new Set(ex.map(m=>m.id));saveNew([...data.newMapas.filter(m=>!ids.has(m.id)),...ex]);}
-        renderMapas();showToast('✅ Importado!');
-      }catch{showToast('❌ Arquivo inválido.');}
-    };
-    reader.readAsText(file);event.target.value='';
-  }
 
   function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
 
@@ -1112,16 +910,13 @@
   window.addEventListener('scroll',()=>{
     const navLinks=document.querySelectorAll('.nav-link');
     const lib=document.getElementById('library').getBoundingClientRect().top;
-    const map=document.getElementById('mapas').getBoundingClientRect().top;
     const lnk=document.getElementById('links').getBoundingClientRect().top;
-    if(lnk<=80){navLinks.forEach(l=>l.classList.remove('active'));navLinks[3].classList.add('active');}
-    else if(map<=80){navLinks.forEach(l=>l.classList.remove('active'));navLinks[2].classList.add('active');}
+    if(lnk<=80){navLinks.forEach(l=>l.classList.remove('active'));navLinks[2].classList.add('active');}
     else if(lib<=80){navLinks.forEach(l=>l.classList.remove('active'));navLinks[1].classList.add('active');}
     else{navLinks.forEach(l=>l.classList.remove('active'));navLinks[0].classList.add('active');}
   });
 
   renderCards();
-  renderMapas();
   renderLinks();
 </script>
 </body>

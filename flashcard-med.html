@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flashcard Med · Aline B. Cunha</title>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #f5f0e8; font-family: Georgia, 'Times New Roman', serif; }
+  #root { min-height: 100vh; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect } = React;
+
+// ── ESPECIALIDADES (cores fixas conforme solicitado) ───────────────────────────
+const E = {
+  CLM:  { nome: "Clínica Médica", abrev: "CLM",  cor: "#c85a10", pill: "#fff0e8", emoji: "🫀" },
+  CIR:  { nome: "Cirurgia",       abrev: "CIR",  cor: "#2a7048", pill: "#eaf4ee", emoji: "🔪" },
+  PREV: { nome: "Preventiva",     abrev: "PREV", cor: "#1a5ea8", pill: "#e6f0fb", emoji: "💉" },
+  PED:  { nome: "Pediatria",      abrev: "PED",  cor: "#6030a8", pill: "#f0eafb", emoji: "👶" },
+  GO:   { nome: "GO",             abrev: "GO",   cor: "#b83068", pill: "#fceef4", emoji: "🤰" },
+  DERM: { nome: "Dermatologia",   abrev: "DERM", cor: "#a04020", pill: "#faf0ec", emoji: "🩺" },
+};
+
+// ── SUB-ÁREAS ─────────────────────────────────────────────────────────────────
+const SUBS = {
+  CLM:  ["Cardiologia","Pneumologia","Nefrologia","Gastroenterologia","Endocrinologia","Reumatologia","Neurologia","Infectologia","Outro"],
+  CIR:  ["Abdome Agudo","Trauma","Cirurgia Geral","Cirurgia Vascular","Outro"],
+  PREV: ["Epidemiologia","Saúde Coletiva","SUS","Vigilância","Saúde do Trabalhador"],
+  PED:  ["Acidente e Violência Pediátrica","Aleitamento Materno","Neonatal Avaliação Inicial","Cardiopatias Congênitas","Crescimento e Desenvolvimento","Doenças TU","Doenças Exantemáticas","Icterícia Neonatal","Imunização","Infecções Congênitas","PALS","Reanimação Neonatal","Síndromes Respiratórias na Infância","Síndromes Respiratórias Neonatais"],
+  GO:   ["Obstetrícia","Ginecologia","Outro"],
+  DERM: ["Tumores","Hanseníase","Infecções Fúngicas","Lesões Elementares","Dermatoses Inflamatórias","Anatomia da Pele","Outro"],
+};
+
+// ── RATING ────────────────────────────────────────────────────────────────────
+const RATINGS = [
+  {v:1,c:"#c0392b",b:"#fce8e4"},
+  {v:2,c:"#d0620a",b:"#fceee0"},
+  {v:3,c:"#b08800",b:"#fdf8dc"},
+  {v:4,c:"#27a060",b:"#e4f4ec"},
+  {v:5,c:"#2878c0",b:"#deeef8"},
+];
+
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
+function shuffle(a) {
+  const b = [...a];
+  for (let i = b.length-1; i>0; i--) { const j = Math.floor(Math.random()*(i+1)); [b[i],b[j]]=[b[j],b[i]]; }
+  return b;
+}
+
+// ── CARDS BASE ────────────────────────────────────────────────────────────────
+const BASE = [
+  // CLM · Cardiologia
+  {id:"b01",esp:"CLM",sub:"Cardiologia",q:"IAMCSST vs IAMSSST — diferença fundamental na conduta",a:"IAMCSST: supra ST ≥ 1mm em ≥ 2 derivações contíguas ou BRE novo → reperfusão IMEDIATA (ICPP ≤ 90 min ou trombólise ≤ 30 min). IAMSSST: sem supra ST (infra, inversão T ou ECG normal) → estabilizar, anticoagular, estratificar com troponina. Sem reperfusão imediata obrigatória.",dica:"BRE novo + dor torácica = IAMCSST até prova em contrário. ECG normal não exclui IAMSSST — a troponina é o árbitro."},
+  {id:"b02",esp:"CLM",sub:"Cardiologia",q:"FA: cardioversão com ou sem anticoagulação prévia?",a:"< 48h: cardiovertir sem anticoagulação prévia, anticoagular APÓS. > 48h ou tempo desconhecido: anticoagular ≥ 3 semanas antes OU ETE para excluir trombo. Instável hemodinamicamente: cardiovertir IMEDIATAMENTE → anticoagular depois.",dica:"Instável com FA de 3 dias: cardioverte agora, anticoagula depois. Nunca retardar cardioversão por falta de anticoagulação se instável."},
+  {id:"b03",esp:"CLM",sub:"Cardiologia",q:"IC com FEr vs ICFEp: tratamento difere?",a:"ICFEr (FE < 40%): IECA/BRA + betabloqueador + espironolactona reduzem mortalidade. ICFEp (FE ≥ 50%): controle sintomático (diurético, PA, FC). Nenhum fármaco reduziu mortalidade na ICFEp.",dica:"'Reduz mortalidade na IC' → só na ICFEr. Na ICFEp é controle sintomático. Questão clássica."},
+  // CLM · Pneumologia
+  {id:"b04",esp:"CLM",sub:"Pneumologia",q:"Critérios de Light: exsudato vs transudato",a:"Exsudato se ≥ 1: (1) proteína pleural/sérica > 0,5; (2) LDH pleural/sérico > 0,6; (3) LDH pleural > 2/3 do limite normal sérico. IC com diurético pode pseudoexsudar → gradiente albumina soro-pleural > 1,2 g/dL confirma transudato.",dica:"IC com diurético: não confiar só em Light. Usar gradiente de albumina."},
+  {id:"b05",esp:"CLM",sub:"Pneumologia",q:"TEP: D-dímero, angioTC ou anticoagular direto?",a:"Alta probabilidade + instável: anticoagular sem exame. Estável com alta probabilidade: angioTC. Contraindicação ao contraste: cintilografia V/Q. D-dímero: útil apenas em baixa/moderada probabilidade para EXCLUIR.",dica:"D-dímero positivo não confirma TEP. Em alta probabilidade, nem pedir. Questão com d-dímero positivo e alta suspeita → imagem."},
+  {id:"b06",esp:"CLM",sub:"Pneumologia",q:"DPOC vs Asma: espirometria e reversibilidade",a:"Ambos: VEF1/CVF < 0,70. DPOC: sem reversibilidade após BD (melhora < 12% ou < 200 mL). Asma: reversibilidade ≥ 12% E ≥ 200 mL, ou variação circadiana do PFE > 10%.",dica:"DPOC = obstrução fixa (tabagismo). Asma = obstrução variável. Tabaco + sem reversibilidade → DPOC."},
+  // CLM · Nefrologia
+  {id:"b07",esp:"CLM",sub:"Nefrologia",q:"IRA pré-renal vs NTA: FeNa e armadilha do diurético",a:"FeNa = (Na urinário × Cr sérica)/(Na sérico × Cr urinária) × 100. Pré-renal: < 1%. NTA: > 2%. Uso de diurético: não usar FeNa → usar FEUreia (< 35% = pré-renal).",dica:"Diurético + IRA = FEUreia, não FeNa. Questão com furosemida é pegadinha clássica de nefrologia."},
+  {id:"b08",esp:"CLM",sub:"Nefrologia",q:"Síndrome nefrótica vs nefrítica",a:"Nefrótica: proteinúria > 3,5g/dia + hipoalbuminemia + edema + hiperlipidemia. SEM hematúria. Nefrítica: hematúria + cilindros hemáticos + HAS + oligúria + azotemia. Proteinúria leve-moderada.",dica:"Nefrótica 'vaza proteína'. Nefrítica 'sangra pelo glomérulo'. Criança com edema sem hematúria = nefrótica (LCM)."},
+  {id:"b09",esp:"CLM",sub:"Nefrologia",q:"Hipercalemia grave: sequência do tratamento",a:"1º Gluconato de cálcio (estabiliza membrana, 5 min, não baixa K). 2º Insulina + glicose (desloca K para célula, 15-30 min). 3º Bicarbonato (só se acidose metabólica). 4º Resinas/diálise (elimina K).",dica:"Gluconato = proteção imediata. Não baixa K. Questão: 'qual a 1ª medida?' → gluconato de cálcio."},
+  // CLM · Gastroenterologia
+  {id:"b10",esp:"CLM",sub:"Gastroenterologia",q:"Crohn vs RCU: diferenças clínico-patológicas",a:"RCU: reto sempre acometido, contínuo, mucosa/submucosa, sangramento retal, sem fístulas. Crohn: qualquer segmento boca-ânus, transmural, salteado (skip lesions), fístulas, estenoses, granuloma.",dica:"Fístula + skip lesions + transmural = Crohn. Reto + contínuo + sangramento = RCU."},
+  {id:"b11",esp:"CLM",sub:"Gastroenterologia",q:"Pancreatite aguda: Ranson — admissão vs 48h",a:"Admissão: idade > 55, leuco > 16k, glicemia > 200, LDH > 350, AST > 250. 48h: queda Ht > 10%, ureia > 5, Ca < 8, PaO2 < 60, déficit base > 4, sequestro > 6L. ≥ 3 = grave.",dica:"Ranson < 3 = leve. ≥ 3 = grave. Na PSA: BISAP como triagem rápida."},
+  // CLM · Endocrinologia
+  {id:"b12",esp:"CLM",sub:"Endocrinologia",q:"CAD vs EHHH (Estado Hiperosmolar Hiperglicêmico)",a:"CAD: glicemia > 250, pH < 7,3, bicarbonato < 15, cetonemia +. DM1 predomina. EHHH: glicemia > 600, osmolaridade > 320, pH > 7,3, SEM cetose. DM2 predomina. Mortalidade EHHH (20-40%) > CAD (1-5%).",dica:"Glicemia 800 + pH normal + sem cetona = EHHH. Maior mortalidade = EHHH, apesar de não ter acidose."},
+  {id:"b13",esp:"CLM",sub:"Endocrinologia",q:"Hipotireoidismo primário vs central: como o TSH muda?",a:"Primário (tireoide falha): T4 livre baixo + TSH ELEVADO. Central (hipófise/hipotálamo falha): T4 livre baixo + TSH baixo ou inapropriadamente normal.",dica:"TSH alto = primário. TSH baixo/normal com T4 baixo = central. Pensar em tumor hipofisário, Sheehan."},
+  // CLM · Reumatologia
+  {id:"b14",esp:"CLM",sub:"Reumatologia",q:"Gota vs Pseudogota: cristais na microscopia",a:"Gota: urato monossódico, agulha, birrefringência NEGATIVA. Pseudogota (CPDD): pirofosfato de cálcio, rombóide, birrefringência POSITIVA. Gota: MTF 1º dedo. Pseudogota: joelho.",dica:"Birrefringência NEGATIVA = gota. POSITIVA = pseudogota. Joelho + rombóide = pseudogota."},
+  // CLM · Neurologia
+  {id:"b15",esp:"CLM",sub:"Neurologia",q:"AVC isquêmico: janela de trombólise e PA",a:"Janela rt-PA IV: até 4,5h. Contraindicações: sangramento ativo, AVC/TCE grave em 3 meses, plaquetas < 100k, PA > 185/110 não controlada. Trombectomia: até 24h em casos selecionados (penumbra viável).",dica:"PA > 185/110 = pode tratar PA e ENTÃO trombolisar. Não é contraindicação absoluta se controlável."},
+  {id:"b16",esp:"CLM",sub:"Neurologia",q:"LCR: bacteriana vs viral vs TB",a:"Bacteriana: turvo, > 1000 PMN, proteína > 100, glicose < 45 → ATB imediato. Viral: claro, 10-500 MN, proteína leve, glicose normal. TB: MN, glicose muito baixa, proteína alta, ADA elevado.",dica:"PMN + glicose baixa = bacteriana. Não atrasar ATB. Dexametasona junto com ATB no pneumococo melhora desfecho."},
+  // CIR · Abdome Agudo
+  {id:"b17",esp:"CIR",sub:"Abdome Agudo",q:"Tipos de abdome agudo",a:"Inflamatório: dor progressiva, defesa, Blumberg. Perfurativo: dor súbita, tábua abdominal, pneumoperitônio. Obstrutivo: cólica + parada de gases + distensão + NHA. Vascular: dor DESPROPORCIONAL ao exame físico, idoso.",dica:"'Dor desproporcional ao exame' = isquemia mesentérica. Abdome mole em crise no idoso = sinal de alarme vascular."},
+  {id:"b18",esp:"CIR",sub:"Abdome Agudo",q:"Apendicite: Alvarado score",a:"Migração da dor (1) + Anorexia (1) + Náusea/vômito (1) + Dor FID (2) + Blumberg (1) + Temp > 37,3°C (1) + Leucocitose (2) + Desvio esquerda (1) = máx 10. Score ≥ 7: cirurgia. 5-6: observação/imagem. < 5: outras causas.",dica:"Score 7+ = operar. 5-6 = TC/US. Em mulher em idade fértil com score 5-6 → TC para excluir patologia ovariana."},
+  // CIR · Trauma
+  {id:"b19",esp:"CIR",sub:"Trauma",q:"Pneumotórax hipertensivo: diagnóstico clínico e conduta",a:"Clínica: desvio de traqueia + ausência de MV ipsilateral + hipotensão + turgência jugular. Conduta: agulha IMEDIATA no 2º EIC linha hemiclavicular ANTES de Rx. Depois: drenagem em selo d'água.",dica:"Diagnóstico CLÍNICO. NUNCA atrasar por Rx. Instabilidade + desvio de traqueia = agulha na hora."},
+  {id:"b20",esp:"CIR",sub:"Trauma",q:"Choque: diferença hemodinâmica entre os 4 tipos",a:"Hipovolêmico: PVC↓, DC↓, RVS↑, pele fria. Distributivo: PVC↓, DC↑, RVS↓, pele quente (fase quente). Obstrutivo (TEP/tamponamento): PVC↑, DC↓, RVS↑. Cardiogênico: PVC↑, DC↓, RVS↑, pele fria.",dica:"Pele quente + hipotensão = distributivo. Turgência jugular + hipotensão = obstrutivo ou cardiogênico."},
+  {id:"b21",esp:"CIR",sub:"Trauma",q:"FAST vs TC vs Lavagem peritoneal diagnóstica",a:"FAST: beira-leito, detecta líquido livre. INSTÁVEL: FAST → se positivo, laparotomia direta. TC: padrão ouro no ESTÁVEL. LPD: quase obsoleta.",dica:"INSTÁVEL = FAST + laparotomia se positivo. ESTÁVEL = TC. NUNCA levar instável para TC."},
+  // CIR · Cirurgia Geral
+  {id:"b22",esp:"CIR",sub:"Cirurgia Geral",q:"Hérnia encarcerada vs estrangulada",a:"Encarcerada: irredutível SEM comprometimento vascular → urgência, pode tentar redução manual se < 6h sem sinais de isquemia. Estrangulada: isquemia → necrose. Febre + toxemia → EMERGÊNCIA, sem tentativa de redução.",dica:"Febre + toxemia = estrangulada = cirurgia agora. Encarcerada sem toxemia = pode tentar reduzir."},
+  {id:"b23",esp:"CIR",sub:"Cirurgia Geral",q:"Queimaduras: regra dos 9 e critérios de gravidade",a:"Regra dos 9: cabeça 9%, cada MS 9%, tronco ant 18%, post 18%, cada MI 18%, genitália 1%. Grave: SCQ > 20% adulto em 2º grau, face/mãos/pés/genitália, inalação, circunferenciais.",dica:"Palma da mão = 1% SCQ. Queimadura elétrica: SCQ subestimada → investigar rabdomiólise e arritmias."},
+  // PREV · Epidemiologia
+  {id:"b24",esp:"PREV",sub:"Epidemiologia",q:"Sensibilidade vs Especificidade: SnNout e SpPin",a:"Sensibilidade: detecta DOENTES. Alta Sens + resultado Negativo → exclui (SnNout). Especificidade: detecta SADIOS. Alta Espec + resultado Positivo → confirma (SpPin). Triagem = alta Sens. Confirmatório = alta Espec.",dica:"Rastreamento: sensível (não perder casos). Confirmatório: específico (não tratar sadio)."},
+  {id:"b25",esp:"PREV",sub:"Epidemiologia",q:"VPP e VPN: o que muda com a prevalência?",a:"Sens/Espec = propriedades do TESTE, não mudam. VPP e VPN dependem da PREVALÊNCIA. Alta prevalência → VPP↑, VPN↓. Baixa prevalência → VPN↑, VPP↓.",dica:"Questão muda a prevalência e pergunta VPP → alta prevalência aumenta VPP. Sens/Espec ficam iguais."},
+  {id:"b26",esp:"PREV",sub:"Epidemiologia",q:"RR vs OR: qual estudo usa qual e quando se equivalem",a:"RR: coorte e ensaios clínicos. OR: caso-controle. OR ≈ RR quando doença RARA (prevalência < 10%). Doença comum: OR superestima o RR.",dica:"Caso-controle: só pode calcular OR. Coorte: calcula RR. OR em coorte = erro metodológico."},
+  {id:"b27",esp:"PREV",sub:"Epidemiologia",q:"Lead time bias vs length bias",a:"Lead time bias: sobrevida parece maior por diagnóstico mais precoce, mas desfecho não mudou. Length bias: rastreamento captura preferencialmente doenças de progressão lenta, superestimando o benefício.",dica:"'Sobrevida aumentou com rastreamento' pode ser lead time bias. Precisa de redução de mortalidade causa-específica."},
+  {id:"b28",esp:"PREV",sub:"Epidemiologia",q:"Estudos epidemiológicos: investigador observacional vs intervenção / investigado agregado vs individuado",a:"Investigador: observacional (não mexe — coorte, caso-controle, transversal) vs intervenção (experimental — ensaio clínico). Investigado: agregado/populacional (unidade = grupo, ex: ecológico) vs individuado (avalia cada pessoa — maioria dos estudos).",dica:"Estudo ecológico = agregado. Pergunta sobre 'países com mais gordura e mais infarto' = ecológico. Não permite inferência causal para indivíduos (falácia ecológica)."},
+  // PREV · Saúde Coletiva
+  {id:"b29",esp:"PREV",sub:"Saúde Coletiva",q:"Calendário vacinal — Rotavírus: limite de idade das doses",a:"1ª dose: até 3 meses e 15 dias (não pode iniciar depois). 2ª dose: até 7 meses e 29 dias. Criança com 4 meses sem dose prévia: NÃO vacinar.",dica:"3m15d = prazo fatal da 1ª dose. Questão clássica: criança de 4 meses 'pode começar?' → Não."},
+  {id:"b30",esp:"PREV",sub:"Saúde Coletiva",q:"HPV: 2 doses vs 3 doses",a:"2 doses (0 e 6 meses): meninas 9-14 anos, meninos 11-14 anos, imunocompetentes. 3 doses (0-1-6 meses): ≥ 15 anos, imunocomprometidos, HIV, transplantados.",dica:"HIV positivo + HPV → sempre 3 doses, independente da idade."},
+  {id:"b31",esp:"PREV",sub:"Saúde Coletiva",q:"Rastreamento vs diagnóstico precoce vs prevenção primária",a:"Primária: age ANTES da doença (vacinação). Rastreamento: detecta ASSINTOMÁTICOS. Diagnóstico precoce: doença inicial mas já SINTOMÁTICA.",dica:"Assintomático + exame de rotina = rastreamento. Sintomático leve detectado = diagnóstico precoce."},
+  // PREV · Vigilância
+  {id:"b32",esp:"PREV",sub:"Vigilância",q:"Notificação imediata (24h) vs semanal",a:"Imediata: sarampo, poliomielite, febre amarela, cólera, difteria, botulismo, raiva humana, hantavirose, SRAG, qualquer SURTO. Semanal: dengue, chikungunya, zika, leishmaniose, sífilis.",dica:"Qualquer SURTO = imediata. Sarampo, febre amarela, polio = imediata. Dengue endêmica = semanal."},
+  {id:"b33",esp:"PREV",sub:"Vigilância",q:"Endemia vs Epidemia vs Surto vs Pandemia",a:"Endemia: ocorrência esperada e regular. Epidemia: acima do esperado. Surto: epidemia restrita a local circunscrito (escola, restaurante). Pandemia: múltiplos continentes com transmissão sustentada.",dica:"Dengue no verão no Sudeste = endemia sazonal. Aumento acima do esperado = epidemia. Em uma escola = surto."},
+  // GO · Obstetrícia
+  {id:"b34",esp:"GO",sub:"Obstetrícia",q:"Pré-eclâmpsia vs Eclâmpsia vs HELLP",a:"Pré-eclâmpsia: PA ≥ 140/90 após 20s + proteinúria ≥ 300mg/24h. Grave: PA ≥ 160/110 ou disfunção orgânica. Eclâmpsia: pré-eclâmpsia + convulsão. HELLP: Hemólise + enzimas hepáticas ↑ + Plaquetopenia. HELLP pode ocorrer SEM HAS.",dica:"HELLP sem HAS é a pegadinha. Epigastralgia + plaquetopenia + TGO elevados em gestante = HELLP."},
+  {id:"b35",esp:"GO",sub:"Obstetrícia",q:"DPP vs Placenta Prévia: diferencial",a:"DPP: sangramento ESCURO + dor intensa + útero hipertônico. Pode ser oculto. PP: sangramento VIVO + INDOLOR + útero flácido. NUNCA toque vaginal na PP.",dica:"'Sangrou sem doer' = PP. 'Dor + útero duro + sangue escuro' = DPP. Toque vaginal em PP = hemorragia catastrófica."},
+  {id:"b36",esp:"GO",sub:"Obstetrícia",q:"RPM: conduta por IG",a:"≥ 37s: induzir parto. 34-36+6s: considerar resolução. 24-33+6s: conduta expectante + corticoide + ATB + MgSO4 se < 32s. < 24s: aconselhamento.",dica:"Corticoide até 34 semanas. < 32s: MgSO4 para neuroproteção. RPM a termo = induzir."},
+  {id:"b37",esp:"GO",sub:"Obstetrícia",q:"Hemorragia pós-parto: 4Ts",a:"Tônus (atonia — 80%), Tecido (retenção placenta), Trauma (laceração), Trombina (coagulopatia). Primeiro: massagem uterina + ocitocina. Não responde: misoprostol, metilergonovina, ácido tranexâmico, B-Lynch, histerectomia.",dica:"Atonia = causa mais comum. Ocitocina = 1º uterotônico. Metilergonovina: contraindicada em hipertensas."},
+  // GO · Ginecologia
+  {id:"b38",esp:"GO",sub:"Ginecologia",q:"Rastreamento câncer de colo: início, periodicidade, parada",a:"Início: 25 anos. Colpocitologia oncótica. Anual nos 2 primeiros negativos, depois a cada 3 anos. Parar: 64 anos com 2 exames negativos nos últimos 5 anos.",dica:"< 25 anos: não rastreia mesmo com atividade sexual. Imunossuprimida: semestral no 1º ano, depois anual."},
+  {id:"b39",esp:"GO",sub:"Ginecologia",q:"Vaginose bacteriana vs Candidíase vs Tricomoníase",a:"VB: acinzentado, odor de peixe, pH > 4,5, Clue cells, Whiff +. Cândida: branco grumoso, pH < 4,5, prurido, pseudohifas. Tricomoníase: amarelo-esverdeado bolhoso, pH > 4,5, colpite em morango. IST: tratar parceiro.",dica:"pH < 4,5 = candidíase. pH > 4,5 = VB ou tricomoníase. Bolhoso = tricomoníase. Só tricomoníase é IST."},
+  // PED · Neonatal Avaliação Inicial
+  {id:"b40",esp:"PED",sub:"Neonatal Avaliação Inicial",q:"APGAR: o que avalia e quando NÃO define conduta",a:"FC + Esforço resp + Tônus + Irritabilidade reflexa + Cor (0-2 cada). 1º e 5º min. APGAR NÃO define quando iniciar reanimação — a decisão é clínica: choro/respiração e tônus ao nascer.",dica:"RN sem choro e hipotônico → reanimação imediata, independente do Apgar."},
+  {id:"b41",esp:"PED",sub:"Neonatal Avaliação Inicial",q:"Hipoglicemia neonatal: valores de corte e conduta",a:"RN a termo saudável: < 45 mg/dL nas primeiras 4h, < 50 mg/dL após. Fatores de risco (PIG, GIG, filho de diabética): < 40 mg/dL. Assintomático: oferecer mamada. Sintomático ou < 25 mg/dL: G10% IV 2 mL/kg.",dica:"GIG (filho de mãe diabética): hiperinsulinismo → hipoglicemia mesmo com glicemia materna normal."},
+  // PED · Icterícia Neonatal
+  {id:"b42",esp:"PED",sub:"Icterícia Neonatal",q:"Icterícia neonatal: fisiológica vs patológica",a:"Fisiológica: surge após 24h, desaparece antes de 2 semanas (termo). Patológica: inicia nas primeiras 24h (hemólise até prova em contrário), bilirrubina acima do nomograma de Bhutani, duração prolongada.",dica:"Icterícia nas primeiras 24h = SEMPRE patológica. Investigar ABO/Rh, G6PD. Não esperar."},
+  // PED · PALS
+  {id:"b43",esp:"PED",sub:"PALS",q:"Convulsão febril simples vs complexa",a:"Simples: generalizada, < 15 min, não recorre em 24h, sem déficit neurológico. Complexa: focal OU > 15 min OU recorrente em 24h. Simples: não medicar cronicamente. Complexa: EEG, neuroimagem.",dica:"Recorrência na mesma febre = complexa. Diazepam retal para crise > 5 min. Antiepiléptico crônico após febril simples = errado."},
+  // PED · Doenças Exantemáticas
+  {id:"b44",esp:"PED",sub:"Doenças Exantemáticas",q:"Meningite bacteriana: agente por faixa etária",a:"0-3m: GBS, E. coli, Listeria → ampicilina + gentamicina. 3m-5a: meningococo, pneumococo → ceftriaxone + dexametasona. Adulto jovem: meningococo. Idoso/imunossuprimido: + Listeria → adicionar ampicilina.",dica:"Dexametasona antes ou junto do ATB no pneumococo melhora desfechos neurológicos."},
+  // PED · Síndromes Respiratórias na Infância
+  {id:"b45",esp:"PED",sub:"Síndromes Respiratórias na Infância",q:"Bronquiolite vs Asma no lactente",a:"Bronquiolite: < 2 anos, 1º/2º episódio, IVAS prévia (VSR). BD não recomendado rotineiramente. Asma lactente: ≥ 3 episódios, atopia, histórico familiar, responde ao BD.",dica:"1º episódio em lactente com coriza = bronquiolite. BD não é rotina. Recorrência + atopia + melhora com BD = asma."},
+  // PED · Crescimento e Desenvolvimento
+  {id:"b46",esp:"PED",sub:"Crescimento e Desenvolvimento",q:"Marcos de alerta do DNPM",a:"Sinal de alerta: sem fixar olhar 2m; sem sorriso social 3m; sem sustentar cabeça 4m; sem sentar sem apoio 9m; sem ficar em pé 12m; sem andar sozinho 18m; sem 50 palavras 24m.",dica:"Ausência de balbucio + sem gesto + sem palavras 12-16m → avaliar TEA. Qualquer regressão de marcos = alarme."},
+  // PED · Cardiopatias Congênitas
+  {id:"b47",esp:"PED",sub:"Cardiopatias Congênitas",q:"Doença de Kawasaki: critérios e complicação principal",a:"Febre ≥ 5 dias + 4 dos 5: conjuntivite bilateral não purulenta, língua framboesa/lábios fissurados, exantema polimorfo, eritema/edema mãos-pés com descamação periungual, linfadenopatia cervical > 1,5cm. Complicação: aneurisma de coronária.",dica:"IVIG + AAS em 10 dias previne aneurisma. Criança com febre prolongada + língua framboesa + conjuntivite = Kawasaki."},
+  // DERM · Tumores
+  {id:"b48",esp:"DERM",sub:"Tumores",q:"CBC vs CEC: origem e comportamento",a:"CBC: células da camada basal. Raramente metastatiza (< 0,1%). CEC: queratinócitos da camada espinhosa. Metastatiza em 2-5%.",dica:"CBC = basal = benigno no comportamento. CEC = espinhosa = pode matar. Questão com metástase → CEC."},
+  {id:"b49",esp:"DERM",sub:"Tumores",q:"Melanoma: ABCDE e Breslow",a:"ABCDE: Assimetria, Bordas irregulares, Cor variada, Diâmetro > 6mm, Evolução. E é o mais sensível. Prognóstico: espessura de Breslow (< 1mm = baixo risco, > 4mm = alto risco).",dica:"Breslow = prognóstico. Clark perdeu importância (8ª AJCC). Lesão que muda = biópsia."},
+  // DERM · Hanseníase
+  {id:"b50",esp:"DERM",sub:"Hanseníase",q:"4 formas clínicas e relação com imunidade",a:"Indeterminada → ponto de partida. Tuberculoide: imunidade alta, paucibacilar, lesão única, anestesia marcada. Virchowiana: imunidade baixa, multibacilar, fácies leonina, alopecia sobrancelhas. Dimorfa: instável.",dica:"Tuberculoide = imune ganha = poucos bacilos. Virchowiana = bacilo ganha = muitos bacilos. Mais infecciosa = virchowiana."},
+  {id:"b51",esp:"DERM",sub:"Hanseníase",q:"Paucibacilar vs Multibacilar: tratamento",a:"PB (< 5 lesões): Rifampicina + Dapsona × 6 meses. MB (≥ 6 lesões): Rifampicina + Clofazimina + Dapsona × 12 meses.",dica:"PB = 2 drogas × 6m. MB = 3 drogas × 12m. Clofazimina só no multibacilar."},
+  {id:"b52",esp:"DERM",sub:"Hanseníase",q:"Reação hansênica tipo 1 vs tipo 2",a:"Tipo 1 (Reversa): dimorfas, piora das lesões antigas + neurite. Trat: prednisona. Tipo 2 (ENH): multibacilares, nódulos novos + febre. Trat: talidomida (contraindicada na mulher fértil) ou prednisona.",dica:"Tipo 1 = lesões antigas pioram. Tipo 2 = nódulos novos + febre. Mulher fértil + ENH → prednisona."},
+  // DERM · Lesões Elementares
+  {id:"b53",esp:"DERM",sub:"Lesões Elementares",q:"Púrpura vs eritema: digitopressão",a:"Eritema: some à digitopressão (vasos íntegros). Púrpura (petéquia < 3mm, equimose > 3mm): NÃO some (extravasamento de sangue para fora dos vasos).",dica:"'Não desaparece ao apertar' = púrpura = sangue extravasado. Meningococcemia = púrpura = emergência."},
+  // DERM · Anatomia da Pele
+  {id:"b54",esp:"DERM",sub:"Anatomia da Pele",q:"Desmossomos vs hemidesmossomos: pênfigo vs penfigoide",a:"Desmossomos: unem queratinócitos entre si → pênfigo vulgar (anti-desmogleína) → bolha FLÁCIDA intraepidérmica. Hemidesmossomos: célula basal à membrana basal → penfigoide bolhoso → bolha TENSA subepidérmica.",dica:"'Flácida' = pênfigo. 'Tensa' = penfigoide."},
+];
+
+// ── MODAL PARA ADICIONAR CARD ─────────────────────────────────────────────────
+function AddModal({ onSave, onClose }) {
+  const [esp, setEsp]   = useState("CLM");
+  const [sub, setSub]   = useState(SUBS.CLM[0]);
+  const [q, setQ]       = useState("");
+  const [a, setA]       = useState("");
+  const [dica, setDica] = useState("");
+  const cfg = E[esp];
+
+  function handleEspChange(v) {
+    setEsp(v);
+    setSub(SUBS[v][0]);
+  }
+
+  function handleSave() {
+    if (!q.trim() || !a.trim()) return;
+    onSave({ id: uid(), esp, sub, q: q.trim(), a: a.trim(), dica: dica.trim(), custom: true });
+  }
+
+  const inputStyle = {
+    width: "100%", boxSizing: "border-box",
+    background: "#faf8f4", border: "1.5px solid #ddd4c0",
+    borderRadius: 8, padding: "10px 12px",
+    fontSize: 13, color: "#2d2218",
+    fontFamily: "inherit", resize: "vertical",
+    outline: "none",
+  };
+
+  return (
+    <div style={{
+      position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)",
+      zIndex: 200, display: "flex", alignItems: "flex-end", justifyContent: "center",
+    }} onClick={e => e.target === e.currentTarget && onClose()}>
+      <div style={{
+        background: "#faf8f4", borderRadius: "20px 20px 0 0",
+        width: "100%", maxWidth: 620,
+        padding: "24px 20px 36px", maxHeight: "90vh", overflowY: "auto",
+      }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
+          <h2 style={{ margin: 0, fontSize: 17, color: "#2d2218", fontWeight: 700 }}>Novo card</h2>
+          <button onClick={onClose} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", color: "#9a8a78" }}>×</button>
+        </div>
+
+        {/* ESP + SUB */}
+        <div style={{ display: "flex", gap: 10, marginBottom: 14 }}>
+          <div style={{ flex: 1 }}>
+            <label style={{ fontSize: 11, color: "#9a8a78", textTransform: "uppercase", letterSpacing: "0.8px", display: "block", marginBottom: 5 }}>Especialidade</label>
+            <select value={esp} onChange={e => handleEspChange(e.target.value)}
+              style={{ ...inputStyle, resize: "none", cursor: "pointer" }}>
+              {Object.entries(E).map(([k,v]) => (
+                <option key={k} value={k}>{v.emoji} {v.nome}</option>
+              ))}
+            </select>
+          </div>
+          <div style={{ flex: 1 }}>
+            <label style={{ fontSize: 11, color: "#9a8a78", textTransform: "uppercase", letterSpacing: "0.8px", display: "block", marginBottom: 5 }}>Sub-área</label>
+            <select value={sub} onChange={e => setSub(e.target.value)}
+              style={{ ...inputStyle, resize: "none", cursor: "pointer" }}>
+              {SUBS[esp].map(s => <option key={s} value={s}>{s}</option>)}
+            </select>
+          </div>
+        </div>
+
+        {/* Indicador de cor */}
+        <div style={{
+          height: 4, background: cfg.cor, borderRadius: 2,
+          marginBottom: 18, transition: "background .3s",
+        }} />
+
+        {/* Q */}
+        <div style={{ marginBottom: 12 }}>
+          <label style={{ fontSize: 11, color: cfg.cor, textTransform: "uppercase", letterSpacing: "0.8px", display: "block", marginBottom: 5, fontWeight: 700 }}>
+            Q — Pergunta / confusão *
+          </label>
+          <textarea rows={3} value={q} onChange={e => setQ(e.target.value)}
+            placeholder="Ex: CAD vs EHHH — diferença fundamental"
+            style={inputStyle} />
+        </div>
+
+        {/* A */}
+        <div style={{ marginBottom: 12 }}>
+          <label style={{ fontSize: 11, color: "#5a7a5a", textTransform: "uppercase", letterSpacing: "0.8px", display: "block", marginBottom: 5, fontWeight: 700 }}>
+            A — Resposta / discriminador *
+          </label>
+          <textarea rows={5} value={a} onChange={e => setA(e.target.value)}
+            placeholder="Ex: CAD: pH < 7,3 + cetonemia. EHHH: glicemia > 600 + osmolaridade > 320 + sem cetose..."
+            style={inputStyle} />
+        </div>
+
+        {/* Dica */}
+        <div style={{ marginBottom: 22 }}>
+          <label style={{ fontSize: 11, color: "#a09020", textTransform: "uppercase", letterSpacing: "0.8px", display: "block", marginBottom: 5, fontWeight: 700 }}>
+            💡 Dica de prova
+          </label>
+          <textarea rows={2} value={dica} onChange={e => setDica(e.target.value)}
+            placeholder="Ex: Questão com glicemia 800 + pH normal + sem cetona = EHHH"
+            style={inputStyle} />
+        </div>
+
+        {/* Botões */}
+        <div style={{ display: "flex", gap: 10 }}>
+          <button onClick={onClose} style={{
+            flex: 1, padding: "12px",
+            background: "#ede5d8", color: "#6a5a48",
+            border: "none", borderRadius: 10,
+            fontSize: 14, cursor: "pointer", fontFamily: "inherit",
+          }}>Cancelar</button>
+          <button onClick={handleSave} disabled={!q.trim() || !a.trim()} style={{
+            flex: 2, padding: "12px",
+            background: !q.trim() || !a.trim() ? "#ccc" : cfg.cor,
+            color: "#fff", border: "none", borderRadius: 10,
+            fontSize: 14, cursor: !q.trim() || !a.trim() ? "not-allowed" : "pointer",
+            fontFamily: "inherit", fontWeight: 700,
+          }}>Salvar card</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── APP PRINCIPAL ─────────────────────────────────────────────────────────────
+function App() {
+  const [customCards, setCustomCards] = useState([]);
+  const [deck, setDeck]               = useState([]);
+  const [idx, setIdx]                 = useState(0);
+  const [revelado, setRevelado]       = useState(false);
+  const [ratings, setRatings]         = useState({});
+  const [marcados, setMarcados]       = useState(new Set());
+  const [filtroEsp, setFiltroEsp]     = useState("Todas");
+  const [filtroSub, setFiltroSub]     = useState("Todas");
+  const [view, setView]               = useState("estudo");
+  const [concluido, setConcluido]     = useState(false);
+  const [ratingAnim, setRatingAnim]   = useState(null);
+  const [showAdd, setShowAdd]         = useState(false);
+
+  // Carregar cards customizados do storage
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("flashcard_custom_v4");
+      if (saved) setCustomCards(JSON.parse(saved));
+    } catch {}
+  }, []);
+
+  // Montar deck quando custom cards carregam
+  useEffect(() => {
+    setDeck(shuffle([...BASE, ...customCards]));
+  }, [customCards]);
+
+  const allCards   = [...BASE, ...customCards];
+  const espSubs    = filtroEsp !== "Todas" ? SUBS[filtroEsp] : [];
+
+  const filtered = deck.filter(c => {
+    if (filtroEsp !== "Todas" && c.esp !== filtroEsp) return false;
+    if (filtroSub !== "Todas" && c.sub !== filtroSub) return false;
+    return true;
+  });
+
+  const card      = filtered[idx % Math.max(filtered.length, 1)];
+  const globalIdx = deck.indexOf(card);
+  const cfg       = card ? E[card.esp] : null;
+  const cor       = cfg?.cor ?? "#8a7a68";
+
+  const feitos   = filtered.filter((_, i) => ratings[deck.indexOf(filtered[i])] != null).length;
+  const progress = filtered.length > 0 ? (feitos / filtered.length) * 100 : 0;
+  const badCount = Object.values(ratings).filter(v => v <= 2).length;
+  const avgRating = Object.values(ratings).length
+    ? (Object.values(ratings).reduce((a,b) => a+b, 0) / Object.values(ratings).length).toFixed(1)
+    : null;
+
+  function toggleMark() {
+    const s = new Set(marcados);
+    s.has(globalIdx) ? s.delete(globalIdx) : s.add(globalIdx);
+    setMarcados(s);
+  }
+
+  function rate(val) {
+    setRatingAnim(val);
+    setTimeout(() => {
+      setRatings(r => ({ ...r, [globalIdx]: val }));
+      setRatingAnim(null);
+      if (idx + 1 >= filtered.length) setConcluido(true);
+      else { setIdx(idx + 1); setRevelado(false); }
+    }, 300);
+  }
+
+  function restart(onlyBad = false) {
+    let next;
+    if (onlyBad) {
+      next = deck.filter((_, i) => ratings[i] != null && ratings[i] <= 2);
+      if (!next.length) next = [...BASE, ...customCards];
+    } else {
+      next = [...BASE, ...customCards];
+    }
+    setDeck(shuffle(next));
+    setIdx(0); setRevelado(false); setRatings({});
+    setConcluido(false); setFiltroEsp("Todas"); setFiltroSub("Todas");
+  }
+
+  function handleAddCard(card) {
+    const updated = [...customCards, card];
+    setCustomCards(updated);
+    try { localStorage.setItem("flashcard_custom_v4", JSON.stringify(updated)); } catch {}
+    setShowAdd(false);
+  }
+
+  function handleDeleteCustom(id) {
+    const updated = customCards.filter(c => c.id !== id);
+    setCustomCards(updated);
+    try { localStorage.setItem("flashcard_custom_v4", JSON.stringify(updated)); } catch {}
+  }
+
+  // Stats por especialidade
+  const statsEsp = Object.entries(E).map(([key, meta]) => {
+    const cards = allCards.filter(c => c.esp === key);
+    const doneIdxs = cards.map(c => deck.indexOf(c)).filter(i => ratings[i] != null);
+    const avg = doneIdxs.length
+      ? (doneIdxs.reduce((a,i) => a + ratings[i], 0) / doneIdxs.length).toFixed(1)
+      : null;
+    return { key, meta, total: cards.length, done: doneIdxs.length, avg };
+  });
+
+  const bg = "#f5f0e8";
+  const cardBg = "#fff";
+  const border = "#ddd4c0";
+  const textMain = "#2d2218";
+  const textMuted = "#9a8a78";
+
+  return (
+    <div style={{ minHeight: "100vh", background: bg, fontFamily: "'Georgia','Times New Roman',serif", paddingBottom: 60 }}>
+
+      {/* ── TOPBAR ── */}
+      <div style={{
+        display: "flex", justifyContent: "space-between", alignItems: "center",
+        padding: "12px 16px", background: "#ede5d8",
+        borderBottom: `1px solid ${border}`,
+        position: "sticky", top: 0, zIndex: 100,
+      }}>
+        <div>
+          <div style={{ fontSize: 14, fontWeight: 700, color: textMain, letterSpacing: "-.3px" }}>
+            Discriminadores · Residência
+          </div>
+          <div style={{ fontSize: 11, color: textMuted, marginTop: 1 }}>
+            {allCards.length} cards{customCards.length > 0 ? ` · ${customCards.length} seus` : ""}
+          </div>
+        </div>
+        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          {avgRating && (
+            <span style={{ fontSize: 11, color: "#a07830" }}>
+              ⭐ {avgRating}/5
+            </span>
+          )}
+          <button onClick={() => setShowAdd(true)} style={{
+            padding: "6px 12px", background: cor, color: "#fff",
+            border: "none", borderRadius: 8,
+            fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "inherit",
+          }}>+ Card</button>
+          <button onClick={() => setView(v => v === "estudo" ? "stats" : "estudo")} style={{
+            padding: "6px 10px", background: "#ddd4c0",
+            border: "none", borderRadius: 8,
+            fontSize: 12, cursor: "pointer", fontFamily: "inherit", color: "#6a5a48",
+          }}>
+            {view === "estudo" ? "📊" : "←"}
+          </button>
+        </div>
+      </div>
+
+      {/* ── STATS ── */}
+      {view === "stats" ? (
+        <div style={{ maxWidth: 600, margin: "20px auto", padding: "0 14px" }}>
+          <h2 style={{ fontSize: 16, color: textMain, marginBottom: 16 }}>Progresso por especialidade</h2>
+          {statsEsp.map(({ key, meta, total, done, avg }) => (
+            <div key={key} style={{
+              background: cardBg, borderRadius: 12, padding: "14px 16px",
+              marginBottom: 10, border: `1px solid ${border}`,
+            }}>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8, alignItems: "center" }}>
+                <span style={{ fontWeight: 700, color: meta.cor, fontSize: 14 }}>
+                  {meta.emoji} {meta.nome}
+                </span>
+                <span style={{ fontSize: 11, color: textMuted }}>
+                  {done}/{total}{avg ? ` · média ${avg}` : ""}
+                </span>
+              </div>
+              <div style={{ height: 5, background: "#ede5d8", borderRadius: 3, overflow: "hidden" }}>
+                <div style={{
+                  height: "100%", width: `${total > 0 ? (done/total)*100 : 0}%`,
+                  background: meta.cor, borderRadius: 3, transition: "width .5s",
+                }} />
+              </div>
+              {/* Sub-areas desse esp */}
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginTop: 8 }}>
+                {SUBS[key].map(s => {
+                  const n = allCards.filter(c => c.esp === key && c.sub === s).length;
+                  if (!n) return null;
+                  return (
+                    <span key={s} style={{
+                      fontSize: 10, padding: "2px 7px", borderRadius: 10,
+                      background: meta.pill, color: meta.cor, border: `1px solid ${meta.cor}30`,
+                    }}>
+                      {s} ({n})
+                    </span>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+          {customCards.length > 0 && (
+            <div style={{ marginTop: 16 }}>
+              <h3 style={{ fontSize: 14, color: textMain, marginBottom: 10 }}>🗂 Seus cards ({customCards.length})</h3>
+              {customCards.map(c => (
+                <div key={c.id} style={{
+                  background: cardBg, border: `1px solid ${border}`,
+                  borderRadius: 10, padding: "10px 14px", marginBottom: 8,
+                  display: "flex", justifyContent: "space-between", alignItems: "flex-start",
+                }}>
+                  <div>
+                    <span style={{ fontSize: 11, color: E[c.esp]?.cor, fontWeight: 700 }}>
+                      {E[c.esp]?.emoji} {E[c.esp]?.nome} · {c.sub}
+                    </span>
+                    <p style={{ margin: "4px 0 0", fontSize: 13, color: textMain }}>{c.q}</p>
+                  </div>
+                  <button onClick={() => handleDeleteCustom(c.id)} style={{
+                    background: "none", border: "none", cursor: "pointer",
+                    fontSize: 16, color: "#c04030", marginLeft: 10, flexShrink: 0,
+                  }}>🗑</button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+      ) : concluido ? (
+        /* ── TELA DE CONCLUSÃO ── */
+        <div style={{
+          maxWidth: 480, margin: "40px auto", padding: "36px 24px",
+          background: cardBg, borderRadius: 20, border: `1px solid ${border}`,
+          textAlign: "center", boxShadow: "0 4px 20px rgba(100,70,40,.1)",
+        }}>
+          <div style={{ fontSize: 48, marginBottom: 12 }}>🎯</div>
+          <h2 style={{ margin: "0 0 6px", color: textMain, fontSize: 22 }}>Rodada concluída</h2>
+          {avgRating && (
+            <p style={{ color: "#a07830", fontWeight: 700, fontSize: 24, margin: "6px 0" }}>
+              {avgRating} / 5
+            </p>
+          )}
+          <p style={{ color: textMuted, fontSize: 13, margin: "0 0 24px" }}>
+            {badCount > 0 ? `${badCount} card${badCount > 1 ? "s" : ""} com rating ≤ 2 para refazer` : "Excelente aproveitamento!"}
+          </p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            {badCount > 0 && (
+              <button onClick={() => restart(true)} style={{
+                padding: "13px", background: "#c04030", color: "#fff",
+                border: "none", borderRadius: 10, fontSize: 14, cursor: "pointer",
+                fontFamily: "inherit", fontWeight: 700,
+              }}>
+                Refazer os {badCount} erros (rating 1-2)
+              </button>
+            )}
+            <button onClick={() => restart(false)} style={{
+              padding: "13px", background: "#2d2218", color: "#f0e8d8",
+              border: "none", borderRadius: 10, fontSize: 14, cursor: "pointer", fontFamily: "inherit",
+            }}>
+              Recomeçar tudo (embaralhado)
+            </button>
+          </div>
+        </div>
+
+      ) : (
+        /* ── ESTUDO ── */
+        <div style={{ maxWidth: 620, margin: "0 auto", padding: "14px 14px 0" }}>
+
+          {/* Filtro especialidade */}
+          <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 8 }}>
+            {["Todas", ...Object.keys(E)].map(key => {
+              const isSel = filtroEsp === key;
+              const meta  = key === "Todas" ? null : E[key];
+              return (
+                <button key={key} onClick={() => { setFiltroEsp(key); setFiltroSub("Todas"); setIdx(0); setRevelado(false); setConcluido(false); }}
+                  style={{
+                    padding: "5px 12px", borderRadius: 20,
+                    border: `2px solid ${isSel ? (meta?.cor ?? "#2d2218") : border}`,
+                    background: isSel ? (meta?.cor ?? "#2d2218") : "transparent",
+                    color: isSel ? "#fff" : (meta?.cor ?? "#6a5a48"),
+                    fontSize: 12, fontWeight: isSel ? 700 : 400,
+                    cursor: "pointer", fontFamily: "inherit",
+                    transition: "all .15s",
+                  }}>
+                  {key === "Todas" ? "Todas" : `${meta.emoji} ${meta.abrev}`}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Filtro sub-área (aparece só quando uma esp está selecionada) */}
+          {filtroEsp !== "Todas" && (
+            <div style={{ display: "flex", gap: 5, flexWrap: "wrap", marginBottom: 10 }}>
+              {["Todas", ...SUBS[filtroEsp]].map(s => {
+                const isSel = filtroSub === s;
+                const meta  = E[filtroEsp];
+                const count = allCards.filter(c => c.esp === filtroEsp && (s === "Todas" || c.sub === s)).length;
+                return (
+                  <button key={s} onClick={() => { setFiltroSub(s); setIdx(0); setRevelado(false); setConcluido(false); }}
+                    style={{
+                      padding: "3px 10px", borderRadius: 16,
+                      border: `1.5px solid ${isSel ? meta.cor : "#d8d0c4"}`,
+                      background: isSel ? meta.pill : "transparent",
+                      color: isSel ? meta.cor : textMuted,
+                      fontSize: 11, cursor: "pointer", fontFamily: "inherit",
+                    }}>
+                    {s}{s !== "Todas" ? ` (${count})` : ""}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Barra de progresso */}
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+            <div style={{ flex: 1, height: 3, background: "#e8dfd0", borderRadius: 2, overflow: "hidden" }}>
+              <div style={{ height: "100%", width: `${progress}%`, background: cor, transition: "width .4s", borderRadius: 2 }} />
+            </div>
+            <span style={{ fontSize: 11, color: "#b0a090", minWidth: 48, textAlign: "right" }}>
+              {feitos}/{filtered.length}
+            </span>
+          </div>
+
+          {/* Card */}
+          {card && filtered.length > 0 ? (
+            <div style={{
+              background: cardBg, borderRadius: 16, overflow: "hidden",
+              border: `1px solid ${border}`,
+              boxShadow: "0 4px 20px rgba(100,70,40,.08)",
+            }}>
+              {/* Header do card */}
+              <div style={{
+                background: cfg.pill, padding: "10px 16px",
+                display: "flex", justifyContent: "space-between", alignItems: "center",
+                borderBottom: `1px solid ${border}`,
+              }}>
+                <div>
+                  <span style={{ fontSize: 10, color: textMuted, textTransform: "uppercase", letterSpacing: "0.8px", display: "block" }}>
+                    {card.sub}
+                  </span>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: cor }}>
+                    {cfg.emoji} {cfg.nome}
+                    {card.custom && <span style={{ fontSize: 10, marginLeft: 6, background: cor+"20", color: cor, padding: "1px 5px", borderRadius: 8 }}>seu</span>}
+                  </span>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <button onClick={toggleMark} style={{
+                    background: "none", border: "none", cursor: "pointer",
+                    fontSize: 17, color: marcados.has(globalIdx) ? "#c08030" : "#d0c8b8",
+                    padding: 0,
+                  }}>🔖</button>
+                  <span style={{ fontSize: 11, color: textMuted }}>{idx + 1}/{filtered.length}</span>
+                </div>
+              </div>
+
+              <div style={{ padding: "22px 20px 18px" }}>
+                {/* Pergunta */}
+                <div style={{ borderLeft: `3px solid ${cor}`, paddingLeft: 14, marginBottom: 18 }}>
+                  <p style={{ margin: "0 0 4px", fontSize: 10, color: textMuted, textTransform: "uppercase", letterSpacing: "1px" }}>Q</p>
+                  <p style={{ margin: 0, fontSize: 16, color: textMain, lineHeight: 1.55, fontWeight: 600 }}>{card.q}</p>
+                </div>
+
+                <div style={{ height: 1, background: "#ede5d8", marginBottom: 18 }} />
+
+                {!revelado ? (
+                  <button onClick={() => setRevelado(true)} style={{
+                    width: "100%", padding: "14px",
+                    background: "#2d2218", color: "#f0e8d8",
+                    border: "none", borderRadius: 12,
+                    fontSize: 14, cursor: "pointer", fontFamily: "inherit",
+                  }}>
+                    Ver resposta
+                  </button>
+                ) : (
+                  <>
+                    {/* Resposta */}
+                    <p style={{ margin: "0 0 4px", fontSize: 10, color: "#5a7a5a", textTransform: "uppercase", letterSpacing: "1px" }}>A</p>
+                    <p style={{ margin: "0 0 14px", fontSize: 14, color: textMain, lineHeight: 1.7 }}>{card.a}</p>
+
+                    {/* Dica */}
+                    {card.dica && (
+                      <div style={{
+                        background: "#fdf8ec", borderLeft: "3px solid #b09020",
+                        borderRadius: "0 8px 8px 0", padding: "10px 14px", marginBottom: 20,
+                      }}>
+                        <p style={{ margin: "0 0 3px", fontSize: 10, color: "#9a8020", textTransform: "uppercase", letterSpacing: "1px" }}>💡 Dica de prova</p>
+                        <p style={{ margin: 0, fontSize: 13, color: "#6a5010", lineHeight: 1.6 }}>{card.dica}</p>
+                      </div>
+                    )}
+
+                    {/* Rating 1-5 */}
+                    <p style={{ margin: "0 0 10px", fontSize: 11, color: textMuted, textTransform: "uppercase", letterSpacing: "1px", textAlign: "center" }}>
+                      Como você foi?
+                    </p>
+                    <div style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
+                      {RATINGS.map(r => (
+                        <button key={r.v} onClick={() => rate(r.v)} style={{
+                          flex: 1, aspectRatio: "1", borderRadius: "50%",
+                          border: "none",
+                          background: ratingAnim === r.v ? r.c : r.b,
+                          color: r.c, fontSize: 18, fontWeight: 900,
+                          cursor: "pointer", fontFamily: "inherit",
+                          transform: ratingAnim === r.v ? "scale(1.2)" : "scale(1)",
+                          transition: "all .2s",
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                        }}>{r.v}</button>
+                      ))}
+                    </div>
+                    <div style={{ display: "flex", justifyContent: "space-between", marginTop: 5, padding: "0 2px" }}>
+                      <span style={{ fontSize: 9, color: "#c04030" }}>Não lembrei</span>
+                      <span style={{ fontSize: 9, color: "#2878c0" }}>Perfectamente</span>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          ) : (
+            <div style={{ textAlign: "center", padding: 40, color: textMuted }}>
+              Nenhum card nessa sub-área ainda.
+              <br />
+              <button onClick={() => setShowAdd(true)} style={{
+                marginTop: 12, padding: "10px 20px",
+                background: cor, color: "#fff", border: "none",
+                borderRadius: 10, fontSize: 13, cursor: "pointer", fontFamily: "inherit",
+              }}>+ Adicionar card</button>
+            </div>
+          )}
+
+          {marcados.size > 0 && (
+            <p style={{ textAlign: "center", fontSize: 11, color: textMuted, marginTop: 10 }}>
+              🔖 {marcados.size} marcado{marcados.size > 1 ? "s" : ""}
+            </p>
+          )}
+        </div>
+      )}
+
+      {/* ── MODAL ADICIONAR CARD ── */}
+      {showAdd && <AddModal onSave={handleAddCard} onClose={() => setShowAdd(false)} />}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
