@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A História do Téo — Marcos do Desenvolvimento</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,900;1,9..144,500&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#fdf6f0;--ink:#3a3340;--ink-soft:#6b6470;
+    --rose:#f6d3cf;--rose-deep:#e8a7a0;--peach:#fbe0c8;
+    --mint:#cfe8dd;--mint-deep:#9ccdb8;--lilac:#ddd4ee;
+    --sky:#cfe2f0;--butter:#f8e9b8;--card:#fffdfb;--line:#ece2d9;
+    --skin:#f3cdb3;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg);color:var(--ink);font-family:'Nunito',sans-serif;line-height:1.6;
+    overflow-x:hidden;
+    background-image:radial-gradient(var(--line) 1px, transparent 1px);background-size:26px 26px;
+  }
+
+  header{max-width:980px;margin:0 auto;padding:70px 24px 30px;text-align:center;position:relative}
+  .eyebrow{display:inline-block;font-weight:800;letter-spacing:.22em;text-transform:uppercase;
+    font-size:.72rem;color:var(--rose-deep);background:var(--rose);padding:7px 16px;border-radius:999px;margin-bottom:22px}
+  h1{font-family:'Fraunces',serif;font-weight:900;line-height:1.02;font-size:clamp(2.6rem,7vw,4.6rem);letter-spacing:-.02em}
+  h1 em{font-style:italic;color:var(--rose-deep)}
+  .sub{margin:20px auto 0;max-width:560px;color:var(--ink-soft);font-size:1.08rem}
+  .rule-pill{margin:34px auto 0;max-width:640px;background:var(--mint);border:2px solid var(--mint-deep);
+    border-radius:20px;padding:16px 22px;font-weight:700;color:#2f5f4d;font-size:.98rem}
+  .rule-pill b{color:#1f4536}
+
+  .toolbar{position:sticky;top:0;z-index:50;background:rgba(253,246,240,.92);backdrop-filter:blur(6px);
+    border-bottom:2px solid var(--line);display:flex;justify-content:center;gap:12px;padding:12px 16px;flex-wrap:wrap}
+  .btn{font-family:'Nunito',sans-serif;font-weight:800;font-size:.9rem;cursor:pointer;border:2.5px solid var(--ink);
+    border-radius:14px;padding:9px 18px;background:var(--butter);color:var(--ink);box-shadow:3px 3px 0 var(--ink);
+    transition:transform .12s, box-shadow .12s}
+  .btn:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--ink)}
+  .btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+  .btn.ghost{background:var(--card)}
+  .saved-msg{align-self:center;font-size:.85rem;color:var(--mint-deep);font-weight:800;opacity:0;transition:opacity .3s}
+  .saved-msg.show{opacity:1}
+
+  main{max-width:980px;margin:0 auto;padding:40px 24px;position:relative}
+  .spine{position:absolute;left:50%;top:0;bottom:120px;width:3px;
+    background:repeating-linear-gradient(var(--rose-deep) 0 8px,transparent 8px 18px);transform:translateX(-50%);z-index:0}
+
+  .chapter{position:relative;width:calc(50% - 46px);margin:0 0 54px;z-index:1;
+    opacity:0;transform:translateY(26px);transition:opacity .6s ease, transform .6s ease}
+  .chapter.show{opacity:1;transform:none}
+  .chapter.left{margin-right:auto;text-align:right}
+  .chapter.right{margin-left:auto}
+
+  .card{background:var(--card);border:2.5px solid var(--ink);border-radius:24px;padding:20px 22px;
+    box-shadow:18px 18px 0 rgba(232,167,160,.18);position:relative}
+  .chapter.right .card{box-shadow:-18px 18px 0 rgba(156,205,184,.22)}
+
+  .age-tag{display:inline-flex;align-items:center;gap:8px;font-family:'Fraunces',serif;font-weight:900;
+    font-size:1.12rem;padding:5px 14px;border-radius:12px;border:2px solid var(--ink);margin-bottom:10px}
+  .age-tag .dot{font-size:1.3rem;line-height:0}
+  .milestone{font-size:1.0rem}
+  .milestone strong{background:linear-gradient(transparent 58%, var(--butter) 58%);padding:0 2px;font-weight:800}
+  .extra{color:var(--ink-soft);font-size:.9rem;margin-top:6px;display:block}
+
+  .note-wrap{margin-top:14px;text-align:left}
+  .note-wrap label{font-size:.72rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--ink-soft);display:block;margin-bottom:5px}
+  textarea{width:100%;min-height:46px;resize:vertical;font-family:'Nunito',sans-serif;font-size:.92rem;
+    color:var(--ink);border:2px dashed var(--rose-deep);border-radius:12px;padding:9px 11px;background:#fffaf7;line-height:1.5}
+  textarea:focus{outline:none;border-style:solid;background:#fff}
+
+  .node{position:absolute;top:30px;width:22px;height:22px;border-radius:50%;
+    background:var(--card);border:3px solid var(--ink);z-index:3}
+  .chapter.left  .node{right:-57px}
+  .chapter.right .node{left:-57px}
+
+  /* SCENE: large illustration on the opposite side of the dotted line */
+  .scene{position:absolute;top:8px;width:128px;height:128px;z-index:2;
+    background:#fff;border:2.5px solid var(--ink);border-radius:22px;padding:8px;
+    box-shadow:6px 6px 0 rgba(58,51,64,.12)}
+  .scene svg{width:100%;height:100%;display:block}
+  .chapter.left  .scene{left:calc(100% + 35px)}   /* card is on left -> scene to the right of spine */
+  .chapter.right .scene{right:calc(100% + 35px)}   /* card is on right -> scene to the left of spine */
+  .scene-cap{position:absolute;bottom:-22px;left:0;right:0;text-align:center;font-size:.7rem;
+    font-weight:800;color:var(--ink-soft);letter-spacing:.04em}
+
+  .t-rose .age-tag{background:var(--rose)}
+  .t-peach .age-tag{background:var(--peach)}
+  .t-mint .age-tag{background:var(--mint)}
+  .t-lilac .age-tag{background:var(--lilac)}
+  .t-sky .age-tag{background:var(--sky)}
+  .t-butter .age-tag{background:var(--butter)}
+
+  .cheats{max-width:980px;margin:10px auto 80px;padding:0 24px}
+  .cheats h2{font-family:'Fraunces',serif;font-weight:900;font-size:2rem;text-align:center;margin-bottom:8px}
+  .cheats .lead{text-align:center;color:var(--ink-soft);margin-bottom:30px}
+  .cheat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px}
+  .cheat{background:var(--card);border:2.5px solid var(--ink);border-radius:20px;padding:20px;box-shadow:8px 8px 0 rgba(58,51,64,.10)}
+  .cheat .ico{font-size:1.7rem;display:block;margin-bottom:8px}
+  .cheat h3{font-family:'Fraunces',serif;font-size:1.12rem;margin-bottom:6px}
+  .cheat p{font-size:.93rem;color:var(--ink-soft)}
+  .cheat p b{color:var(--ink)}
+
+  /* ---------- EXAM FOCUS ---------- */
+  .exam{max-width:980px;margin:30px auto 80px;padding:0 24px}
+  .exam-head{text-align:center;margin-bottom:30px}
+  .exam-head .badge{display:inline-block;font-weight:800;letter-spacing:.18em;text-transform:uppercase;
+    font-size:.7rem;color:#9a5b00;background:var(--butter);border:2px solid #e0c45e;
+    padding:6px 16px;border-radius:999px;margin-bottom:14px}
+  .exam-head h2{font-family:'Fraunces',serif;font-weight:900;font-size:2rem}
+  .exam-head .lead{color:var(--ink-soft);margin-top:6px}
+  .exam-card{background:var(--card);border:2.5px solid var(--ink);border-radius:22px;
+    padding:22px 24px;margin-bottom:18px;box-shadow:8px 8px 0 rgba(58,51,64,.10)}
+  .exam-card .rank{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+  .exam-card .rank .num{font-family:'Fraunces',serif;font-weight:900;font-size:1.4rem;
+    width:40px;height:40px;flex:0 0 40px;display:flex;align-items:center;justify-content:center;
+    border:2.5px solid var(--ink);border-radius:12px}
+  .exam-card h3{font-family:'Fraunces',serif;font-size:1.18rem;line-height:1.2}
+  .exam-card h3 small{display:block;font-family:'Nunito',sans-serif;font-weight:700;
+    font-size:.74rem;color:var(--ink-soft);letter-spacing:.06em;text-transform:uppercase;margin-top:2px}
+  .exam-card ul{list-style:none;margin:4px 0 0;padding:0}
+  .exam-card li{position:relative;padding:5px 0 5px 22px;font-size:.96rem;border-bottom:1px solid var(--line)}
+  .exam-card li:last-child{border-bottom:none}
+  .exam-card li::before{content:"›";position:absolute;left:4px;top:5px;color:var(--rose-deep);font-weight:900}
+  .exam-card li b{font-weight:800}
+  .exam-card li.trap{background:#fff6f4;border-radius:10px;padding-left:30px;margin-top:4px;border-bottom:none}
+  .exam-card li.trap::before{content:"⚠";left:8px;color:#d9824f}
+  .exam-card .hl{background:linear-gradient(transparent 58%, var(--butter) 58%);padding:0 2px}
+  .t1 .num{background:var(--rose)} .t2 .num{background:var(--mint)} .t3 .num{background:var(--sky)}
+  .t4 .num{background:var(--lilac)} .t5 .num{background:var(--peach)} .t6 .num{background:var(--butter)}
+
+  footer{text-align:center;padding:0 24px 60px;color:var(--ink-soft);font-size:.85rem}
+
+  @media(max-width:860px){
+    .scene{width:104px;height:104px}
+    .chapter.left .scene{left:calc(100% + 22px)}
+    .chapter.right .scene{right:calc(100% + 22px)}
+  }
+  @media(max-width:720px){
+    .spine{left:21px;transform:none}
+    .chapter,.chapter.left,.chapter.right{width:100%;margin:0 0 36px;text-align:left;padding-left:46px}
+    .chapter.left .card,.chapter.right .card{box-shadow:8px 8px 0 rgba(232,167,160,.20)}
+    .chapter.left .node,.chapter.right .node{left:11px;right:auto}
+    /* scene moves above the card on mobile */
+    .scene{position:relative;top:auto;left:auto !important;right:auto !important;
+      width:108px;height:108px;margin:0 0 26px}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <span class="eyebrow">Pediatria · DNPM</span>
+  <h1>A história do <em>Téo</em></h1>
+  <p class="sub">Os marcos do desenvolvimento neuropsicomotor contados como uma só história — para decorar a sequência sem decoreba.</p>
+  <div class="rule-pill">🧭 <b>Regra do jogo:</b> sentido <b>craniocaudal</b> (cabeça → pés) e <b>proximodistal</b> (centro → extremidades). Sempre do <b>simples → complexo</b>.</div>
+</header>
+
+<div class="toolbar">
+  <button class="btn" onclick="exportNotes()">⬇️ Exportar minhas anotações (.txt)</button>
+  <button class="btn ghost" onclick="clearNotes()">🧹 Limpar tudo</button>
+  <span class="saved-msg" id="savedMsg">✓ pronto</span>
+</div>
+
+<main>
+  <div class="spine"></div>
+
+  <!-- 1 mês — ESGRIMA (reflexo tônico cervical assimétrico) -->
+  <article class="chapter left t-rose"><span class="node"></span>
+    <span class="scene"><svg viewBox="0 0 100 100"><g stroke="#3a3340" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <ellipse cx="50" cy="62" rx="28" ry="14" fill="#f6d3cf"/>
+      <circle cx="32" cy="46" r="13" fill="#f3cdb3"/>
+      <path d="M28 44c1 1.5 3 1.5 4 0M36 44c1 1.5 3 1.5 4 0"/>
+      <path d="M30 50c2 1 4 1 6 0"/>
+      <path d="M45 50l22 -6" stroke="#e8a7a0"/>
+      <path d="M52 62l-16 8" stroke="#e8a7a0"/>
+      <path d="M66 66l8 2M64 72l8 0"/>
+    </g></svg><span class="scene-cap">posição de esgrima</span></span>
+    <div class="card">
+      <span class="age-tag"><span class="dot">●</span>1 mês</span>
+      <p class="milestone">Téo nasceu <strong>enroladinho</strong> (postura flexora) e em <strong>posição de esgrimista</strong>. Só sabe <strong>chorar alto</strong>.</p>
+      <span class="extra">Reflexo tônico cervical assimétrico no comando.</span>
+      <div class="note-wrap"><label>Minha anotação</label><textarea data-note="1mes" placeholder="escreva aqui…"></textarea></div>
+    </div>
+  </article>
+
+  <!-- 2 meses — SORRISO social -->
+  <article class="chapter right t-peach"><span class="node"></span>
+    <span class="scene"><svg viewBox="0 0 100 100"><g stroke="#3a3340" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="50" cy="50" r="30" fill="#fbe0c8"/>
+      <path d="M36 44c1.5-3 5-3 6.5 0M57.5 44c1.5-3 5-3 6.5 0"/>
+      <path d="M36 60c5 7 23 7 28 0" stroke="#e8a7a0"/>
+      <path d="M50 22c0-5 3-7 3-7"/>
+    </g></svg><span class="scene-cap">sorriso social</span></span>
+    <div class="card">
+      <span class="age-tag"><span class="dot">●</span>2 meses</span>
+      <p class="milestone">As mãos <strong>abrem sozinhas</strong>, vem o primeiro <strong>sorriso social</strong> e ele <strong>segue objetos com os olhos</strong>.</p>
+      <span class="extra">💡 "Sorriso social aos 2."</span>
+      <div class="note-wrap"><label>Minha anotação</label><textarea data-note="2meses" placeholder="escreva aqui…"></textarea></div>
+    </div>
+  </article>
+
+  <!-- 4 meses — SENTADO (com apoio / sustenta cabeça) -->
+  <article class="chapter left t-mint"><span class="node"></span>
+    <span class="scene"><svg viewBox="0 0 100 100"><g stroke="#3a3340" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="50" cy="32" r="14" fill="#cfe8dd"/>
+      <circle cx="45" cy="31" r="1.6" fill="#3a3340" stroke="none"/>
+      <circle cx="55" cy="31" r="1.6" fill="#3a3340" stroke="none"/>
+      <path d="M46 37c2 2 6 2 8 0"/>
+      <path d="M38 48c6-4 18-4 24 0l-2 22c-7 3-13 3-20 0z" fill="#9ccdb8"/>
+      <path d="M40 70l-8 8M60 70l8 8"/>
+      <path d="M38 56l-10 6M62 56l10 6" stroke="#cfe8dd"/>
+    </g></svg><span class="scene-cap">sentado, cabeça firme</span></span>
+    <div class="card">
+      <span class="age-tag"><span class="dot">●</span>4 meses</span>
+      <p class="milestone"><strong>Sustenta a cabeça</strong> e fica <strong>sentado com apoio</strong>; <strong>segura objetos</strong> com coordenação olho-mão. Solta o "gugu".</p>
+      <span class="extra">Reconhece rostos e dá risada interativa.</span>
+      <div class="note-wrap"><label>Minha anotação</label><textarea data-note="4meses" placeholder="escreva aqui…"></textarea></div>
+    </div>
+  </article>
+
+  <!-- 6 meses — DIZENDO SÍLABAS -->
+  <article class="chapter right t-lilac"><span class="node"></span>
+    <span class="scene"><svg viewBox="0 0 100 100"><g stroke="#3a3340" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="42" cy="48" r="20" fill="#ddd4ee"/>
+      <circle cx="38" cy="45" r="1.6" fill="#3a3340" stroke="none"/>
+      <circle cx="47" cy="45" r="1.6" fill="#3a3340" stroke="none"/>
+      <ellipse cx="42" cy="55" rx="4" ry="5" fill="#e8a7a0"/>
+      <path d="M66 34h22v16H78l-4 6v-6h-8z" fill="#fff"/>
+      <text x="77" y="46" font-family="Nunito,sans-serif" font-size="9" font-weight="800" fill="#3a3340" stroke="none" text-anchor="middle">ba</text>
+    </g></svg><span class="scene-cap">"ba-ba", "ga-ga"</span></span>
+    <div class="card">
+      <span class="age-tag"><span class="dot">●</span>6 meses</span>
+      <p class="milestone">Vira de fase: o <strong>Moro acaba até 6 meses</strong>. Téo <strong>diz sílabas simples ("ba", "ga")</strong>, rola e senta com apoio.</p>
+      <span class="extra">Fim dos principais reflexos primitivos.</span>
+      <div class="note-wrap"><label>Minha anotação</label><textarea data-note="6meses" placeholder="escreva aqui…"></textarea></div>
+    </div>
+  </article>
+
+  <!-- 9 meses — ENGATINHANDO -->
+  <article class="chapter left t-sky"><span class="node"></span>
+    <span class="scene"><svg viewBox="0 0 100 100"><g stroke="#3a3340" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <ellipse cx="54" cy="50" rx="22" ry="13" fill="#cfe2f0"/>
+      <circle cx="30" cy="42" r="13" fill="#f3cdb3"/>
+      <circle cx="27" cy="41" r="1.6" fill="#3a3340" stroke="none"/>
+      <path d="M24 47c2 1.5 5 1.5 7 0"/>
+      <path d="M40 60v14M52 62v12M64 60v14M72 58v14"/>
+    </g></svg><span class="scene-cap">engatinhando</span></span>
+    <div class="card">
+      <span class="age-tag"><span class="dot">●</span>9 meses</span>
+      <p class="milestone"><strong>Engatinha</strong>, faz <strong>pinça polegar-dedo</strong>, <strong>senta sem apoio</strong> e tem <strong>estranhamento</strong>.</p>
+      <span class="extra">Reconhece o nome · brinca de esconde-achou.</span>
+      <div class="note-wrap"><label>Minha anotação</label><textarea data-note="9meses" placeholder="escreva aqui…"></textarea></div>
+    </div>
+  </article>
+
+  <!-- 12 meses — CAMINHANDO COM APOIO -->
+  <article class="chapter right t-rose"><span class="node"></span>
+    <span class="scene"><svg viewBox="0 0 100 100"><g stroke="#3a3340" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="64" y="30" width="4" height="50" rx="2" fill="#e8a7a0"/>
+      <path d="M48 78h36" stroke="#e8a7a0"/>
+      <circle cx="38" cy="30" r="12" fill="#f6d3cf"/>
+      <circle cx="35" cy="29" r="1.5" fill="#3a3340" stroke="none"/>
+      <circle cx="42" cy="29" r="1.5" fill="#3a3340" stroke="none"/>
+      <path d="M36 34c1.5 1.5 4 1.5 5 0"/>
+      <path d="M38 42v22M38 50l24 -14" stroke="#3a3340"/>
+      <path d="M38 64l-7 14M38 64l8 14"/>
+    </g></svg><span class="scene-cap">anda com apoio</span></span>
+    <div class="card">
+      <span class="age-tag"><span class="dot">●</span>12 meses · 1 ano</span>
+      <p class="milestone">Festa! <strong>Caminha com apoio</strong>, <strong>bate palmas e acena</strong>, faz a <strong>pinça completa (polpa a polpa)</strong> e <strong>aponta</strong>.</p>
+      <span class="extra">Segura o copo sozinho.</span>
+      <div class="note-wrap"><label>Minha anotação</label><textarea data-note="12meses" placeholder="escreva aqui…"></textarea></div>
+    </div>
+  </article>
+
+  <!-- 15 meses — PRIMEIROS PASSOS SEM APOIO -->
+  <article class="chapter left t-peach"><span class="node"></span>
+    <span class="scene"><svg viewBox="0 0 100 100"><g stroke="#3a3340" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="50" cy="26" r="12" fill="#fbe0c8"/>
+      <circle cx="47" cy="25" r="1.5" fill="#3a3340" stroke="none"/>
+      <circle cx="53" cy="25" r="1.5" fill="#3a3340" stroke="none"/>
+      <path d="M47 30c2 2 4 2 6 0"/>
+      <path d="M50 38v24"/>
+      <path d="M50 44l-12 6M50 44l12 6"/>
+      <path d="M50 62l-12 16M50 62l12 16"/>
+      <path d="M30 84h12M58 84h12" stroke="#e8a7a0"/>
+    </g></svg><span class="scene-cap">primeiros passos</span></span>
+    <div class="card">
+      <span class="age-tag"><span class="dot">●</span>15 meses</span>
+      <p class="milestone">Solta os <strong>primeiros passos sem apoio</strong> e fala <strong>4–6 palavras</strong>.</p>
+      <div class="note-wrap"><label>Minha anotação</label><textarea data-note="15meses" placeholder="escreva aqui…"></textarea></div>
+    </div>
+  </article>
+
+  <!-- 18 meses — NOMEANDO OBJETO -->
+  <article class="chapter right t-mint"><span class="node"></span>
+    <span class="scene"><svg viewBox="0 0 100 100"><g stroke="#3a3340" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="36" cy="40" r="14" fill="#cfe8dd"/>
+      <circle cx="32" cy="39" r="1.6" fill="#3a3340" stroke="none"/>
+      <circle cx="41" cy="39" r="1.6" fill="#3a3340" stroke="none"/>
+      <path d="M33 45c2 1.5 5 1.5 7 0"/>
+      <path d="M36 54v18M36 60l22 -6"/>
+      <path d="M36 72l-7 10M36 72l7 10"/>
+      <circle cx="66" cy="46" r="9" fill="#f8e9b8"/>
+      <path d="M58 48l16 0" stroke="#e8a7a0"/>
+    </g></svg><span class="scene-cap">"bola!" (nomeia)</span></span>
+    <div class="card">
+      <span class="age-tag"><span class="dot">●</span>18 meses</span>
+      <p class="milestone"><strong>Anda sem apoio</strong>, <strong>nomeia objetos</strong> (~50 palavras), <strong>rabisca</strong> e <strong>obedece ordens</strong>.</p>
+      <div class="note-wrap"><label>Minha anotação</label><textarea data-note="18meses" placeholder="escreva aqui…"></textarea></div>
+    </div>
+  </article>
+
+  <!-- 24 meses — (mantido) -->
+  <article class="chapter left t-lilac"><span class="node"></span>
+    <span class="scene"><svg viewBox="0 0 100 100"><g stroke="#3a3340" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="50" cy="24" r="12" fill="#ddd4ee"/>
+      <circle cx="46" cy="23" r="1.5" fill="#3a3340" stroke="none"/>
+      <circle cx="54" cy="23" r="1.5" fill="#3a3340" stroke="none"/>
+      <path d="M47 28c2 2 4 2 6 0"/>
+      <path d="M50 36v26M50 44l-14 8M50 44l14 8"/>
+      <path d="M50 62l-12 18M50 62l12 18"/>
+    </g></svg><span class="scene-cap">corre · frases</span></span>
+    <div class="card">
+      <span class="age-tag"><span class="dot">●</span>24 meses · 2 anos</span>
+      <p class="milestone"><strong>Sobe escadas</strong> (dois pés/degrau), <strong>corre</strong> e monta <strong>frases com verbo</strong> ("dá água"). Já <strong>tira uma roupa</strong>.</p>
+      <div class="note-wrap"><label>Minha anotação</label><textarea data-note="24meses" placeholder="escreva aqui…"></textarea></div>
+    </div>
+  </article>
+
+  <!-- 2-3 anos — CHUTANDO BOLA -->
+  <article class="chapter right t-sky"><span class="node"></span>
+    <span class="scene"><svg viewBox="0 0 100 100"><g stroke="#3a3340" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="40" cy="24" r="12" fill="#cfe2f0"/>
+      <circle cx="37" cy="23" r="1.5" fill="#3a3340" stroke="none"/>
+      <circle cx="44" cy="23" r="1.5" fill="#3a3340" stroke="none"/>
+      <path d="M37 28c2 2 5 2 7 0"/>
+      <path d="M40 36v22M40 44l-12 6M40 44l12 6"/>
+      <path d="M40 58l-10 18"/>
+      <path d="M40 58l16 8" stroke="#3a3340"/>
+      <circle cx="68" cy="74" r="11" fill="#f8e9b8"/>
+      <path d="M62 70l12 8M62 78l12 -8" stroke="#9ccdb8" stroke-width="1.6"/>
+    </g></svg><span class="scene-cap">chuta a bola</span></span>
+    <div class="card">
+      <span class="age-tag"><span class="dot">●</span>2–3 anos</span>
+      <p class="milestone">Sociável: <strong>chuta bola</strong>, <strong>sobe escada alternando os pés</strong>, <strong>salta com dois pés</strong> e brinca de <strong>faz de conta</strong>.</p>
+      <span class="extra">Demonstra empatia · constrói torres.</span>
+      <div class="note-wrap"><label>Minha anotação</label><textarea data-note="2a3anos" placeholder="escreva aqui…"></textarea></div>
+    </div>
+  </article>
+
+  <!-- 4 anos — SUBINDO ESCADA -->
+  <article class="chapter left t-butter"><span class="node"></span>
+    <span class="scene"><svg viewBox="0 0 100 100"><g stroke="#3a3340" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M14 84h18v-16h18v-16h18v-16h14" stroke="#f8e9b8" stroke-width="3"/>
+      <circle cx="56" cy="34" r="11" fill="#f8e9b8"/>
+      <circle cx="53" cy="33" r="1.5" fill="#3a3340" stroke="none"/>
+      <circle cx="60" cy="33" r="1.5" fill="#3a3340" stroke="none"/>
+      <path d="M53 38c2 2 5 2 7 0"/>
+      <path d="M56 45v18M56 52l-12 4M56 52l12 -2"/>
+      <path d="M56 63l-10 9M56 63l8 -5"/>
+    </g></svg><span class="scene-cap">sobe escada</span></span>
+    <div class="card">
+      <span class="age-tag"><span class="dot">●</span>4 anos</span>
+      <p class="milestone"><strong>Sobe escada alternando os pés</strong>, <strong>salta em um pé só</strong>, lança bola e <strong>desenha o "palito" humano</strong>.</p>
+      <span class="extra">✏️ 4 anos → boneco palito.</span>
+      <div class="note-wrap"><label>Minha anotação</label><textarea data-note="4anos" placeholder="escreva aqui…"></textarea></div>
+    </div>
+  </article>
+
+  <!-- 5 anos -->
+  <article class="chapter right t-rose"><span class="node"></span>
+    <span class="scene"><svg viewBox="0 0 100 100"><g stroke="#3a3340" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="20" y="18" width="60" height="60" rx="6" fill="#f6d3cf"/>
+      <circle cx="50" cy="36" r="7" fill="#fff"/>
+      <path d="M50 43v14"/>
+      <path d="M50 47l-9 4M50 47l9 4"/>
+      <path d="M50 57l-8 11M50 57l8 11"/>
+    </g></svg><span class="scene-cap">figura, 6 partes</span></span>
+    <div class="card">
+      <span class="age-tag"><span class="dot">●</span>5 anos</span>
+      <p class="milestone">Evolui o desenho: <strong>figura humana com 6 partes</strong>, <strong>recorta com tesoura</strong>, <strong>pula e pega bola</strong> e já <strong>dá opinião</strong>.</p>
+      <span class="extra">✏️ 5 anos → 6 partes (mais detalhes).</span>
+      <div class="note-wrap"><label>Minha anotação</label><textarea data-note="5anos" placeholder="escreva aqui…"></textarea></div>
+    </div>
+  </article>
+
+  <!-- 6-10 anos -->
+  <article class="chapter left t-mint"><span class="node"></span>
+    <span class="scene"><svg viewBox="0 0 100 100"><g stroke="#3a3340" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M22 40l28-14 28 14-28 14z" fill="#cfe8dd"/>
+      <path d="M34 46v14c0 4 32 4 32 0v-14"/>
+      <path d="M78 40v18" stroke="#9ccdb8"/>
+      <circle cx="78" cy="61" r="2" fill="#3a3340" stroke="none"/>
+    </g></svg><span class="scene-cap">raciocínio lógico</span></span>
+    <div class="card">
+      <span class="age-tag"><span class="dot">●</span>6–10 anos</span>
+      <p class="milestone">Amadurece: <strong>raciocínio lógico</strong>, entende <strong>metáforas</strong> e fica mais <strong>calmo e empático</strong>.</p>
+      <div class="note-wrap"><label>Minha anotação</label><textarea data-note="6a10anos" placeholder="escreva aqui…"></textarea></div>
+    </div>
+  </article>
+</main>
+
+<section class="cheats">
+  <h2>Atalhos pra fixar</h2>
+  <p class="lead">Os ganchos que mais despencam em prova.</p>
+  <div class="cheat-grid">
+    <div class="cheat"><span class="ico">🤺</span><h3>Esgrima</h3><p>Reflexo tônico cervical assimétrico — postura clássica do <b>1º mês</b>; some entre 4–6 meses.</p></div>
+    <div class="cheat"><span class="ico">🤏</span><h3>Pinça</h3><p><b>9 meses:</b> polegar-dedo. <b>12 meses:</b> completa, polpa a polpa.</p></div>
+    <div class="cheat"><span class="ico">✏️</span><h3>Desenho da figura</h3><p><b>4 anos:</b> palito. <b>5 anos:</b> 6 partes. Mais idade, mais detalhe.</p></div>
+    <div class="cheat"><span class="ico">🪜</span><h3>Escadas</h3><p><b>2 anos:</b> sobe com dois pés/degrau. <b>2–3 anos / 4 anos:</b> alterna os pés.</p></div>
+    <div class="cheat"><span class="ico">😊</span><h3>Sorriso social</h3><p>Aos <b>2 meses</b>. Rima fácil: "sorriso social aos dois".</p></div>
+    <div class="cheat"><span class="ico">🔄</span><h3>Moro</h3><p>Some <b>até 6 meses</b> — fecha a fase dos reflexos primitivos.</p></div>
+  </div>
+</section>
+
+<section class="exam">
+  <div class="exam-head">
+    <span class="badge">⭐ Cai na prova</span>
+    <h2>O que mais despenca</h2>
+    <p class="lead">Ranking dos marcos de DNPM por frequência em 84 questões de residência.</p>
+  </div>
+
+  <div class="exam-card t1">
+    <div class="rank"><span class="num">1</span><h3>Os 9 meses<small>marco mais cobrado de longe</small></h3></div>
+    <ul>
+      <li>Tripé que sempre testam: <b>senta sem apoio</b>, <b>pinça polegar-dedo</b> e <b>estranhamento</b> (medo de estranhos).</li>
+      <li>Também: <b>reconhece o nome</b>, transfere objeto entre as mãos e brinca de <b>esconde-achou</b>.</li>
+      <li class="trap"><span class="hl">Não engatinhar aos 9–11 meses NÃO é atraso</span> — engatinhar é variável e nem todo bebê engatinha. O que importa é sentar sem apoio e fazer pinça.</li>
+    </ul>
+  </div>
+
+  <div class="exam-card t2">
+    <div class="rank"><span class="num">2</span><h3>Os 4 meses<small>segundo lugar em incidência</small></h3></div>
+    <ul>
+      <li><b>Sustenta a cabeça</b>, <b>segue objetos / preensão voluntária</b>, leva a mão à boca, <b>sorri e grita de prazer</b> e começa a sentar com apoio.</li>
+      <li class="trap">Aos 4 meses ainda <b>não</b> faz pinça nem brinca de esconde-achou — isso é dos 9 meses.</li>
+    </ul>
+  </div>
+
+  <div class="exam-card t3">
+    <div class="rank"><span class="num">3</span><h3>"Que idade é essa?"<small>diferenciar marcador motor por faixa</small></h3></div>
+    <ul>
+      <li><b>6 meses:</b> rola, senta com apoio, sílabas ("ba/ga"), tenta alcançar e transfere objeto entre as mãos.</li>
+      <li class="trap">Aos 6 meses ainda <b>não</b> faz pinça nem busca objeto escondido.</li>
+      <li><b>18 meses:</b> anda sozinha, rabisca, nomeia objetos, ~50 palavras, torre de blocos.</li>
+      <li><b>24 meses / 2 anos:</b> corre, sobe escada, torre de <b>~4–6 cubos</b>, faz de conta ("comidinha"), entende "meu", <b>empatia</b> (sente quando pisa no pé da mãe).</li>
+    </ul>
+  </div>
+
+  <div class="exam-card t4">
+    <div class="rank"><span class="num">4</span><h3>Linguagem e sinais de alerta<small>alta recorrência</small></h3></div>
+    <ul>
+      <li>Aos <b>3 meses</b> já deve fixar o olhar e localizar som — se não faz, é alerta.</li>
+      <li>O <b>"manhês" é adequado</b> e estimula a fala (não é prejudicial).</li>
+      <li>Atraso de linguagem é <b>mais comum em meninos</b>; fatores de risco: prematuridade e baixo peso.</li>
+      <li class="trap">Alerta universal forte: <span class="hl">indiferença / não reconhecer os pais</span> e <span class="hl">perda de habilidade já adquirida</span>.</li>
+    </ul>
+  </div>
+
+  <div class="exam-card t5">
+    <div class="rank"><span class="num">5</span><h3>Reflexos primitivos<small>pegadinha clássica</small></h3></div>
+    <ul>
+      <li>Preensão palmar some por volta dos <b>6 meses</b> (não 9).</li>
+      <li class="trap">O RN tem <b>tônus flexor de membros + hipotonia axial</b> — não o contrário. "Extensão generalizada/hipotonia dos membros" no 1º mês está errado.</li>
+    </ul>
+  </div>
+
+  <div class="exam-card t6">
+    <div class="rank"><span class="num">6</span><h3>Prematuro = idade corrigida<small>até os 2 anos</small></h3></div>
+    <ul>
+      <li>Sempre avalie o prematuro pela <b>idade corrigida</b> antes de classificar como atraso.</li>
+      <li>No <b>catch-up</b>, o <b>perímetro cefálico</b> costuma ser o primeiro a se equiparar.</li>
+    </ul>
+  </div>
+</section>
+
+<footer>A história do Téo · material de revisão de DNPM · feito para estudo pessoal</footer>
+
+<script>
+  const obs = new IntersectionObserver((entries)=>{
+    entries.forEach((e,i)=>{
+      if(e.isIntersecting){
+        e.target.style.transitionDelay = (i%2)*0.08 + 's';
+        e.target.classList.add('show');
+        obs.unobserve(e.target);
+      }
+    });
+  },{threshold:0.15});
+  document.querySelectorAll('.chapter').forEach(c=>obs.observe(c));
+
+  const labels = {
+    "1mes":"1 mês","2meses":"2 meses","4meses":"4 meses","6meses":"6 meses",
+    "9meses":"9 meses","12meses":"12 meses (1 ano)","15meses":"15 meses",
+    "18meses":"18 meses","24meses":"24 meses (2 anos)","2a3anos":"2–3 anos",
+    "4anos":"4 anos","5anos":"5 anos","6a10anos":"6–10 anos"
+  };
+
+  function flash(){
+    const m=document.getElementById('savedMsg');
+    m.textContent="✓ baixado";m.classList.add('show');
+    setTimeout(()=>m.classList.remove('show'),1600);
+  }
+
+  function exportNotes(){
+    const areas=document.querySelectorAll('textarea[data-note]');
+    let out="ANOTAÇÕES — A HISTÓRIA DO TÉO (Marcos do DNPM)\n";
+    out+="Exportado em "+new Date().toLocaleString('pt-BR')+"\n";
+    out+="==================================================\n\n";
+    let any=false;
+    areas.forEach(a=>{
+      const txt=a.value.trim();
+      if(txt){ any=true; out+="["+labels[a.dataset.note]+"]\n"+txt+"\n\n"; }
+    });
+    if(!any){ out+="(nenhuma anotação escrita ainda)\n"; }
+    const blob=new Blob([out],{type:"text/plain;charset=utf-8"});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;a.download="anotacoes-teo-dnpm.txt";
+    document.body.appendChild(a);a.click();
+    document.body.removeChild(a);URL.revokeObjectURL(url);
+    flash();
+  }
+
+  function clearNotes(){
+    if(confirm("Apagar todas as anotações desta página?")){
+      document.querySelectorAll('textarea[data-note]').forEach(a=>a.value="");
+    }
+  }
+</script>
+</body>
+</html>
