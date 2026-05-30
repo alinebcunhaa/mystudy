@@ -278,7 +278,7 @@ body {
   margin-top: 3px;
 }
 
-/* ─── IMAGE ZONES ─────────────────────────────────────────────── */
+/* ─── IMAGE GALLERY ZONES ──────────────────────────────────────── */
 .card-images {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -286,75 +286,138 @@ body {
   padding: 0 20px 14px;
 }
 .img-zone {
-  border: 1.5px dashed var(--border-hover);
+  border: 1.5px solid var(--border);
   border-radius: var(--radius-sm);
-  min-height: 130px;
+  background: var(--bg);
+  overflow: hidden;
+  transition: var(--transition);
+}
+.img-zone:hover { border-color: var(--border-hover); }
+
+/* Zone header */
+.zone-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 7px 9px 6px;
+  border-bottom: 1px solid var(--border);
+}
+.zone-header-label {
+  font-size: 10px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.5px;
+  color: var(--text-muted);
+  display: flex; align-items: center; gap: 5px;
+}
+.zone-add-btn {
+  width: 22px; height: 22px;
+  border-radius: 6px;
+  border: 1.5px solid var(--border-hover);
+  background: var(--surface);
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 14px; line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+  transition: var(--transition);
+  flex-shrink: 0;
+}
+.zone-add-btn:hover { background: var(--text); color: #fff; border-color: var(--text); }
+
+/* Zone body - thumbnail grid */
+.zone-body { padding: 8px; }
+.zone-empty {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; gap: 5px;
+  min-height: 80px;
+  cursor: pointer;
+}
+.zone-empty-icon { font-size: 20px; opacity: 0.35; }
+.zone-empty-text {
+  font-size: 10.5px; color: var(--text-light);
+  text-align: center; line-height: 1.4;
+}
+.zone-thumbs {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(58px, 1fr));
+  gap: 5px;
+}
+.thumb {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 5px;
+  overflow: hidden;
+  cursor: pointer;
+  border: 1.5px solid var(--border);
+  transition: var(--transition);
+}
+.thumb:hover { border-color: var(--border-hover); transform: scale(1.03); }
+.thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.thumb-del {
+  position: absolute; top: 2px; right: 2px;
+  width: 18px; height: 18px;
+  background: rgba(44,36,22,0.72);
+  border: none; border-radius: 4px;
+  color: #fff; font-size: 9px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: var(--transition);
+}
+.thumb:hover .thumb-del { opacity: 1; }
+
+/* ─── LIGHTBOX ─────────────────────────────────────────────────── */
+#lightbox {
+  position: fixed; inset: 0; z-index: 500;
+  background: rgba(20,16,10,0.92);
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
-  gap: 7px;
-  cursor: pointer;
-  transition: var(--transition);
+  gap: 14px;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.2s;
+  padding: 20px;
+}
+#lightbox.open { opacity: 1; pointer-events: all; }
+.lb-img-wrap {
   position: relative;
-  overflow: hidden;
-  background: var(--bg);
-}
-.img-zone:hover { border-color: var(--text-muted); background: #F6F1E8; }
-.img-zone.has-image { border-style: solid; border-color: var(--border); }
-.img-zone .zone-icon { font-size: 22px; opacity: 0.5; }
-.img-zone .zone-label {
-  font-size: 11px;
-  color: var(--text-muted);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
-  text-align: center;
-  padding: 0 10px;
-}
-.img-zone .zone-hint {
-  font-size: 10.5px;
-  color: var(--text-light);
-  text-align: center;
-  padding: 0 10px;
-}
-.img-zone img {
-  width: 100%; height: 100%;
-  object-fit: cover;
-  position: absolute; inset: 0;
-}
-.zone-overlay {
-  position: absolute; inset: 0;
-  background: rgba(44,36,22,0.55);
+  max-width: min(90vw, 900px);
+  max-height: 75vh;
   display: flex; align-items: center; justify-content: center;
-  gap: 10px;
-  opacity: 0;
-  transition: var(--transition);
-  border-radius: calc(var(--radius-sm) - 2px);
 }
-.img-zone:hover .zone-overlay { opacity: 1; }
-.zone-overlay button {
-  background: rgba(255,255,255,0.9);
-  border: none;
-  border-radius: 6px;
-  padding: 5px 10px;
-  font-size: 11px;
+#lb-img {
+  max-width: 100%; max-height: 75vh;
+  object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+  display: block;
+}
+.lb-nav {
+  position: absolute; top: 50%;
+  transform: translateY(-50%);
+  width: 38px; height: 38px;
+  background: rgba(255,255,255,0.15);
+  border: none; border-radius: 50%;
+  color: #fff; font-size: 18px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: var(--transition); backdrop-filter: blur(4px);
+}
+.lb-nav:hover { background: rgba(255,255,255,0.28); }
+#lb-prev { left: -50px; }
+#lb-next { right: -50px; }
+.lb-nav:disabled { opacity: 0.25; cursor: default; }
+.lb-bar {
+  display: flex; align-items: center; gap: 14px;
+}
+.lb-counter {
+  font-size: 12px; color: rgba(255,255,255,0.6);
+  font-family: 'DM Mono', monospace;
+  min-width: 50px; text-align: center;
+}
+.lb-close, .lb-del-btn {
+  padding: 7px 16px; border-radius: 8px;
+  border: none; cursor: pointer;
   font-family: 'DM Sans', sans-serif;
-  font-weight: 600;
-  cursor: pointer;
-  color: var(--text);
+  font-size: 12px; font-weight: 600;
+  transition: var(--transition);
 }
-.zone-type-badge {
-  position: absolute;
-  top: 7px; left: 7px;
-  font-size: 9.5px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-  padding: 2px 7px;
-  border-radius: 4px;
-  background: rgba(255,255,255,0.88);
-  color: var(--text-muted);
-  backdrop-filter: blur(4px);
-}
+.lb-close { background: rgba(255,255,255,0.15); color: #fff; }
+.lb-close:hover { background: rgba(255,255,255,0.25); }
+.lb-del-btn { background: #C07080; color: #fff; }
+.lb-del-btn:hover { background: #a8566a; }
 
 /* ─── CARD FOOTER ─────────────────────────────────────────────── */
 .card-footer {
@@ -636,6 +699,20 @@ body {
 <!-- HIDDEN FILE INPUT (shared) -->
 <input type="file" accept="image/*" class="hidden-input" id="imgInput">
 
+<!-- LIGHTBOX -->
+<div id="lightbox">
+  <div class="lb-img-wrap">
+    <img id="lb-img" src="" alt="Imagem ampliada">
+    <button class="lb-nav" id="lb-prev">‹</button>
+    <button class="lb-nav" id="lb-next">›</button>
+  </div>
+  <div class="lb-bar">
+    <button class="lb-del-btn" id="lb-del-btn">🗑 Remover</button>
+    <span class="lb-counter" id="lb-counter">1 / 1</span>
+    <button class="lb-close" id="lb-close">✕ Fechar</button>
+  </div>
+</div>
+
 <script>
 // ──────────────────────────────────────────────
 // PALETTE MAP
@@ -674,8 +751,8 @@ const defaultData = [
     ],
     pdfUrl: 'https://bvsms.saude.gov.br/bvs/publicacoes/manual_recomendacoes_controle_tuberculose_brasil_2_ed.pdf',
     tags: ['Manual MS 2ª ed.', 'Notificação compulsória', 'Alta frequência em prova'],
-    imgSus: null,
-    imgNota: null,
+    imgSus: [],
+    imgNota: [],
   },
   {
     id: 'hipertensao',
@@ -694,8 +771,8 @@ const defaultData = [
     ],
     pdfUrl: 'https://www.gov.br/conitec/pt-br/midias/protocolos/pcdt-hipertensao-arterial-sistemica.pdf',
     tags: ['PCDT CONITEC 2025', 'Alta frequência'],
-    imgSus: null,
-    imgNota: null,
+    imgSus: [],
+    imgNota: [],
   },
   {
     id: 'diabetes',
@@ -714,8 +791,8 @@ const defaultData = [
     ],
     pdfUrl: 'https://www.gov.br/conitec/pt-br/midias/protocolos/PCDTDM2.pdf',
     tags: ['PCDT CONITEC 2024', 'SBD 2024', 'Alta frequência'],
-    imgSus: null,
-    imgNota: null,
+    imgSus: [],
+    imgNota: [],
   },
   {
     id: 'dpoc',
@@ -734,8 +811,8 @@ const defaultData = [
     ],
     pdfUrl: 'https://www.gov.br/saude/pt-br/assuntos/saude-de-a-a-z/d/dpoc',
     tags: ['PCDT 2022', 'GOLD 2024', 'Espirometria'],
-    imgSus: null,
-    imgNota: null,
+    imgSus: [],
+    imgNota: [],
   },
   {
     id: 'sepse',
@@ -754,8 +831,8 @@ const defaultData = [
     ],
     pdfUrl: 'https://www.gov.br/saude/pt-br/assuntos/saude-de-a-a-z/s/sepse',
     tags: ['Sepse-3', 'Bundle 1h', 'UTI'],
-    imgSus: null,
-    imgNota: null,
+    imgSus: [],
+    imgNota: [],
   },
   {
     id: 'prenatal',
@@ -773,8 +850,8 @@ const defaultData = [
     ],
     pdfUrl: 'https://bvsms.saude.gov.br/bvs/publicacoes/cadernos_atencao_basica_32_prenatal.pdf',
     tags: ['CAB nº32', 'Atenção Básica', 'Obrigatório prova'],
-    imgSus: null,
-    imgNota: null,
+    imgSus: [],
+    imgNota: [],
   },
   {
     id: 'hanseniase',
@@ -794,8 +871,8 @@ const defaultData = [
     ],
     pdfUrl: 'https://www.gov.br/conitec/pt-br/midias/protocolos/20220818_pcdt_hanseniase.pdf',
     tags: ['PCDT 2022', 'Notificação compulsória', 'Incapacidade física'],
-    imgSus: null,
-    imgNota: null,
+    imgSus: [],
+    imgNota: [],
   },
   {
     id: 'hiv-criancas',
@@ -815,8 +892,8 @@ const defaultData = [
     ],
     pdfUrl: 'https://www.gov.br/conitec/pt-br/midias/protocolos/protocolo-clinico-e-diretrizes-terapeuticas-para-manejo-da-infeccao-pelo-hiv-em-criancas-e-adolescentes-modulo-2-diagnostico-manejo-e-tratamento-de-criancas-e-adolescentes-vivendo-com-hiv.pdf',
     tags: ['PCDT 2023', 'Pediatria', 'TARV'],
-    imgSus: null,
-    imgNota: null,
+    imgSus: [],
+    imgNota: [],
   },
   {
     id: 'rcu',
@@ -836,8 +913,8 @@ const defaultData = [
     ],
     pdfUrl: 'https://www.gov.br/conitec/pt-br/midias/protocolos/pcdt-de-retocolite-ulcerativa',
     tags: ['PCDT 2024', 'DII', 'Truelove-Witts'],
-    imgSus: null,
-    imgNota: null,
+    imgSus: [],
+    imgNota: [],
   },
 ];
 
@@ -854,11 +931,21 @@ function loadState() {
     const saved = localStorage.getItem('cartilhas-ms-v3');
     if (saved) {
       cartilhas = JSON.parse(saved);
+      // migração: converter imgSus/imgNota string → array
+      cartilhas.forEach(c => {
+        if (c.imgSus && !Array.isArray(c.imgSus)) c.imgSus = [c.imgSus];
+        if (c.imgNota && !Array.isArray(c.imgNota)) c.imgNota = [c.imgNota];
+        if (!c.imgSus) c.imgSus = [];
+        if (!c.imgNota) c.imgNota = [];
+      });
     } else {
       cartilhas = JSON.parse(JSON.stringify(defaultData));
+      // garantir arrays nos defaults
+      cartilhas.forEach(c => { c.imgSus = []; c.imgNota = []; });
     }
   } catch(e) {
     cartilhas = JSON.parse(JSON.stringify(defaultData));
+    cartilhas.forEach(c => { c.imgSus = []; c.imgNota = []; });
   }
 }
 
@@ -883,49 +970,43 @@ function renderStars(n) {
   ).join('');
 }
 
+function renderZone(c, type) {
+  const isSus = type === 'sus';
+  const imgs = toArr(isSus ? c.imgSus : c.imgNota);
+  const label = isSus ? '🏥 Infográfico SUS' : '✏️ Minha anotação';
+  const emptyHint = isSus ? 'Clique em + para<br>adicionar infográfico' : 'Clique em + para<br>foto, desenho ou scan';
+
+  const thumbsHtml = imgs.map((src, idx) => `
+    <div class="thumb" onclick="openLightbox('${c.id}','${type}',${idx})">
+      <img src="${src}" alt="imagem ${idx+1}">
+      <button class="thumb-del" onclick="event.stopPropagation();removeImg('${c.id}','${type}',${idx})" title="Remover">✕</button>
+    </div>
+  `).join('');
+
+  const bodyHtml = imgs.length === 0
+    ? `<div class="zone-empty" onclick="triggerAdd('${c.id}','${type}')">
+         <span class="zone-empty-icon">${isSus ? '🏥' : '✏️'}</span>
+         <span class="zone-empty-text">${emptyHint}</span>
+       </div>`
+    : `<div class="zone-thumbs">${thumbsHtml}</div>`;
+
+  return `
+    <div class="img-zone">
+      <div class="zone-header">
+        <span class="zone-header-label">${label}</span>
+        <button class="zone-add-btn" onclick="triggerAdd('${c.id}','${type}')" title="Adicionar imagem">+</button>
+      </div>
+      <div class="zone-body">${bodyHtml}</div>
+    </div>`;
+}
+
 function renderCard(c) {
   const st = getStyle(c.categoria);
-  const pontos = (c.pontos || []).map(p =>
-    `<li>${p}</li>`
-  ).join('');
-  const tags = (c.tags || []).map(t =>
-    `<span class="tag">${t}</span>`
-  ).join('');
+  const pontos = (c.pontos || []).map(p => `<li>${p}</li>`).join('');
+  const tags = (c.tags || []).map(t => `<span class="tag">${t}</span>`).join('');
   const pdfBtn = c.pdfUrl
     ? `<a class="btn btn-pdf" href="${c.pdfUrl}" target="_blank" rel="noopener">📄 Cartilha MS</a>`
     : `<button class="btn btn-outline" onclick="setPdf('${c.id}')">+ PDF</button>`;
-
-  // SUS image zone
-  const susZone = c.imgSus
-    ? `<div class="img-zone has-image" onclick="openImgZone('${c.id}','sus')">
-         <img src="${c.imgSus}" alt="Infográfico SUS">
-         <span class="zone-type-badge">🏥 Infográfico SUS</span>
-         <div class="zone-overlay">
-           <button onclick="event.stopPropagation();removeImg('${c.id}','sus')">🗑 Remover</button>
-           <button onclick="event.stopPropagation();openImgZone('${c.id}','sus')">↺ Trocar</button>
-         </div>
-       </div>`
-    : `<div class="img-zone" onclick="openImgZone('${c.id}','sus')">
-         <span class="zone-icon">🏥</span>
-         <span class="zone-label">Infográfico SUS</span>
-         <span class="zone-hint">Clique para adicionar</span>
-       </div>`;
-
-  // Nota zone
-  const notaZone = c.imgNota
-    ? `<div class="img-zone has-image" onclick="openImgZone('${c.id}','nota')">
-         <img src="${c.imgNota}" alt="Anotação pessoal">
-         <span class="zone-type-badge">✏️ Minha anotação</span>
-         <div class="zone-overlay">
-           <button onclick="event.stopPropagation();removeImg('${c.id}','nota')">🗑 Remover</button>
-           <button onclick="event.stopPropagation();openImgZone('${c.id}','nota')">↺ Trocar</button>
-         </div>
-       </div>`
-    : `<div class="img-zone" onclick="openImgZone('${c.id}','nota')">
-         <span class="zone-icon">✏️</span>
-         <span class="zone-label">Minha anotação</span>
-         <span class="zone-hint">Foto, desenho ou scan</span>
-       </div>`;
 
   const hidden = (currentFilter !== 'all' && currentFilter !== c.categoria) ? 'card-hidden' : '';
 
@@ -951,8 +1032,8 @@ function renderCard(c) {
     </div>
 
     <div class="card-images">
-      ${susZone}
-      ${notaZone}
+      ${renderZone(c, 'sus')}
+      ${renderZone(c, 'nota')}
     </div>
 
     <div class="card-footer">
@@ -985,7 +1066,7 @@ function render() {
 function updateStats() {
   document.getElementById('stat-total').textContent = cartilhas.length;
   document.getElementById('stat-imagens').textContent =
-    cartilhas.filter(c => c.imgSus || c.imgNota).length;
+    cartilhas.filter(c => toArr(c.imgSus).length > 0 || toArr(c.imgNota).length > 0).length;
   document.getElementById('stat-pdfs').textContent =
     cartilhas.filter(c => c.pdfUrl).length;
 }
@@ -1003,42 +1084,120 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
 });
 
 // ──────────────────────────────────────────────
+// IMAGE HELPERS
+// ──────────────────────────────────────────────
+function toArr(v) {
+  if (!v) return [];
+  if (Array.isArray(v)) return v;
+  return [v]; // migração de formato antigo
+}
+
+function getImgArr(card, type) {
+  return toArr(type === 'sus' ? card.imgSus : card.imgNota);
+}
+
+function setImgArr(card, type, arr) {
+  if (type === 'sus') card.imgSus = arr;
+  else card.imgNota = arr;
+}
+
+// ──────────────────────────────────────────────
 // IMAGE UPLOAD
 // ──────────────────────────────────────────────
 const imgInput = document.getElementById('imgInput');
 
-function openImgZone(id, type) {
+function triggerAdd(id, type) {
   pendingImgCardId = id;
   pendingImgType = type;
   imgInput.click();
 }
 
 imgInput.addEventListener('change', e => {
-  const file = e.target.files[0];
-  if (!file || !pendingImgCardId) return;
-  const reader = new FileReader();
-  reader.onload = ev => {
-    const card = cartilhas.find(c => c.id === pendingImgCardId);
-    if (!card) return;
-    if (pendingImgType === 'sus') card.imgSus = ev.target.result;
-    else card.imgNota = ev.target.result;
-    saveState();
-    render();
-    pendingImgCardId = null;
-    pendingImgType = null;
-    imgInput.value = '';
-  };
-  reader.readAsDataURL(file);
+  const files = Array.from(e.target.files);
+  if (!files.length || !pendingImgCardId) return;
+  const card = cartilhas.find(c => c.id === pendingImgCardId);
+  if (!card) return;
+
+  let loaded = 0;
+  files.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const arr = getImgArr(card, pendingImgType);
+      arr.push(ev.target.result);
+      setImgArr(card, pendingImgType, arr);
+      loaded++;
+      if (loaded === files.length) {
+        saveState();
+        render();
+        pendingImgCardId = null;
+        pendingImgType = null;
+        imgInput.value = '';
+      }
+    };
+    reader.readAsDataURL(file);
+  });
 });
 
-function removeImg(id, type) {
+// allow multiple files
+imgInput.setAttribute('multiple', '');
+
+function removeImg(id, type, idx) {
   const card = cartilhas.find(c => c.id === id);
   if (!card) return;
-  if (type === 'sus') card.imgSus = null;
-  else card.imgNota = null;
+  const arr = getImgArr(card, type);
+  arr.splice(idx, 1);
+  setImgArr(card, type, arr);
   saveState();
   render();
+  // close lightbox if open on this image
+  if (lbCardId === id && lbType === type) closeLightbox();
 }
+
+// ──────────────────────────────────────────────
+// LIGHTBOX
+// ──────────────────────────────────────────────
+let lbCardId = null, lbType = null, lbIdx = 0;
+
+function openLightbox(id, type, idx) {
+  lbCardId = id; lbType = type; lbIdx = idx;
+  updateLightbox();
+  document.getElementById('lightbox').classList.add('open');
+}
+
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+  lbCardId = null; lbType = null;
+}
+
+function updateLightbox() {
+  const card = cartilhas.find(c => c.id === lbCardId);
+  if (!card) return;
+  const imgs = getImgArr(card, lbType);
+  if (!imgs.length) { closeLightbox(); return; }
+  lbIdx = Math.max(0, Math.min(lbIdx, imgs.length - 1));
+  document.getElementById('lb-img').src = imgs[lbIdx];
+  document.getElementById('lb-counter').textContent = `${lbIdx + 1} / ${imgs.length}`;
+  document.getElementById('lb-prev').disabled = lbIdx === 0;
+  document.getElementById('lb-next').disabled = lbIdx === imgs.length - 1;
+}
+
+document.getElementById('lb-prev').addEventListener('click', () => { lbIdx--; updateLightbox(); });
+document.getElementById('lb-next').addEventListener('click', () => { lbIdx++; updateLightbox(); });
+document.getElementById('lb-close').addEventListener('click', closeLightbox);
+document.getElementById('lb-del-btn').addEventListener('click', () => {
+  if (!lbCardId) return;
+  removeImg(lbCardId, lbType, lbIdx);
+});
+document.getElementById('lightbox').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeLightbox();
+});
+document.addEventListener('keydown', e => {
+  const lb = document.getElementById('lightbox');
+  if (!lb.classList.contains('open')) return;
+  if (e.key === 'Escape') closeLightbox();
+  if (e.key === 'ArrowLeft') { lbIdx--; updateLightbox(); }
+  if (e.key === 'ArrowRight') { lbIdx++; updateLightbox(); }
+});
 
 // ──────────────────────────────────────────────
 // MODAL
@@ -1076,8 +1235,8 @@ function addCard() {
     pontos,
     pdfUrl: document.getElementById('f-pdf').value.trim(),
     tags,
-    imgSus: null,
-    imgNota: null,
+    imgSus: [],
+    imgNota: [],
   };
   cartilhas.push(newCard);
   saveState();
