@@ -104,6 +104,44 @@
   .cheat p{font-size:.93rem;color:var(--ink-soft)}
   .cheat p b{color:var(--ink)}
 
+  /* ---------- REFLEXES TIMELINE ---------- */
+  .reflex{max-width:980px;margin:20px auto 70px;padding:0 24px}
+  .reflex-head{text-align:center;margin-bottom:26px}
+  .reflex-head .badge{display:inline-block;font-weight:800;letter-spacing:.18em;text-transform:uppercase;
+    font-size:.7rem;color:var(--rose-deep);background:var(--rose);border:2px solid var(--rose-deep);
+    padding:6px 16px;border-radius:999px;margin-bottom:12px}
+  .reflex-head h2{font-family:'Fraunces',serif;font-weight:900;font-size:2rem}
+  .reflex-head .lead{color:var(--ink-soft);margin-top:6px;font-size:.96rem}
+  .gantt{background:var(--card);border:2.5px solid var(--ink);border-radius:22px;padding:20px 20px 14px;
+    box-shadow:8px 8px 0 rgba(58,51,64,.10);overflow-x:auto}
+  .gantt-inner{min-width:560px}
+  /* axis */
+  .axis{display:grid;grid-template-columns:150px 1fr;align-items:end;margin-bottom:10px}
+  .axis .ticks{display:grid;grid-template-columns:repeat(13,1fr);font-size:.66rem;font-weight:800;color:var(--ink-soft)}
+  .axis .ticks span{position:relative;text-align:left;border-left:1px solid var(--line);padding-left:3px;padding-bottom:2px}
+  .axis .ticks span:first-child{border-left:none}
+  .axis .unit{font-size:.62rem;font-weight:800;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.08em}
+  /* rows */
+  .row{display:grid;grid-template-columns:150px 1fr;align-items:center;padding:7px 0;border-top:1px solid var(--line)}
+  .row .label{font-size:.82rem;font-weight:700;padding-right:8px;line-height:1.25}
+  .row .label small{display:block;font-weight:600;color:var(--ink-soft);font-size:.72rem}
+  .lane{position:relative;height:22px;background:repeating-linear-gradient(90deg,transparent 0,transparent calc(100%/13 - 1px),var(--line) calc(100%/13 - 1px),var(--line) calc(100%/13))}
+  .bar{position:absolute;top:3px;height:16px;border-radius:8px;border:2px solid var(--ink);
+    display:flex;align-items:center;justify-content:flex-end;padding-right:6px}
+  .bar.solid{}
+  /* uncertainty (range of disappearance) shown lighter */
+  .bar .fade{position:absolute;right:0;top:-2px;bottom:-2px;width:38%;border-radius:0 8px 8px 0;
+    background:repeating-linear-gradient(45deg,rgba(255,255,255,.0) 0 3px,rgba(255,255,255,.55) 3px 6px)}
+  .b-rose{background:var(--rose)} .b-peach{background:var(--peach)} .b-mint{background:var(--mint)}
+  .b-lilac{background:var(--lilac)} .b-sky{background:var(--sky)} .b-butter{background:var(--butter)}
+  .b-rosedeep{background:var(--rose-deep)} .b-mintdeep{background:var(--mint-deep)}
+  .reflex .note{font-size:.8rem;color:var(--ink-soft);margin-top:12px;text-align:center}
+  .reflex .legend{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;margin-top:14px;font-size:.78rem;font-weight:700;color:var(--ink-soft)}
+  .reflex .legend i{display:inline-block;width:26px;height:12px;border:2px solid var(--ink);border-radius:6px;vertical-align:middle;margin-right:6px;background:var(--mint)}
+  .reflex .legend i.range{background:var(--mint);position:relative;overflow:hidden}
+  .reflex .legend i.range::after{content:"";position:absolute;right:0;top:0;bottom:0;width:55%;
+    background:repeating-linear-gradient(45deg,transparent 0 3px,rgba(255,255,255,.6) 3px 6px)}
+
   /* ---------- EXAM FOCUS ---------- */
   .exam{max-width:980px;margin:30px auto 80px;padding:0 24px}
   .exam-head{text-align:center;margin-bottom:30px}
@@ -416,6 +454,72 @@
     <div class="cheat"><span class="ico">😊</span><h3>Sorriso social</h3><p>Aos <b>2 meses</b>. Rima fácil: "sorriso social aos dois".</p></div>
     <div class="cheat"><span class="ico">🔄</span><h3>Moro</h3><p>Some <b>até 6 meses</b> — fecha a fase dos reflexos primitivos.</p></div>
   </div>
+</section>
+
+<section class="reflex">
+  <div class="reflex-head">
+    <span class="badge">🔄 Reflexos primitivos</span>
+    <h2>Quando some cada reflexo</h2>
+    <p class="lead">Quase todos estão presentes ao nascer (RN a termo) — a prova cobra <b>quando desaparecem</b>. As janelas se sobrepõem; veja na linha do tempo.</p>
+  </div>
+
+  <div class="gantt">
+    <div class="gantt-inner">
+      <div class="axis">
+        <span class="unit">Idade →</span>
+        <div class="ticks">
+          <span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12m</span>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="label">Marcha reflexa<small>passos automáticos</small></div>
+        <div class="lane"><div class="bar b-peach" style="left:0;width:16.7%"></div></div>
+      </div>
+
+      <div class="row">
+        <div class="label">Sucção<small>vira voluntária</small></div>
+        <div class="lane"><div class="bar b-rose" style="left:0;width:25%"></div></div>
+      </div>
+
+      <div class="row">
+        <div class="label">Tônico-cervical<small>"esgrimista"</small></div>
+        <div class="lane"><div class="bar b-lilac" style="left:8.33%;width:41.7%"><span class="fade"></span></div></div>
+      </div>
+
+      <div class="row">
+        <div class="label">Galant<small>incurvação do tronco</small></div>
+        <div class="lane"><div class="bar b-mint" style="left:0;width:50%"><span class="fade"></span></div></div>
+      </div>
+
+      <div class="row">
+        <div class="label">Preensão palmar<small>abre p/ preensão voluntária</small></div>
+        <div class="lane"><div class="bar b-sky" style="left:0;width:50%"><span class="fade" style="width:66%"></span></div></div>
+      </div>
+
+      <div class="row">
+        <div class="label">Moro<small>★ o mais cobrado</small></div>
+        <div class="lane"><div class="bar b-rosedeep" style="left:0;width:50%"></div></div>
+      </div>
+
+      <div class="row">
+        <div class="label">Preensão plantar<small>some p/ ficar de pé</small></div>
+        <div class="lane"><div class="bar b-mintdeep" style="left:0;width:100%"><span class="fade" style="width:25%"></span></div></div>
+      </div>
+
+      <div class="row">
+        <div class="label">Cutâneo-plantar ext.<small>Babinski fisiológico</small></div>
+        <div class="lane"><div class="bar b-butter" style="left:0;width:100%"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="legend">
+    <span><i></i>presente / ativo</span>
+    <span><i class="range"></i>janela de desaparecimento (hachura)</span>
+  </div>
+
+  <p class="note">Resumo: Marcha ~2m · Sucção 2–3m · Tônico-cervical e Galant 4–6m · Preensão palmar 2–6m · <b>Moro até 6m</b> · Preensão plantar 9–12m · Babinski até 12m.</p>
 </section>
 
 <section class="exam">
