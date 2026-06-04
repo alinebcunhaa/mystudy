@@ -321,6 +321,7 @@
   <div class="nav-links">
     <button class="nav-link active" onclick="scrollToSection('home',this)">Início</button>
     <button class="nav-link" onclick="scrollToSection('library',this)">Biblioteca</button>
+    <button class="nav-link" onclick="window.open('provas.html','_blank')">📅 Provas</button>
     <button class="nav-link" onclick="window.open('mapas.html','_blank')">Mapas Mentais</button>
     <button class="nav-link" onclick="scrollToSection('links',this)">Links</button>
     <a href="/mystudy/assistente.html" class="nav-link" style="background:linear-gradient(135deg,var(--rose-light),var(--lavender-light));border:1px solid var(--lavender);color:var(--text-dark);text-decoration:none;font-weight:500;">🤖 IA</a>
@@ -350,6 +351,7 @@
       <button class="subject-chip" style="background:var(--geral-bg);border-color:var(--geral);color:var(--geral);" onclick="goToLibrary('geral')"><div class="chip-dot" style="background:var(--geral)"></div>Geral</button>
       <button class="subject-chip" style="background:#e8f0e8;border-color:#6a9e60;color:#4a7040;" onclick="scrollToSection('links',null)"><div class="chip-dot" style="background:#6a9e60"></div>Links & Recursos</button>
       <button class="subject-chip" style="background:#f5e8e8;border-color:#d4a5a5;color:var(--gineco);" onclick="window.open('mapas.html','_blank')"><div class="chip-dot" style="background:#d4a5a5"></div>Mapas Mentais</button>
+      <button class="subject-chip" style="background:var(--lavender-soft);border-color:var(--lavender);color:var(--text-dark);" onclick="window.open('provas.html','_blank')"><div class="chip-dot" style="background:var(--lavender)"></div>📅 Provas</button>
       <a href="/mystudy/assistente.html" class="subject-chip" style="background:linear-gradient(135deg,var(--rose-light),var(--lavender-light));border-color:var(--lavender);color:var(--text-dark);text-decoration:none;font-weight:500;"><div class="chip-dot" style="background:var(--lavender)"></div>Assistente IA ✨</a>
     </div>
   </div>
@@ -923,11 +925,13 @@
 
   window.addEventListener('scroll',()=>{
     const navLinks=document.querySelectorAll('.nav-link');
+    const find=txt=>[...navLinks].find(l=>l.textContent.trim()===txt);
+    const setActive=el=>{navLinks.forEach(l=>l.classList.remove('active'));if(el)el.classList.add('active');};
     const lib=document.getElementById('library').getBoundingClientRect().top;
     const lnk=document.getElementById('links').getBoundingClientRect().top;
-    if(lnk<=80){navLinks.forEach(l=>l.classList.remove('active'));navLinks[2].classList.add('active');}
-    else if(lib<=80){navLinks.forEach(l=>l.classList.remove('active'));navLinks[1].classList.add('active');}
-    else{navLinks.forEach(l=>l.classList.remove('active'));navLinks[0].classList.add('active');}
+    if(lnk<=80){setActive(find('Links'));}
+    else if(lib<=80){setActive(find('Biblioteca'));}
+    else{setActive(find('Início'));}
   });
 
   renderCards();
