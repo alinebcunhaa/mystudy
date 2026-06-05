@@ -108,7 +108,15 @@ function seed(){
      notas:'100% pelo SUS-SP. NÃO tem prova própria nem currículo — faz a prova geral e "leiloa" a vaga em janeiro pela classificação. Fase única (100%): 100 questões, 5 alt, enunciados longos, muitas imagens (ECG, TC, RX), casos clínicos extensos. Nota bruta define tudo. Provas antigas: site Quadrix "Residência Médica SUS-SP".',files:[]}
   ];
 }
-function salvar(){ localStorage.setItem(KEY, JSON.stringify(provas)); }
+function salvar(){
+  try{
+    localStorage.setItem(KEY, JSON.stringify(provas));
+    return true;
+  }catch(e){
+    alert('⚠️ Não foi possível salvar: o armazenamento do navegador está cheio.\n\nIsso costuma acontecer ao anexar PDFs grandes. Tente:\n• anexar um arquivo menor (comprima o PDF), ou\n• usar o campo "Link Notion" / colar um link do Google Drive nas Notas em vez de anexar o arquivo.\n\nSeus outros dados continuam salvos.');
+    return false;
+  }
+}
 
 function diasRestantes(data){
   if(!data) return null;
@@ -174,12 +182,31 @@ function addProva(){ provas.push({id:Date.now(),nome:'Nova prova',data:'',edital
 function addFile(id,ev){
   const p=provas.find(x=>x.id===id); if(!p) return;
   const files=[...ev.target.files];
+  if(!files.length) return;
   let pend=files.length;
+  const novos=[];
   files.forEach(f=>{
+    if(f.size > 3*1024*1024){
+      alert('⚠️ "'+f.name+'" tem '+(f.size/1048576).toFixed(1)+' MB.\n\nArquivos acima de ~3 MB costumam estourar o armazenamento do navegador. Comprima o PDF ou cole um link do Google Drive nas Notas.');
+      if(--pend===0) finalizar();
+      return;
+    }
     const r=new FileReader();
-    r.onload=()=>{ p.files.push({id:Date.now()+Math.random().toString(36).slice(2),name:f.name,data:r.result}); if(--pend===0){salvar();render();} };
+    r.onload=()=>{
+      const fid='fl'+Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+      novos.push({id:fid,name:f.name,data:r.result});
+      if(--pend===0) finalizar();
+    };
+    r.onerror=()=>{ alert('Erro ao ler "'+f.name+'".'); if(--pend===0) finalizar(); };
     r.readAsDataURL(f);
   });
+  function finalizar(){
+    if(!novos.length){ ev.target.value=''; return; }
+    p.files.push(...novos);
+    if(!salvar()){ p.files=p.files.filter(x=>!novos.includes(x)); } // reverte se cota estourou
+    render();
+    ev.target.value='';
+  }
 }
 function rmFile(id,fid){ const p=provas.find(x=>x.id===id); if(p){p.files=p.files.filter(f=>f.id!==fid); salvar(); render();} }
 
