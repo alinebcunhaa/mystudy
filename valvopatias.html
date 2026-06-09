@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Valvopatias — Quadro de Sopros | MedStudy</title>
+<style>
+  :root{
+    --ink:#16181d;
+    --paper:#f7f5f0;
+    --card:#ffffff;
+    --line:#e3ded3;
+    --sys:#b5341f;      /* sístole — vermelho tijolo */
+    --sys-bg:#fbeae6;
+    --dia:#1f5b8f;      /* diástole — azul */
+    --dia-bg:#e7f0f8;
+    --gold:#c79a3a;
+    --muted:#6b6256;
+    --ok:#2f7d4f;
+    --warn:#9a5b00;
+    --warn-bg:#fdf3e0;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Iowan Old Style',Georgia,'Times New Roman',serif;
+    line-height:1.55;
+    padding:0 0 80px;
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+
+  /* Header */
+  header{
+    border-bottom:3px solid var(--ink);
+    padding:38px 0 22px;
+    margin-bottom:34px;
+    background:linear-gradient(180deg,#fbf9f4,var(--paper));
+  }
+  .eyebrow{
+    font-family:'SF Mono',ui-monospace,Menlo,monospace;
+    font-size:11px;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--muted);margin-bottom:10px;
+  }
+  h1{font-size:42px;line-height:1.05;letter-spacing:-.02em;font-weight:700}
+  h1 .sub{display:block;font-size:18px;font-weight:400;color:var(--muted);margin-top:8px;font-style:italic}
+
+  /* The golden rule banner */
+  .rule{
+    display:grid;grid-template-columns:1fr 1fr;gap:0;
+    border:2px solid var(--ink);border-radius:10px;overflow:hidden;
+    margin-bottom:40px;box-shadow:4px 4px 0 var(--ink);
+  }
+  .rule>div{padding:22px 24px}
+  .rule .sys{background:var(--sys-bg);border-right:2px solid var(--ink)}
+  .rule .dia{background:var(--dia-bg)}
+  .rule h2{font-size:13px;font-family:'SF Mono',ui-monospace,monospace;letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px}
+  .rule .sys h2{color:var(--sys)}
+  .rule .dia h2{color:var(--dia)}
+  .rule p{font-size:15px}
+  .rule .ph{display:block;font-weight:700;font-size:17px;margin:6px 0 2px}
+  .rule .list{font-style:italic;color:var(--muted);font-size:14px;margin-top:6px}
+
+  /* Phono diagram */
+  .phono{margin:6px 0 14px;background:#fff;border:1px solid var(--line);border-radius:8px;padding:14px}
+  .phono svg{width:100%;height:auto;display:block}
+  .phono .cap{font-size:12px;color:var(--muted);font-style:italic;margin-top:6px;text-align:center}
+
+  section{margin-bottom:46px}
+  .shead{display:flex;align-items:baseline;gap:12px;margin-bottom:18px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+  .shead .num{font-family:'SF Mono',monospace;font-size:13px;color:var(--gold);font-weight:700}
+  .shead h2{font-size:24px;letter-spacing:-.01em}
+
+  /* Valve cards */
+  .vcard{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    margin-bottom:18px;overflow:hidden;
+  }
+  .vcard.s{border-left:6px solid var(--sys)}
+  .vcard.d{border-left:6px solid var(--dia)}
+  .vtop{display:flex;align-items:center;gap:14px;padding:16px 20px;cursor:pointer;user-select:none}
+  .vtag{
+    font-family:'SF Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.08em;
+    padding:4px 9px;border-radius:5px;text-transform:uppercase;white-space:nowrap;
+  }
+  .vtag.s{background:var(--sys-bg);color:var(--sys)}
+  .vtag.d{background:var(--dia-bg);color:var(--dia)}
+  .vtop h3{font-size:19px;flex:1}
+  .vtop .hemo{font-size:13px;color:var(--muted);font-style:italic;text-align:right;max-width:260px}
+  .chev{color:var(--muted);font-size:13px;transition:transform .2s}
+  .vcard.open .chev{transform:rotate(180deg)}
+  .vbody{display:none;padding:0 20px 20px;border-top:1px solid var(--line)}
+  .vcard.open .vbody{display:block}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:16px}
+  .field{background:var(--paper);border-radius:8px;padding:12px 14px}
+  .field .k{font-family:'SF Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+  .field .v{font-size:15px}
+  .field .v b{color:var(--ink)}
+  .manobra{grid-column:1/-1;background:#fffdf5;border:1px dashed var(--gold)}
+  .manobra .k{color:var(--warn)}
+
+  /* exam focus box */
+  .focus{background:var(--warn-bg);border:1px solid #e8cd92;border-radius:10px;padding:18px 22px;margin-top:8px}
+  .focus h3{font-size:15px;color:var(--warn);font-family:'SF Mono',monospace;letter-spacing:.06em;text-transform:uppercase;margin-bottom:12px}
+  .focus ul{list-style:none}
+  .focus li{padding:8px 0 8px 26px;position:relative;border-bottom:1px dotted #e0cfa6;font-size:15px}
+  .focus li:last-child{border-bottom:none}
+  .focus li::before{content:"▸";position:absolute;left:4px;color:var(--gold);font-weight:700}
+  .focus li b{color:var(--warn)}
+
+  .traps{background:#fbeae6;border:1px solid #e8b3a6;border-radius:10px;padding:18px 22px;margin-top:18px}
+  .traps h3{font-size:15px;color:var(--sys);font-family:'SF Mono',monospace;letter-spacing:.06em;text-transform:uppercase;margin-bottom:12px}
+  .traps li{list-style:none;padding:8px 0 8px 26px;position:relative;border-bottom:1px dotted #e8b3a6;font-size:15px}
+  .traps li:last-child{border-bottom:none}
+  .traps li::before{content:"✕";position:absolute;left:4px;color:var(--sys);font-weight:700}
+  .traps li b{color:var(--sys)}
+  .traps li .fix{color:var(--ok);font-weight:600}
+
+  footer{border-top:1px solid var(--line);padding-top:18px;margin-top:50px;font-size:13px;color:var(--muted);font-style:italic}
+
+  @media(max-width:640px){
+    h1{font-size:32px}
+    .rule{grid-template-columns:1fr}
+    .rule .sys{border-right:none;border-bottom:2px solid var(--ink)}
+    .vtop .hemo{display:none}
+    .vtop{flex-wrap:wrap}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="eyebrow">MedStudy · Cardiologia · R1</div>
+    <h1>Valvopatias
+      <span class="sub">o sopro não mente: onde ele cai no ciclo já entrega o diagnóstico</span>
+    </h1>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- A REGRA DE OURO -->
+  <div class="rule">
+    <div class="sys">
+      <h2>Entre B1 → B2 = SÍSTOLE</h2>
+      <p>O ventrículo está <b>ejetando</b>. Sopro aqui = problema na <b>saída</b> (estenose de via de saída) ou <b>fuga</b> de uma valva AV que deveria estar fechada.</p>
+      <span class="ph">EAo · IM · IT · EP</span>
+      <span class="list">Estenose Aórtica/Pulmonar · Insuf. Mitral/Tricúspide</span>
+    </div>
+    <div class="dia">
+      <h2>Entre B2 → próxima B1 = DIÁSTOLE</h2>
+      <p>O ventrículo está <b>enchendo</b>. Sopro aqui = problema na <b>entrada</b> (estenose de valva AV) ou <b>fuga</b> de uma valva semilunar que deveria estar fechada.</p>
+      <span class="ph">EM · ET · IAo · IP</span>
+      <span class="list">Estenose Mitral/Tricúspide · Insuf. Aórtica/Pulmonar</span>
+    </div>
+  </div>
+
+  <!-- PHONO da questão 1 -->
+  <section>
+    <div class="shead"><span class="num">★</span><h2>O traçado que te derrubou (Questão 1)</h2></div>
+    <div class="phono">
+      <svg viewBox="0 0 600 130" xmlns="http://www.w3.org/2000/svg">
+        <line x1="20" y1="80" x2="580" y2="80" stroke="#ccc" stroke-width="1"/>
+        <!-- B1 -->
+        <line x1="70" y1="30" x2="70" y2="115" stroke="#16181d" stroke-width="5"/>
+        <text x="70" y="20" font-size="12" text-anchor="middle" fill="#16181d" font-family="monospace">B1</text>
+        <!-- B2 -->
+        <line x1="190" y1="38" x2="190" y2="107" stroke="#16181d" stroke-width="5"/>
+        <text x="190" y="20" font-size="12" text-anchor="middle" fill="#16181d" font-family="monospace">B2</text>
+        <!-- sopro diastolico: decrescendo-crescendo (rufla) entre B2 e proxima B1 -->
+        <g stroke="#1f5b8f" stroke-width="1.6">
+          <line x1="215" y1="55" x2="215" y2="105"/><line x1="223" y1="58" x2="223" y2="102"/>
+          <line x1="231" y1="60" x2="231" y2="100"/><line x1="239" y1="62" x2="239" y2="98"/>
+          <line x1="247" y1="64" x2="247" y2="96"/><line x1="255" y1="66" x2="255" y2="94"/>
+          <line x1="263" y1="67" x2="263" y2="93"/><line x1="271" y1="68" x2="271" y2="92"/>
+          <line x1="279" y1="69" x2="279" y2="91"/><line x1="287" y1="69" x2="287" y2="91"/>
+          <line x1="295" y1="70" x2="295" y2="90"/><line x1="303" y1="70" x2="303" y2="90"/>
+          <line x1="311" y1="70" x2="311" y2="90"/><line x1="319" y1="70" x2="319" y2="90"/>
+          <line x1="327" y1="69" x2="327" y2="91"/><line x1="335" y1="69" x2="335" y2="91"/>
+          <!-- reforco pre-sistolico: crescendo antes da B1 -->
+          <line x1="395" y1="66" x2="395" y2="94"/><line x1="403" y1="63" x2="403" y2="97"/>
+          <line x1="411" y1="59" x2="411" y2="101"/><line x1="419" y1="54" x2="419" y2="106"/>
+          <line x1="427" y1="48" x2="427" y2="112"/>
+        </g>
+        <!-- proxima B1 -->
+        <line x1="450" y1="30" x2="450" y2="115" stroke="#16181d" stroke-width="5"/>
+        <text x="450" y="20" font-size="12" text-anchor="middle" fill="#16181d" font-family="monospace">B1</text>
+        <!-- chaves -->
+        <text x="280" y="128" font-size="11" text-anchor="middle" fill="#1f5b8f" font-style="italic">ruflar diastólico</text>
+        <text x="411" y="128" font-size="11" text-anchor="middle" fill="#1f5b8f" font-style="italic">reforço pré-sistólico</text>
+      </svg>
+      <div class="cap">Sopro <b>entre B2 e a próxima B1</b> = diastólico. Ruflar + reforço pré-sistólico → <b>Estenose Mitral</b>. Mulher + febre reumática → mitral é a assinatura.</div>
+    </div>
+    <p style="font-size:15px;color:var(--muted);font-style:italic">Você leu como holossistólico porque olhou a forma do sopro antes de localizar onde ele estava no ciclo. <b style="color:var(--ink)">Primeiro localize (entre quais bulhas?), depois descreva a forma.</b> A localização sozinha já elimina metade das alternativas.</p>
+  </section>
+
+  <!-- SISTÓLICOS -->
+  <section>
+    <div class="shead"><span class="num">01</span><h2>Sopros sistólicos <span style="color:var(--sys);font-size:15px;font-family:monospace">(B1 → B2)</span></h2></div>
+
+    <div class="vcard s" onclick="this.classList.toggle('open')">
+      <div class="vtop"><span class="vtag s">Sistólico</span><h3>Estenose Aórtica (EAo)</h3><span class="hemo">→ hipertrofia concêntrica do VE</span><span class="chev">▼</span></div>
+      <div class="vbody">
+        <div class="grid">
+          <div class="field"><div class="k">Sopro</div><div class="v">Mesossistólico em <b>diamante</b> (crescendo-decrescendo), rude</div></div>
+          <div class="field"><div class="k">Foco</div><div class="v"><b>Aórtico</b> (2º EIC D), irradia para <b>carótidas</b></div></div>
+          <div class="field"><div class="k">Tríade clínica</div><div class="v">Angina · síncope · dispneia (= IC)</div></div>
+          <div class="field"><div class="k">Hemodinâmica</div><div class="v">Obstrução à saída → <b>hipertrofia concêntrica</b> do VE; pulso <i>parvus et tardus</i></div></div>
+          <div class="field manobra"><div class="k">Manobra</div><div class="v">↑ com agachamento/handgrip (↑ pós-carga). <b>Diminui</b> com Valsalva. Atenção: na <b>CMH</b> é o oposto (↑ com Valsalva) — pega clássica.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="vcard s" onclick="this.classList.toggle('open')">
+      <div class="vtop"><span class="vtag s">Sistólico</span><h3>Insuficiência Mitral (IM)</h3><span class="hemo">→ dilatação de AE e VE (sobrecarga volume)</span><span class="chev">▼</span></div>
+      <div class="vbody">
+        <div class="grid">
+          <div class="field"><div class="k">Sopro</div><div class="v"><b>Holossistólico</b> (em platô), sopra do início ao fim da sístole</div></div>
+          <div class="field"><div class="k">Foco</div><div class="v"><b>Mitral</b> (ápice), irradia para <b>axila</b></div></div>
+          <div class="field"><div class="k">Etiologia</div><div class="v">Mundo: <b>PVM</b> · Brasil: <b>reumática</b></div></div>
+          <div class="field"><div class="k">Hemodinâmica</div><div class="v">FEVE pode estar <b>falsamente normal</b> (ejeta por 2 vias: aorta + AE)</div></div>
+          <div class="field manobra"><div class="k">Manobra / conduta</div><div class="v">↑ com handgrip. Na IM 1ª por PVM: <b>plastia &gt; troca</b> sempre que viável.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="vcard s" onclick="this.classList.toggle('open')">
+      <div class="vtop"><span class="vtag s">Sistólico</span><h3>Insuficiência Tricúspide (IT)</h3><span class="hemo">→ sobrecarga de VD / congestão sistêmica</span><span class="chev">▼</span></div>
+      <div class="vbody">
+        <div class="grid">
+          <div class="field"><div class="k">Sopro</div><div class="v">Holossistólico</div></div>
+          <div class="field"><div class="k">Foco</div><div class="v"><b>Tricúspide</b> (borda esternal E baixa)</div></div>
+          <div class="field manobra"><div class="k">Sinal-chave</div><div class="v"><b>Sinal de Rivero-Carvallo:</b> ↑ na <b>inspiração</b> (↑ retorno venoso → câmaras D). É o que diferencia sopro D de E.</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DIASTÓLICOS -->
+  <section>
+    <div class="shead"><span class="num">02</span><h2>Sopros diastólicos <span style="color:var(--dia);font-size:15px;font-family:monospace">(B2 → próxima B1)</span></h2></div>
+
+    <div class="vcard d" onclick="this.classList.toggle('open')">
+      <div class="vtop"><span class="vtag d">Diastólico</span><h3>Estenose Mitral (EM)</h3><span class="hemo">→ dilatação do ÁTRIO esquerdo (VE poupado)</span><span class="chev">▼</span></div>
+      <div class="vbody">
+        <div class="grid">
+          <div class="field"><div class="k">Sopro</div><div class="v"><b>Ruflar diastólico</b> com <b>reforço pré-sistólico</b>; estalido de abertura após B2</div></div>
+          <div class="field"><div class="k">Foco</div><div class="v"><b>Mitral</b> (ápice), decúbito lateral E</div></div>
+          <div class="field"><div class="k">Etiologia</div><div class="v"><b>Reumática</b> — quase sempre. Mulher jovem/meia-idade.</div></div>
+          <div class="field"><div class="k">Hemodinâmica</div><div class="v">Obstrução ao enchimento do VE → represa no <b>AE</b> → dilatação atrial, FA, congestão pulmonar. <b>VE não hipertrofia.</b></div></div>
+          <div class="field manobra"><div class="k">⚠ É a questão 1</div><div class="v">Resposta = <b>dilatação atrial esquerda</b>, não hipertrofia de VE.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="vcard d" onclick="this.classList.toggle('open')">
+      <div class="vtop"><span class="vtag d">Diastólico</span><h3>Insuficiência Aórtica (IAo)</h3><span class="hemo">→ dilatação excêntrica do VE</span><span class="chev">▼</span></div>
+      <div class="vbody">
+        <div class="grid">
+          <div class="field"><div class="k">Sopro</div><div class="v"><b>Protodiastólico</b> aspirativo, em <b>decrescendo</b>; melhor sentado, inclinado à frente, expiração</div></div>
+          <div class="field"><div class="k">Foco</div><div class="v">Acessório aórtico (3º EIC E — <b>foco de Erb</b>)</div></div>
+          <div class="field"><div class="k">Sinais periféricos</div><div class="v">Pulso <b>em martelo d'água</b> (Corrigan), PA divergente, sinal de Musset (cabeça pulsa)</div></div>
+          <div class="field manobra"><div class="k">Manobra</div><div class="v">↑ com handgrip (↑ pós-carga ↑ refluxo)</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="vcard d" onclick="this.classList.toggle('open')">
+      <div class="vtop"><span class="vtag d">Diastólico</span><h3>Estenose Tricúspide (ET)</h3><span class="hemo">→ sobrecarga de AD / congestão sistêmica</span><span class="chev">▼</span></div>
+      <div class="vbody">
+        <div class="grid">
+          <div class="field"><div class="k">Sopro</div><div class="v">Ruflar diastólico em foco tricúspide</div></div>
+          <div class="field"><div class="k">Sinal-chave</div><div class="v">↑ na <b>inspiração</b> (Rivero-Carvallo). Rara, quase sempre reumática + outras valvas.</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXAM FOCUS -->
+  <section>
+    <div class="shead"><span class="num">03</span><h2>Foco de prova — o que a banca ama cobrar</h2></div>
+    <div class="focus">
+      <h3>Memorize estes</h3>
+      <ul>
+        <li><b>Intensidade do sopro ≠ gravidade.</b> Sopro discreto pode ser regurgitação grave (ex: IM aguda). Essa foi a assertiva III da sua questão 6.</li>
+        <li><b>Sopros direitos (T e P) aumentam na inspiração</b> (Rivero-Carvallo). Sopros esquerdos aumentam na expiração. Diferencia lado.</li>
+        <li><b>Handgrip / agachamento</b> ↑ pós-carga → ↑ sopros de regurgitação esquerda (IM, IAo) e de EAo; <b>↓ na CMH</b>.</li>
+        <li><b>Valsalva</b> ↓ retorno venoso → ↓ quase todos os sopros, <b>exceto CMH e PVM</b> (aumentam).</li>
+        <li>Febre reumática no Brasil → <b>mitral</b> é a mais acometida (estenose ou insuficiência).</li>
+        <li>IM primária por PVM → <b>plastia é preferível à troca</b> (preserva subvalvar, menor mortalidade). Assertiva IV da questão 6.</li>
+      </ul>
+    </div>
+
+    <div class="traps">
+      <h3>Suas pegadinhas de hoje — não repita</h3>
+      <ul>
+        <li><b>Q1:</b> chamou de holossistólico um sopro que estava entre B2 e B1. <span class="fix">→ Localize no ciclo ANTES de descrever a forma.</span></li>
+        <li><b>Q6-III:</b> marcou "intensidade correlaciona com gravidade" como certa. <span class="fix">→ É FALSO. Intensidade não mede gravidade.</span></li>
+        <li><b>Q6-IV:</b> marcou plastia &gt; troca como errada. <span class="fix">→ É VERDADEIRO. Plastia é preferível no PVM.</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>
+    Fonte: <i>Harrison's</i> (26ª ed.) · <i>Medicina de Emergência — Abordagem Prática</i> (Hajjar, 2024) · diretrizes ESC/AHA de valvopatias. Quadro de revisão rápida — confirme condutas nas diretrizes vigentes antes de aplicar clinicamente.
+  </footer>
+</div>
+
+<script>
+  // Abre o card da Estenose Mitral por padrão (é o da questão 1)
+  document.addEventListener('DOMContentLoaded',function(){
+    var cards=document.querySelectorAll('.vcard');
+    cards.forEach(function(c){
+      if(c.querySelector('h3') && c.querySelector('h3').textContent.indexOf('Estenose Mitral')>-1){
+        c.classList.add('open');
+      }
+    });
+  });
+</script>
+</body>
+</html>
