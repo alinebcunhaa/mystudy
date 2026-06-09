@@ -329,6 +329,11 @@ function App() {
     }, 300);
   }
 
+  function skip() {
+    if (idx + 1 >= filtered.length) setConcluido(true);
+    else { setIdx(idx + 1); setRevelado(false); }
+  }
+
   function restart(onlyBad = false) {
     let next;
     if (onlyBad) {
@@ -612,14 +617,24 @@ function App() {
                 <div style={{ height: 1, background: "#ede5d8", marginBottom: 18 }} />
 
                 {!revelado ? (
-                  <button onClick={() => setRevelado(true)} style={{
-                    width: "100%", padding: "14px",
-                    background: "#2d2218", color: "#f0e8d8",
-                    border: "none", borderRadius: 12,
-                    fontSize: 14, cursor: "pointer", fontFamily: "inherit",
-                  }}>
-                    Ver resposta
-                  </button>
+                  <div style={{ display: "flex", gap: 8 }}>
+                    <button onClick={() => setRevelado(true)} style={{
+                      flex: 1, padding: "14px",
+                      background: "#2d2218", color: "#f0e8d8",
+                      border: "none", borderRadius: 12,
+                      fontSize: 14, cursor: "pointer", fontFamily: "inherit",
+                    }}>
+                      Ver resposta
+                    </button>
+                    <button onClick={skip} title="Passar sem avaliar" style={{
+                      padding: "14px 18px",
+                      background: "transparent", color: "#7a6a52",
+                      border: "1px solid #d8ccb8", borderRadius: 12,
+                      fontSize: 14, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap",
+                    }}>
+                      Pular →
+                    </button>
+                  </div>
                 ) : (
                   <>
                     {/* Resposta */}
@@ -659,6 +674,15 @@ function App() {
                       <span style={{ fontSize: 9, color: "#c04030" }}>Não lembrei</span>
                       <span style={{ fontSize: 9, color: "#2878c0" }}>Perfectamente</span>
                     </div>
+                    <button onClick={skip} style={{
+                      width: "100%", marginTop: 14, padding: "9px",
+                      background: "transparent", color: "#9a8a72",
+                      border: "none", borderRadius: 8,
+                      fontSize: 12, cursor: "pointer", fontFamily: "inherit",
+                      textDecoration: "underline", textUnderlineOffset: "3px",
+                    }}>
+                      Pular sem avaliar →
+                    </button>
                   </>
                 )}
               </div>
