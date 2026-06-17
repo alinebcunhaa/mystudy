@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sepse 2026 + NEWS 2 — Referência clínica</title>
+<style>
+  :root{
+    --cream:#F7F3EC;
+    --paper:#FFFDF9;
+    --ink:#3A352E;
+    --muted:#8A8175;
+    --sage:#9CAE91;
+    --sage-deep:#6E8268;
+    --terracotta:#C8795C;
+    --terra-soft:#E8C7B6;
+    --rose:#D9A7A0;
+    --lav:#B5A8C9;
+    --line:#E4DCCF;
+    --red-band:#C36A5A;
+    --amber-band:#D8A55E;
+    --soft-amber:#F0E3C8;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--cream);
+    color:var(--ink);
+    font-family:'Iowan Old Style','Palatino Linotype',Palatino,Georgia,serif;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:880px;margin:0 auto;padding:0 22px 100px}
+
+  /* HERO */
+  header{
+    padding:64px 22px 40px;
+    max-width:880px;margin:0 auto;
+  }
+  .eyebrow{
+    font-family:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+    font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--terracotta);margin-bottom:18px;
+  }
+  h1{
+    font-size:clamp(2.1rem,5.5vw,3.3rem);
+    font-weight:600;line-height:1.05;letter-spacing:-.01em;
+    margin-bottom:14px;
+  }
+  h1 .sub{display:block;color:var(--sage-deep);font-size:.46em;font-weight:500;margin-top:10px;letter-spacing:0}
+  .lede{color:var(--muted);font-size:1.05rem;max-width:60ch}
+
+  /* NAV chips */
+  nav{display:flex;flex-wrap:wrap;gap:9px;margin-top:30px}
+  nav a{
+    font-family:'IBM Plex Mono',ui-monospace,monospace;
+    font-size:.74rem;letter-spacing:.04em;text-decoration:none;
+    color:var(--ink);background:var(--paper);
+    border:1px solid var(--line);border-radius:999px;
+    padding:7px 15px;transition:.18s;
+  }
+  nav a:hover{background:var(--sage);color:#fff;border-color:var(--sage)}
+
+  section{margin-top:58px;scroll-margin-top:24px}
+  .sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:22px;border-bottom:1px solid var(--line);padding-bottom:12px}
+  .sec-num{font-family:'IBM Plex Mono',monospace;font-size:.8rem;color:var(--terracotta);}
+  h2{font-size:1.6rem;font-weight:600;letter-spacing:-.01em}
+  h3{font-size:1.15rem;font-weight:600;margin:26px 0 10px;color:var(--sage-deep)}
+  p{margin-bottom:13px}
+  .q{color:var(--terracotta);font-style:italic}
+
+  /* CARDS comparativo */
+  .compare{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:18px 0}
+  .col{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:18px 20px}
+  .col.old{background:#F3EEE4}
+  .col h4{font-family:'IBM Plex Mono',monospace;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;margin-bottom:12px}
+  .col.old h4{color:var(--muted)}
+  .col.new h4{color:var(--sage-deep)}
+  .col ul{list-style:none}
+  .col li{position:relative;padding-left:18px;margin-bottom:9px;font-size:.95rem}
+  .col li::before{content:'';position:absolute;left:0;top:.62em;width:6px;height:6px;border-radius:50%;background:var(--terra-soft)}
+  .col.new li::before{background:var(--sage)}
+
+  .topic{background:var(--paper);border:1px solid var(--line);border-left:3px solid var(--terracotta);border-radius:0 12px 12px 0;padding:14px 18px;margin:14px 0}
+  .topic strong{color:var(--terracotta)}
+
+  .pill{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.05em;padding:2px 9px;border-radius:6px;background:var(--soft-amber);color:#8a6a2e;margin-left:6px;vertical-align:middle}
+  .pill.new{background:#DCE6D5;color:var(--sage-deep)}
+  .pill.contra{background:#F2D7D2;color:#a8503f}
+
+  /* NEWS 2 table */
+  .tbl{width:100%;border-collapse:collapse;margin:16px 0;font-size:.9rem;background:var(--paper);border-radius:12px;overflow:hidden;border:1px solid var(--line)}
+  .tbl th,.tbl td{padding:9px 11px;text-align:center;border-bottom:1px solid var(--line)}
+  .tbl th{background:var(--sage-deep);color:#fff;font-family:'IBM Plex Mono',monospace;font-size:.72rem;letter-spacing:.05em;font-weight:500}
+  .tbl td:first-child{text-align:left;font-weight:600}
+  .tbl tr:last-child td{border-bottom:none}
+  .s0{background:#fff}.s1{background:#FBF3DF}.s2{background:#F6E2C8}.s3{background:#F0CFC4}
+  .scorecell{font-weight:700;font-family:'IBM Plex Mono',monospace}
+
+  /* U-shape highlight */
+  .ushape{background:linear-gradient(180deg,#FBF6EE,#F5EADD);border:1px solid var(--terra-soft);border-radius:16px;padding:24px;margin:22px 0}
+  .ushape h3{margin-top:0;color:var(--terracotta)}
+  .utbl{width:100%;border-collapse:collapse;margin:14px 0;font-size:.92rem}
+  .utbl td{padding:10px 12px;border-bottom:1px solid var(--terra-soft)}
+  .utbl td:first-child{font-family:'IBM Plex Mono',monospace}
+  .utbl td:last-child{text-align:right;font-weight:700;font-family:'IBM Plex Mono',monospace;width:80px}
+  .utbl tr:last-child td{border-bottom:none}
+  .hi3{color:var(--red-band)}
+  .hi0{color:var(--sage-deep)}
+
+  /* trigger bands */
+  .bands{margin:16px 0}
+  .band{display:flex;align-items:flex-start;gap:14px;padding:13px 16px;border-radius:11px;margin-bottom:9px;background:var(--paper);border:1px solid var(--line)}
+  .band .lvl{font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:.85rem;min-width:78px;padding-top:1px}
+  .band.b1{border-left:4px solid var(--sage)}
+  .band.b2{border-left:4px solid var(--amber-band)}
+  .band.b3{border-left:4px solid var(--red-band)}
+  .band.b1 .lvl{color:var(--sage-deep)}
+  .band.b2 .lvl{color:#b07d2e}
+  .band.b3 .lvl{color:var(--red-band)}
+  .band .txt{font-size:.92rem}
+
+  .callout{background:#EFEAF3;border:1px solid var(--lav);border-radius:12px;padding:16px 20px;margin:18px 0}
+  .callout .tag{font-family:'IBM Plex Mono',monospace;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:#7d6ba0;display:block;margin-bottom:7px}
+
+  .src{font-size:.78rem;color:var(--muted);margin-top:8px;font-style:italic}
+  footer{margin-top:70px;padding-top:24px;border-top:1px solid var(--line);font-size:.82rem;color:var(--muted)}
+  footer a{color:var(--terracotta)}
+
+  @media(max-width:640px){
+    .compare{grid-template-columns:1fr}
+    header{padding-top:44px}
+    .tbl{font-size:.78rem}
+    .tbl th,.tbl td{padding:7px 6px}
+  }
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">PSA · referência rápida · jun 2026</div>
+  <h1>Sepse 2026 &amp; NEWS 2
+    <span class="sub">o que mudou nas diretrizes e por que um sinal vital "extremo" sempre pesa 3</span>
+  </h1>
+  <p class="lede">Duas ferramentas que conversam no plantão: a NEWS 2 detecta quem está deteriorando; a Surviving Sepsis Campaign 2026 diz o que fazer quando a deterioração é sepse.</p>
+  <nav>
+    <a href="#ssc">Sepse 2026</a>
+    <a href="#mudancas">Mudanças-chave</a>
+    <a href="#news">NEWS 2</a>
+    <a href="#ushape">PAS em U</a>
+    <a href="#armadilhas">Armadilhas</a>
+  </nav>
+</header>
+
+<div class="wrap">
+
+  <!-- ============ SEPSE ============ -->
+  <section id="ssc">
+    <div class="sec-head"><span class="sec-num">01</span><h2>Surviving Sepsis Campaign 2026</h2></div>
+    <p>Publicada em março de 2026 (ESICM + SCCM), substituindo a versão de 2021. São <strong>129 recomendações, sendo 46 inéditas</strong>, organizadas em rastreamento e manejo precoce, infecção, hemodinâmica, suporte respiratório, terapias adjuvantes, suporte adicional, metas de cuidado, transições e desfechos de longo prazo. Mantém os três pilares: reconhecimento precoce, tratamento oportuno da infecção e ressuscitação hemodinâmica.</p>
+    <p class="src">Prescott HC, Antonelli M, Alhazzani W, et al. Crit Care Med 2026 / Intensive Care Med 2026.</p>
+  </section>
+
+  <!-- ============ MUDANÇAS ============ -->
+  <section id="mudancas">
+    <div class="sec-head"><span class="sec-num">02</span><h2>2021 → 2026: o que mudou</h2></div>
+
+    <div class="compare">
+      <div class="col old"><h4>Era 2021</h4>
+        <ul>
+          <li>Bundle de 1 hora; foco no escalonamento de bolus de cristaloide</li>
+          <li>Pouca menção a POCUS formal</li>
+          <li>Recomendações majoritariamente condicionais e "fracas"</li>
+          <li>Seguimento pós-sepse pouco detalhado</li>
+        </ul>
+      </div>
+      <div class="col new"><h4>Agora 2026</h4>
+        <ul>
+          <li>Programa de melhoria de desempenho + protocolo "código sepse" / sepsis huddle</li>
+          <li>POCUS condicional para guiar ressuscitação</li>
+          <li>Recomendações mais definitivas; 46 novos enunciados</li>
+          <li>Cobre morbidade pós-sepse e seguimento a longo prazo</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>Hemodinâmica — o coração da atualização</h3>
+    <div class="topic"><strong>PAM-alvo:</strong> mantido em <strong>65 mmHg</strong> para a população geral, mas idosos podem se beneficiar de alvos pressóricos <strong>mais baixos</strong>. <span class="pill new">novo</span></div>
+    <div class="topic"><strong>Vasopressor precoce:</strong> ressuscitação inicial com cristaloide e <strong>início imediato de vasopressor</strong> na hipotensão persistente, sem esperar grandes volumes.</div>
+    <div class="topic"><strong>Remoção ativa de fluido:</strong> iniciar deressuscitação após o término da fase de ressuscitação inicial, para prevenir sobrecarga volêmica. <span class="pill new">novo</span></div>
+    <div class="topic"><strong>POCUS:</strong> recomendação condicional para guiar a ressuscitação à beira-leito. <span class="pill new">novo</span></div>
+    <div class="topic"><strong>Outras mudanças:</strong> monitorização invasiva de pressão arterial, albumina e terapia antifúngica.</div>
+
+    <h3>Suporte respiratório</h3>
+    <div class="topic"><strong>Cateter nasal de alto fluxo (CNAF)</strong> como dispositivo inicial na insuficiência respiratória associada à sepse; alvos individualizados de O₂ e considerar prona acordada.</div>
+    <div class="topic"><strong>Volume corrente 6–8 mL/kg</strong> sugerido na ausência de lesão pulmonar (diferente dos clássicos 6 mL/kg do ARDS). <span class="pill new">novo</span></div>
+
+    <h3>Terapias adjuvantes — vários "contra"</h3>
+    <div class="topic"><strong>Contra</strong> antipiréticos de rotina para melhorar desfecho (podem ser usados para alívio sintomático). <span class="pill contra">não usar</span></div>
+    <div class="topic"><strong>Contra</strong> probióticos no tratamento de sepse/choque séptico. <span class="pill contra">não usar</span></div>
+    <div class="topic"><strong>Contra</strong> betabloqueadores como tratamento de sepse/choque séptico. <span class="pill contra">não usar</span></div>
+
+    <h3>Antimicrobianos &amp; stewardship</h3>
+    <div class="topic">Hemoculturas <strong>antes</strong> do antimicrobiano; uso precoce quando há acesso tardio ao hospital; cobertura empírica criteriosa conforme risco de multirresistência/anaeróbios; diagnósticos rápidos seletivos guiados pela epidemiologia local e princípios de descalonamento.</div>
+
+    <div class="callout">
+      <span class="tag">Para a prova</span>
+      Atenção à dissociação força × evidência: várias recomendações <em>fortes</em> têm certeza de evidência <em>baixa</em> ou <em>muito baixa</em>. A banca adora cobrar isso — força de recomendação ≠ nível de evidência.
+    </div>
+  </section>
+
+  <!-- ============ NEWS 2 ============ -->
+  <section id="news">
+    <div class="sec-head"><span class="sec-num">03</span><h2>NEWS 2 — como funciona</h2></div>
+    <p>Sistema <em>track-and-trigger</em> do Royal College of Physicians (NEWS 2012, revisão 2017). Mede 6 parâmetros fisiológicos de rotina; cada um recebe 0–3 pontos, somando um agregado de 0 a 20. <strong>Quanto maior o desvio agudo de qualquer sinal vital, maior o risco de deterioração e morte em 24h.</strong> O O₂ suplementar acrescenta +2 fixos.</p>
+
+    <table class="tbl">
+      <thead>
+        <tr><th>Parâmetro</th><th>3</th><th>2</th><th>1</th><th>0</th><th>1</th><th>2</th><th>3</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>FR (irpm)</td><td class="s3 scorecell">≤8</td><td class="s0"></td><td class="s1">9–11</td><td class="s0">12–20</td><td class="s0"></td><td class="s2">21–24</td><td class="s3 scorecell">≥25</td></tr>
+        <tr><td>SpO₂ Esc.1 (%)</td><td class="s3 scorecell">≤91</td><td class="s2">92–93</td><td class="s1">94–95</td><td class="s0">≥96</td><td class="s0"></td><td class="s0"></td><td class="s0"></td></tr>
+        <tr><td>Ar / O₂</td><td class="s0"></td><td class="s2">O₂</td><td class="s0"></td><td class="s0">Ar</td><td class="s0"></td><td class="s0"></td><td class="s0"></td></tr>
+        <tr><td>PAS (mmHg)</td><td class="s3 scorecell">≤90</td><td class="s2">91–100</td><td class="s1">101–110</td><td class="s0">111–219</td><td class="s0"></td><td class="s0"></td><td class="s3 scorecell">≥220</td></tr>
+        <tr><td>FC (bpm)</td><td class="s3 scorecell">≤40</td><td class="s0"></td><td class="s1">41–50</td><td class="s0">51–90</td><td class="s1">91–110</td><td class="s2">111–130</td><td class="s3 scorecell">≥131</td></tr>
+        <tr><td>Temp (°C)</td><td class="s3 scorecell">≤35,0</td><td class="s0"></td><td class="s1">35,1–36,0</td><td class="s0">36,1–38,0</td><td class="s1">38,1–39,0</td><td class="s2">≥39,1</td><td class="s0"></td></tr>
+        <tr><td>Consciência</td><td class="s0"></td><td class="s0"></td><td class="s0"></td><td class="s0">Alerta</td><td class="s0"></td><td class="s0"></td><td class="s3 scorecell">C/V/P/U</td></tr>
+      </tbody>
+    </table>
+    <p class="src">Escala 2 (alvo 88–92%) substitui a linha de SpO₂ em retentores crônicos de CO₂ / DPOC. Consciência = ACVPU; "C" = confusão de início agudo.</p>
+
+    <h3>Limiares de resposta</h3>
+    <div class="bands">
+      <div class="band b1"><span class="lvl">1–4</span><span class="txt">Baixo. Enfermeiro avalia e decide frequência/escalonamento. Monitorar a cada 4–6h.</span></div>
+      <div class="band b2"><span class="lvl">3 isolado</span><span class="txt">Escore 3 em <strong>qualquer parâmetro único</strong> → equipe médica revisa. Monitorar de hora em hora.</span></div>
+      <div class="band b2"><span class="lvl">5–6</span><span class="txt">Limiar urgente. Avaliação por clínico competente esperada em 60 min, ambiente com monitorização.</span></div>
+      <div class="band b3"><span class="lvl">≥7</span><span class="txt">Limiar de emergência. Time com competência em terapia intensiva; avaliação em 30 min; considerar UTI/alta dependência.</span></div>
+    </div>
+  </section>
+
+  <!-- ============ U-SHAPE ============ -->
+  <section id="ushape">
+    <div class="sec-head"><span class="sec-num">04</span><h2>Por que PAS ≥220 pontua 3</h2></div>
+    <p>A pergunta-chave: <span class="q">se PA alta crônica nem sempre é emergência, por que ≥220 vale o máximo?</span> Porque a tabela de PAS do NEWS 2 tem forma de <strong>U</strong> — os dois extremos pontuam 3, com gradação fina só no lado da hipotensão.</p>
+
+    <div class="ushape">
+      <h3>A curva em U da pressão sistólica</h3>
+      <table class="utbl">
+        <tr><td>≤90</td><td class="hi3">3</td></tr>
+        <tr><td>91–100</td><td>2</td></tr>
+        <tr><td>101–110</td><td>1</td></tr>
+        <tr><td>111–219</td><td class="hi0">0</td></tr>
+        <tr><td>≥220</td><td class="hi3">3</td></tr>
+      </table>
+      <p style="margin-bottom:0">A assimetria é proposital: a queda progressiva de PA é o caminho clássico do choque, então o escore quer captá-la cedo (degraus 90/100/110). Do lado hipertensivo só existe o extremo, porque HAS moderada não prediz deterioração aguda da mesma forma.</p>
+    </div>
+
+    <h3>O racional do teto de 220</h3>
+    <p>O NEWS 2 não mede "PA alta = ruim" no sentido crônico. Ele mede <strong>afastamento agudo extremo da homeostase</strong> como sinal de risco iminente. Uma PAS ≥220 em avaliação aguda raramente é hipertensão de consultório — é marcador de possível <strong>emergência hipertensiva</strong>: encefalopatia, AVC hemorrágico/isquêmico, dissecção de aorta, edema agudo de pulmão, pré-eclâmpsia/eclâmpsia (gestante usa escore próprio).</p>
+    <p>Como é ferramenta de <strong>triagem de deterioração</strong>, não de manejo de hipertensão, ele não precisa graduar finamente os níveis de HAS — basta sinalizar "isto é extremo, chame alguém". Daí o salto direto de 0 (até 219) para 3 (≥220).</p>
+
+    <div class="callout">
+      <span class="tag">Como foi formulado</span>
+      O NEWS nasceu em 2012, encomendado pelo RCP, porque o NHS tinha múltiplos EWS sem padronização — equipes "não falavam a mesma língua" ao avaliar gravidade. Princípios de desenho: parâmetros já coletados de rotina (usabilidade máxima) e validação por discriminação de desfechos (parada, UTI não planejada, morte — Smith/Prytherch, ViEWS 2010). A versão 2 (2017) acrescentou a Escala 2 de oximetria para hipóxia crônica, a confusão aguda no ACVPU e o ajuste das faixas.
+    </div>
+  </section>
+
+  <!-- ============ ARMADILHAS ============ -->
+  <section id="armadilhas">
+    <div class="sec-head"><span class="sec-num">05</span><h2>Armadilhas que a banca adora</h2></div>
+    <div class="topic"><strong>O₂ sempre vale só 2:</strong> qualquer necessidade de O₂ acima do ar ambiente adiciona apenas 2 pontos. Um paciente pode estar subindo de cateter nasal para Venturi 60% (TEP, p.ex.) sem o escore subir. Sempre cheque a <em>quantidade</em> real de O₂.</div>
+    <div class="topic"><strong>NEWS baixo ≠ sem risco:</strong> jovens compensam por mais tempo. Acidose metabólica grave / hipercalemia por LRA podem cursar com NEWS 2–3 e colapso súbito.</div>
+    <div class="topic"><strong>Julgamento clínico prevalece:</strong> preocupação do clínico, paciente ou família sobrepõe o escore. A orientação de sepse recomenda subir <em>pelo menos uma faixa</em> de NEWS quando há preocupação com o quadro.</div>
+    <div class="topic"><strong>Agregado &gt; pico isolado:</strong> o valor agregado discrimina melhor desfechos do que um único parâmetro muito alto — mas o "3 isolado" ainda dispara revisão obrigatória.</div>
+
+    <div class="callout">
+      <span class="tag">Conexão sepse ↔ NEWS</span>
+      No PSA: NEWS 2 ≥5 com foco infeccioso = gatilho para protocolo de sepse. A SSC 2026 reforça rastreamento padronizado já no pré-hospitalar e o "código sepse" para acelerar diagnóstico e antimicrobiano.
+    </div>
+  </section>
+
+  <footer>
+    Fontes: SSC 2026 (Crit Care Med / Intensive Care Med, mar 2026); RCP — National Early Warning Score (NEWS) 2, 2017; Welch, Dean &amp; Hartin, Clin Med 2022. Ferramenta de estudo — o julgamento clínico sempre prevalece sobre qualquer escore.
+  </footer>
+
+</div>
+</body>
+</html>
