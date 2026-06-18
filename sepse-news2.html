@@ -169,12 +169,23 @@
   .pcard-cap{padding:13px 15px;font-size:.88rem;line-height:1.5;color:var(--ink)}
   .pcard-cap b{color:var(--sage-deep)}
   .postits{display:flex;flex-direction:column;gap:9px;padding:0 15px}
-  .postit{position:relative;background:var(--postit);border:1px solid var(--postit-edge);border-radius:4px 4px 8px 4px;padding:11px 30px 11px 13px;font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:.81rem;line-height:1.5;color:#5c4f1f;box-shadow:0 2px 5px rgba(0,0,0,.06);min-height:42px;outline:none;white-space:pre-wrap;word-break:break-word}
+  .postit-wrap{position:relative;width:100%;align-self:stretch}
+  .postit{position:relative;width:100%;display:block;background:var(--postit);border:1px solid var(--postit-edge);border-radius:4px 4px 8px 4px;padding:11px 42px 11px 13px;font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:.81rem;line-height:1.5;color:#5c4f1f;box-shadow:0 2px 5px rgba(0,0,0,.06);min-height:42px;outline:none;white-space:pre-wrap;overflow-wrap:anywhere;word-break:normal}
+  /* paleta de cores dos post-its */
+  .postit.c-yellow{background:#FBF1C7;border-color:#E8D98F;color:#5c4f1f}
+  .postit.c-pink{background:#F8DCE3;border-color:#E7AFBD;color:#7a3b4c}
+  .postit.c-green{background:#DEEBD4;border-color:#A9C595;color:#3f5733}
+  .postit.c-blue{background:#D7E6F0;border-color:#A6C5DA;color:#33536b}
+  .postit.c-lilac{background:#E7E0F2;border-color:#C2B3DD;color:#544676}
+  .postit-tools{position:absolute;top:6px;right:7px;display:flex;align-items:center;gap:5px;opacity:0;transition:.15s;z-index:2}
+  .postit-wrap:hover .postit-tools,.postit-wrap:focus-within .postit-tools{opacity:1}
+  .dot{width:13px;height:13px;border-radius:50%;border:1.5px solid rgba(0,0,0,.12);cursor:pointer;padding:0;display:inline-block}
+  .dot.c-yellow{background:#FBF1C7}.dot.c-pink{background:#F8DCE3}.dot.c-green{background:#DEEBD4}.dot.c-blue{background:#D7E6F0}.dot.c-lilac{background:#E7E0F2}
+  .dot:hover{transform:scale(1.18)}
+  .postit-del{width:18px;height:18px;border:none;background:none;color:#9a8a5a;cursor:pointer;font-size:15px;line-height:1;border-radius:4px}
+  .postit-del:hover{background:rgba(168,80,63,.15);color:#a8503f}
   .postit:empty::before{content:'escreva aqui...';color:#b7a86a;font-style:italic}
   .postit:focus{border-color:var(--terracotta);box-shadow:0 2px 10px rgba(200,121,92,.18)}
-  .postit-del{position:absolute;top:5px;right:7px;width:18px;height:18px;border:none;background:none;color:#b7a86a;cursor:pointer;font-size:14px;line-height:1;border-radius:4px;opacity:0;transition:.15s}
-  .postit:hover .postit-del,.postit:focus .postit-del{opacity:1}
-  .postit-del:hover{background:#e9c9be;color:#a8503f}
   .add-pi{margin:10px 15px 15px;align-self:flex-start;font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--muted);background:none;border:1px dashed var(--line);border-radius:8px;padding:6px 12px;cursor:pointer;transition:.15s}
   .add-pi:hover{border-color:var(--terracotta);color:var(--terracotta);background:var(--paper)}
   .add-img{margin-top:14px;font-family:'IBM Plex Mono',monospace;font-size:.76rem;color:var(--sage-deep);background:var(--paper);border:1px dashed var(--sage);border-radius:10px;padding:9px 16px;cursor:pointer;transition:.15s}
@@ -509,18 +520,33 @@
   }
 
   /* ---- post-its ---- */
+  const PI_COLORS=['yellow','pink','green','blue','lilac'];
+  /* normaliza item: aceita string antiga ou objeto {t,c} */
+  function piNorm(item){
+    if(typeof item==='string')return{t:item,c:'yellow'};
+    return{t:(item&&item.t)||'',c:(item&&item.c)||'yellow'};
+  }
   function renderPostits(cid){
     const wrap=document.getElementById('pi_'+cid);if(!wrap)return;
     const arr=(loadNotes()[cid])||[];wrap.innerHTML='';
-    arr.forEach((txt,idx)=>{
-      const d=document.createElement('div');d.className='postit';d.contentEditable='true';d.textContent=txt;
-      d.addEventListener('input',()=>{const n=loadNotes();n[cid]=n[cid]||[];n[cid][idx]=d.textContent;saveNotes(n);});
+    arr.forEach((raw,idx)=>{
+      const it=piNorm(raw);
+      const w=document.createElement('div');w.className='postit-wrap';
+      const d=document.createElement('div');d.className='postit c-'+it.c;d.contentEditable='true';d.textContent=it.t;
+      d.addEventListener('input',()=>{const n=loadNotes();n[cid]=n[cid]||[];n[cid][idx]=piNorm(n[cid][idx]);n[cid][idx].t=d.textContent;saveNotes(n);});
+      const tools=document.createElement('div');tools.className='postit-tools';
+      PI_COLORS.forEach(col=>{
+        const dot=document.createElement('button');dot.className='dot c-'+col;dot.title=col;
+        dot.addEventListener('click',e=>{e.stopPropagation();const n=loadNotes();n[cid][idx]=piNorm(n[cid][idx]);n[cid][idx].c=col;saveNotes(n);renderPostits(cid);});
+        tools.appendChild(dot);
+      });
       const del=document.createElement('button');del.className='postit-del';del.textContent='×';del.title='remover';
       del.addEventListener('click',e=>{e.stopPropagation();const n=loadNotes();n[cid].splice(idx,1);if(!n[cid].length)delete n[cid];saveNotes(n);renderPostits(cid);});
-      d.appendChild(del);wrap.appendChild(d);
+      tools.appendChild(del);
+      w.appendChild(d);w.appendChild(tools);wrap.appendChild(w);
     });
   }
-  function addPostit(cid){const n=loadNotes();n[cid]=n[cid]||[];n[cid].push('');saveNotes(n);renderPostits(cid);const w=document.getElementById('pi_'+cid);if(w&&w.lastChild)w.lastChild.focus();}
+  function addPostit(cid){const n=loadNotes();n[cid]=n[cid]||[];n[cid].push({t:'',c:'yellow'});saveNotes(n);renderPostits(cid);const w=document.getElementById('pi_'+cid);if(w&&w.lastChild&&w.lastChild.firstChild)w.lastChild.firstChild.focus();}
 
   /* ---- adicionar imagem (com compressão) ---- */
   function addImage(gid){
