@@ -184,6 +184,10 @@
   .card-del:hover{opacity:1;text-decoration:underline}
   .pcard-cap[contenteditable]:focus{outline:1px solid var(--terracotta);outline-offset:2px;border-radius:4px}
   .pocus-quota{font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--muted);align-self:center;margin-left:4px}
+  .notes-block{margin-top:26px;background:var(--paper);border:1px solid var(--line);border-left:3px solid var(--postit-edge);border-radius:0 12px 12px 0;padding:16px 18px}
+  .notes-head{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+  .notes-block .postits{padding:0}
+  .notes-block .add-pi{margin:12px 0 0}
   .lb{position:fixed;inset:0;background:rgba(40,36,30,.9);display:none;align-items:center;justify-content:center;z-index:200;padding:30px;cursor:zoom-out}
   .lb.open{display:flex}
   .lb img{max-width:94vw;max-height:88vh;border-radius:8px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
@@ -202,6 +206,7 @@
   <nav>
     <a href="#ssc">Sepse 2026</a>
     <a href="#mudancas">Mudanças-chave</a>
+    <a href="#tratamento">Tratamento</a>
     <a href="#news">NEWS 2</a>
     <a href="#ushape">PAS em U</a>
     <a href="#pocus">POCUS</a>
@@ -264,12 +269,74 @@
       <span class="tag">Para a prova</span>
       Atenção à dissociação força × evidência: várias recomendações <em>fortes</em> têm certeza de evidência <em>baixa</em> ou <em>muito baixa</em>. A banca adora cobrar isso — força de recomendação ≠ nível de evidência.
     </div>
+
+    <div class="notes-block">
+      <div class="notes-head">Minhas anotações — o que mudou</div>
+      <div class="postits" id="pi_mudancas"></div>
+      <button class="add-pi" onclick="addPostit('mudancas')">+ post-it</button>
+    </div>
+  </section>
+
+  <!-- ============ TRATAMENTO ============ -->
+  <section id="tratamento">
+    <div class="sec-head"><span class="sec-num">03</span><h2>Tratamento — bundle SSC 2026</h2></div>
+    <p>Sepse e choque séptico são <strong>emergências médicas</strong>: tratamento e ressuscitação começam imediatamente. Os pilares abaixo refletem as recomendações de 2026 (a maioria condicional / certeza de evidência baixa — vide aba Mudanças).</p>
+
+    <div class="topic"><strong>Antimicrobiano:</strong> no choque séptico (possível, provável ou definido), uso imediato, idealmente <strong>dentro de 1 hora</strong> do reconhecimento. Sepse sem choque, provável/definida: também imediato, idealmente em 1h. Baixo risco de infecção e sem choque: pode-se <strong>diferir</strong> o ATB e monitorar de perto. Sempre <strong>hemoculturas antes</strong> do antimicrobiano.</div>
+
+    <div class="topic"><strong>Fluidos:</strong> cristaloide como 1ª linha (<span class="pill new">evidência moderada</span>), preferir <strong>cristaloide balanceado</strong> ao SF 0,9%. Na hipoperfusão/choque, <strong>≥30 mL/kg nas primeiras 3h</strong> (peso real; ajustado/ideal se IMC > 30). Reavaliação frequente para evitar sub e sobre-ressuscitação. Cristaloide isolado é preferido a cristaloide + albumina.</div>
+
+    <div class="topic"><strong>Vasopressor:</strong> na hipotensão, bolus de cristaloide seguido de vasopressor se a hipotensão persistir; no choque instável, <strong>vasopressor concomitante</strong> ao fluido caso a caso. <strong>Noradrenalina</strong> de 1ª linha (ou adrenalina se disfunção cardíaca associada).</div>
+
+    <div class="topic"><strong>Alvo de PAM:</strong> <strong>65 mmHg</strong> na população geral; em ≥65 anos, sugere-se faixa inicial <strong>60–65 mmHg</strong> (alvo mais baixo).</div>
+
+    <div class="topic"><strong>Monitorização da perfusão:</strong> medir <strong>lactato</strong>; lactato seriado para guiar ressuscitação se elevado/choque. <strong>Tempo de enchimento capilar</strong> como adjuvante. POCUS condicional. Pressão arterial invasiva se vasopressor em dose intermediária-alta, escalonamento, múltiplos vasopressores ou PA não-invasiva inconsistente.</div>
+
+    <div class="topic"><strong>Deresuscitação (fase 4 do ROSE):</strong> após sair do choque, buscar balanço negativo / remoção ativa do fluido acumulado, para evitar sobrecarga.</div>
+
+    <div class="topic"><strong>Disposição:</strong> se necessita UTI, admitir <strong>em até 6h</strong>.</div>
+
+    <div class="callout">
+      <span class="tag">Lembrete de leitura</span>
+      A maioria dessas condutas é recomendação <em>condicional</em> com certeza de evidência baixa a muito baixa (o "30 mL/kg" inclusive). Útil saber a força quando a banca cobrar.
+    </div>
+
+    <div class="notes-block">
+      <div class="notes-head">Minhas anotações — tratamento</div>
+      <div class="postits" id="pi_tratamento"></div>
+      <button class="add-pi" onclick="addPostit('tratamento')">+ post-it</button>
+    </div>
   </section>
 
   <!-- ============ NEWS 2 ============ -->
   <section id="news">
-    <div class="sec-head"><span class="sec-num">03</span><h2>NEWS 2 — como funciona</h2></div>
+    <div class="sec-head"><span class="sec-num">04</span><h2>NEWS 2 — como funciona</h2></div>
     <p>Sistema <em>track-and-trigger</em> do Royal College of Physicians (NEWS 2012, revisão 2017). Mede 6 parâmetros fisiológicos de rotina; cada um recebe 0–3 pontos, somando um agregado de 0 a 20. <strong>Quanto maior o desvio agudo de qualquer sinal vital, maior o risco de deterioração e morte em 24h.</strong> O O₂ suplementar acrescenta +2 fixos.</p>
+
+    <h3>NEWS 1 (2012) → NEWS 2 (2017): o que mudou</h3>
+    <p>O NEWS 2 é um refinamento, não uma reformulação. Os 6 parâmetros centrais, os pontos de corte (FR, SpO₂ Escala 1, PAS, FC, temperatura), o +2 fixo do oxigênio e os limiares de resposta (3 isolado · 5–6 · ≥7) continuam iguais. Mudaram três coisas:</p>
+
+    <div class="compare">
+      <div class="col old"><h4>NEWS 1 — 2012</h4>
+        <ul>
+          <li><strong>Uma única escala de SpO₂</strong> — penalizava todo mundo com saturação baixa, incluindo o retentor crônico de CO₂</li>
+          <li>Consciência pelo <strong>AVPU</strong> (Alert, Voice, Pain, Unresponsive)</li>
+          <li>Delirium/confusão nova passava como "Alert" — não pontuava</li>
+        </ul>
+      </div>
+      <div class="col new"><h4>NEWS 2 — 2017</h4>
+        <ul>
+          <li><strong>Escala 2 de SpO₂</strong> (alvo 88–92%) para hipóxia hipercápnica crônica confirmada (DPOC); SpO₂ acima do alvo em quem recebe O₂ passa a pontuar, sinalizando excesso de oxigênio</li>
+          <li>Consciência pelo <strong>ACVPU</strong> — acrescenta o <strong>"C"</strong> de confusão de início agudo, que pontua 3</li>
+          <li>Padronização de cores, reforço do registro de dispositivo/fluxo de O₂ e ênfase no julgamento clínico</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="callout">
+      <span class="tag">Numa frase</span>
+      O NEWS 2 resolveu dois pontos cegos do original: o do <strong>retentor de CO₂</strong> (Escala 2, evitando hiperóxia e narcose) e o do <strong>delirium</strong> (o "C" do ACVPU, captando o paciente alerta mas desorientado — sinal precoce de sepse, hipóxia, AVC).
+    </div>
 
     <table class="tbl">
       <thead>
@@ -298,7 +365,7 @@
 
   <!-- ============ U-SHAPE ============ -->
   <section id="ushape">
-    <div class="sec-head"><span class="sec-num">04</span><h2>Por que PAS ≥220 pontua 3</h2></div>
+    <div class="sec-head"><span class="sec-num">05</span><h2>Por que PAS ≥220 pontua 3</h2></div>
     <p>A pergunta-chave: <span class="q">se PA alta crônica nem sempre é emergência, por que ≥220 vale o máximo?</span> Porque a tabela de PAS do NEWS 2 tem forma de <strong>U</strong> — os dois extremos pontuam 3, com gradação fina só no lado da hipotensão.</p>
 
     <div class="ushape">
@@ -325,7 +392,7 @@
 
   <!-- ============ POCUS ============ -->
   <section id="pocus">
-    <div class="sec-head"><span class="sec-num">05</span><h2>POCUS à beira-leito</h2></div>
+    <div class="sec-head"><span class="sec-num">06</span><h2>POCUS à beira-leito</h2></div>
     <p class="pocus-intro">A SSC 2026 traz o POCUS como recomendação condicional para guiar a ressuscitação. Atlas de imagens com legenda fixa; os post-its amarelos são editáveis e você pode adicionar suas próprias imagens em cada grupo. Tudo o que você criar (post-its e imagens novas) salva neste navegador — use exportar para backup.</p>
     <div class="pocus-toolbar">
       <button class="pocus-tbtn" onclick="exportNotes()">⬇ exportar (imagens + post-its)</button>
@@ -338,7 +405,7 @@
 
   <!-- ============ ARMADILHAS ============ -->
   <section id="armadilhas">
-    <div class="sec-head"><span class="sec-num">06</span><h2>Armadilhas que a banca adora</h2></div>
+    <div class="sec-head"><span class="sec-num">07</span><h2>Armadilhas que a banca adora</h2></div>
     <div class="topic"><strong>O₂ sempre vale só 2:</strong> qualquer necessidade de O₂ acima do ar ambiente adiciona apenas 2 pontos. Um paciente pode estar subindo de cateter nasal para Venturi 60% (TEP, p.ex.) sem o escore subir. Sempre cheque a <em>quantidade</em> real de O₂.</div>
     <div class="topic"><strong>NEWS baixo ≠ sem risco:</strong> jovens compensam por mais tempo. Acidose metabólica grave / hipercalemia por LRA podem cursar com NEWS 2–3 e colapso súbito.</div>
     <div class="topic"><strong>Julgamento clínico prevalece:</strong> preocupação do clínico, paciente ou família sobrepõe o escore. A orientação de sepse recomenda subir <em>pelo menos uma faixa</em> de NEWS quando há preocupação com o quadro.</div>
@@ -347,6 +414,12 @@
     <div class="callout">
       <span class="tag">Conexão sepse ↔ NEWS</span>
       No PSA: NEWS 2 ≥5 com foco infeccioso = gatilho para protocolo de sepse. A SSC 2026 reforça rastreamento padronizado já no pré-hospitalar e o "código sepse" para acelerar diagnóstico e antimicrobiano.
+    </div>
+
+    <div class="notes-block">
+      <div class="notes-head">Minhas anotações — armadilhas de prova</div>
+      <div class="postits" id="pi_armadilhas"></div>
+      <button class="add-pi" onclick="addPostit('armadilhas')">+ post-it</button>
     </div>
   </section>
 
@@ -514,6 +587,7 @@
   }
 
   renderGroups();
+  ['mudancas','tratamento','armadilhas'].forEach(renderPostits);
 </script>
 </body>
 </html>
