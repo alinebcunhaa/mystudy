@@ -293,10 +293,14 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-
 .pt-export-btn{font-family:inherit;font-size:13px;font-weight:600;padding:10px 18px;border:none;border-radius:8px;background:var(--uni);color:#fff;cursor:pointer;transition:opacity .2s}
 .pt-export-btn:hover{opacity:.88}
 @media print{
-  body * {visibility:hidden!important;}
-  #print-area, #print-area * {visibility:visible!important;}
-  #print-area{position:absolute;left:0;top:0;width:100%;padding:24px;}
-  .top-header,.sidebar{display:none!important;}
+  /* durante impressão: esconde tudo no body, mostra só o relatório */
+  body.printing > *{ display:none!important; }
+  body.printing > #print-area{ display:block!important; position:static!important; }
+  #print-area, #print-area *{
+    -webkit-print-color-adjust:exact!important;
+    print-color-adjust:exact!important;
+  }
+  @page{ margin:14mm; }
 }
 #print-area{display:none;}
 </style>
@@ -1524,9 +1528,14 @@ function exportScale(id, acronym, name){
   const area = document.getElementById('print-area');
   area.innerHTML = html;
   area.style.display = 'block';
+  document.body.classList.add('printing');
   window.print();
   // limpa depois para não interferir na tela
-  setTimeout(()=>{ area.style.display='none'; area.innerHTML=''; }, 400);
+  setTimeout(()=>{
+    document.body.classList.remove('printing');
+    area.style.display='none';
+    area.innerHTML='';
+  }, 400);
 }
 
 // ──────────────────────────────────────────────────────────────────────────────
