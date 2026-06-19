@@ -292,6 +292,65 @@
     .links-grid{grid-template-columns:1fr;}
   }
   @keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:var(--lavender);border-radius:10px;}
+  /* ── RESUMOS ── */
+  .resumos-header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;padding:0 48px;margin-bottom:18px;}
+  .resumos-main-title{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600;color:var(--text-dark);}
+  .resumos-main-title span{color:var(--lavender);font-style:italic;}
+  .resumos-count{font-size:12px;color:var(--text-light);margin-top:2px;}
+  .resumos-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .resumos-filter-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:0 48px;margin-bottom:24px;}
+  .resumos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px;padding:0 48px 60px;}
+  .resumo-card{background:white;border:1px solid var(--border);border-radius:18px;overflow:hidden;cursor:pointer;transition:transform 0.18s,box-shadow 0.18s;display:flex;flex-direction:column;position:relative;}
+  .resumo-card:hover{transform:translateY(-3px);box-shadow:0 12px 28px rgba(45,45,53,0.1);}
+  .resumo-bar{height:4px;width:100%;}
+  .resumo-body{padding:18px 20px 16px;flex:1;display:flex;flex-direction:column;}
+  .resumo-cat{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-light);margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+  .resumo-name{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;color:var(--text-dark);line-height:1.2;margin-bottom:8px;}
+  .resumo-preview{font-size:12.5px;color:var(--text-mid);line-height:1.5;max-height:60px;overflow:hidden;flex:1;}
+  .resumo-footer{display:flex;align-items:center;gap:8px;margin-top:14px;flex-wrap:wrap;}
+  .resumo-pdf-tag{font-size:10.5px;background:var(--rose-light);color:var(--gineco);padding:3px 9px;border-radius:50px;display:inline-flex;align-items:center;gap:4px;}
+  .resumo-date{font-size:10.5px;color:var(--text-light);margin-left:auto;}
+  .resumos-empty{grid-column:1/-1;text-align:center;padding:50px 20px;color:var(--text-light);font-size:13px;}
+  /* editor */
+  .modal-wide{width:760px;}
+  .rt-toolbar{display:flex;flex-wrap:wrap;gap:4px;background:var(--cream);border:1px solid var(--border);border-radius:10px 10px 0 0;padding:8px;position:sticky;top:0;z-index:2;}
+  .rt-btn{min-width:30px;height:30px;padding:0 8px;border:1px solid transparent;background:white;border-radius:7px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text-dark);display:inline-flex;align-items:center;justify-content:center;transition:background 0.15s,border-color 0.15s;}
+  .rt-btn:hover{background:var(--lavender-light);}
+  .rt-btn.active{background:var(--lavender-light);border-color:var(--lavender);}
+  .rt-btn b{font-weight:700;}.rt-btn i{font-style:italic;}.rt-btn u{text-decoration:underline;}
+  .rt-sep{width:1px;background:var(--border);margin:2px 3px;}
+  .rt-color{width:22px;height:22px;border:none;border-radius:6px;cursor:pointer;padding:0;background:none;}
+  .rt-select{height:30px;border:1px solid var(--border);border-radius:7px;background:white;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--text-mid);padding:0 6px;cursor:pointer;outline:none;}
+  .rt-swatch{width:20px;height:20px;border-radius:5px;border:1px solid rgba(0,0,0,0.08);cursor:pointer;transition:transform 0.12s;}
+  .rt-swatch:hover{transform:scale(1.18);}
+  .rt-editor{border:1px solid var(--border);border-top:none;border-radius:0 0 10px 10px;min-height:240px;max-height:46vh;overflow-y:auto;padding:16px 18px;font-family:'DM Sans',sans-serif;font-size:14px;line-height:1.65;color:var(--text-dark);background:white;outline:none;}
+  .rt-editor:empty:before{content:attr(data-ph);color:var(--text-light);}
+  .rt-editor h1{font-family:'Cormorant Garamond',serif;font-size:26px;margin:8px 0;}
+  .rt-editor h2{font-family:'Cormorant Garamond',serif;font-size:21px;margin:8px 0;}
+  .rt-editor blockquote{border-left:3px solid var(--lavender);margin:8px 0;padding:4px 14px;color:var(--text-mid);background:var(--lavender-soft);border-radius:0 8px 8px 0;}
+  .rt-editor ul,.rt-editor ol{padding-left:22px;margin:6px 0;}
+  .rt-editor a{color:var(--preventiva);}
+  .pdf-attach-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:6px;}
+  .pdf-chip{display:inline-flex;align-items:center;gap:8px;background:var(--rose-light);color:var(--gineco);padding:7px 12px;border-radius:10px;font-size:12px;max-width:100%;}
+  .pdf-chip .x{cursor:pointer;font-weight:700;opacity:0.7;}.pdf-chip .x:hover{opacity:1;}
+  .seg{display:flex;background:var(--cream);border:1px solid var(--border);border-radius:10px;padding:3px;gap:3px;}
+  .seg button{flex:1;padding:7px 10px;border:none;background:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--text-mid);cursor:pointer;transition:background 0.15s;}
+  .seg button.active{background:white;color:var(--text-dark);font-weight:500;box-shadow:0 1px 3px rgba(0,0,0,0.06);}
+  /* viewer */
+  .viewer-modal{background:white;border-radius:20px;width:900px;max-width:96vw;max-height:92vh;display:flex;flex-direction:column;position:relative;overflow:hidden;animation:modalIn 0.3s cubic-bezier(.34,1.56,.64,1);}
+  .viewer-head{padding:22px 28px 16px;border-bottom:1px solid var(--border);}
+  .viewer-cat{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-light);margin-bottom:6px;}
+  .viewer-title{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:600;color:var(--text-dark);padding-right:40px;}
+  .viewer-body{padding:24px 28px;overflow-y:auto;font-family:'DM Sans',sans-serif;font-size:14.5px;line-height:1.7;color:var(--text-dark);}
+  .viewer-body h1{font-family:'Cormorant Garamond',serif;font-size:26px;margin:10px 0;}
+  .viewer-body h2{font-family:'Cormorant Garamond',serif;font-size:21px;margin:10px 0;}
+  .viewer-body blockquote{border-left:3px solid var(--lavender);margin:10px 0;padding:4px 14px;color:var(--text-mid);background:var(--lavender-soft);border-radius:0 8px 8px 0;}
+  .viewer-body ul,.viewer-body ol{padding-left:24px;margin:8px 0;}
+  .viewer-body a{color:var(--preventiva);}
+  .viewer-pdf{margin:18px 28px 24px;border:1px solid var(--border);border-radius:14px;overflow:hidden;height:60vh;}
+  .viewer-pdf iframe{width:100%;height:100%;border:none;}
+  .viewer-actions{padding:14px 28px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;}
+  @media(max-width:600px){.resumos-header,.resumos-filter-bar,.resumos-grid{padding-left:24px;padding-right:24px;}.modal-wide{width:95vw;}}
   .toast{position:fixed;bottom:24px;right:24px;background:var(--text-dark);color:white;padding:12px 20px;border-radius:12px;font-size:13px;z-index:300;transform:translateY(80px);opacity:0;transition:all 0.3s cubic-bezier(.34,1.56,.64,1);}
   .toast.show{transform:translateY(0);opacity:1;}
 
@@ -375,6 +434,41 @@
   </div>
   <div class="library-meta"><div class="total-count" id="totalCount"></div></div>
   <div class="cards-grid" id="cardsGrid"></div>
+</section>
+
+<div class="section-divider"><div class="divider-label">Meus <span>Resumos</span></div></div>
+
+<section id="resumos">
+  <div class="resumos-header">
+    <div>
+      <div class="resumos-main-title">Meu caderno de <span>Resumos</span></div>
+      <div class="resumos-count" id="resumosCount"></div>
+    </div>
+    <div class="resumos-actions">
+      <button class="btn-action" onclick="exportResumos()">💾 Exportar</button>
+      <button class="btn-action" onclick="document.getElementById('importResumosInput').click()">📂 Importar</button>
+      <button class="btn-add-link" onclick="openResumoModal(null)">＋ Novo resumo</button>
+      <input type="file" id="importResumosInput" accept=".json" style="display:none" onchange="importResumos(event)">
+    </div>
+  </div>
+  <div class="resumos-filter-bar">
+    <div class="links-search">
+      <span style="color:var(--text-light);font-size:13px">🔍</span>
+      <input type="text" placeholder="Buscar resumos..." id="resumosSearch" oninput="renderResumos()">
+    </div>
+    <select class="area-filter" id="resumosCatFilter" onchange="renderResumos()">
+      <option value="">Todas as categorias</option>
+      <option value="clinica">Clínica Médica</option>
+      <option value="cirurgia">Cirurgia</option>
+      <option value="preventiva">Preventiva</option>
+      <option value="gineco">GO</option>
+      <option value="pediatria">Pediatria</option>
+      <option value="pos">PÓS</option>
+      <option value="psa">PSA</option>
+      <option value="geral">Geral</option>
+    </select>
+  </div>
+  <div class="resumos-grid" id="resumosGrid"></div>
 </section>
 
 <div class="section-divider"><div class="divider-label">Links & <span>Recursos</span></div></div>
@@ -471,6 +565,130 @@
       <button class="btn-danger" id="linkDelBtn" onclick="deleteLink()" style="display:none">🗑 Excluir</button>
       <button class="btn-secondary" onclick="closeLinkModal()">Cancelar</button>
       <button class="btn-primary" onclick="saveLink()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL RESUMO (EDITOR) -->
+<div class="overlay" id="resumoOverlay" onclick="closeResumoOnOverlay(event)">
+  <div class="modal modal-wide">
+    <button class="modal-close" onclick="closeResumoModal()">✕</button>
+    <div class="modal-title" id="resumoModalTitle">Novo resumo</div>
+    <div class="modal-sub">Cole, escreva e formate. Anexe um PDF embutido ou um link — você decide.</div>
+
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;">
+      <div style="flex:2;min-width:220px;">
+        <label class="form-label">Título</label>
+        <input type="text" class="form-input" id="resumoTitulo" placeholder="Ex: Sepse — pontos de prova">
+      </div>
+      <div style="flex:1;min-width:140px;">
+        <label class="form-label">Categoria</label>
+        <select class="form-select" id="resumoCat">
+          <option value="clinica">Clínica Médica</option>
+          <option value="cirurgia">Cirurgia</option>
+          <option value="preventiva">Preventiva</option>
+          <option value="gineco">GO</option>
+          <option value="pediatria">Pediatria</option>
+          <option value="pos">PÓS</option>
+          <option value="psa">PSA</option>
+          <option value="geral" selected>Geral</option>
+        </select>
+      </div>
+    </div>
+
+    <label class="form-label">Conteúdo</label>
+    <div class="rt-toolbar" id="rtToolbar">
+      <select class="rt-select" onchange="rtCmd('formatBlock',this.value);this.selectedIndex=0;">
+        <option value="">Estilo ▾</option>
+        <option value="h1">Título grande</option>
+        <option value="h2">Subtítulo</option>
+        <option value="p">Parágrafo</option>
+        <option value="blockquote">Citação</option>
+      </select>
+      <select class="rt-select" onchange="rtCmd('fontSize',this.value);this.selectedIndex=0;" title="Tamanho">
+        <option value="">Tam ▾</option>
+        <option value="2">Pequeno</option>
+        <option value="3">Normal</option>
+        <option value="5">Grande</option>
+        <option value="6">Muito grande</option>
+      </select>
+      <span class="rt-sep"></span>
+      <button class="rt-btn" data-cmd="bold" onmousedown="event.preventDefault();rtCmd('bold')"><b>B</b></button>
+      <button class="rt-btn" data-cmd="italic" onmousedown="event.preventDefault();rtCmd('italic')"><i>I</i></button>
+      <button class="rt-btn" data-cmd="underline" onmousedown="event.preventDefault();rtCmd('underline')"><u>U</u></button>
+      <button class="rt-btn" data-cmd="strikeThrough" onmousedown="event.preventDefault();rtCmd('strikeThrough')"><span style="text-decoration:line-through">S</span></button>
+      <span class="rt-sep"></span>
+      <button class="rt-btn" onmousedown="event.preventDefault();rtCmd('insertUnorderedList')" title="Lista">• ☰</button>
+      <button class="rt-btn" onmousedown="event.preventDefault();rtCmd('insertOrderedList')" title="Lista numerada">1.</button>
+      <span class="rt-sep"></span>
+      <!-- cor do texto -->
+      <span style="display:inline-flex;align-items:center;gap:3px;">
+        <span style="font-size:11px;color:var(--text-light)">A</span>
+        <span class="rt-swatch" style="background:#2d2d35" onmousedown="event.preventDefault();rtCmd('foreColor','#2d2d35')"></span>
+        <span class="rt-swatch" style="background:#c0392b" onmousedown="event.preventDefault();rtCmd('foreColor','#c0392b')"></span>
+        <span class="rt-swatch" style="background:#2980b9" onmousedown="event.preventDefault();rtCmd('foreColor','#2980b9')"></span>
+        <span class="rt-swatch" style="background:#27ae60" onmousedown="event.preventDefault();rtCmd('foreColor','#27ae60')"></span>
+        <span class="rt-swatch" style="background:#8e44ad" onmousedown="event.preventDefault();rtCmd('foreColor','#8e44ad')"></span>
+        <input type="color" class="rt-color" title="Outra cor" onchange="rtCmd('foreColor',this.value)">
+      </span>
+      <span class="rt-sep"></span>
+      <!-- realce -->
+      <span style="display:inline-flex;align-items:center;gap:3px;">
+        <span style="font-size:11px;color:var(--text-light)">🖊</span>
+        <span class="rt-swatch" style="background:#fff3a0" onmousedown="event.preventDefault();rtCmd('hiliteColor','#fff3a0')"></span>
+        <span class="rt-swatch" style="background:#ffd0d0" onmousedown="event.preventDefault();rtCmd('hiliteColor','#ffd0d0')"></span>
+        <span class="rt-swatch" style="background:#c8eccb" onmousedown="event.preventDefault();rtCmd('hiliteColor','#c8eccb')"></span>
+        <span class="rt-swatch" style="background:#cfe3f5" onmousedown="event.preventDefault();rtCmd('hiliteColor','#cfe3f5')"></span>
+        <span class="rt-swatch" style="background:#ede8f5" onmousedown="event.preventDefault();rtCmd('hiliteColor','#ede8f5')"></span>
+        <span class="rt-swatch" style="background:transparent;border:1px solid var(--border);display:inline-flex;align-items:center;justify-content:center;font-size:10px;color:var(--text-light)" title="Remover realce" onmousedown="event.preventDefault();rtCmd('hiliteColor','transparent')">⌀</span>
+      </span>
+      <span class="rt-sep"></span>
+      <button class="rt-btn" onmousedown="event.preventDefault();rtLink()" title="Inserir link">🔗</button>
+      <button class="rt-btn" onmousedown="event.preventDefault();rtCmd('removeFormat')" title="Limpar formatação">⨯ᶠ</button>
+    </div>
+    <div class="rt-editor" id="rtEditor" contenteditable="true" data-ph="Comece a escrever ou cole seu conteúdo aqui..." oninput="rtSync()"></div>
+
+    <div style="margin-top:18px;">
+      <label class="form-label">PDF (opcional)</label>
+      <div class="seg" style="margin-bottom:10px;">
+        <button id="segNone" class="active" onclick="setPdfMode('none')">Sem PDF</button>
+        <button id="segEmbed" onclick="setPdfMode('embed')">📎 Embutir arquivo</button>
+        <button id="segLink" onclick="setPdfMode('link')">🔗 Link do PDF</button>
+      </div>
+      <div id="pdfEmbedArea" style="display:none;">
+        <input type="file" id="pdfFileInput" accept="application/pdf" style="display:none" onchange="onPdfPicked(event)">
+        <div class="pdf-attach-row">
+          <button class="btn-action" onclick="document.getElementById('pdfFileInput').click()">📎 Escolher PDF</button>
+          <span id="pdfSizeHint" style="font-size:11px;color:var(--text-light)"></span>
+        </div>
+        <div id="pdfChipWrap" class="pdf-attach-row"></div>
+      </div>
+      <div id="pdfLinkArea" style="display:none;">
+        <input type="text" class="form-input" id="pdfLinkInput" placeholder="https://drive.google.com/... ou outro link do PDF">
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-danger" id="resumoDelBtn" onclick="deleteResumo()" style="display:none">🗑 Excluir</button>
+      <button class="btn-secondary" onclick="closeResumoModal()">Cancelar</button>
+      <button class="btn-primary" onclick="saveResumo()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- VIEWER RESUMO -->
+<div class="overlay" id="viewerOverlay" onclick="closeViewerOnOverlay(event)">
+  <div class="viewer-modal">
+    <button class="modal-close" onclick="closeViewer()" style="z-index:3">✕</button>
+    <div class="viewer-head">
+      <div class="viewer-cat" id="viewerCat"></div>
+      <div class="viewer-title" id="viewerTitle"></div>
+    </div>
+    <div class="viewer-body" id="viewerBody"></div>
+    <div class="viewer-pdf" id="viewerPdf" style="display:none"><iframe id="viewerPdfFrame" title="PDF"></iframe></div>
+    <div class="viewer-actions">
+      <button class="btn-action" id="viewerPdfBtn" style="display:none" onclick="openViewerPdfNewTab()">↗ Abrir PDF em nova aba</button>
+      <button class="btn-primary" style="flex:none;padding:9px 20px" onclick="editFromViewer()">✏️ Editar</button>
     </div>
   </div>
 </div>
@@ -940,6 +1158,164 @@
 
   renderCards();
   renderLinks();
+
+  // ════════════════ RESUMOS ════════════════
+  const RESUMOS_KEY='medstudy_resumos';
+  let editingResumoId=null, currentPdfMode='none', currentPdfData=null, currentPdfName='';
+  function loadResumos(){try{return JSON.parse(localStorage.getItem(RESUMOS_KEY))||[];}catch{return[];}}
+  function saveResumos(arr){
+    try{localStorage.setItem(RESUMOS_KEY,JSON.stringify(arr));return true;}
+    catch(e){showToast('❌ Sem espaço! PDF embutido grande demais — use link.');return false;}
+  }
+  function stripHtml(html){const d=document.createElement('div');d.innerHTML=html;return (d.textContent||'').trim();}
+  function fmtDate(ts){const d=new Date(ts);return d.toLocaleDateString('pt-BR',{day:'2-digit',month:'short',year:'numeric'});}
+
+  function renderResumos(){
+    const grid=document.getElementById('resumosGrid');
+    let list=loadResumos();
+    const q=(document.getElementById('resumosSearch').value||'').toLowerCase();
+    const catF=document.getElementById('resumosCatFilter').value;
+    if(catF)list=list.filter(r=>r.cat===catF);
+    if(q)list=list.filter(r=>(r.titulo||'').toLowerCase().includes(q)||stripHtml(r.conteudo||'').toLowerCase().includes(q));
+    list.sort((a,b)=>(b.updated||0)-(a.updated||0));
+    document.getElementById('resumosCount').textContent=`${list.length} resumo${list.length===1?'':'s'}`;
+    if(!list.length){grid.innerHTML=`<div class="resumos-empty">Nenhum resumo ainda. Clique em <b>＋ Novo resumo</b> para começar.</div>`;return;}
+    grid.innerHTML=list.map(r=>{
+      const meta=categoryMeta[r.cat]||{label:r.cat,color:'#b0a898'};
+      const preview=stripHtml(r.conteudo||'').slice(0,160);
+      const hasPdf=r.pdfMode&&r.pdfMode!=='none';
+      const pdfTag=hasPdf?`<span class="resumo-pdf-tag">📄 PDF</span>`:'';
+      return`<div class="resumo-card" onclick="openViewer('${r.id}')">
+        <div class="resumo-bar" style="background:${meta.color}"></div>
+        <div class="resumo-body">
+          <div class="resumo-cat"><span style="width:7px;height:7px;border-radius:50%;background:${meta.color};display:inline-block"></span>${meta.label}</div>
+          <div class="resumo-name">${escapeHtml(r.titulo||'Sem título')}</div>
+          <div class="resumo-preview">${escapeHtml(preview)||'<em style="color:var(--text-light)">Sem texto</em>'}</div>
+          <div class="resumo-footer">${pdfTag}<span class="resumo-date">${fmtDate(r.updated||Date.now())}</span></div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+  function escapeHtml(s){return (s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+  // ── editor rich text ──
+  function rtCmd(cmd,val){document.getElementById('rtEditor').focus();try{document.execCommand(cmd,false,val||null);}catch(e){}rtSync();}
+  function rtLink(){const url=prompt('URL do link:');if(url)rtCmd('createLink',url);}
+  function rtSync(){/* placeholder hook for future autosave */}
+
+  function setPdfMode(mode){
+    currentPdfMode=mode;
+    document.getElementById('segNone').classList.toggle('active',mode==='none');
+    document.getElementById('segEmbed').classList.toggle('active',mode==='embed');
+    document.getElementById('segLink').classList.toggle('active',mode==='link');
+    document.getElementById('pdfEmbedArea').style.display=mode==='embed'?'block':'none';
+    document.getElementById('pdfLinkArea').style.display=mode==='link'?'block':'none';
+  }
+  function onPdfPicked(e){
+    const file=e.target.files[0];if(!file)return;
+    const mb=file.size/1048576;
+    if(mb>3.5){showToast('⚠️ PDF grande ('+mb.toFixed(1)+'MB). Pode estourar o limite — considere usar link.');}
+    const reader=new FileReader();
+    reader.onload=ev=>{currentPdfData=ev.target.result;currentPdfName=file.name;renderPdfChip();};
+    reader.readAsDataURL(file);
+    e.target.value='';
+  }
+  function renderPdfChip(){
+    const wrap=document.getElementById('pdfChipWrap');
+    if(currentPdfData){
+      const kb=Math.round(currentPdfData.length*0.75/1024);
+      document.getElementById('pdfSizeHint').textContent=`~${kb} KB embutido`;
+      wrap.innerHTML=`<span class="pdf-chip">📄 ${escapeHtml(currentPdfName||'arquivo.pdf')} <span class="x" onclick="clearPdf()">✕</span></span>`;
+    }else{wrap.innerHTML='';document.getElementById('pdfSizeHint').textContent='';}
+  }
+  function clearPdf(){currentPdfData=null;currentPdfName='';renderPdfChip();}
+
+  function openResumoModal(id){
+    editingResumoId=id;
+    const r=id?loadResumos().find(x=>x.id===id):null;
+    document.getElementById('resumoModalTitle').textContent=id?'Editar resumo':'Novo resumo';
+    document.getElementById('resumoTitulo').value=r?r.titulo:'';
+    document.getElementById('resumoCat').value=r?r.cat:'geral';
+    document.getElementById('rtEditor').innerHTML=r?r.conteudo:'';
+    currentPdfData=null;currentPdfName='';document.getElementById('pdfLinkInput').value='';
+    if(r&&r.pdfMode==='embed'){currentPdfData=r.pdfData;currentPdfName=r.pdfName||'arquivo.pdf';setPdfMode('embed');}
+    else if(r&&r.pdfMode==='link'){document.getElementById('pdfLinkInput').value=r.pdfLink||'';setPdfMode('link');}
+    else setPdfMode('none');
+    renderPdfChip();
+    document.getElementById('resumoDelBtn').style.display=id?'block':'none';
+    document.getElementById('resumoOverlay').classList.add('active');
+  }
+  function closeResumoModal(){document.getElementById('resumoOverlay').classList.remove('active');}
+  function closeResumoOnOverlay(e){if(e.target===document.getElementById('resumoOverlay'))closeResumoModal();}
+
+  function saveResumo(){
+    const titulo=document.getElementById('resumoTitulo').value.trim();
+    const conteudo=document.getElementById('rtEditor').innerHTML.trim();
+    const cat=document.getElementById('resumoCat').value;
+    if(!titulo&&!stripHtml(conteudo)){showToast('❌ Dê um título ou escreva algo.');return;}
+    let list=loadResumos();
+    let obj=editingResumoId?list.find(x=>x.id===editingResumoId):null;
+    if(!obj){obj={id:'r'+Date.now()+Math.random().toString(36).slice(2,6),created:Date.now()};list.unshift(obj);}
+    obj.titulo=titulo;obj.conteudo=conteudo;obj.cat=cat;obj.updated=Date.now();
+    obj.pdfMode=currentPdfMode;
+    obj.pdfData=currentPdfMode==='embed'?currentPdfData:null;
+    obj.pdfName=currentPdfMode==='embed'?currentPdfName:null;
+    obj.pdfLink=currentPdfMode==='link'?document.getElementById('pdfLinkInput').value.trim():null;
+    if(saveResumos(list)){closeResumoModal();renderResumos();showToast(editingResumoId?'✅ Resumo atualizado!':'✅ Resumo salvo!');}
+  }
+  function deleteResumo(){
+    if(!editingResumoId)return;
+    if(!confirm('Excluir este resumo? Não dá pra desfazer.'))return;
+    saveResumos(loadResumos().filter(x=>x.id!==editingResumoId));
+    closeResumoModal();renderResumos();showToast('🗑 Resumo excluído.');
+  }
+
+  // ── viewer ──
+  let viewerCurrentId=null, viewerPdfUrl=null;
+  function openViewer(id){
+    const r=loadResumos().find(x=>x.id===id);if(!r)return;
+    viewerCurrentId=id;
+    const meta=categoryMeta[r.cat]||{label:r.cat,color:'#b0a898'};
+    document.getElementById('viewerCat').textContent=meta.label+' · '+fmtDate(r.updated||Date.now());
+    document.getElementById('viewerTitle').textContent=r.titulo||'Sem título';
+    document.getElementById('viewerBody').innerHTML=r.conteudo||'<em style="color:var(--text-light)">Sem conteúdo</em>';
+    const pdfBox=document.getElementById('viewerPdf'),frame=document.getElementById('viewerPdfFrame'),pdfBtn=document.getElementById('viewerPdfBtn');
+    viewerPdfUrl=null;
+    if(r.pdfMode==='embed'&&r.pdfData){viewerPdfUrl=r.pdfData;frame.src=r.pdfData;pdfBox.style.display='block';pdfBtn.style.display='inline-flex';}
+    else if(r.pdfMode==='link'&&r.pdfLink){viewerPdfUrl=r.pdfLink;frame.src=r.pdfLink;pdfBox.style.display='block';pdfBtn.style.display='inline-flex';}
+    else{frame.src='about:blank';pdfBox.style.display='none';pdfBtn.style.display='none';}
+    document.getElementById('viewerOverlay').classList.add('active');
+  }
+  function closeViewer(){document.getElementById('viewerOverlay').classList.remove('active');document.getElementById('viewerPdfFrame').src='about:blank';}
+  function closeViewerOnOverlay(e){if(e.target===document.getElementById('viewerOverlay'))closeViewer();}
+  function openViewerPdfNewTab(){if(viewerPdfUrl)window.open(viewerPdfUrl,'_blank');}
+  function editFromViewer(){const id=viewerCurrentId;closeViewer();openResumoModal(id);}
+
+  // ── export / import ──
+  function exportResumos(){
+    const data=loadResumos();
+    if(!data.length){showToast('Nada para exportar.');return;}
+    const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+    a.download='resumos-medstudy-'+new Date().toISOString().slice(0,10)+'.json';a.click();
+    showToast('💾 Resumos exportados!');
+  }
+  function importResumos(event){
+    const file=event.target.files[0];if(!file)return;
+    const reader=new FileReader();
+    reader.onload=e=>{
+      try{
+        const imported=JSON.parse(e.target.result);
+        if(!Array.isArray(imported))throw new Error();
+        const ex=loadResumos();const ids=new Set(ex.map(r=>r.id));
+        const merged=[...imported.filter(r=>!ids.has(r.id)),...ex];
+        if(saveResumos(merged)){renderResumos();showToast('✅ Resumos importados!');}
+      }catch{showToast('❌ Arquivo inválido.');}
+    };
+    reader.readAsText(file);event.target.value='';
+  }
+
+  renderResumos();
 </script>
 </body>
 </html>
