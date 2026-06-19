@@ -1,0 +1,74 @@
+[
+  {
+    "id": "l1780339770214",
+    "nome": "Cardiologia na emergência",
+    "url": "chrome-extension://efaidnbmnnnibpcajpcglclefindmkaj/https://ampllaeditora.com.br/books/2023/03/CardiologianaEmergencia.pdf",
+    "categoria": "Clínica Médica",
+    "tipo": "Site",
+    "desc": ""
+  },
+  {
+    "id": "l1779137435942",
+    "nome": "Pericardite",
+    "url": "https://litfl.com/pericarditis-ecg-library/",
+    "categoria": "Clínica Médica",
+    "tipo": "Site",
+    "desc": ""
+  },
+  {
+    "id": "l1779137049881",
+    "nome": "ECG",
+    "url": "https://litfl.com/category/ecg-library/",
+    "categoria": "Clínica Médica",
+    "tipo": "Site",
+    "desc": ""
+  },
+  {
+    "id": "l1779133631270",
+    "nome": "IAM",
+    "url": "https://sanarmed.com/infarto-agudo-do-miocardio-alteracoes-eletrocardiograficas-no-diagnostico-precoce/",
+    "categoria": "Clínica Médica",
+    "tipo": "Site",
+    "desc": ""
+  },
+  {
+    "id": "l1778950216608",
+    "nome": "APS- rastreamento",
+    "url": "https://biblioteca.cofen.gov.br/rastreamento/",
+    "categoria": "Geral",
+    "tipo": "Site",
+    "desc": ""
+  },
+  {
+    "id": "l1778160568848",
+    "nome": "Simulador de ventilador mecanico",
+    "url": "https://xlung.net/en/simulators",
+    "categoria": "Geral",
+    "tipo": "Site",
+    "desc": ""
+  },
+  {
+    "id": "l1778160483599",
+    "nome": "Sd Swyer - clevelandclinic",
+    "url": "https://my.clevelandclinic.org/health/diseases/swyer-syndrome",
+    "categoria": "Pediatria",
+    "tipo": "Site",
+    "desc": ""
+  },
+  {
+    "id": "l1777950454305",
+    "nome": "Notion - aline",
+    "url": "https://www.notion.so/Gerenciador-de-estudos-2dece9d7ed8780b485fce98845243961",
+    "categoria": "Geral",
+    "tipo": "Site",
+    "desc": "gerenciador de estudos - notion"
+  },
+  {
+    "id": "l1777950366347",
+    "nome": "RADIOPEDIA",
+    "url": "https://radiopaedia.org/articles/transient-tachypnoea-of-the-newborn?lang=us",
+    "categoria": "Pediatria",
+    "tipo": "Site",
+    "desc": "neonatal respiratory distress (causes)"
+  }
+]
