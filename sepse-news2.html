@@ -204,6 +204,28 @@
   .lb img{max-width:94vw;max-height:88vh;border-radius:8px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
   .save-flash{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--sage-deep);color:#fff;font-family:'IBM Plex Mono',monospace;font-size:.76rem;padding:8px 18px;border-radius:999px;opacity:0;transition:.3s;pointer-events:none;z-index:300}
   .save-flash.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  /* ---- Hemodinâmica & Inotropismo ---- */
+  .hemo-h3{font-size:1.08rem;font-weight:600;color:var(--terracotta);margin:30px 0 8px;border-bottom:1px dashed var(--terra-soft);padding-bottom:7px}
+  .trop-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;margin:16px 0}
+  .trop-card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:14px 16px;border-top:4px solid var(--terracotta)}
+  .trop-card .trop-tag{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);display:block}
+  .trop-card b{display:block;color:var(--sage-deep);margin:2px 0 7px;font-size:.95rem}
+  .trop-card p{font-size:.84rem;line-height:1.5;color:var(--ink);margin:0}
+  .trop-card.t-ino{border-top-color:#C8795C}.trop-card.t-crono{border-top-color:#7d6ba0}
+  .trop-card.t-dromo{border-top-color:#5b8a72}.trop-card.t-luso{border-top-color:#3a7ca5}
+  .fs-wrap{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:18px;margin:14px 0 6px;display:grid;grid-template-columns:1fr;gap:14px}
+  @media(min-width:720px){.fs-wrap{grid-template-columns:240px 1fr;align-items:start}.fs-wrap canvas{grid-column:2}.fs-controls{grid-column:1;grid-row:1/3}.fs-readout{grid-column:2}}
+  .fs-controls{display:flex;flex-direction:column;gap:16px}
+  .fs-controls label{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:.74rem;color:var(--ink);display:flex;flex-direction:column;gap:5px}
+  .fs-controls input[type=range]{width:100%;accent-color:var(--terracotta)}
+  .fs-val{font-size:.7rem;color:var(--muted)}
+  .fs-toggles{display:flex;flex-direction:column;gap:7px;margin-top:2px}
+  .fs-chk{flex-direction:row !important;align-items:center;gap:7px !important;color:var(--muted) !important}
+  .fs-chk input{accent-color:var(--sage-deep)}
+  #fsCanvas{width:100%;height:auto;max-width:640px;background:#FBF8F2;border:1px solid var(--line);border-radius:12px}
+  .fs-readout{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:.78rem;line-height:1.6;color:var(--ink);background:#EFEAF3;border:1px solid var(--lav);border-radius:10px;padding:11px 14px}
+  .fs-readout b{color:#7d6ba0}
+  .hemo-atlas{margin-top:30px}
 </style>
 </head>
 <body>
@@ -220,6 +242,7 @@
     <a href="#tratamento">Tratamento</a>
     <a href="#news">NEWS 2</a>
     <a href="#ushape">PAS em U</a>
+    <a href="#hemo">Hemodinâmica</a>
     <a href="#pocus">POCUS</a>
     <a href="#armadilhas">Armadilhas</a>
   </nav>
@@ -414,9 +437,74 @@
     </div>
   </section>
 
+  <!-- ============ HEMODINÂMICA & INOTROPISMO ============ -->
+  <section id="hemo">
+    <div class="sec-head"><span class="sec-num">06</span><h2>Hemodinâmica &amp; Inotropismo</h2></div>
+    <p class="pocus-intro">Quando o choque é refratário a volume, o passo seguinte é manipular contratilidade e tônus vascular. Entender o inotropismo no nível do cálcio explica por que cada droga age — e por que toda droga inotrópica tem um preço metabólico.</p>
+
+    <h3 class="hemo-h3">1 · O mecanismo do cálcio</h3>
+    <p>A força de contração do miócito é governada pela quantidade de Ca²⁺ que chega às proteínas contráteis a cada sístole. O potencial de ação abre canais de Ca²⁺ tipo-L (no túbulo T); esse influxo dispara a liberação maciça de Ca²⁺ do retículo sarcoplasmático (RS) pelos receptores de rianodina — o <em>cálcio-induzindo-liberação-de-cálcio</em>. O Ca²⁺ liga-se à troponina C, libera o sítio actina-miosina e gera força. O relaxamento depende da recaptação ativa pela <strong>SERCA</strong> (de volta ao RS) e da extrusão pelo trocador Na⁺/Ca²⁺.</p>
+    <div class="topic"><strong>Onde cada classe entra:</strong> agonistas β₁ (dobutamina, adrenalina, dopamina em dose β) → ↑AMPc via adenilato-ciclase → PKA fosforila os canais de Ca²⁺ tipo-L e o fosfolambam (desinibindo a SERCA): mais Ca²⁺ entra e é reciclado mais rápido — <em>inotropismo + lusitropismo</em>. <strong>Inibidores da PDE-3</strong> (milrinona) → bloqueiam a degradação do AMPc → mesmo efeito a jusante, sem precisar do receptor β (útil em down-regulation β crônica). <strong>Digoxina</strong> → inibe a Na⁺/K⁺-ATPase → ↑Na⁺ intracelular → o trocador Na⁺/Ca²⁺ extruda menos Ca²⁺ → ↑Ca²⁺ disponível (inotropismo independente de AMPc, sem ↑consumo de O₂ proporcional). <strong>Sensibilizadores de Ca²⁺</strong> (levosimendana) → aumentam a afinidade da troponina C pelo Ca²⁺ já presente — força sem sobrecarga de cálcio.</p></div>
+
+    <h3 class="hemo-h3">2 · Os quatro tropismos</h3>
+    <p>Toda droga vasoativa pode ser descrita por seu efeito sobre quatro propriedades cardíacas independentes. Separá-las evita confundir "bate mais forte" com "bate mais rápido".</p>
+    <div class="trop-grid">
+      <div class="trop-card t-ino"><span class="trop-tag">Inotropismo</span><b>força de contração</b><p>Quanto o ventrículo ejeta por batimento (↑VS). Mediado pela quantidade de Ca²⁺ que chega à troponina. ↑ por β₁, PDE-3i, digoxina, levosimendana.</p></div>
+      <div class="trop-card t-crono"><span class="trop-tag">Cronotropismo</span><b>frequência cardíaca</b><p>Velocidade de disparo do nó sinusal. ↑ por β₁ (e β₂), atropina; ↓ por digoxina (vagal) e β-bloqueio. FC excessiva encurta a diástole e a perfusão coronariana.</p></div>
+      <div class="trop-card t-dromo"><span class="trop-tag">Dromotropismo</span><b>velocidade de condução</b><p>Condução pelo nó AV. ↑ por catecolaminas; ↓ por digoxina e β-bloqueio — por isso a digoxina controla FC na FA.</p></div>
+      <div class="trop-card t-luso"><span class="trop-tag">Lusitropismo</span><b>relaxamento diastólico</b><p>Capacidade de relaxar e encher na diástole. Depende da recaptação de Ca²⁺ pela SERCA. ↑ por β₁/PDE-3i (via fosfolambam) — melhora o enchimento sem ↑pré-carga.</p></div>
+    </div>
+
+    <h3 class="hemo-h3">3 · O custo de oxigênio</h3>
+    <p>O consumo miocárdico de O₂ (MVO₂) é o que o coração paga para gerar débito. Inotropismo e cronotropismo positivos por catecolaminas <strong>aumentam o MVO₂</strong> de forma proporcional — em um coração isquêmico ou em choque cardiogênico, isso pode ampliar a área de injúria e provocar arritmias.</p>
+    <div class="callout"><span class="tag">Determinantes do MVO₂</span>
+      Os três grandes: <strong>tensão da parede</strong> (Lei de Laplace: ↑ por ↑pré-carga e ↑pós-carga — reduzir pós-carga é "barato" e melhora eficiência), <strong>frequência cardíaca</strong> e <strong>contratilidade</strong>. Por isso a hierarquia clínica: otimize volume e ritmo primeiro; só então pague o O₂ do inotrópico — e, quando possível, prefira estratégias que aumentam força sem o custo total das catecolaminas (levosimendana, digoxina, redução de pós-carga).
+    </div>
+
+    <h3 class="hemo-h3">4 · Frank-Starling: volume vs. inotropismo</h3>
+    <p class="pocus-giline">A curva de Frank-Starling relaciona a pré-carga (volume/pressão de enchimento no eixo X) ao débito sistólico (no eixo Y). <strong>Dar volume</strong> move o paciente <em>ao longo</em> da mesma curva (para a direita). Um <strong>inotrópico</strong> desloca a curva inteira <em>para cima e à esquerda</em>: mais débito para a mesma pré-carga. Ajuste os controles e compare.</p>
+
+    <div class="fs-wrap">
+      <div class="fs-controls">
+        <label>Inotropismo
+          <input type="range" id="fsIno" min="0" max="100" value="40" oninput="drawFS()">
+          <span class="fs-val" id="fsInoV"></span>
+        </label>
+        <label>Pré-carga (volume) — ponto do paciente
+          <input type="range" id="fsPre" min="5" max="95" value="35" oninput="drawFS()">
+          <span class="fs-val" id="fsPreV"></span>
+        </label>
+        <div class="fs-toggles">
+          <label class="fs-chk"><input type="checkbox" id="fsShowBase" checked onchange="drawFS()"> mostrar curva basal</label>
+          <label class="fs-chk"><input type="checkbox" id="fsCongest" onchange="drawFS()"> marcar zona de congestão</label>
+        </div>
+      </div>
+      <canvas id="fsCanvas" width="640" height="420" aria-label="Gráfico de Frank-Starling interativo"></canvas>
+      <div class="fs-readout" id="fsReadout"></div>
+    </div>
+
+    <div class="hemo-atlas">
+      <h3 class="hemo-h3">5 · Atlas de imagens — hemodinâmica</h3>
+      <p class="pocus-giline">Adicione suas próprias imagens (curvas, fluxogramas de droga, tabelas de receptor). Funciona igual ao atlas POCUS: post-its editáveis em 5 cores e tudo salva neste navegador.</p>
+      <div class="pocus-toolbar">
+        <button class="pocus-tbtn" onclick="exportHemo()">⬇ exportar (imagens + post-its)</button>
+        <button class="pocus-tbtn" onclick="document.getElementById('importHemoFile').click()">⬆ importar backup</button>
+        <input type="file" id="importHemoFile" accept="application/json" style="display:none" onchange="importHemo(event)">
+        <span class="pocus-quota" id="hemoQuota"></span>
+      </div>
+      <div id="hemoGroups"></div>
+    </div>
+
+    <div class="notes-block">
+      <div class="notes-head">Minhas anotações — hemodinâmica &amp; inotropismo</div>
+      <div class="postits" id="pi_hemo"></div>
+      <button class="add-pi" onclick="addPostit('hemo')">+ post-it</button>
+    </div>
+  </section>
+
   <!-- ============ POCUS ============ -->
   <section id="pocus">
-    <div class="sec-head"><span class="sec-num">06</span><h2>POCUS à beira-leito</h2></div>
+    <div class="sec-head"><span class="sec-num">07</span><h2>POCUS à beira-leito</h2></div>
     <p class="pocus-intro">A SSC 2026 traz o POCUS como recomendação condicional para guiar a ressuscitação. Atlas de imagens com legenda fixa; os post-its amarelos são editáveis e você pode adicionar suas próprias imagens em cada grupo. Tudo o que você criar (post-its e imagens novas) salva neste navegador — use exportar para backup.</p>
     <div class="pocus-toolbar">
       <button class="pocus-tbtn" onclick="exportNotes()">⬇ exportar (imagens + post-its)</button>
@@ -429,7 +517,7 @@
 
   <!-- ============ ARMADILHAS ============ -->
   <section id="armadilhas">
-    <div class="sec-head"><span class="sec-num">07</span><h2>Armadilhas que a banca adora</h2></div>
+    <div class="sec-head"><span class="sec-num">08</span><h2>Armadilhas que a banca adora</h2></div>
     <div class="topic"><strong>O₂ sempre vale só 2:</strong> qualquer necessidade de O₂ acima do ar ambiente adiciona apenas 2 pontos. Um paciente pode estar subindo de cateter nasal para Venturi 60% (TEP, p.ex.) sem o escore subir. Sempre cheque a <em>quantidade</em> real de O₂.</div>
     <div class="topic"><strong>NEWS baixo ≠ sem risco:</strong> jovens compensam por mais tempo. Acidose metabólica grave / hipercalemia por LRA podem cursar com NEWS 2–3 e colapso súbito.</div>
     <div class="topic"><strong>Julgamento clínico prevalece:</strong> preocupação do clínico, paciente ou família sobrepõe o escore. A orientação de sepse recomenda subir <em>pelo menos uma faixa</em> de NEWS quando há preocupação com o quadro.</div>
@@ -625,8 +713,169 @@
     else el.textContent='';
   }
 
+  /* ================= HEMODINÂMICA: atlas de imagens (isolado) ================= */
+  const HEMO_GROUPS=[{gid:'hemo_atlas',title:'Curvas, drogas & receptores',intro:'Imagens de apoio para a seção — adicione as suas.'}];
+  const HEMO_IMGS_KEY='hemo_custom_imgs_v1';
+  function loadHemoImgs(){try{return JSON.parse(localStorage.getItem(HEMO_IMGS_KEY))||{};}catch{return{};}}
+  function saveHemoImgs(o){try{localStorage.setItem(HEMO_IMGS_KEY,JSON.stringify(o));flash();updateHemoQuota();return true;}catch(e){alert('Sem espaço no navegador para guardar mais imagens. Exporte um backup e/ou remova imagens antigas.');return false;}}
+
+  function buildHemoLB(){
+    const ci=loadHemoImgs();
+    Object.keys(ci).forEach(gid=>ci[gid].forEach(im=>{LB[im.id]=im.src;}));
+  }
+  function renderHemoGroups(){
+    buildHemoLB();
+    const root=document.getElementById('hemoGroups');if(!root)return;
+    const ci=loadHemoImgs();let html='';
+    HEMO_GROUPS.forEach(g=>{
+      html+='<div class="pocus-group"><h3>'+g.title+'</h3><p class="pocus-giline">'+g.intro+'</p><div class="pgrid">';
+      (ci[g.gid]||[]).forEach(im=>{html+=cardHTML(im.id,im.src,im.cap,true);});
+      html+='</div>';
+      html+='<button class="add-img" onclick="addHemoImage(\''+g.gid+'\')">+ adicionar imagem</button>';
+      html+='</div>';
+    });
+    root.innerHTML=html;
+    const ci2=loadHemoImgs();Object.keys(ci2).forEach(gid=>ci2[gid].forEach(im=>renderPostits(im.id)));
+    updateHemoQuota();
+  }
+  function addHemoImage(gid){
+    const inp=document.createElement('input');inp.type='file';inp.accept='image/*';
+    inp.onchange=e=>{const f=e.target.files[0];if(!f)return;
+      const r=new FileReader();
+      r.onload=ev=>{compress(ev.target.result,1100,0.8,dataUrl=>{
+        const ci=loadHemoImgs();ci[gid]=ci[gid]||[];
+        const id='h'+Date.now()+Math.floor(Math.random()*999);
+        ci[gid].push({id:id,src:dataUrl,cap:'<b>Nova imagem</b> — clique para editar a legenda.'});
+        if(saveHemoImgs(ci))renderHemoGroups();
+      });};
+      r.readAsDataURL(f);
+    };
+    inp.click();
+  }
+  /* editCap/delImage genéricos só conhecem loadImgs(); estendo aqui para cobrir o atlas hemo */
+  const _editCap=editCap;
+  editCap=function(el){
+    const cid=el.getAttribute('data-cap');const ci=loadHemoImgs();let found=false;
+    Object.keys(ci).forEach(gid=>{const im=ci[gid].find(x=>x.id===cid);if(im){im.cap=el.innerHTML;found=true;}});
+    if(found){saveHemoImgs(ci);}else{_editCap(el);}
+  };
+  const _delImage=delImage;
+  delImage=function(cid){
+    if(cid&&cid[0]==='h'){
+      if(!confirm('Remover esta imagem e seus post-its?'))return;
+      const ci=loadHemoImgs();
+      Object.keys(ci).forEach(gid=>{ci[gid]=ci[gid].filter(x=>x.id!==cid);if(!ci[gid].length)delete ci[gid];});
+      saveHemoImgs(ci);
+      const n=loadNotes();if(n[cid]){delete n[cid];saveNotes(n);}
+      renderHemoGroups();
+    } else {_delImage(cid);}
+  };
+  function exportHemo(){
+    const payload={version:1,notesHemo:{},customImgs:loadHemoImgs()};
+    const n=loadNotes();const ci=loadHemoImgs();const ids=['hemo'];
+    Object.keys(ci).forEach(g=>ci[g].forEach(im=>ids.push(im.id)));
+    ids.forEach(id=>{if(n[id])payload.notesHemo[id]=n[id];});
+    const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+    const u=URL.createObjectURL(blob);const a=document.createElement('a');
+    a.href=u;a.download='hemo-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(u);
+  }
+  function importHemo(ev){
+    const f=ev.target.files[0];if(!f)return;const r=new FileReader();
+    r.onload=e=>{try{
+      const d=JSON.parse(e.target.result);
+      if(d&&d.customImgs){const merged={...loadHemoImgs()};Object.keys(d.customImgs).forEach(g=>{merged[g]=(merged[g]||[]).concat(d.customImgs[g]);});saveHemoImgs(merged);}
+      if(d&&d.notesHemo){saveNotes({...loadNotes(),...d.notesHemo});}
+      renderHemoGroups();renderPostits('hemo');
+    }catch{alert('Arquivo inválido.');}};
+    r.readAsText(f);ev.target.value='';
+  }
+  function updateHemoQuota(){
+    const el=document.getElementById('hemoQuota');if(!el)return;
+    let bytes=0;try{bytes=(localStorage.getItem(HEMO_IMGS_KEY)||'').length;}catch{}
+    const mb=(bytes/1048576);
+    if(mb>0.05){el.textContent='~'+mb.toFixed(1)+' MB usados'+(mb>4?' ⚠ perto do limite':'');el.style.color=mb>4?'#a8503f':'';}
+    else el.textContent='';
+  }
+
+  /* ================= Gráfico de Frank-Starling ================= */
+  function fsCurve(x,ino){
+    /* x: pré-carga 0..100 ; ino: 0..100 → curva sigmoide com platô.
+       inotropismo ↑ amplitude (Vmax) e ↑ inclinação (sensibilidade à pré-carga) */
+    const Vmax=45+ino*0.9;          /* débito máximo do platô */
+    const k=0.045+ino*0.0006;       /* inclinação: mais inotropismo = sobe mais cedo */
+    const x0=42-ino*0.18;           /* desloca à esquerda com inotropismo */
+    return Vmax/(1+Math.exp(-k*100*(x-x0)/30));
+  }
+  function drawFS(){
+    const c=document.getElementById('fsCanvas');if(!c)return;
+    const ino=+document.getElementById('fsIno').value;
+    const pre=+document.getElementById('fsPre').value;
+    const showBase=document.getElementById('fsShowBase').checked;
+    const congest=document.getElementById('fsCongest').checked;
+    document.getElementById('fsInoV').textContent=ino+' %';
+    document.getElementById('fsPreV').textContent=pre+' (unid. relat.)';
+    const ctx=c.getContext('2d');const W=c.width,H=c.height;
+    const padL=52,padB=44,padT=20,padR=18;
+    const plotW=W-padL-padR,plotH=H-padT-padB;
+    const yMax=140;
+    const X=v=>padL+(v/100)*plotW;
+    const Y=v=>padT+plotH-(v/yMax)*plotH;
+    ctx.clearRect(0,0,W,H);
+    /* zona de congestão (pré-carga alta) */
+    if(congest){
+      ctx.fillStyle='rgba(200,121,92,.10)';
+      ctx.fillRect(X(70),padT,X(100)-X(70),plotH);
+      ctx.fillStyle='#a8503f';ctx.font='11px monospace';ctx.textAlign='center';
+      ctx.fillText('congestão / edema',X(85),padT+14);
+    }
+    /* grid + eixos */
+    ctx.strokeStyle='#E4DBCB';ctx.lineWidth=1;ctx.fillStyle='#9b9080';ctx.font='10px monospace';
+    ctx.textAlign='right';ctx.textBaseline='middle';
+    for(let v=0;v<=yMax;v+=20){ctx.beginPath();ctx.moveTo(padL,Y(v));ctx.lineTo(W-padR,Y(v));ctx.stroke();ctx.fillText(v,padL-7,Y(v));}
+    ctx.textAlign='center';ctx.textBaseline='top';
+    for(let v=0;v<=100;v+=20){ctx.fillText(v,X(v),H-padB+7);}
+    /* eixos labels */
+    ctx.fillStyle='#6f6557';ctx.font='12px monospace';
+    ctx.fillText('Pré-carga (volume / pressão de enchimento) →',X(50),H-18);
+    ctx.save();ctx.translate(16,padT+plotH/2);ctx.rotate(-Math.PI/2);ctx.textAlign='center';
+    ctx.fillText('← Débito sistólico',0,0);ctx.restore();
+    /* curva basal */
+    function plot(inoVal,color,dash,width){
+      ctx.beginPath();ctx.setLineDash(dash);ctx.strokeStyle=color;ctx.lineWidth=width;
+      for(let x=0;x<=100;x+=1){const y=Math.min(fsCurve(x,inoVal),yMax);const px=X(x),py=Y(y);if(x===0)ctx.moveTo(px,py);else ctx.lineTo(px,py);}
+      ctx.stroke();ctx.setLineDash([]);
+    }
+    if(showBase)plot(0,'#b9aE99',[6,5],2);            /* basal cinza tracejada */
+    plot(ino,'#C8795C',[],3);                          /* curva atual terracota */
+    /* ponto do paciente na curva atual */
+    const py=Math.min(fsCurve(pre,ino),yMax);
+    /* projeção: mesmo pré-carga na basal (efeito só de volume vive na basal) */
+    const pyBase=Math.min(fsCurve(pre,0),yMax);
+    if(showBase){
+      ctx.fillStyle='#8a7f6d';ctx.beginPath();ctx.arc(X(pre),Y(pyBase),4.5,0,7);ctx.fill();
+      /* seta vertical mostrando ganho do inotrópico para a mesma pré-carga */
+      if(py-pyBase>2){
+        ctx.strokeStyle='#7d6ba0';ctx.lineWidth=2;ctx.setLineDash([3,3]);
+        ctx.beginPath();ctx.moveTo(X(pre),Y(pyBase));ctx.lineTo(X(pre),Y(py));ctx.stroke();ctx.setLineDash([]);
+        ctx.fillStyle='#7d6ba0';ctx.beginPath();ctx.moveTo(X(pre),Y(py));ctx.lineTo(X(pre)-4,Y(py)+8);ctx.lineTo(X(pre)+4,Y(py)+8);ctx.closePath();ctx.fill();
+      }
+    }
+    ctx.fillStyle='#C8795C';ctx.strokeStyle='#fff';ctx.lineWidth=2;
+    ctx.beginPath();ctx.arc(X(pre),Y(py),6.5,0,7);ctx.fill();ctx.stroke();
+    /* readout */
+    const ro=document.getElementById('fsReadout');
+    const gainIno=Math.max(0,py-pyBase);
+    let msg='<b>Débito atual:</b> ~'+py.toFixed(0)+' un. para pré-carga '+pre+'. ';
+    msg+='<b>Ganho do inotrópico</b> (mesma pré-carga): +'+gainIno.toFixed(0)+' un.';
+    if(pre>=70){msg+=' <br>⚠ Pré-carga na zona de congestão: mais volume aqui sobe a pressão de enchimento sem ganhar débito — sinal para inotrópico/redução de pós-carga, não mais fluido.';}
+    else if(ino<20 && pre<40){msg+=' <br>Curva quase plana e pré-carga baixa: ainda há resposta a volume (sobe na mesma curva).';}
+    ro.innerHTML=msg;
+  }
+
   renderGroups();
-  ['mudancas','tratamento','armadilhas'].forEach(renderPostits);
+  ['mudancas','tratamento','armadilhas','hemo'].forEach(renderPostits);
+  renderHemoGroups();
+  drawFS();
 </script>
 </body>
 </html>
