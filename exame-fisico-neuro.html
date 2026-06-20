@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exame Físico — Neuro & Coluna</title>
+<style>
+  :root{
+    --cream:#f4efe4;
+    --paper:#fbf8f1;
+    --ink:#2e2a23;
+    --terra:#b5562f;
+    --terra-soft:#cf7a52;
+    --sage:#7d8b6a;
+    --sage-soft:#aeb89c;
+    --line:#ddd3bf;
+    --shadow:rgba(60,48,30,.10);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;background:var(--cream);color:var(--ink);
+    font-family:Georgia,'Times New Roman',serif;line-height:1.55;
+  }
+  header{
+    padding:34px 22px 26px;text-align:center;
+    border-bottom:1px solid var(--line);background:var(--paper);
+  }
+  header .eyebrow{
+    font-family:'Courier New',monospace;letter-spacing:.28em;
+    text-transform:uppercase;font-size:.7rem;color:var(--sage);margin-bottom:8px;
+  }
+  header h1{margin:0;font-size:2rem;letter-spacing:.01em}
+  header p{margin:8px auto 0;max-width:620px;color:#6b6354;font-size:.95rem}
+
+  .wrap{max-width:880px;margin:0 auto;padding:24px 18px 80px}
+
+  .tabs{
+    display:flex;flex-wrap:wrap;gap:8px;justify-content:center;
+    margin:22px 0 30px;position:sticky;top:0;z-index:5;
+    background:var(--cream);padding:10px 0;
+  }
+  .tab{
+    font-family:'Courier New',monospace;font-size:.78rem;letter-spacing:.06em;
+    text-transform:uppercase;padding:8px 14px;border:1px solid var(--line);
+    background:var(--paper);color:var(--ink);border-radius:2px;cursor:pointer;
+    transition:.15s;
+  }
+  .tab:hover{border-color:var(--terra-soft)}
+  .tab.active{background:var(--terra);color:#fff;border-color:var(--terra)}
+
+  .panel{display:none}
+  .panel.active{display:block}
+
+  .sec-title{
+    font-size:1.35rem;margin:6px 0 4px;color:var(--terra);
+    border-bottom:2px solid var(--line);padding-bottom:6px;
+  }
+  .sec-sub{font-size:.9rem;color:#6b6354;margin:0 0 20px;font-style:italic}
+
+  .card{
+    background:var(--paper);border:1px solid var(--line);border-radius:4px;
+    margin-bottom:16px;box-shadow:0 2px 6px var(--shadow);overflow:hidden;
+  }
+  .card-head{
+    display:flex;align-items:baseline;gap:10px;padding:14px 16px 10px;
+    cursor:pointer;
+  }
+  .card-head .num{
+    font-family:'Courier New',monospace;font-size:.75rem;color:var(--sage);
+    background:var(--cream);border:1px solid var(--line);border-radius:2px;
+    padding:2px 7px;flex:none;
+  }
+  .card-head h3{margin:0;font-size:1.05rem;flex:1}
+  .card-head .chev{color:var(--terra-soft);font-size:.8rem;flex:none;transition:.2s}
+  .card.open .chev{transform:rotate(90deg)}
+
+  .card-body{display:none;padding:0 16px 16px;border-top:1px dashed var(--line)}
+  .card.open .card-body{display:block}
+
+  .field{margin:12px 0 0}
+  .field .lbl{
+    font-family:'Courier New',monospace;font-size:.68rem;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--sage);margin-bottom:3px;
+  }
+  .field .val{font-size:.96rem}
+
+  .photo{
+    margin-top:14px;border:1px dashed var(--sage-soft);border-radius:4px;
+    background:var(--cream);padding:14px;text-align:center;
+  }
+  .photo img{max-width:100%;border-radius:3px;display:none;margin:0 auto 10px}
+  .photo.has-img img{display:block}
+  .photo .ph-empty{color:#8a8170;font-size:.85rem;font-style:italic}
+  .photo.has-img .ph-empty{display:none}
+  .photo input{
+    width:100%;font-family:'Courier New',monospace;font-size:.8rem;
+    padding:8px 10px;border:1px solid var(--line);border-radius:3px;
+    background:var(--paper);color:var(--ink);margin-top:8px;
+  }
+  .photo .hint{font-size:.7rem;color:#9a907c;margin-top:6px}
+
+  .ref{
+    background:var(--paper);border-left:3px solid var(--sage);
+    padding:14px 18px;margin:24px 0;border-radius:0 4px 4px 0;font-size:.92rem;
+  }
+  .ref strong{color:var(--sage)}
+  .ref ul{margin:8px 0 0;padding-left:20px}
+  .ref li{margin:4px 0}
+
+  .scale-grid{display:grid;grid-template-columns:auto 1fr;gap:0;margin-top:10px}
+  .scale-grid div{padding:7px 10px;border-bottom:1px solid var(--line);font-size:.9rem}
+  .scale-grid .g{font-family:'Courier New',monospace;color:var(--terra);font-weight:bold;background:var(--cream)}
+
+  footer{text-align:center;padding:30px 20px;color:#9a907c;font-size:.8rem;
+    font-family:'Courier New',monospace;border-top:1px solid var(--line)}
+
+  /* ---- Prática ---- */
+  .pt-head{
+    background:var(--paper);border:1px solid var(--line);border-radius:4px;
+    padding:16px;margin-bottom:22px;box-shadow:0 2px 6px var(--shadow);
+    display:grid;grid-template-columns:1fr 90px 1fr;gap:12px;
+  }
+  .pt-head .full{grid-column:1/-1}
+  .pt-field .lbl{font-family:'Courier New',monospace;font-size:.66rem;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--sage);margin-bottom:3px}
+  .pt-field input,.pt-field textarea{
+    width:100%;font-family:Georgia,serif;font-size:.95rem;padding:7px 9px;
+    border:1px solid var(--line);border-radius:3px;background:var(--cream);color:var(--ink);
+  }
+  .pt-field textarea{resize:vertical;min-height:46px}
+
+  .pt-group{margin-bottom:20px}
+  .pt-group h4{
+    font-size:1rem;color:var(--terra);margin:0 0 8px;
+    border-bottom:1px solid var(--line);padding-bottom:5px;
+  }
+  .chk{
+    display:flex;align-items:flex-start;gap:10px;padding:9px 12px;
+    border:1px solid var(--line);border-radius:3px;background:var(--paper);
+    margin-bottom:7px;cursor:pointer;transition:.12s;
+  }
+  .chk:hover{border-color:var(--terra-soft)}
+  .chk .box{
+    width:18px;height:18px;border:2px solid var(--sage-soft);border-radius:3px;
+    flex:none;margin-top:2px;position:relative;transition:.12s;
+  }
+  .chk.normal .box{background:var(--sage);border-color:var(--sage)}
+  .chk.normal .box::after{content:"✓";color:#fff;font-size:.8rem;position:absolute;
+    top:-3px;left:2px;font-family:sans-serif}
+  .chk.alt .box{background:var(--terra);border-color:var(--terra)}
+  .chk.alt .box::after{content:"!";color:#fff;font-size:.85rem;font-weight:bold;
+    position:absolute;top:-3px;left:5px;font-family:sans-serif}
+  .chk .body{flex:1}
+  .chk .nm{font-size:.95rem}
+  .chk .state{font-family:'Courier New',monospace;font-size:.66rem;letter-spacing:.1em;
+    text-transform:uppercase;color:#9a907c;margin-top:2px}
+  .chk.normal .state{color:var(--sage)}
+  .chk.alt .state{color:var(--terra)}
+  .chk .note{
+    width:100%;margin-top:7px;font-family:Georgia,serif;font-size:.85rem;
+    padding:5px 8px;border:1px dashed var(--line);border-radius:3px;
+    background:var(--cream);color:var(--ink);display:none;
+  }
+  .chk.alt .note{display:block}
+
+  .pt-actions{display:flex;gap:10px;flex-wrap:wrap;margin:24px 0 10px}
+  .btn{
+    font-family:'Courier New',monospace;font-size:.78rem;letter-spacing:.06em;
+    text-transform:uppercase;padding:11px 18px;border-radius:3px;cursor:pointer;
+    border:1px solid var(--terra);background:var(--terra);color:#fff;transition:.12s;
+  }
+  .btn.ghost{background:var(--paper);color:var(--terra)}
+  .btn:hover{opacity:.88}
+  .pt-hint{font-family:'Courier New',monospace;font-size:.72rem;color:#9a907c;margin-bottom:18px}
+
+  #pt-out{
+    width:100%;min-height:260px;margin-top:14px;font-family:'Courier New',monospace;
+    font-size:.82rem;line-height:1.5;padding:14px;border:1px solid var(--line);
+    border-radius:4px;background:var(--paper);color:var(--ink);white-space:pre;display:none;
+  }
+
+  @media print{.tabs,.photo input,.photo .hint,.card-head .chev,.pt-actions,.pt-hint{display:none}
+    .panel{display:block!important}.card-body{display:block!important}}
+  @media (max-width:560px){.pt-head{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <div class="eyebrow">Roteiro de Aula · Pares Cranianos · Coluna</div>
+  <h1>Exame Físico Neurológico & Coluna</h1>
+  <p>Sequência de manobras com técnica, justificativa e espaço para anexar a foto de cada exame.</p>
+</header>
+
+<div class="wrap">
+  <div class="tabs" id="tabs"></div>
+
+  <!-- PARES CRANIANOS -->
+  <div class="panel" id="p-pc">
+    <h2 class="sec-title">Pares Cranianos & Audição</h2>
+    <p class="sec-sub">"Super, ultra, mega rápido" — começa pela face: pupila, ocular, língua e nervos específicos.</p>
+    <div id="list-pc"></div>
+    <div class="ref">
+      <strong>Trigêmeo (V)</strong>
+      <ul>
+        <li>Neuralgia trigeminal: V1 ≈ 5% dos casos; V2 e V3 ≈ 95%.</li>
+        <li>Sensitivo na face e arcadas dentárias; motor no masseter.</li>
+        <li>Tinel pode provocar dor/choque; choque costuma durar poucos minutos.</li>
+      </ul>
+      <strong>Glossofaríngeo (IX)</strong>
+      <ul>
+        <li>Neuropatia glossofaríngea: dor na garganta, muito próxima à orelha.</li>
+        <li>Sinal de Maynard = "fechamento de cortinas"/"desabamento" ao abrir a boca.</li>
+      </ul>
+      <strong>Pupila (a mais importante na prática)</strong>
+      <ul>
+        <li>Anisocoria, miose, midríase. Se não contrair igual na convergência → não é fisiológico.</li>
+        <li>Atenção em uso de gabapentina, duloxetina, opioides.</li>
+        <li>Midríase + tremor + sudorese → suspeitar síndrome serotoninérgica / neuroléptica maligna.</li>
+      </ul>
+      <strong>Manobra em "H"</strong> — avalia abducente, reto inferior, reto superior, oblíquo inferior e oblíquo superior.
+    </div>
+    <div class="photo" id="refimg_pc">
+      <img alt="Pares cranianos">
+      <div class="ph-empty">Sem foto anexada</div>
+      <input type="text" placeholder="Cole o link da foto e tecle Enter"
+        onkeydown="if(event.key==='Enter')setImg('refimg_pc',this.value)">
+      <div class="hint">URL de imagem (jpg/png) — GitHub raw, Drive público, etc.</div>
+    </div>
+  </div>
+
+  <!-- FORÇA -->
+  <div class="panel" id="p-forca">
+    <h2 class="sec-title">Força Motora & Raízes</h2>
+    <p class="sec-sub">Segmentar por raízes e sempre comparar com o contralateral. Escala MRC 0–5.</p>
+    <div id="list-forca"></div>
+    <div class="ref">
+      <strong>Escala de força (MRC)</strong>
+      <div class="scale-grid">
+        <div class="g">5</div><div>Força normal</div>
+        <div class="g">4</div><div>Vence pequena resistência</div>
+        <div class="g">3</div><div>Vence a gravidade</div>
+        <div class="g">2</div><div>Movimento só sem gravidade</div>
+        <div class="g">1</div><div>Leve contração muscular</div>
+        <div class="g">0</div><div>Sem força</div>
+      </div>
+      <ul style="margin-top:12px">
+        <li><strong>Membro superior:</strong> C5 (flexão cotovelo) · C6 (extensão punho) · C7 (extensão cotovelo) · C8 (flexão dedos) · T1 (abdução 5º dedo)</li>
+        <li><strong>Membro inferior:</strong> L2 (flexão quadril) · L3 (extensão joelho) · L4 (dorsiflexão pé) · L5 (extensão hálux) · S1 (flexão plantar)</li>
+        <li><strong>NMI:</strong> fasciculação, hiporreflexia, hipotonia, fraqueza exacerbada.</li>
+        <li><strong>NMS:</strong> espasticidade e hiperreflexia.</li>
+      </ul>
+    </div>
+    <div class="photo" id="refimg_forca">
+      <img alt="Força e raízes">
+      <div class="ph-empty">Sem foto anexada</div>
+      <input type="text" placeholder="Cole o link da foto e tecle Enter"
+        onkeydown="if(event.key==='Enter')setImg('refimg_forca',this.value)">
+      <div class="hint">URL de imagem (jpg/png) — GitHub raw, Drive público, etc.</div>
+    </div>
+  </div>
+
+  <!-- COLUNA / RADICULOPATIA -->
+  <div class="panel" id="p-coluna">
+    <h2 class="sec-title">Coluna, Cervicalgia & Radiculopatia</h2>
+    <p class="sec-sub">Sequência: força → reflexo → testes específicos. Apenas ~3% das lombalgias são cirúrgicas.</p>
+    <div id="list-coluna"></div>
+    <div class="ref">
+      <strong>Critérios cirúrgicos em lombalgia/radiculopatia</strong>
+      <ul>
+        <li>Síndrome da cauda equina.</li>
+        <li>Perda neurológica progressiva.</li>
+      </ul>
+      <strong>Atenção:</strong> pacientes manipuladores podem referir dor muito cedo no movimento (critérios de Waddell/VABEL). Comum em ambulatório de ortopedia e contexto de benefício/aposentadoria.
+    </div>
+    <div class="photo" id="refimg_coluna">
+      <img alt="Coluna e radiculopatia">
+      <div class="ph-empty">Sem foto anexada</div>
+      <input type="text" placeholder="Cole o link da foto e tecle Enter"
+        onkeydown="if(event.key==='Enter')setImg('refimg_coluna',this.value)">
+      <div class="hint">URL de imagem (jpg/png) — GitHub raw, Drive público, etc.</div>
+    </div>
+  </div>
+
+  <!-- PRÁTICA -->
+  <div class="panel active" id="p-pratica">
+    <h2 class="sec-title">Prática · Exame do Dia</h2>
+    <p class="sec-sub">Preencha o cabeçalho, clique nas manobras (1× normal · 2× alterado) e exporte.</p>
+
+    <div class="pt-head">
+      <div class="pt-field"><div class="lbl">Nome</div><input id="pt-nome" type="text" oninput="saveState()"></div>
+      <div class="pt-field"><div class="lbl">Idade</div><input id="pt-idade" type="text" oninput="saveState()"></div>
+      <div class="pt-field"><div class="lbl">Data de nasc.</div><input id="pt-dn" type="text" placeholder="dd/mm/aaaa" oninput="saveState()"></div>
+      <div class="pt-field full"><div class="lbl">Queixa principal (QP)</div><textarea id="pt-qp" oninput="saveState()"></textarea></div>
+    </div>
+
+    <div class="pt-hint">Clique no item → ✓ normal · clique de novo → ! alterado (abre campo p/ descrever) · 3ª vez → limpa</div>
+    <div id="pt-list"></div>
+
+    <div class="pt-actions">
+      <button class="btn" onclick="exportar()">Gerar exame</button>
+      <button class="btn ghost" onclick="copiar()">Copiar</button>
+      <button class="btn ghost" onclick="baixar()">Exportar (.txt)</button>
+      <button class="btn ghost" onclick="limpar()">Limpar tudo</button>
+    </div>
+    <textarea id="pt-out" readonly></textarea>
+  </div>
+</div>
+
+<footer>Anexe as fotos clicando em cada manobra · imprima ou exporte quando completo</footer>
+
+<script>
+const tabs=[
+  {id:'p-pratica',label:'★ Prática'},
+  {id:'p-pc',label:'Pares Cranianos'},
+  {id:'p-forca',label:'Força & Raízes'},
+  {id:'p-coluna',label:'Coluna / Radiculopatia'}
+];
+
+const data={
+  'list-pc':[
+    ['Teste de Rinne','Bater o diapasão e comparar audição vibratória (mastoide) vs. de transmissão (ar).','A audição vibratória deve ser maior que a da calota / de transmissão.'],
+    ['Teste de Weber','Diapasão na linha média; comparar lateralização do som.','Comparação auditiva entre os lados.'],
+    ['Reflexo corneano','Tocar a córnea com algodão. Contexto de morte encefálica / CTI.','Avaliar ramo sensitivo do trigêmeo em contexto intensivo.'],
+    ['Teste de Tinel (trigêmeo)','Percutir o trajeto do nervo; paciente pode sentir dor ou choque.','Buscar dor/choque sugestivo de neuralgia trigeminal.'],
+    ['Facial — assimetria','Observar se há desvio/assimetria facial em repouso.','Avaliação do nervo facial (VII).'],
+    ['Facial — encher a boca','Pedir para encher a boca de ar.','Avaliar musculatura facial inferior.'],
+    ['Facial — apertar os olhos','Pedir para fechar/apertar os olhos contra resistência.','Avaliar musculatura facial superior.'],
+    ['Manobra de Mallampati','Boca aberta, língua para fora; observar visibilidade da úvula/orofaringe.','Avaliação da via aérea (contexto anestésico).'],
+    ['Sinal de Maynard','Abrir a boca; observar "desabamento"/"fechamento de cortinas".','Sinal de lesão do glossofaríngeo (IX).'],
+    ['Nervo acessório (XI)','Elevação dos ombros e rotação do pescoço contra resistência.','Diagnóstico diferencial em cervicalgia: lesão alta, muscular ou radicular.'],
+    ['Fadiga ocular (piscar rápido)','Piscar rápido várias vezes e tentar reabrir os olhos.','Se houver fadiga e o olho não abrir → pensar em miastenia.'],
+    ['Ice Pack Test','Gelo sobre a pálpebra por ~2 min; reavaliar abertura. Positivo se melhora >15%.','Melhora pós-gelo sugere fadiga miastênica (retorno da acetilcolina).'],
+    ['Reflexo pupilar','Estímulo luminoso (ou seguir o dedo); observar contração.','Avaliar resposta pupilar; essencial em pares cranianos e fármacos.'],
+    ['Teste de convergência','Aproximar o dedo; pupilas devem contrair igualmente.','Se não contraem igual → anisocoria não fisiológica.'],
+    ['Movimentação ocular — manobra em "H"','Seguir o alvo em formato de H.','Avaliar rapidamente abducente, retos e oblíquos.'],
+    ['Língua — protrusão e lateralização','Língua para fora e para os lados.','Avaliar motricidade da língua (XII).'],
+    ['Língua — fasciculações','Língua parada dentro da boca, sem protrusão.','Procurar fasciculações (não restos alimentares) → lesão de NMI.']
+  ],
+  'list-forca':[
+    ['Classificação MRC','Graduar a força de 0 a 5 conforme contração, gravidade e resistência.','Padronizar a avaliação de força motora.'],
+    ['MMSS — C5: flexão do cotovelo','Flexão do cotovelo contra resistência.','Avaliar raiz C5.'],
+    ['MMSS — C6: extensão do punho','Extensão do punho contra resistência.','Avaliar raiz C6.'],
+    ['MMSS — C7: extensão do cotovelo','Estender o cotovelo contra resistência.','Avaliar raiz C7.'],
+    ['MMSS — C8: flexão dos dedos','Flexão dos dedos.','Avaliar raiz C8.'],
+    ['MMSS — T1: abdução do 5º dedo','Abdução do quinto dedo.','Avaliar raiz T1.'],
+    ['MMII — L2: flexão do quadril','Fletir/levantar o quadril.','Avaliar raiz L2.'],
+    ['MMII — L3: extensão do joelho','Estender o joelho.','Avaliar raiz L3.'],
+    ['MMII — L4: dorsiflexão','Levantar o pé (dorsiflexão).','Avaliar raiz L4.'],
+    ['MMII — L5: extensão do hálux','Levantar o hálux.','Avaliar raiz L5.'],
+    ['MMII — S1: flexão plantar','Empurrar o pé para baixo (flexão plantar).','Avaliar raiz S1.'],
+    ['Avaliação da marcha','Observar entrada com tornozelo, apoio do calcanhar e impulso.','Avalia força de MMII já na entrada do paciente no consultório.']
+  ],
+  'list-coluna':[
+    ['Teste de Spurling','Segurar a cabeça com segurança, inclinar e comprimir para baixo.','Radiculopatia cervical: choque irradiado = compressão de raiz.'],
+    ['Teste de distração','Tração suave da cabeça após Spurling positivo.','Melhora com tração confirma componente radicular/compressivo.'],
+    ['Teste das facetas cervicais','Movimento cervical que comprime a região facetária.','Dor facetária (pode envolver C2, C3, C4).'],
+    ['Flexão cervical (diferencial faceta)','Levar o pescoço à frente.','Se melhora com flexão → "não é faceta".'],
+    ['Teste de Adson','Hiperestender o membro/punho e rodar a cabeça para o lado; palpar pulso.','Avaliar desfiladeiro torácico / componente vascular.'],
+    ['Teste de ombro (elevação/força)','Elevar o braço e fazer força contra resistência.','Diferenciar dor de ombro de dor cervical/facetária.'],
+    ['Reflexos','Pesquisar reflexos osteotendíneos.','Definir déficit neurológico / critério cirúrgico.'],
+    ['Lasègue (perna estendida)','Elevar a perna estendida; dor entre 30°–60°.','Estiramento do ciático → radiculopatia. Atenção a falsos positivos.'],
+    ['Lasègue com flexão de quadril','Variação com flexão de quadril.','Avaliar radiculopatia/estiramento ciático; muito usado em dor.'],
+    ['Sinal da corda do arco','Após Lasègue, pressionar a fossa poplítea / tendão isquiotibial.','Complementar a avaliação de radiculopatia ciática.']
+  ]
+};
+
+function makeCard(id,i,[title,tech,why]){
+  const slot='img_'+id+'_'+i;
+  return `<div class="card">
+    <div class="card-head" onclick="this.parentNode.classList.toggle('open')">
+      <span class="num">${String(i+1).padStart(2,'0')}</span>
+      <h3>${title}</h3><span class="chev">▶</span>
+    </div>
+    <div class="card-body">
+      <div class="field"><div class="lbl">Como é feito</div><div class="val">${tech}</div></div>
+      <div class="field"><div class="lbl">Por quê</div><div class="val">${why}</div></div>
+      <div class="photo" id="${slot}">
+        <img alt="${title}">
+        <div class="ph-empty">Sem foto anexada</div>
+        <input type="text" placeholder="Cole o link da foto e tecle Enter"
+          onkeydown="if(event.key==='Enter')setImg('${slot}',this.value)">
+        <div class="hint">URL de imagem (jpg/png). Ex.: link do GitHub raw, Drive público, etc.</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+for(const key in data){
+  document.getElementById(key).innerHTML=data[key].map((d,i)=>makeCard(key,i,d)).join('');
+}
+
+function setImg(slot,url){
+  url=url.trim();if(!url)return;
+  const box=document.getElementById(slot);
+  const img=box.querySelector('img');
+  img.src=url;box.classList.add('has-img');
+  saveState();
+}
+
+/* ---- Prática: checklist ---- */
+const groups=[
+  ['Pares cranianos',['Rinne','Weber','Reflexo corneano','Tinel (trigêmeo)','Facial (assimetria/boca/olhos)','Mallampati','Sinal de Maynard','Nervo acessório','Fadiga ocular / Ice pack','Reflexo pupilar','Convergência','Movimentação ocular (H)','Língua (motricidade/fasciculação)']],
+  ['Força & raízes',['MMSS C5 — flexão cotovelo','MMSS C6 — extensão punho','MMSS C7 — extensão cotovelo','MMSS C8 — flexão dedos','MMSS T1 — abdução 5º dedo','MMII L2 — flexão quadril','MMII L3 — extensão joelho','MMII L4 — dorsiflexão','MMII L5 — extensão hálux','MMII S1 — flexão plantar','Marcha']],
+  ['Coluna / radiculopatia',['Spurling','Distração','Facetas cervicais','Adson (desfiladeiro)','Teste de ombro','Reflexos','Lasègue','Lasègue c/ flexão quadril','Corda do arco']]
+];
+const STATES=['','normal','alt'];
+const STLBL={normal:'Normal',alt:'Alterado'};
+
+function buildPratica(){
+  const c=document.getElementById('pt-list');
+  c.innerHTML=groups.map((g,gi)=>{
+    const items=g[1].map((nm,ii)=>{
+      const id=`c_${gi}_${ii}`;
+      return `<div class="chk" id="${id}" data-st="" onclick="cycle(event,'${id}')">
+        <div class="box"></div>
+        <div class="body">
+          <div class="nm">${nm}</div>
+          <div class="state"></div>
+          <input class="note" type="text" placeholder="descrever achado..."
+            onclick="event.stopPropagation()" oninput="saveState()">
+        </div>
+      </div>`;
+    }).join('');
+    return `<div class="pt-group"><h4>${g[0]}</h4>${items}
+      <div class="photo" id="ptimg_${gi}">
+        <img alt="${g[0]}">
+        <div class="ph-empty">Sem foto anexada</div>
+        <input type="text" placeholder="Cole o link da foto e tecle Enter"
+          onkeydown="if(event.key==='Enter')setImg('ptimg_${gi}',this.value)">
+        <div class="hint">URL de imagem (jpg/png) — GitHub raw, Drive público, etc.</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+function cycle(e,id){
+  const el=document.getElementById(id);
+  let st=el.dataset.st, idx=(STATES.indexOf(st)+1)%STATES.length, ns=STATES[idx];
+  el.dataset.st=ns;
+  el.classList.remove('normal','alt');
+  if(ns)el.classList.add(ns);
+  el.querySelector('.state').textContent=ns?STLBL[ns]:'';
+  saveState();
+}
+function exportar(){
+  const v=id=>document.getElementById(id).value.trim();
+  let t='EXAME FÍSICO NEUROLÓGICO & COLUNA\n';
+  t+='─'.repeat(38)+'\n';
+  t+=`Nome: ${v('pt-nome')||'—'}\n`;
+  t+=`Idade: ${v('pt-idade')||'—'}    DN: ${v('pt-dn')||'—'}\n`;
+  t+=`QP: ${v('pt-qp')||'—'}\n`;
+  t+=`Data do exame: ${new Date().toLocaleDateString('pt-BR')}\n`;
+  t+='─'.repeat(38)+'\n';
+  groups.forEach((g,gi)=>{
+    const lines=[];
+    g[1].forEach((nm,ii)=>{
+      const el=document.getElementById(`c_${gi}_${ii}`);
+      const st=el.dataset.st;if(!st)return;
+      const note=el.querySelector('.note').value.trim();
+      if(st==='normal')lines.push(`  • ${nm}: normal`);
+      else lines.push(`  • ${nm}: ALTERADO${note?' — '+note:''}`);
+    });
+    if(lines.length){t+=`\n${g[0].toUpperCase()}\n`+lines.join('\n')+'\n';}
+    const im=document.querySelector(`#ptimg_${gi} img`);
+    if(im&&im.src&&document.getElementById(`ptimg_${gi}`).classList.contains('has-img')){
+      t+=`  [foto: ${im.getAttribute('src')}]\n`;
+    }
+  });
+  const out=document.getElementById('pt-out');
+  out.value=t;out.style.display='block';
+}
+function copiar(){
+  const out=document.getElementById('pt-out');
+  if(out.style.display==='none'||!out.value)exportar();
+  out.select();document.execCommand('copy');
+  out.blur();alert('Exame copiado.');
+}
+function limpar(){
+  if(!confirm('Limpar todos os campos e marcações?'))return;
+  ['pt-nome','pt-idade','pt-dn','pt-qp'].forEach(i=>document.getElementById(i).value='');
+  document.querySelectorAll('.chk').forEach(el=>{
+    el.dataset.st='';el.classList.remove('normal','alt');
+    el.querySelector('.state').textContent='';el.querySelector('.note').value='';
+  });
+  document.querySelectorAll('.photo').forEach(b=>{
+    b.classList.remove('has-img');b.querySelector('img').src='';
+    const inp=b.querySelector('input');if(inp)inp.value='';
+  });
+  const out=document.getElementById('pt-out');out.value='';out.style.display='none';
+  localStorage.removeItem(LS_KEY);
+}
+buildPratica();
+
+/* ---- Persistência (localStorage) ---- */
+const LS_KEY='exame_neuro_v1';
+function saveState(){
+  const v=id=>{const e=document.getElementById(id);return e?e.value:'';};
+  const state={nome:v('pt-nome'),idade:v('pt-idade'),dn:v('pt-dn'),qp:v('pt-qp'),checks:{},photos:{}};
+  document.querySelectorAll('#pt-list .chk').forEach(el=>{
+    state.checks[el.id]={st:el.dataset.st||'',note:el.querySelector('.note').value};
+  });
+  document.querySelectorAll('.photo.has-img').forEach(b=>{
+    state.photos[b.id]=b.querySelector('img').getAttribute('src');
+  });
+  try{localStorage.setItem(LS_KEY,JSON.stringify(state));}catch(e){}
+}
+function loadState(){
+  let raw;try{raw=localStorage.getItem(LS_KEY);}catch(e){return;}
+  if(!raw)return;
+  let s;try{s=JSON.parse(raw);}catch(e){return;}
+  const set=(id,val)=>{const e=document.getElementById(id);if(e&&val!=null)e.value=val;};
+  set('pt-nome',s.nome);set('pt-idade',s.idade);set('pt-dn',s.dn);set('pt-qp',s.qp);
+  if(s.checks)for(const id in s.checks){
+    const el=document.getElementById(id);if(!el)continue;
+    const{st,note}=s.checks[id];
+    el.dataset.st=st;el.classList.remove('normal','alt');
+    if(st){el.classList.add(st);el.querySelector('.state').textContent=STLBL[st];}
+    if(note)el.querySelector('.note').value=note;
+  }
+  if(s.photos)for(const id in s.photos){
+    const box=document.getElementById(id);if(!box)continue;
+    box.querySelector('img').src=s.photos[id];box.classList.add('has-img');
+    const inp=box.querySelector('input');if(inp)inp.value=s.photos[id];
+  }
+}
+function baixar(){
+  const out=document.getElementById('pt-out');
+  if(out.style.display==='none'||!out.value)exportar();
+  const nome=(document.getElementById('pt-nome').value.trim()||'paciente').replace(/\s+/g,'_');
+  const blob=new Blob([out.value],{type:'text/plain;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=`exame_${nome}_${new Date().toISOString().slice(0,10)}.txt`;
+  a.click();URL.revokeObjectURL(a.href);
+}
+loadState();
+
+const tabBox=document.getElementById('tabs');
+tabBox.innerHTML=tabs.map((t,i)=>`<button class="tab${i===0?' active':''}" data-t="${t.id}">${t.label}</button>`).join('');
+tabBox.addEventListener('click',e=>{
+  const b=e.target.closest('.tab');if(!b)return;
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');
+  document.getElementById(b.dataset.t).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+});
+</script>
+</body>
+</html>
