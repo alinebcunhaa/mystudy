@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Doador em Morte Encefálica · Manejo Anestésico</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Source+Sans+3:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cream:#F6F1E7; --cream-2:#EFE7D6; --ink:#3A332B; --ink-soft:#6B6256;
+  --terra:#C2714F; --terra-d:#A65A3C; --sage:#7E8E6F; --sage-d:#647155;
+  --line:#DAD0BC; --card:#FCF9F2; --warn:#B5562F; --good:#647155;
+  --shadow:0 1px 3px rgba(58,51,43,.08),0 4px 16px rgba(58,51,43,.06);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--cream);color:var(--ink);font-family:'Source Sans 3',sans-serif;line-height:1.6;font-size:16px;padding-bottom:80px}
+.wrap{max-width:960px;margin:0 auto;padding:0 18px}
+
+/* HEADER */
+header{padding:38px 0 22px;border-bottom:1px solid var(--line);margin-bottom:0}
+.eyebrow{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:2.5px;text-transform:uppercase;color:var(--terra);margin-bottom:10px}
+h1{font-family:'Lora',serif;font-weight:600;font-size:32px;line-height:1.15;color:var(--ink);margin-bottom:8px}
+.sub{color:var(--ink-soft);font-size:15.5px;max-width:680px}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}
+.btn{font-family:'Source Sans 3',sans-serif;font-size:13.5px;font-weight:600;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:9px;cursor:pointer;transition:.15s;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{border-color:var(--terra);color:var(--terra-d)}
+.btn.primary{background:var(--terra);color:#fff;border-color:var(--terra)}
+.btn.primary:hover{background:var(--terra-d);color:#fff}
+.btn.ghost{background:transparent}
+
+/* TABS */
+nav.tabs{position:sticky;top:0;z-index:30;background:var(--cream);border-bottom:1px solid var(--line);display:flex;gap:2px;overflow-x:auto;padding:6px 0;margin-top:14px}
+.tab{flex:0 0 auto;font-family:'JetBrains Mono',monospace;font-size:12.5px;letter-spacing:.5px;border:none;background:transparent;color:var(--ink-soft);padding:9px 15px;border-radius:8px;cursor:pointer;white-space:nowrap;transition:.15s}
+.tab:hover{background:var(--cream-2)}
+.tab.active{background:var(--terra);color:#fff}
+
+/* PANELS */
+.panel{display:none;padding:26px 0 10px;animation:fade .25s ease}
+.panel.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+h2{font-family:'Lora',serif;font-weight:600;font-size:23px;color:var(--ink);margin:6px 0 4px}
+h3{font-family:'Lora',serif;font-weight:600;font-size:18px;color:var(--terra-d);margin:22px 0 8px}
+.lead{color:var(--ink-soft);font-size:15px;margin-bottom:14px}
+p{margin-bottom:10px}
+ul{margin:6px 0 12px 20px}li{margin-bottom:5px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:18px 20px;margin:14px 0;box-shadow:var(--shadow)}
+.card h3{margin-top:0}
+.tag{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.5px;padding:2px 8px;border-radius:20px;margin-right:5px}
+.tag.terra{background:#F0DDD2;color:var(--terra-d)}
+.tag.sage{background:#E1E6D8;color:var(--sage-d)}
+.tag.warn{background:#F3D8CB;color:var(--warn)}
+.callout{border-left:3px solid var(--terra);background:#FBF1E9;padding:12px 16px;border-radius:0 10px 10px 0;margin:14px 0;font-size:14.5px}
+.callout.sage{border-color:var(--sage);background:#EEF1E8}
+.callout.warn{border-color:var(--warn);background:#FAEDE6}
+.callout strong{color:var(--terra-d)}
+
+/* TABLE */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14.5px;background:var(--card);border-radius:10px;overflow:hidden;box-shadow:var(--shadow)}
+th{background:var(--sage);color:#fff;text-align:left;padding:10px 13px;font-weight:600;font-size:13.5px}
+td{padding:9px 13px;border-top:1px solid var(--line);vertical-align:top}
+tr:nth-child(even) td{background:#FBF8F1}
+.metric{font-family:'JetBrains Mono',monospace;font-weight:500;color:var(--terra-d)}
+
+/* CFM citation */
+.cfm{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--sage-d);background:#EEF1E8;border:1px dashed var(--sage);border-radius:8px;padding:4px 9px;display:inline-block;margin:4px 4px 4px 0}
+
+/* EDITABLE NOTE */
+.note-lbl{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--ink-soft);margin:18px 0 6px}
+[contenteditable]{background:#FFFDF8;border:1px dashed var(--line);border-radius:10px;padding:12px 14px;min-height:54px;outline:none;font-size:14.5px;transition:.15s}
+[contenteditable]:focus{border-color:var(--terra);border-style:solid;background:#fff}
+[contenteditable]:empty:before{content:attr(data-ph);color:#B8AE9C}
+
+/* FORM FIELDS */
+.field{margin-bottom:12px}
+.field label{display:block;font-size:13px;font-weight:600;color:var(--ink-soft);margin-bottom:4px}
+.field input,.field select{width:100%;font-family:inherit;font-size:14.5px;padding:8px 11px;border:1px solid var(--line);border-radius:9px;background:#FFFDF8;color:var(--ink)}
+.field input:focus,.field select:focus{outline:none;border-color:var(--terra)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:620px){.grid2{grid-template-columns:1fr}}
+
+/* CHECKLIST */
+.chk{display:flex;align-items:flex-start;gap:10px;padding:9px 12px;border:1px solid var(--line);border-radius:10px;margin-bottom:7px;background:var(--card);cursor:pointer;transition:.15s}
+.chk:hover{border-color:var(--sage)}
+.chk.done{background:#EEF1E8;border-color:var(--sage)}
+.chk input{margin-top:4px;accent-color:var(--sage);width:17px;height:17px;flex:0 0 auto}
+.chk .t{font-size:14.5px}
+.chk.done .t{text-decoration:line-through;color:var(--ink-soft)}
+
+/* PHOTO SLOT */
+.photo{margin:16px 0}
+.photo .row{display:flex;gap:8px;margin-bottom:8px}
+.photo input{flex:1;font-family:inherit;font-size:13.5px;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:#FFFDF8}
+.photo img{max-width:100%;border-radius:10px;border:1px solid var(--line);display:none;box-shadow:var(--shadow)}
+.photo img.show{display:block}
+
+footer{text-align:center;color:var(--ink-soft);font-size:12.5px;padding:30px 0 0;margin-top:30px;border-top:1px solid var(--line);font-family:'JetBrains Mono',monospace}
+.regra{font-family:'JetBrains Mono',monospace;font-size:34px;color:var(--terra);font-weight:500}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">Pós · Anestesiologia · Captação de órgãos</div>
+  <h1>Doador em Morte Encefálica</h1>
+  <p class="sub">Manejo anestésico na retirada de órgãos: por que se "anestesia" quem já está morto, fisiopatologia da ME, metas de manutenção e o papel do anestesista no centro cirúrgico. Critérios diagnósticos pela Resolução CFM nº 2.173/2017.</p>
+  <div class="toolbar">
+    <button class="btn primary" onclick="exportTxt()">⬇ Exportar (.txt)</button>
+    <button class="btn" onclick="window.print()">🖨 Imprimir / PDF</button>
+    <button class="btn ghost" onclick="clearAll()">↺ Limpar campos</button>
+  </div>
+</header>
+
+<nav class="tabs" id="tabs">
+  <button class="tab active" data-p="fisio">FISIOPATOLOGIA ME</button>
+  <button class="tab" data-p="diag">DIAGNÓSTICO · CFM</button>
+  <button class="tab" data-p="metas">METAS · REGRA 100</button>
+  <button class="tab" data-p="drogas">DROGAS</button>
+  <button class="tab" data-p="intra">★ INTRAOPERATÓRIO</button>
+</nav>
+
+<!-- ============ FISIOPATOLOGIA ============ -->
+<section class="panel active" data-p="fisio">
+  <h2>Fisiopatologia da morte encefálica</h2>
+  <p class="lead">A ME desencadeia uma cascata previsível. Entendê-la é o que justifica cada conduta de manutenção do doador.</p>
+
+  <div class="card">
+    <h3>Tempestade autonômica <span class="tag terra">fase 1</span></h3>
+    <p>Na herniação, a isquemia progressiva do tronco gera descarga simpática maciça: <strong>hipertensão grave, taquicardia, vasoconstrição intensa</strong>. Consequências: lesão miocárdica por sobrecarga (necrose em bandas de contração), edema pulmonar neurogênico, isquemia visceral.</p>
+  </div>
+
+  <div class="card">
+    <h3>Colapso simpático <span class="tag sage">fase 2</span></h3>
+    <p>Após a herniação completa, há <strong>perda total do tônus simpático</strong> → vasoplegia, hipotensão refratária, bradicardia que não responde à atropina (sem via vagal eferente funcional → coração "desnervado").</p>
+  </div>
+
+  <div class="card">
+    <h3>Desarranjo endócrino e metabólico</h3>
+    <ul>
+      <li><strong>Diabetes insipidus central</strong> — perda de ADH (neuro-hipófise): poliúria, hipernatremia, hipovolemia, hipocalemia.</li>
+      <li><strong>Queda de T3/T4 e cortisol</strong> — disfunção do eixo hipotálamo-hipofisário; metabolismo anaeróbico, instabilidade hemodinâmica.</li>
+      <li><strong>Hipotermia</strong> — perda da termorregulação hipotalâmica → arritmia, coagulopatia, desvio da curva de O₂.</li>
+      <li><strong>Coagulopatia</strong> — liberação de tromboplastina tecidual cerebral.</li>
+      <li><strong>Perda do drive respiratório</strong> — apneia (base do teste diagnóstico).</li>
+    </ul>
+  </div>
+
+  <div class="callout warn"><strong>Pegadinha de prova:</strong> a bradicardia da fase 2 <strong>não responde à atropina</strong> — use marca-passo ou cronotrópico direto (adrenalina/isoprenalina). O reflexo cardíaco vagal exige tronco íntegro.</div>
+
+  <div class="note-lbl">Minhas anotações</div>
+  <div contenteditable="true" id="n_fisio" data-ph="Escreva aqui…"></div>
+</section>
+
+<!-- ============ DIAGNÓSTICO CFM ============ -->
+<section class="panel" data-p="diag">
+  <h2>Diagnóstico de ME · Resolução CFM nº 2.173/2017</h2>
+  <p class="lead">A retirada de órgãos só ocorre após ME confirmada por <strong>dois médicos não participantes das equipes de captação/transplante</strong> (Lei nº 9.434/97).</p>
+
+  <h3>Pré-requisitos obrigatórios <span class="cfm">Art. 1º</span></h3>
+  <ul>
+    <li>Lesão encefálica de <strong>causa conhecida, irreversível</strong> e capaz de causar a ME.</li>
+    <li>Ausência de fatores tratáveis que confundam o diagnóstico (distúrbio hidroeletrolítico/ácido-base/endócrino, intoxicação, fármacos depressores do SNC, bloqueador neuromuscular).</li>
+    <li>Tratamento e observação no hospital por <strong>≥ 6 horas</strong> (≥ 24 h se causa for encefalopatia hipóxico-isquêmica). <span class="cfm">Art. 2º</span></li>
+    <li>Temperatura corporal <strong>&gt; 35 °C</strong>, SatO₂ &gt; 94% e PAS ≥ 100 mmHg (ou PAM ≥ 65). <span class="cfm">Art. 3º</span></li>
+  </ul>
+
+  <h3>Exame clínico <span class="cfm">Art. 4º–6º</span></h3>
+  <p>Dois exames clínicos por <strong>dois médicos diferentes</strong>, confirmando:</p>
+  <ul>
+    <li>Coma não perceptivo (Glasgow 3, sem resposta supraespinhal a estímulo doloroso).</li>
+    <li>Ausência de reflexos de tronco: <span class="metric">fotomotor, córneo-palpebral, oculocefálico, vestíbulo-calórico, de tosse</span>.</li>
+  </ul>
+  <div class="callout sage"><strong>Intervalo entre os dois exames clínicos:</strong> ≥ 7 dias a 2 meses incompletos: 24 h · 2 meses a &lt; 24 meses: 12 h · ≥ 2 anos: 1 h. <span class="cfm">Art. 6º</span></div>
+
+  <h3>Teste de apneia <span class="cfm">Art. 7º</span></h3>
+  <p>Realizado <strong>uma vez</strong>. Comprova ausência de movimento respiratório após atingir <strong>PaCO₂ &gt; 55 mmHg</strong> (com pré-oxigenação e oferta de O₂ durante o teste).</p>
+
+  <h3>Exame complementar — obrigatório <span class="cfm">Art. 8º</span></h3>
+  <p>Deve demonstrar de forma inequívoca a <strong>ausência de</strong>:</p>
+  <table>
+    <tr><th>Exame</th><th>O que demonstra</th></tr>
+    <tr><td><strong>Angiografia cerebral</strong></td><td>Ausência de perfusão sanguínea encefálica (padrão-ouro circulatório)</td></tr>
+    <tr><td><strong>EEG</strong></td><td>Ausência de atividade elétrica cerebral</td></tr>
+    <tr><td><strong>Doppler transcraniano</strong></td><td>Ausência de fluxo sanguíneo cerebral</td></tr>
+    <tr><td><strong>Cintilografia / SPECT</strong></td><td>Ausência de atividade metabólica/perfusional</td></tr>
+  </table>
+  <div class="callout"><strong>Conclusão e registro:</strong> preenchimento obrigatório do <strong>Termo de Declaração de Morte Encefálica</strong>; hora da morte = hora do último procedimento confirmatório. Família deve ser informada. <span class="cfm">Art. 9º–10º</span></div>
+
+  <div class="note-lbl">Minhas anotações</div>
+  <div contenteditable="true" id="n_diag" data-ph="Intervalos, exceções pediátricas, dúvidas de banca…"></div>
+
+  <div class="photo">
+    <div class="note-lbl">Anexar imagem (ex.: termo, angio, fluxograma)</div>
+    <div class="row">
+      <input id="img_diag" placeholder="Cole a URL da imagem e tecle Enter">
+    </div>
+    <img id="imgv_diag" alt="">
+  </div>
+</section>
+
+<!-- ============ METAS ============ -->
+<section class="panel" data-p="metas">
+  <h2>Metas de manutenção do doador</h2>
+  <p class="lead">O foco terapêutico migra do paciente para a <strong>viabilidade dos órgãos</strong>. Mnemônico clássico: a <strong>regra dos 100</strong>.</p>
+
+  <div style="text-align:center;margin:18px 0">
+    <div class="regra">100 · 100 · 100</div>
+    <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink-soft);letter-spacing:1px">PAS &gt;100 · PaO₂ &gt;100 · DÉBITO ~100 mL/h</div>
+  </div>
+
+  <table>
+    <tr><th>Parâmetro</th><th>Meta</th><th>Observação</th></tr>
+    <tr><td>PAS / PAM</td><td class="metric">&gt;100 / 60–70 mmHg</td><td>Evitar hipotensão → perda de enxerto</td></tr>
+    <tr><td>PaO₂</td><td class="metric">&gt;100 mmHg</td><td>FiO₂ mínima necessária; proteger pulmão</td></tr>
+    <tr><td>Débito urinário</td><td class="metric">~100 mL/h (1 mL/kg/h)</td><td>Poliúria → suspeitar de DI</td></tr>
+    <tr><td>Hemoglobina</td><td class="metric">~10 g/dL (Ht &gt;30%)</td><td>Transfundir se necessário</td></tr>
+    <tr><td>Glicemia</td><td class="metric">140–180 mg/dL</td><td>Evitar hiperglicemia (poliúria osmótica)</td></tr>
+    <tr><td>Temperatura</td><td class="metric">&gt;35 °C</td><td>Aquecimento ativo (mantas, fluidos aquecidos)</td></tr>
+    <tr><td>Na⁺</td><td class="metric">&lt;155 mEq/L</td><td>Hipernatremia hepatotóxica para o enxerto</td></tr>
+    <tr><td>pH</td><td class="metric">7,35–7,45</td><td>Corrigir acidose</td></tr>
+    <tr><td>Ventilação</td><td class="metric">Vt 6–8 mL/kg + PEEP 8–10</td><td>Estratégia protetora preserva pulmão</td></tr>
+  </table>
+
+  <div class="callout warn"><strong>Equilíbrio fino de volume:</strong> hipovolemia compromete rim/fígado, mas <strong>excesso de fluido edemacia o pulmão</strong> e inviabiliza a captação pulmonar. Guiar por metas e responsividade a volume.</div>
+
+  <div class="note-lbl">Minhas anotações</div>
+  <div contenteditable="true" id="n_metas" data-ph="Metas específicas por órgão a captar…"></div>
+</section>
+
+<!-- ============ DROGAS ============ -->
+<section class="panel" data-p="drogas">
+  <h2>Drogas no manejo do doador</h2>
+
+  <h3>Vasopressores e inotrópicos</h3>
+  <table>
+    <tr><th>Droga</th><th>Indicação</th></tr>
+    <tr><td><strong>Noradrenalina</strong></td><td>Vasoplegia / hipotensão — 1ª linha</td></tr>
+    <tr><td><strong>Vasopressina</strong></td><td>Ideal: corrige hipotensão <em>e</em> DI ao mesmo tempo; poupa catecolaminas</td></tr>
+    <tr><td><strong>Dopamina / Dobutamina</strong></td><td>Suporte inotrópico se disfunção miocárdica</td></tr>
+    <tr><td><strong>Adrenalina / Isoprenalina</strong></td><td>Bradicardia refratária (não responde à atropina)</td></tr>
+  </table>
+
+  <h3>Diabetes insipidus</h3>
+  <ul>
+    <li><strong>Desmopressina (DDAVP)</strong> — análogo de ADH, efeito antidiurético seletivo.</li>
+    <li><strong>Vasopressina</strong> — quando se quer também efeito vasopressor.</li>
+  </ul>
+
+  <h3>Terapia hormonal combinada</h3>
+  <p>Considerada em instabilidade refratária / para otimização de enxerto cardíaco:</p>
+  <ul>
+    <li><strong>Metilprednisolona</strong> (corticoide; atenua resposta inflamatória).</li>
+    <li><strong>Levotiroxina / T3</strong> (reverte estado hipometabólico).</li>
+    <li><strong>Vasopressina</strong>.</li>
+    <li>± Insulina (controle glicêmico).</li>
+  </ul>
+
+  <h3>Drogas do ato cirúrgico <span class="tag terra">papel do anestesista</span></h3>
+  <ul>
+    <li><strong>Bloqueador neuromuscular</strong> (pancurônio/rocurônio) — abole <em>reflexos motores espinhais</em> à incisão e relaxa a parede; NÃO é por dor.</li>
+    <li><strong>Opioide / anestésico volátil</strong> — controla a <em>resposta hipertensiva reflexa simpática medular</em> à manipulação cirúrgica.</li>
+    <li><strong>Heparina</strong> — antes do clampeamento, conforme a equipe de captação.</li>
+  </ul>
+
+  <div class="callout"><strong>Por que relaxante e opioide num morto?</strong> Os movimentos e a resposta pressórica vêm de <strong>arcos reflexos medulares</strong>, não de percepção cortical. Bloqueá-los garante campo cirúrgico imóvel e estabilidade — não há analgesia/hipnose envolvida.</div>
+
+  <div class="note-lbl">Minhas anotações</div>
+  <div contenteditable="true" id="n_drogas" data-ph="Doses, diluições, esquema do seu serviço…"></div>
+</section>
+
+<!-- ============ INTRAOPERATÓRIO (prático) ============ -->
+<section class="panel" data-p="intra">
+  <h2>★ Intraoperatório — checklist prático</h2>
+  <p class="lead">Identificação do caso, metas e tarefas do anestesista até o clampeamento aórtico.</p>
+
+  <div class="card">
+    <h3>Identificação</h3>
+    <div class="grid2">
+      <div class="field"><label>Doador (iniciais / ID)</label><input id="f_id"></div>
+      <div class="field"><label>Idade</label><input id="f_idade"></div>
+      <div class="field"><label>Causa da ME</label><input id="f_causa"></div>
+      <div class="field"><label>Data/hora confirmação ME</label><input id="f_me"></div>
+      <div class="field"><label>Órgãos a captar</label><input id="f_orgaos" placeholder="coração, fígado, rins, pulmão…"></div>
+      <div class="field"><label>Exame complementar usado</label>
+        <select id="f_exame">
+          <option value="">—</option>
+          <option>Angiografia cerebral</option>
+          <option>EEG</option>
+          <option>Doppler transcraniano</option>
+          <option>Cintilografia / SPECT</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Tarefas do anestesista</h3>
+    <div class="chk" onclick="toggle(this)"><input type="checkbox"><span class="t">Monitorização completa (PAI, PVC, SpO₂, capno, débito urinário, temperatura)</span></div>
+    <div class="chk" onclick="toggle(this)"><input type="checkbox"><span class="t">Acessos calibrosos + acesso venoso central</span></div>
+    <div class="chk" onclick="toggle(this)"><input type="checkbox"><span class="t">Ventilação protetora (Vt 6–8 mL/kg, PEEP, FiO₂ mínima p/ PaO₂ &gt;100)</span></div>
+    <div class="chk" onclick="toggle(this)"><input type="checkbox"><span class="t">Aquecimento ativo — manter T &gt;35 °C</span></div>
+    <div class="chk" onclick="toggle(this)"><input type="checkbox"><span class="t">Vasopressor titulado (noradrenalina / vasopressina) para PAM 60–70</span></div>
+    <div class="chk" onclick="toggle(this)"><input type="checkbox"><span class="t">Reposição volêmica guiada por metas (cuidado com pulmão)</span></div>
+    <div class="chk" onclick="toggle(this)"><input type="checkbox"><span class="t">Tratar DI (DDAVP / vasopressina), corrigir Na⁺ e K⁺</span></div>
+    <div class="chk" onclick="toggle(this)"><input type="checkbox"><span class="t">Controle glicêmico 140–180 mg/dL</span></div>
+    <div class="chk" onclick="toggle(this)"><input type="checkbox"><span class="t">Bloqueador neuromuscular para abolir reflexos espinhais</span></div>
+    <div class="chk" onclick="toggle(this)"><input type="checkbox"><span class="t">Opioide/volátil p/ resposta simpática reflexa à incisão</span></div>
+    <div class="chk" onclick="toggle(this)"><input type="checkbox"><span class="t">Heparinização antes do clampeamento (conforme equipe)</span></div>
+    <div class="chk" onclick="toggle(this)"><input type="checkbox"><span class="t">Suspender suporte ao clampeamento aórtico + solução de preservação</span></div>
+  </div>
+
+  <div class="callout warn"><strong>Fim da participação anestésica:</strong> no clampeamento da aorta e infusão da solução de preservação, a ventilação e o suporte são interrompidos — a captação propriamente dita prossegue com a equipe cirúrgica.</div>
+
+  <div class="note-lbl">Intercorrências / observações</div>
+  <div contenteditable="true" id="n_intra" data-ph="Eventos, doses usadas, evolução hemodinâmica…"></div>
+
+  <div class="photo">
+    <div class="note-lbl">Anexar imagem</div>
+    <div class="row"><input id="img_intra" placeholder="Cole a URL da imagem e tecle Enter"></div>
+    <img id="imgv_intra" alt="">
+  </div>
+</section>
+
+<footer>
+  ficha-doador-me.html · mystudy · Critérios: Resolução CFM nº 2.173/2017 + Lei nº 9.434/97 · Manejo: Tratado de Anestesiologia SAESP
+</footer>
+
+</div>
+
+<script>
+const LS='medstudy_doador_me';
+function load(){
+  let d={};try{d=JSON.parse(localStorage.getItem(LS)||'{}')}catch(e){}
+  document.querySelectorAll('[contenteditable]').forEach(el=>{if(d[el.id]!=null)el.innerHTML=d[el.id]});
+  document.querySelectorAll('.field input,.field select').forEach(el=>{if(d[el.id]!=null)el.value=d[el.id]});
+  (d._chk||[]).forEach((v,i)=>{const c=document.querySelectorAll('.chk')[i];if(c&&v){c.classList.add('done');c.querySelector('input').checked=true}});
+  ['diag','intra'].forEach(k=>{const u=d['img_'+k];if(u){const ip=document.getElementById('img_'+k),iv=document.getElementById('imgv_'+k);if(ip)ip.value=u;if(iv){iv.src=u;iv.classList.add('show')}}});
+}
+function save(){
+  const d={};
+  document.querySelectorAll('[contenteditable]').forEach(el=>d[el.id]=el.innerHTML);
+  document.querySelectorAll('.field input,.field select').forEach(el=>d[el.id]=el.value);
+  d._chk=[...document.querySelectorAll('.chk')].map(c=>c.classList.contains('done'));
+  ['diag','intra'].forEach(k=>{const ip=document.getElementById('img_'+k);if(ip&&ip.value)d['img_'+k]=ip.value});
+  localStorage.setItem(LS,JSON.stringify(d));
+}
+// tabs
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active');
+  document.querySelector('.panel[data-p="'+t.dataset.p+'"]').classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+});
+// checklist
+function toggle(el){const c=el.querySelector('input');c.checked=!c.checked;el.classList.toggle('done',c.checked);save();}
+// photo
+['diag','intra'].forEach(k=>{
+  const ip=document.getElementById('img_'+k);if(!ip)return;
+  ip.addEventListener('keydown',e=>{if(e.key==='Enter'){const iv=document.getElementById('imgv_'+k);iv.src=ip.value.trim();iv.classList.toggle('show',!!ip.value.trim());save();}});
+});
+// autosave
+document.addEventListener('input',e=>{if(e.target.matches('[contenteditable],.field input,.field select'))save();});
+// export
+function exportTxt(){
+  const g=id=>{const e=document.getElementById(id);return e?(e.value!==undefined?e.value:e.innerText).trim():''};
+  let t='FICHA — DOADOR EM MORTE ENCEFÁLICA / MANEJO ANESTÉSICO\n';
+  t+='Critérios: Resolução CFM nº 2.173/2017\n'+'='.repeat(52)+'\n\n';
+  t+='IDENTIFICAÇÃO\n';
+  t+='Doador: '+g('f_id')+'   Idade: '+g('f_idade')+'\n';
+  t+='Causa da ME: '+g('f_causa')+'\n';
+  t+='Confirmação ME: '+g('f_me')+'\n';
+  t+='Órgãos a captar: '+g('f_orgaos')+'\n';
+  t+='Exame complementar: '+g('f_exame')+'\n\n';
+  t+='CHECKLIST INTRAOPERATÓRIO\n';
+  document.querySelectorAll('#tabs ~ .panel[data-p="intra"] .chk').forEach(c=>{t+='['+(c.classList.contains('done')?'x':' ')+'] '+c.querySelector('.t').innerText+'\n';});
+  t+='\nANOTAÇÕES\n';
+  [['Fisiopatologia','n_fisio'],['Diagnóstico/CFM','n_diag'],['Metas','n_metas'],['Drogas','n_drogas'],['Intraop','n_intra']].forEach(([lbl,id])=>{const v=g(id);if(v)t+='\n— '+lbl+' —\n'+v+'\n';});
+  t+='\n'+'='.repeat(52)+'\nGerado em '+new Date().toLocaleString('pt-BR');
+  const blob=new Blob([t],{type:'text/plain;charset=utf-8'});
+  const a=document.createElement('a');
+  const nm=(g('f_id')||'doador').replace(/[^\w]/g,'_');
+  a.href=URL.createObjectURL(blob);a.download='ficha_doador_me_'+nm+'.txt';a.click();
+}
+function clearAll(){if(confirm('Limpar todos os campos editáveis desta ficha?')){localStorage.removeItem(LS);location.reload();}}
+load();
+</script>
+</body>
+</html>

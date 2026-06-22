@@ -1492,16 +1492,78 @@ function esc(s){
   return String(s||'').replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 }
 
+// Varre os itens da escala: enunciado + todas as alternativas, marcando a escolhida.
+// Retorna [{ q, opts:[{txt,sel}], answered }]
+function collectItems(id){
+  const body = document.getElementById('ibody-'+id);
+  if(!body) return [];
+  const items = [];
+  // 1) itens padrão .inst-q (rb / nrs) e .inst-like-row e .mcg-group
+  body.querySelectorAll('.inst-q, .inst-like-row, .mcg-group').forEach(q=>{
+    // enunciado
+    let qt = q.querySelector('.inst-q-text, .inst-like-q');
+    let label = qt ? qt.textContent.trim() : '';
+    if(!label){
+      const gnum = q.querySelector('.mcg-gnum');
+      if(gnum) label = 'Grupo '+gnum.textContent.trim();
+    }
+    // alternativas
+    const opts = [];
+    q.querySelectorAll('.inst-rb, .inst-nrs-b, .inst-like-b, .mcg-word').forEach(b=>{
+      // texto da alternativa
+      let t = '';
+      const rl = b.querySelector('.rl');
+      const rv = b.querySelector('.rv');
+      const lbl = b.querySelector('.mcg-lbl');
+      const val = b.querySelector('.mcg-val');
+      if(lbl){ t = (val?val.textContent.trim()+' · ':'') + lbl.textContent.trim(); }
+      else if(rl){ t = (rv?rv.textContent.trim()+' · ':'') + rl.textContent.trim(); }
+      else { t = b.textContent.trim(); } // nrs / like: só o número
+      opts.push({ txt: t, sel: b.classList.contains('sel') });
+    });
+    if(opts.length){
+      items.push({ q: label, opts, answered: opts.some(o=>o.sel) });
+    }
+  });
+  return items;
+}
+
 // Monta o relatório imprimível e dispara a impressão (Salvar como PDF)
 function exportScale(id, acronym, name){
   const scores = collectScores(id);
+  const items = collectItems(id);
+  const algumPreenchido = scores.length>0 || items.some(it=>it.answered);
+  if(!algumPreenchido){
+    alert('Esta escala ainda não foi preenchida. Marque ao menos um item antes de exportar.');
+    return;
+  }
   const agora = new Date();
   const dataHora = agora.toLocaleDateString('pt-BR') + ' ' +
     agora.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
 
   const scoreRows = scores.length
     ? scores.map(s=>`<tr><td style="padding:6px 10px;border:1px solid #d8cfc4">${esc(s.label)}</td><td style="padding:6px 10px;border:1px solid #d8cfc4;font-weight:700;text-align:right">${esc(s.value)}</td></tr>`).join('')
-    : `<tr><td colspan="2" style="padding:6px 10px;border:1px solid #d8cfc4;color:#9a8f80">Nenhum escore preenchido</td></tr>`;
+    : `<tr><td colspan="2" style="padding:6px 10px;border:1px solid #d8cfc4;color:#9a8f80">Nenhum escore calculado</td></tr>`;
+
+  // Itens: enunciado + todas as alternativas, destacando a marcada
+  const itemsHTML = items.length ? items.map((it,idx)=>{
+    const opts = it.opts.map(o=>{
+      if(o.sel){
+        return `<span style="display:inline-block;margin:2px 5px 2px 0;padding:3px 9px;border-radius:5px;background:#c96a40;color:#fff;font-weight:700">✓ ${esc(o.txt)}</span>`;
+      }
+      return `<span style="display:inline-block;margin:2px 5px 2px 0;padding:3px 9px;border-radius:5px;border:1px solid #d8cfc4;color:#9a8f80">${esc(o.txt)}</span>`;
+    }).join('');
+    const naoResp = it.answered ? '' : ' <span style="font-size:11px;color:#b08a5a;font-style:italic">(não respondido)</span>';
+    return `<div style="margin-bottom:11px;padding-bottom:9px;border-bottom:1px solid #efe8dd">
+      <div style="font-weight:600;font-size:12.5px;margin-bottom:5px">${esc(it.q||('Item '+(idx+1)))}${naoResp}</div>
+      <div style="line-height:1.9">${opts}</div>
+    </div>`;
+  }).join('') : '';
+
+  const itemsSection = items.length ? `
+      <div style="font-size:15px;font-weight:700;margin:18px 0 10px">Itens da escala</div>
+      <div style="font-size:12px;color:#7a6f60;margin-bottom:10px">A alternativa marcada aparece destacada em laranja.</div>
+      ${itemsHTML}` : '';
 
   const html = `
     <div style="font-family:Georgia,'Times New Roman',serif;color:#3a322a;max-width:680px;margin:0 auto">
@@ -1516,11 +1578,12 @@ function exportScale(id, acronym, name){
         <tr><td style="padding:6px 10px;border:1px solid #d8cfc4;color:#7a6f60">Queixa principal</td><td style="padding:6px 10px;border:1px solid #d8cfc4">${esc(PT.qp)||'—'}</td></tr>
       </table>
       <div style="font-size:15px;font-weight:700;margin-bottom:8px">Resultado(s)</div>
-      <table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:24px">
+      <table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:8px">
         <thead><tr><th style="padding:6px 10px;border:1px solid #d8cfc4;text-align:left;background:#f0e9df">Medida</th><th style="padding:6px 10px;border:1px solid #d8cfc4;text-align:right;background:#f0e9df">Valor</th></tr></thead>
         <tbody>${scoreRows}</tbody>
       </table>
-      <div style="font-size:11px;color:#9a8f80;border-top:1px solid #d8cfc4;padding-top:8px">
+      ${itemsSection}
+      <div style="font-size:11px;color:#9a8f80;border-top:1px solid #d8cfc4;padding-top:8px;margin-top:18px">
         Emitido em ${esc(dataHora)} · Instrumento aplicado para fins de avaliação clínica.
       </div>
     </div>`;
