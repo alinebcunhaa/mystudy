@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AINEs — Guia Crítico | Linha de Dor</title>
+<style>
+  :root{
+    --cream:#F6F1E7; --cream-d:#ECE4D4; --terra:#C2714F; --terra-l:#EAD3C6;
+    --sage:#7E8E6F; --sage-l:#DCE3D2; --ink:#3A352E; --warn:#B5524A;
+    --gold:#B79A5E; --paper:#FBF8F1;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:'Source Sans 3','Segoe UI',system-ui,sans-serif;
+    background:var(--cream); color:var(--ink); line-height:1.55;
+    padding:clamp(14px,3vw,40px);
+  }
+  .wrap{max-width:1180px;margin:0 auto}
+  h1,h2,h3{font-family:'Lora',Georgia,serif}
+  header{text-align:center;margin-bottom:8px}
+  header h1{font-size:clamp(2rem,5vw,3.1rem);color:var(--terra);font-weight:700;letter-spacing:-.5px}
+  header .sub{color:var(--sage);font-size:clamp(.95rem,2vw,1.15rem);margin-top:2px}
+  .rule{height:2px;width:min(420px,60%);margin:14px auto 26px;
+    background:linear-gradient(90deg,transparent,var(--terra),transparent);opacity:.55}
+
+  /* Concept banner */
+  .concept{
+    background:var(--paper);border:1px solid var(--terra-l);border-left:5px solid var(--terra);
+    border-radius:12px;padding:16px 20px;margin-bottom:24px;font-size:.96rem
+  }
+  .concept b{color:var(--terra)}
+
+  /* Controls */
+  .controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:18px}
+  .controls input[type=search]{
+    flex:1;min-width:180px;padding:10px 14px;border:1px solid var(--cream-d);
+    border-radius:10px;background:var(--paper);font-size:.95rem;color:var(--ink);font-family:inherit
+  }
+  .controls input[type=search]:focus{outline:2px solid var(--sage);border-color:var(--sage)}
+  .chip{
+    border:1px solid var(--cream-d);background:var(--paper);color:var(--ink);
+    padding:8px 14px;border-radius:20px;cursor:pointer;font-size:.85rem;font-family:inherit;
+    transition:.15s;user-select:none
+  }
+  .chip:hover{border-color:var(--sage)}
+  .chip.active{background:var(--sage);color:#fff;border-color:var(--sage)}
+  .chip.active.warn{background:var(--warn);border-color:var(--warn)}
+  .chip.active.coxibe{background:var(--gold);border-color:var(--gold)}
+
+  /* Table */
+  .tablecard{background:var(--paper);border-radius:14px;overflow:hidden;
+    box-shadow:0 2px 18px rgba(58,53,46,.08);border:1px solid var(--cream-d)}
+  .scroll{overflow-x:auto}
+  table{border-collapse:collapse;width:100%;min-width:720px}
+  thead th{
+    background:var(--terra);color:#fff;font-weight:600;font-size:.82rem;
+    padding:12px 10px;text-align:center;cursor:pointer;white-space:nowrap;position:relative;
+    font-family:'Source Sans 3',sans-serif
+  }
+  thead th:first-child{text-align:left;padding-left:18px}
+  thead th .arr{opacity:.4;font-size:.7rem;margin-left:3px}
+  thead th.sorted .arr{opacity:1}
+  tbody td{padding:11px 10px;text-align:center;font-size:.9rem;border-bottom:1px solid var(--cream-d)}
+  tbody td:first-child{text-align:left;font-weight:600;padding-left:14px}
+  tbody tr{transition:.12s}
+  tbody tr:hover{background:var(--cream)}
+  tbody tr td:first-child{border-left:4px solid transparent}
+  tr.aine td:first-child{border-left-color:var(--sage)}
+  tr.coxibe td:first-child{border-left-color:var(--gold)}
+  tr.warn td:first-child{border-left-color:var(--warn)}
+  tr.nonaine td:first-child{border-left-color:var(--gold)}
+  tr.aine{background:rgba(236,228,212,.4)}
+  tr.coxibe{background:rgba(220,227,210,.5)}
+  tr.warn{background:rgba(234,211,198,.45)}
+  tr.nonaine{background:rgba(231,220,192,.5)}
+  .pot{font-weight:700;letter-spacing:1px}
+  .pot.max{color:var(--terra)}
+  .note{font-size:.78rem;text-align:left;color:var(--ink);max-width:260px;line-height:1.35}
+  .warnico{color:var(--warn);font-weight:700}
+  .star{color:var(--gold);font-weight:700}
+
+  /* Legend */
+  .legend{display:flex;flex-wrap:wrap;gap:16px;margin:18px 2px;font-size:.83rem;color:var(--ink)}
+  .legend span{display:flex;align-items:center;gap:7px}
+  .sw{width:16px;height:16px;border-radius:4px;border:1px solid var(--sage)}
+
+  /* Scenario picker */
+  .scn{margin-top:34px}
+  .scn h2{color:var(--terra);font-size:1.5rem;margin-bottom:4px}
+  .scn .lead{color:var(--sage);margin-bottom:16px;font-size:.95rem}
+  .scn-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+  .scn-btn{
+    text-align:left;background:var(--paper);border:1px solid var(--cream-d);border-radius:12px;
+    padding:14px 16px;cursor:pointer;transition:.15s;font-family:inherit;color:var(--ink)
+  }
+  .scn-btn:hover{border-color:var(--terra);transform:translateY(-2px)}
+  .scn-btn.active{border-color:var(--terra);background:#fff;box-shadow:0 4px 16px rgba(194,113,79,.15)}
+  .scn-btn .t{font-weight:700;font-size:.98rem;display:block;margin-bottom:3px}
+  .scn-btn .d{font-size:.8rem;color:var(--sage)}
+  .scn-out{
+    margin-top:16px;background:var(--paper);border:1px solid var(--terra-l);
+    border-left:5px solid var(--sage);border-radius:12px;padding:18px 22px;
+    min-height:90px;font-size:.95rem;display:none
+  }
+  .scn-out.show{display:block;animation:fade .3s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .scn-out .pick{font-family:'Lora',serif;font-size:1.25rem;color:var(--terra);font-weight:700;margin-bottom:6px}
+  .scn-out .why b{color:var(--sage)}
+  .scn-out .avoid{margin-top:10px;font-size:.86rem;color:var(--warn)}
+
+  /* Footnotes */
+  .foot{margin-top:30px;font-size:.82rem;color:var(--sage);line-height:1.6}
+  .foot p{margin-bottom:7px;padding-left:16px;position:relative}
+  .foot p::before{content:"—";position:absolute;left:0;color:var(--terra)}
+  .sig{text-align:right;font-family:'Lora',serif;font-style:italic;color:var(--terra);
+    opacity:.7;margin-top:20px;font-size:.9rem}
+  @media(max-width:560px){
+    .note{max-width:180px}
+    .concept{font-size:.88rem}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>AINEs — Guia Crítico</h1>
+    <div class="sub">Anti-inflamatórios não esteroidais · potência analgésica × perfil clínico</div>
+  </header>
+  <div class="rule"></div>
+
+  <div class="concept">
+    <b>A ideia central:</b> todos inibem a COX — o mecanismo é o mesmo. O que muda entre eles é
+    <b>via de administração</b>, <b>velocidade de início</b>, <b>dose-teto analgésico</b>,
+    <b>meia-vida</b> e <b>seletividade COX-1/COX-2</b>. "Potência para dor" é a analgesia que o fármaco
+    <i>entrega</i>, não uma diferença de ação sobre a enzima. Por isso você escolhe o AINE cruzando o
+    tipo de dor com a cinética e o perfil de risco do paciente — não pela "cruzinha" isolada.
+  </div>
+
+  <div class="controls">
+    <input type="search" id="q" placeholder="Buscar fármaco…" aria-label="Buscar fármaco">
+    <button class="chip active" data-f="all">Todos</button>
+    <button class="chip" data-f="aine">AINE clássico</button>
+    <button class="chip coxibe" data-f="coxibe">COX-2 seletivo</button>
+    <button class="chip" data-f="nonaine">Não-AINE (central)</button>
+    <button class="chip warn" data-f="warn">⚠ Alerta tóxico</button>
+  </div>
+
+  <div class="tablecard">
+    <div class="scroll">
+      <table id="tb">
+        <thead>
+          <tr>
+            <th data-k="nome">Fármaco<span class="arr">↕</span></th>
+            <th data-k="dor">Dor<span class="arr">↕</span></th>
+            <th data-k="inf">Inflam.<span class="arr">↕</span></th>
+            <th data-k="feb">Febre<span class="arr">↕</span></th>
+            <th data-k="ant">Antiagreg.<span class="arr">↕</span></th>
+            <th data-k="ini">Início<span class="arr">↕</span></th>
+            <th data-k="dose">Dose (mg)</th>
+            <th data-k="intv">Intervalo</th>
+            <th data-k="max">Dose máx</th>
+            <th>Nota clínica</th>
+          </tr>
+        </thead>
+        <tbody id="body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="legend">
+    <span><i class="sw" style="background:#DCE3D2"></i> AINE clássico</span>
+    <span><i class="sw" style="background:#DCE3D2;border-color:#B79A5E"></i> COX-2 seletivo / preferencial</span>
+    <span><i class="sw" style="background:#E7DCC0"></i> ✦ Não é AINE verdadeiro</span>
+    <span><i class="sw" style="background:#EAD3C6"></i> ⚠ Toxicidade relevante</span>
+  </div>
+
+  <section class="scn">
+    <h2>Qual escolher?</h2>
+    <p class="lead">Toque num cenário clínico para ver a escolha mais defensável pela evidência.</p>
+    <div class="scn-grid" id="scnGrid"></div>
+    <div class="scn-out" id="scnOut"></div>
+  </section>
+
+  <div class="foot">
+    <p><b>★ Naproxeno</b> é a única exceção com bom perfil cardiovascular entre os não-seletivos (CNT Collaboration, <i>Lancet</i> 2013).</p>
+    <p><b>✦ Dipirona e paracetamol</b> agem predominantemente no SNC — pouca inibição COX periférica, daí efeito anti-inflamatório fraco e melhor perfil GI/renal. Estão aqui por convenção didática.</p>
+    <p><b>Coxibes e meloxicam</b> poupam a COX-1 → menos lesão GI, mas <b>não antiagregam</b> e não substituem o AAS.</p>
+    <p><b>Cetorolaco:</b> potência analgésica de opioide leve em dor aguda, mas teto baixo e ≤5 dias — nefro e gastrotoxicidade limitam o uso.</p>
+  </div>
+
+  <div class="sig">Neuro Hub · linha de dor</div>
+</div>
+
+<script>
+const DATA=[
+ {nome:"Cetorolaco",dor:4,inf:1,feb:2,ant:2,ini:"10 min",iniN:10,dose:"10",max:"40 mg",intv:"4–8 h",cat:"aine",note:"Analgésico potente, anti-inflam. fraco. Via IV/IM. <span class='warnico'>⚠</span> ≤5 dias, nefro/GI alto."},
+ {nome:"Cetoprofeno",dor:4,inf:3,feb:2,ant:2,ini:"15 min",iniN:15,dose:"50–100",max:"200 mg",intv:"6–8 h",cat:"aine",note:"Início rápido, boa potência aguda."},
+ {nome:"Diclofenaco",dor:3,inf:3,feb:2,ant:1,ini:"15 min",iniN:15,dose:"25–75",max:"200 mg",intv:"8–12 h",cat:"warn",note:"Tem via IV. <span class='warnico'>⚠</span> pior perfil cardiovascular entre os tradicionais."},
+ {nome:"Indometacina",dor:3,inf:4,feb:3,ant:1,ini:"30 min",iniN:30,dose:"25–50",max:"200 mg",intv:"8–12 h",cat:"warn",note:"Anti-inflam. potente (gota, pericardite). <span class='warnico'>⚠</span> tóxico SNC/GI."},
+ {nome:"Etoricoxibe",dor:3,inf:3,feb:1,ant:0,ini:"1 h",iniN:60,dose:"60–90",max:"120 mg",intv:"24 h",cat:"coxibe",note:"COX-2 seletivo. Sem antiagregação. Dose única diária."},
+ {nome:"Piroxicam",dor:2,inf:3,feb:2,ant:1,ini:"3 h",iniN:180,dose:"10",max:"20 mg",intv:"24 h",cat:"warn",note:"Meia-vida longa. <span class='warnico'>⚠</span> GI elevado, início lento."},
+ {nome:"Meloxicam",dor:1,inf:3,feb:2,ant:0,ini:"2–4 h",iniN:120,dose:"7,5–15",max:"15 mg",intv:"24 h",cat:"coxibe",note:"COX-2 preferencial. Meio-termo, GI intermediário."},
+ {nome:"Naproxeno",dor:2,inf:2,feb:2,ant:2,ini:"1 h",iniN:60,dose:"250–500",max:"1,25 g",intv:"12 h",cat:"aine",note:"<span class='star'>★</span> melhor perfil cardiovascular. Dor sustentada/crônica."},
+ {nome:"Ibuprofeno",dor:2,inf:2,feb:3,ant:1,ini:"30 min",iniN:30,dose:"200–400",max:"2,4 g",intv:"4–8 h",cat:"aine",note:"Seguro, escalável, ambulatorial, OTC."},
+ {nome:"Celecoxibe",dor:2,inf:2,feb:1,ant:0,ini:"2–3 h",iniN:150,dose:"50–200",max:"400 mg",intv:"12–24 h",cat:"coxibe",note:"COX-2 seletivo. Poupa estômago. Não antiagrega."},
+ {nome:"Ác. mefenâmico",dor:2,inf:2,feb:2,ant:1,ini:"1 h",iniN:60,dose:"250–500",max:"1,5 g",intv:"6–8 h",cat:"aine",note:"Dor leve-moderada, dismenorreia."},
+ {nome:"Nimesulida",dor:2,inf:3,feb:2,ant:1,ini:"1 h",iniN:60,dose:"100",max:"200 mg",intv:"12 h",cat:"warn",note:"Boa ação anti-inflam. <span class='warnico'>⚠</span> alerta de hepatotoxicidade."},
+ {nome:"Ác. acetilsalicílico",dor:2,inf:2,feb:2,ant:3,ini:"30 min",iniN:30,dose:"81–500",max:"4 g",intv:"6–24 h",cat:"aine",note:"Único antiagregante <b>irreversível</b> (COX-1). Dose baixa = cardioproteção."},
+ {nome:"Dipirona",dor:3,inf:1,feb:4,ant:0,ini:"30 min",iniN:30,dose:"300–1000",max:"4 g",intv:"6–8 h",cat:"nonaine",note:"<span class='star'>✦</span> NÃO é AINE clássico. Antitérmico/analgésico central potente."},
+ {nome:"Paracetamol",dor:2,inf:0,feb:4,ant:0,ini:"15 min",iniN:15,dose:"500–1000",max:"4 g",intv:"6–8 h",cat:"nonaine",note:"<span class='star'>✦</span> NÃO é AINE. Sem ação anti-inflam. periférica. Mecanismo central."},
+];
+const plus=n=> n===0?"–":"+".repeat(n);
+const body=document.getElementById('body');
+let filter="all", sortK=null, sortAsc=true, query="";
+
+function render(){
+  let rows=DATA.filter(d=>{
+    const okF = filter==="all"||d.cat===filter;
+    const okQ = d.nome.toLowerCase().includes(query);
+    return okF&&okQ;
+  });
+  if(sortK){
+    rows.sort((a,b)=>{
+      let x=a[sortK],y=b[sortK];
+      if(sortK==="ini"){x=a.iniN;y=b.iniN;}
+      if(typeof x==="string"){x=x.toLowerCase();y=y.toLowerCase();}
+      return (x<y?-1:x>y?1:0)*(sortAsc?1:-1);
+    });
+  }
+  body.innerHTML=rows.map(d=>`
+    <tr class="${d.cat}">
+      <td>${d.nome}</td>
+      <td class="pot ${d.dor===4?'max':''}">${plus(d.dor)}</td>
+      <td class="pot">${plus(d.inf)}</td>
+      <td class="pot">${plus(d.feb)}</td>
+      <td class="pot">${plus(d.ant)}</td>
+      <td>${d.ini}</td>
+      <td>${d.dose}</td>
+      <td>${d.intv}</td>
+      <td>${d.max}</td>
+      <td class="note">${d.note}</td>
+    </tr>`).join("");
+}
+document.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{
+  document.querySelectorAll('.chip').forEach(x=>x.classList.remove('active'));
+  c.classList.add('active');filter=c.dataset.f;render();
+});
+document.getElementById('q').oninput=e=>{query=e.target.value.toLowerCase();render();};
+document.querySelectorAll('th[data-k]').forEach(th=>th.onclick=()=>{
+  const k=th.dataset.k;
+  if(sortK===k)sortAsc=!sortAsc;else{sortK=k;sortAsc=true;}
+  document.querySelectorAll('th').forEach(t=>t.classList.remove('sorted'));
+  th.classList.add('sorted');
+  render();
+});
+
+/* Scenario picker */
+const SCN=[
+ {t:"Dor aguda intensa no PSA",d:"Cólica renal, pós-op, sem contraindicação",
+  pick:"Cetorolaco IV/IM",
+  why:"Via parenteral entrega pico em minutos e potência analgésica que rivaliza com opioide leve. <b>Limite:</b> dose-teto baixo (40 mg/dia) e máximo 5 dias.",
+  avoid:"Evite se: lesão renal, sangramento ativo, idoso frágil."},
+ {t:"Risco gastrointestinal alto",d:"Idoso, úlcera prévia, anticoagulado",
+  pick:"Celecoxibe (± IBP)",
+  why:"Vantagem GI comprovada em desfecho duro (PRECISION): poupa a COX-1 gástrica. <b>Eficácia analgésica semelhante</b> à dos não-seletivos.",
+  avoid:"Lembre: não antiagrega, não substitui o AAS profilático."},
+ {t:"Risco cardiovascular alto",d:"Coronariopata, IC, HAS de difícil controle",
+  pick:"Naproxeno (menor dose/tempo)",
+  why:"Único não-seletivo com bom perfil CV (CNT Collaboration). <b>Evite diclofenaco e coxibe</b> nesse perfil — ambos deslocam o equilíbrio pró-trombótico.",
+  avoid:"Idealmente: prefira não-farmacológico/paracetamol antes do AINE."},
+ {t:"Dor com forte componente inflamatório",d:"Gota, artrite, bursite",
+  pick:"Indometacina ou diclofenaco",
+  why:"Maior potência anti-inflamatória intrínseca. Indometacina é clássica na gota aguda e pericardite.",
+  avoid:"Vigie toxicidade SNC/GI (indometacina) e risco CV (diclofenaco)."},
+ {t:"Dor crônica sustentada",d:"Osteoartrite, cobrir o dia todo",
+  pick:"Naproxeno, meloxicam ou piroxicam",
+  why:"Meia-vida longa = 1–2 tomadas/dia, controle estável. Meloxicam acrescenta perfil GI intermediário.",
+  avoid:"Reavalie necessidade periodicamente — menor dose eficaz, menor tempo."},
+ {t:"Febre / dor leve sem inflamação",d:"Quadro viral, cefaleia, dor pós-vacinal",
+  pick:"Dipirona ou paracetamol",
+  why:"Antitérmicos/analgésicos centrais potentes, sem o ônus GI/renal do AINE. <b>Não precisa de anti-inflamatório aqui.</b>",
+  avoid:"Paracetamol: respeite o teto de 4 g/dia (hepatotoxicidade)."},
+];
+const grid=document.getElementById('scnGrid'), out=document.getElementById('scnOut');
+grid.innerHTML=SCN.map((s,i)=>`<button class="scn-btn" data-i="${i}">
+  <span class="t">${s.t}</span><span class="d">${s.d}</span></button>`).join("");
+grid.querySelectorAll('.scn-btn').forEach(b=>b.onclick=()=>{
+  grid.querySelectorAll('.scn-btn').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');
+  const s=SCN[b.dataset.i];
+  out.innerHTML=`<div class="pick">${s.pick}</div>
+    <div class="why">${s.why}</div>
+    <div class="avoid">${s.avoid}</div>`;
+  out.classList.add('show');
+});
+
+render();
+</script>
+</body>
+</html>
