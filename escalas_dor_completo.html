@@ -1457,10 +1457,32 @@ function ptCalcIdade(id){
 }
 
 // Coleta todos os escores visíveis daquela escala (#iscore-ID e variantes)
+const SF36_DOM_LABELS = {
+  CF: 'Capacidade Funcional',
+  AF: 'Aspectos Físicos',
+  D:  'Dor',
+  SG: 'Estado Geral de Saúde',
+  V:  'Vitalidade',
+  AS: 'Aspectos Sociais',
+  AE: 'Aspectos Emocionais',
+  SM: 'Saúde Mental'
+};
+
 function collectScores(id){
   const body = document.getElementById('ibody-'+id);
   if(!body) return [];
   const out = [];
+  // Caso especial: SF-36 usa ids "sf36-dom-XX" para os 8 domínios,
+  // em vez do padrão "iscore-" usado pelas demais escalas.
+  if(id === 'sf36'){
+    Object.keys(SF36_DOM_LABELS).forEach(dom=>{
+      const el = body.querySelector('#sf36-dom-'+dom);
+      const val = el ? (el.textContent||'').trim() : '';
+      if(val && val !== '—'){
+        out.push({ label: SF36_DOM_LABELS[dom], value: val });
+      }
+    });
+  }
   body.querySelectorAll('[id^="iscore-"]').forEach(el=>{
     const val = (el.textContent||'').trim();
     if(val && val !== '—'){
