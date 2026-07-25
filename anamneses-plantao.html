@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anamneses Rápidas — Plantão</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400&family=Source+Sans+3:wght@400;600;700&display=swap');
+
+  :root {
+    --cream: #faf6f0;
+    --cream-dark: #f0e9de;
+    --terracotta: #c16b4f;
+    --terracotta-dark: #a5573f;
+    --sage: #8a9a7e;
+    --sage-dark: #6f7f63;
+    --text: #3a3230;
+    --text-light: #6b625d;
+    --border: #e3d9c9;
+    --white: #fffdfa;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--cream);
+    color: var(--text);
+    font-family: 'Source Sans 3', sans-serif;
+    padding: 24px 16px 60px;
+    line-height: 1.5;
+  }
+
+  header {
+    max-width: 900px;
+    margin: 0 auto 24px;
+    text-align: center;
+  }
+
+  h1 {
+    font-family: 'Lora', serif;
+    font-weight: 700;
+    font-size: 1.8rem;
+    color: var(--terracotta-dark);
+    margin-bottom: 4px;
+  }
+
+  header p {
+    color: var(--text-light);
+    font-style: italic;
+    font-size: 0.95rem;
+  }
+
+  .controls {
+    max-width: 900px;
+    margin: 0 auto 20px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  #search {
+    flex: 1;
+    min-width: 200px;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 1rem;
+    background: var(--white);
+  }
+  #search:focus { outline: none; border-color: var(--terracotta); }
+
+  .counter {
+    align-self: center;
+    color: var(--text-light);
+    font-size: 0.85rem;
+    white-space: nowrap;
+  }
+
+  .grid {
+    max-width: 900px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 14px;
+  }
+
+  .card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-left: 5px solid var(--sage);
+    border-radius: 10px;
+    padding: 16px 18px;
+    cursor: pointer;
+    transition: box-shadow 0.15s ease, transform 0.15s ease;
+  }
+  .card:hover {
+    box-shadow: 0 4px 14px rgba(161, 87, 63, 0.12);
+    transform: translateY(-2px);
+  }
+  .card.open { border-left-color: var(--terracotta); }
+
+  .card h2 {
+    font-family: 'Lora', serif;
+    font-size: 1.05rem;
+    color: var(--terracotta-dark);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .tag {
+    font-size: 0.7rem;
+    background: var(--cream-dark);
+    color: var(--sage-dark);
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-family: 'Source Sans 3', sans-serif;
+    font-weight: 600;
+    white-space: nowrap;
+    margin-left: 8px;
+  }
+
+  .body-text {
+    display: none;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--border);
+    font-size: 0.95rem;
+    color: var(--text);
+  }
+  .card.open .body-text { display: block; }
+
+  .hidden { display: none !important; }
+
+  footer {
+    max-width: 900px;
+    margin: 30px auto 0;
+    text-align: center;
+    color: var(--text-light);
+    font-size: 0.8rem;
+    font-style: italic;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Anamneses Rápidas</h1>
+  <p>Histórias clínicas breves para consulta durante o plantão</p>
+</header>
+
+<div class="controls">
+  <input type="text" id="search" placeholder="Buscar (ex: dor, tosse, renal...)">
+  <span class="counter" id="counter"></span>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<footer>Toque no card para expandir/recolher • Uso pessoal de apoio, não substitui julgamento clínico</footer>
+
+<script>
+const casos = [
+  { titulo: "Sinusite", tag: "ORL", texto: "Cefaleia frontal e dor facial há 5 dias, piora ao inclinar a cabeça para frente, coriza purulenta e congestão nasal, febre baixa intermitente. Refere melhora inicial após IVAS seguida de piora (padrão bifásico)." },
+  { titulo: "Asma (crise)", tag: "Resp", texto: "Falta de ar e chiado há 2 dias, piorando à noite, uso de SABA sem alívio completo. Refere história prévia de asma, gatilho por poeira/exercício, sem febre." },
+  { titulo: "Refluxo (DRGE)", tag: "GI", texto: "Queimação retroesternal há semanas, pior deitado e após refeições, azia e regurgitação ácida, sem disfagia ou emagrecimento." },
+  { titulo: "Tosse por gotejamento pós-nasal", tag: "ORL", texto: "Tosse seca, pior à noite e ao deitar, sensação de secreção escorrendo na garganta, pigarro frequente, sem febre, há mais de 3 semanas." },
+  { titulo: "IVAS", tag: "ORL", texto: "Coriza, espirros, dor de garganta leve e mal-estar há 2-3 dias, febre baixa ou ausente, sem sinais de alarme." },
+  { titulo: "Amigdalite", tag: "ORL", texto: "Dor de garganta intensa há 2 dias, febre alta, odinofagia importante, sem tosse ou coriza (sugerindo etiologia estreptocócica)." },
+  { titulo: "Dor abdominal (inespecífica/GEA)", tag: "GI", texto: "Dor em cólica difusa há 1 dia, associada a náuseas e episódios de diarreia, nega febre alta ou sangue nas fezes." },
+  { titulo: "Dor lombar (mecânica)", tag: "Ortho", texto: "Dor lombar há 3 dias após esforço físico, piora ao movimento, melhora com repouso, sem irradiação ou sinais de alarme (febre, perda de força, alteração esfincteriana)." },
+  { titulo: "Cálculo renal", tag: "Uro", texto: "Dor lombar em cólica, súbita, irradiando para região inguinal, intensidade forte, associada a náuseas e agitação (paciente não encontra posição de conforto), ± hematúria." },
+  { titulo: "Cefaleia tensional / enxaqueca", tag: "Neuro", texto: "Cefaleia em aperto bilateral há 1 dia, sem sinais de alarme (ausência de febre, déficit focal ou pior cefaleia da vida). Se enxaqueca: pulsátil, unilateral, com fotofobia/fonofobia e náusea, melhora em ambiente escuro." },
+  { titulo: "Cistite (ITU baixa)", tag: "Uro", texto: "Disúria, polaciúria e urgência miccional há 2 dias, sem febre ou dor lombar, nega corrimento vaginal ou secreção uretral." },
+  { titulo: "Gastroenterite aguda", tag: "GI", texto: "Diarreia aquosa e vômitos há 1-2 dias, cólicas abdominais associadas, relato de alimento suspeito ou contactante com quadro similar, sem sangue nas fezes." },
+  { titulo: "Crise hipertensiva", tag: "Cardio", texto: "Cefaleia occipital e mal-estar, PA elevada aferida em casa ou no plantão, nega dor torácica, déficit neurológico ou turvação visual (descartando emergência hipertensiva)." },
+  { titulo: "Lombociatalgia (compressão radicular)", tag: "Ortho", texto: "Dor lombar irradiando para membro inferior (trajeto ciático) há alguns dias, piora ao sentar/tossir, parestesia associada, nega perda de força ou alteração esfincteriana." },
+  { titulo: "Otite média aguda", tag: "ORL", texto: "Otalgia há 2 dias, sensação de ouvido tampado, febre associada, história recente de IVAS, sem otorreia (ou com otorreia se perfuração)." },
+  { titulo: "Conjuntivite", tag: "Oftalmo", texto: "Hiperemia ocular e secreção (purulenta ou aquosa) há 1-2 dias, sensação de areia nos olhos, sem dor importante ou alteração visual, ± contactante com quadro similar." },
+  { titulo: "Celulite / erisipela", tag: "Derm", texto: "Área de vermelhidão, calor e edema em membro há 2-3 dias, dor local, ± febre, relato de porta de entrada (ferida, micose interdigital, picada de inseto)." },
+  { titulo: "Dor torácica atípica", tag: "Cardio", texto: "Dor torácica em pontada ou queimação há algumas horas, sem irradiação típica, sem relação clara com esforço, nega dispneia, sudorese ou fatores de risco relevantes (a descartar SCA)." },
+  { titulo: "Vertigem periférica (labirintite/VPPB)", tag: "Neuro", texto: "Tontura rotatória há 1-2 dias, piora com mudança de posição da cabeça, náuseas associadas, sem outros sinais neurológicos focais (descartando causa central)." }
+];
+
+const grid = document.getElementById('grid');
+const search = document.getElementById('search');
+const counter = document.getElementById('counter');
+
+function render(filter = "") {
+  grid.innerHTML = "";
+  const f = filter.trim().toLowerCase();
+  let shown = 0;
+
+  casos.forEach((c, i) => {
+    const match = !f || c.titulo.toLowerCase().includes(f) || c.texto.toLowerCase().includes(f) || c.tag.toLowerCase().includes(f);
+    if (match) shown++;
+
+    const card = document.createElement('div');
+    card.className = 'card' + (match ? '' : ' hidden');
+    card.innerHTML = `
+      <h2>${c.titulo} <span class="tag">${c.tag}</span></h2>
+      <div class="body-text">${c.texto}</div>
+    `;
+    card.addEventListener('click', () => card.classList.toggle('open'));
+    grid.appendChild(card);
+  });
+
+  counter.textContent = shown + " caso" + (shown !== 1 ? "s" : "");
+}
+
+search.addEventListener('input', () => render(search.value));
+render();
+</script>
+
+</body>
+</html>
