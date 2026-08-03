@@ -139,17 +139,28 @@ function render(){
       else if(d===0) cd=`<span class="countdown days-soon">⏳ Hoje!</span>`;
       else cd=`<span class="countdown" style="color:var(--muted)">Passou</span>`;
     }
+    let cdInsc='';
+    if(p.inscFim){
+      const di=diasRestantes(p.inscFim);
+      if(di!==null){
+        if(di>0) cdInsc=`<span class="countdown ${di<=7?'days-soon':'days-ok'}">📝 inscrição: ${di} dia${di>1?'s':''}</span>`;
+        else if(di===0) cdInsc=`<span class="countdown days-soon">📝 inscrição encerra hoje!</span>`;
+        else cdInsc=`<span class="countdown" style="color:var(--muted)">📝 inscrição encerrada</span>`;
+      }
+    }
     const files=p.files.map(f=>`<span class="file-tag">📎 <a href="${f.data}" download="${f.name}">${f.name}</a><span class="x" onclick="rmFile(${p.id},'${f.id}')">✕</span></span>`).join('');
     const notion=p.notion?`<a class="link-chip" href="${p.notion}" target="_blank">🗒 Notion</a>`:'';
     return `<div class="card">
       <div class="card-head">
         <input class="name" value="${p.nome.replace(/"/g,'&quot;')}" onchange="upd(${p.id},'nome',this.value)">
-        <div style="display:flex;gap:8px;align-items:center">${cd}
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">${cd}${cdInsc}
         <span class="badge" style="color:${s.c};background:${s.bg}">${s.t}</span></div>
       </div>
       <div class="grid">
         <div class="field"><label>Data da prova</label><input type="date" value="${p.data}" onchange="upd(${p.id},'data',this.value)"></div>
         <div class="field"><label>Edital sai em</label><input type="text" placeholder="ex: outubro" value="${p.edital||''}" onchange="upd(${p.id},'edital',this.value)"></div>
+        <div class="field"><label>Inscrição — início</label><input type="date" value="${p.inscInicio||''}" onchange="upd(${p.id},'inscInicio',this.value)"></div>
+        <div class="field"><label>Inscrição — fim</label><input type="date" value="${p.inscFim||''}" onchange="upd(${p.id},'inscFim',this.value)"></div>
         <div class="field"><label>Valor inscrição</label><input type="text" placeholder="R$ 0,00" value="${p.valor}" onchange="upd(${p.id},'valor',this.value)"></div>
         <div class="field"><label>Banca / estilo</label><input type="text" placeholder="ex: Vunesp" value="${p.banca||''}" onchange="upd(${p.id},'banca',this.value)"></div>
         <div class="field"><label>Status</label><select onchange="upd(${p.id},'status',this.value)">
@@ -177,7 +188,7 @@ function render(){
 function autoGrow(el){ el.style.height='auto'; el.style.height=(el.scrollHeight+2)+'px'; }
 function upd(id,campo,val){ const p=provas.find(x=>x.id===id); if(p){p[campo]=val; salvar(); render();} }
 function del(id){ if(confirm('Excluir esta prova?')){ provas=provas.filter(x=>x.id!==id); salvar(); render(); } }
-function addProva(){ provas.push({id:Date.now(),nome:'Nova prova',data:'',edital:'',valor:'',status:'pendente',banca:'',notion:'',notas:'',files:[]}); salvar(); render(); }
+function addProva(){ provas.push({id:Date.now(),nome:'Nova prova',data:'',edital:'',inscInicio:'',inscFim:'',valor:'',status:'pendente',banca:'',notion:'',notas:'',files:[]}); salvar(); render(); }
 
 function addFile(id,ev){
   const p=provas.find(x=>x.id===id); if(!p) return;
