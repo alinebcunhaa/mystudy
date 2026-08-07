@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Drogas em Infusão Contínua — Guia Rápido</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;0,700;1,500&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#F4F1EA;
+    --cream-2:#ECE7DC;
+    --ink:#2B2620;
+    --ink-soft:#5B5346;
+    --terracotta:#C1694F;
+    --terracotta-deep:#A6543D;
+    --sage:#8A9A7E;
+    --sage-deep:#6E7F63;
+    --line:#DBD4C4;
+    --card:#FFFFFF;
+    --amber:#C99A3C;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--cream);
+    color:var(--ink);
+    font-family:'Source Sans 3', sans-serif;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,h4{
+    font-family:'Lora', serif;
+    color:var(--ink);
+    margin:0;
+  }
+  .wrap{max-width:980px;margin:0 auto;padding:0 24px 80px;}
+
+  /* HEADER */
+  header.hero{
+    background:linear-gradient(155deg, var(--terracotta) 0%, var(--terracotta-deep) 60%);
+    color:#fff;
+    padding:52px 24px 64px;
+    position:relative;
+    overflow:hidden;
+  }
+  header.hero::after{
+    content:"";
+    position:absolute;
+    right:-60px; top:-60px;
+    width:260px;height:260px;
+    border-radius:50%;
+    background:rgba(255,255,255,0.08);
+  }
+  header.hero::before{
+    content:"";
+    position:absolute;
+    left:-40px; bottom:-80px;
+    width:220px;height:220px;
+    border-radius:50%;
+    background:rgba(255,255,255,0.06);
+  }
+  .hero-inner{max-width:980px;margin:0 auto;position:relative;z-index:1;}
+  .eyebrow{
+    font-size:12.5px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    font-weight:700;
+    opacity:.85;
+    margin-bottom:14px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:#fff;display:inline-block;}
+  header.hero h1{
+    font-size:38px;
+    font-weight:700;
+    line-height:1.15;
+    max-width:640px;
+  }
+  header.hero p{
+    margin-top:14px;
+    max-width:560px;
+    font-size:16px;
+    opacity:.92;
+  }
+  .ref-chip{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    margin-top:22px;
+    background:rgba(255,255,255,0.14);
+    border:1px solid rgba(255,255,255,0.35);
+    padding:7px 14px;
+    border-radius:100px;
+    font-size:13px;
+    font-weight:600;
+  }
+
+  /* NAV TABS */
+  nav.tabs{
+    position:sticky; top:0; z-index:20;
+    background:var(--cream);
+    border-bottom:1px solid var(--line);
+  }
+  .tabs-inner{
+    max-width:980px;margin:0 auto;
+    display:flex; gap:4px;
+    overflow-x:auto;
+    padding:0 24px;
+    scrollbar-width:none;
+  }
+  .tabs-inner::-webkit-scrollbar{display:none;}
+  .tab-btn{
+    font-family:'Source Sans 3', sans-serif;
+    font-weight:600;
+    font-size:14.5px;
+    color:var(--ink-soft);
+    background:transparent;
+    border:none;
+    padding:16px 14px 13px;
+    cursor:pointer;
+    white-space:nowrap;
+    border-bottom:3px solid transparent;
+    transition:color .15s ease, border-color .15s ease;
+  }
+  .tab-btn:hover{color:var(--ink);}
+  .tab-btn.active{
+    color:var(--terracotta-deep);
+    border-bottom-color:var(--terracotta);
+  }
+
+  main{padding-top:36px;}
+  section.panel{display:none;}
+  section.panel.active{display:block; animation:fade .25s ease;}
+  @keyframes fade{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);}}
+
+  .section-head{margin-bottom:22px;}
+  .section-head h2{font-size:26px; font-weight:700;}
+  .section-head .sub{color:var(--ink-soft); font-size:14.5px; margin-top:6px;}
+
+  .note{
+    background:#F4E9D8;
+    border-left:4px solid var(--amber);
+    padding:12px 16px;
+    border-radius:6px;
+    font-size:14px;
+    color:var(--ink);
+    margin-bottom:16px;
+  }
+  .note.sage{background:#EAEEE6; border-left-color:var(--sage-deep);}
+  .note strong{font-weight:700;}
+
+  /* CONVERSION CARD */
+  .formula-card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:22px 22px;
+    margin-bottom:16px;
+    box-shadow:0 1px 2px rgba(43,38,32,0.04);
+  }
+  .formula-card h4{
+    color:var(--terracotta-deep);
+    font-size:15px;
+    font-weight:700;
+    margin-bottom:8px;
+  }
+  .formula-card code{
+    display:block;
+    font-family:'Source Sans 3', sans-serif;
+    font-weight:600;
+    font-size:15.5px;
+    background:var(--cream-2);
+    padding:10px 14px;
+    border-radius:8px;
+    color:var(--ink);
+  }
+  .prop-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(160px,1fr));
+    gap:10px;
+    margin-top:6px;
+  }
+  .prop-grid div{
+    background:var(--cream-2);
+    padding:10px 12px;
+    border-radius:8px;
+    font-size:14px;
+    font-weight:600;
+  }
+
+  /* CALCULATOR */
+  .calc{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:24px;
+    margin:24px 0 8px;
+  }
+  .calc h3{font-size:18px; margin-bottom:4px;}
+  .calc .sub{color:var(--ink-soft); font-size:13.5px; margin-bottom:18px;}
+  .calc-mode{
+    display:flex; gap:8px; margin-bottom:18px; flex-wrap:wrap;
+  }
+  .calc-mode button, .trombo-btn{
+    font-family:'Source Sans 3', sans-serif;
+    font-weight:600; font-size:13.5px;
+    border:1px solid var(--line);
+    background:var(--cream-2);
+    color:var(--ink-soft);
+    padding:8px 14px;
+    border-radius:100px;
+    cursor:pointer;
+    transition:all .15s ease;
+  }
+  .calc-mode button.active, .trombo-btn.active{
+    background:var(--terracotta);
+    border-color:var(--terracotta);
+    color:#fff;
+  }
+  .calc-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+    gap:14px;
+    margin-bottom:16px;
+  }
+  .field label{
+    display:block;
+    font-size:12.5px;
+    font-weight:700;
+    color:var(--ink-soft);
+    text-transform:uppercase;
+    letter-spacing:.03em;
+    margin-bottom:6px;
+  }
+  .field input{
+    width:100%;
+    padding:10px 12px;
+    border-radius:8px;
+    border:1px solid var(--line);
+    background:var(--cream);
+    font-family:'Source Sans 3', sans-serif;
+    font-size:15px;
+    color:var(--ink);
+  }
+  .field input:focus{outline:2px solid var(--sage); outline-offset:1px;}
+  .calc-result{
+    background:linear-gradient(135deg, var(--sage) 0%, var(--sage-deep) 100%);
+    color:#fff;
+    border-radius:10px;
+    padding:16px 18px;
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+  .calc-result .label{font-size:13px; font-weight:600; opacity:.9;}
+  .calc-result .value{font-family:'Lora', serif; font-size:28px; font-weight:700;}
+
+  .trombo-result-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(160px,1fr));
+    gap:10px;
+    margin-top:4px;
+  }
+  .trombo-result-card{
+    background:linear-gradient(135deg, var(--sage) 0%, var(--sage-deep) 100%);
+    color:#fff;
+    border-radius:10px;
+    padding:14px 16px;
+  }
+  .trombo-result-card .label{font-size:12px; font-weight:600; opacity:.9; text-transform:uppercase; letter-spacing:.03em;}
+  .trombo-result-card .value{font-family:'Lora', serif; font-size:22px; font-weight:700; margin-top:4px;}
+  .trombo-cap-note{
+    margin-top:12px;
+    font-size:13px;
+    color:var(--ink-soft);
+    background:var(--cream-2);
+    padding:8px 12px;
+    border-radius:8px;
+  }
+
+  /* DRUG CARDS */
+  .drug{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:14px;
+    margin-bottom:18px;
+    overflow:hidden;
+    box-shadow:0 1px 2px rgba(43,38,32,0.04);
+  }
+  .drug-head{
+    background:var(--cream-2);
+    padding:14px 20px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:8px;
+    border-bottom:1px solid var(--line);
+  }
+  .drug-head h3{font-size:17px; font-weight:700;}
+  .drug-head .conc{
+    font-size:13px; font-weight:600; color:var(--ink-soft);
+  }
+  .gest-badge{
+    font-size:11.5px;
+    font-weight:700;
+    padding:4px 10px;
+    border-radius:100px;
+    background:var(--terracotta);
+    color:#fff;
+    white-space:nowrap;
+  }
+  .gest-badge.b{background:var(--sage-deep);}
+  .gest-badge.c{background:var(--amber);}
+  .gest-badge.d{background:#B24A4A;}
+  .gest-badge.na{background:#9A9184;}
+
+  .drug-body{padding:16px 20px 18px;}
+  .dose-row{
+    display:flex;
+    gap:12px;
+    padding:9px 0;
+    border-bottom:1px dashed var(--line);
+    font-size:14.5px;
+  }
+  .dose-row:last-child{border-bottom:none;}
+  .dose-row .tag{
+    flex:0 0 auto;
+    font-weight:700;
+    color:var(--terracotta-deep);
+    min-width:150px;
+  }
+  .dose-row .detail{color:var(--ink); flex:1;}
+  .dose-row .detail .sub-item{
+    display:block;
+    color:var(--ink-soft);
+    font-size:13.5px;
+    margin-top:2px;
+  }
+  ul.plain{margin:6px 0 0; padding-left:18px;}
+  ul.plain li{margin-bottom:4px; font-size:14px;}
+
+  .warn{
+    margin-top:10px;
+    font-size:13.5px;
+    background:#FBEAEA;
+    border-left:3px solid #B24A4A;
+    padding:9px 12px;
+    border-radius:6px;
+    color:#7A3131;
+  }
+  .tip{
+    margin-top:10px;
+    font-size:13.5px;
+    background:#EAEEE6;
+    border-left:3px solid var(--sage-deep);
+    padding:9px 12px;
+    border-radius:6px;
+    color:#3E4A37;
+  }
+
+  footer{
+    text-align:center;
+    padding:36px 24px 10px;
+    color:var(--ink-soft);
+    font-size:12.5px;
+  }
+
+  @media (max-width:600px){
+    header.hero h1{font-size:28px;}
+    .drug-head{flex-direction:column; align-items:flex-start;}
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="eyebrow"><span class="dot"></span> PSA · Farmacologia aplicada</div>
+    <h1>Drogas em Infusão Contínua</h1>
+    <p>Guia rápido de sedoanalgesia, bloqueio neuromuscular e drogas vasoativas — doses, conversões e observações práticas para o plantão.</p>
+    <div class="ref-chip">📖 Fonte: Medway / UpToDate, acesso mar/2025</div>
+  </div>
+</header>
+
+<nav class="tabs">
+  <div class="tabs-inner" id="tabsInner">
+    <button class="tab-btn active" data-panel="conversao">Conversões</button>
+    <button class="tab-btn" data-panel="sedo">Sedoanalgesia</button>
+    <button class="tab-btn" data-panel="bnm">Bloqueio Neuromuscular</button>
+    <button class="tab-btn" data-panel="dva">Vasoativas</button>
+    <button class="tab-btn" data-panel="inotropicos">Inotrópicos</button>
+    <button class="tab-btn" data-panel="vasodilat">Vasodilatadores</button>
+    <button class="tab-btn" data-panel="trombolise">Trombólise (AVCi)</button>
+  </div>
+</nav>
+
+<main class="wrap">
+
+  <!-- CONVERSÃO -->
+  <section class="panel active" id="conversao">
+    <div class="section-head">
+      <h2>Convertendo doses em vazões</h2>
+      <div class="sub">Sequência para calculadora manual + calculadora interativa abaixo</div>
+    </div>
+
+    <div class="formula-card">
+      <h4>Dose (mcg/min) → Vazão (mL/h)</h4>
+      <code>Dose (mcg/min) ÷ Concentração (mcg/mL) × 60</code>
+    </div>
+    <div class="formula-card">
+      <h4>Dose (mcg/kg/min) → Vazão (mL/h)</h4>
+      <code>Dose (mcg/kg/min) ÷ Concentração (mcg/mL) × Peso (kg) × 60</code>
+    </div>
+    <div class="formula-card">
+      <h4>Vazão (mL/h) → Dose (mcg/kg/min)</h4>
+      <code>Vazão (mL/h) × Concentração (mcg/mL) ÷ Peso (kg) ÷ 60</code>
+    </div>
+
+    <div class="formula-card">
+      <h4>Proporções úteis</h4>
+      <div class="prop-grid">
+        <div>1 mL = 20 gotas</div>
+        <div>1 gota = 3 microgotas</div>
+        <div>1 mL = 60 microgotas</div>
+        <div>3 mL/h = 1 gota/min</div>
+        <div>1 mL/h = 1 microgota/min</div>
+        <div>1 mg = 1.000 mcg</div>
+      </div>
+    </div>
+
+    <!-- CALCULATOR -->
+    <div class="calc">
+      <h3>Calculadora de dose ↔ vazão</h3>
+      <div class="sub">Escolha o sentido do cálculo e preencha os campos.</div>
+
+      <div class="calc-mode">
+        <button class="mode-btn active" data-mode="dosemin">mcg/min → mL/h</button>
+        <button class="mode-btn" data-mode="dosekg">mcg/kg/min → mL/h</button>
+        <button class="mode-btn" data-mode="vazao">mL/h → mcg/kg/min</button>
+      </div>
+
+      <div class="calc-grid" id="calcFields"></div>
+
+      <div class="calc-result">
+        <span class="label" id="resultLabel">Vazão calculada</span>
+        <span class="value" id="resultValue">— mL/h</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- SEDOANALGESIA -->
+  <section class="panel" id="sedo">
+    <div class="section-head">
+      <h2>Sedoanalgesia — Sedativos e Analgésicos</h2>
+    </div>
+
+    <div class="note"><strong>Idosos:</strong> reduzir a dose em 30 a 50% em relação ao adulto previamente hígido.</div>
+    <div class="note sage"><strong>Gestantes:</strong> Propofol é o sedativo de escolha (Classe B).</div>
+
+    <div class="drug">
+      <div class="drug-head">
+        <h3>Lidocaína</h3>
+        <span class="conc">20 mg/mL (2%)</span>
+      </div>
+      <div class="drug-body">
+        <div class="dose-row"><div class="tag">Indução (IOT)</div><div class="detail">1,0 a 1,5 mg/kg <span class="sub-item">Gosto metálico na boca</span></div></div>
+        <div class="dose-row"><div class="tag">Indução (IOT acordado)</div><div class="detail">5 mL em NBZ</div></div>
+        <div class="dose-row"><div class="tag">Periglótica c/ atomizador</div><div class="detail">Borrifa-se um pouco nas cordas vocais e o restante dentro da traqueia (onde o cuff ficará insuflado)
+          <ul class="plain">
+            <li>Lidocaína 2% 10 mL; ou</li>
+            <li>Lidocaína 2% 7 mL + Ropivacaína 0,75% 3 mL; ou</li>
+            <li>Lidocaína 2% 2 mL + Ropivacaína 0,75% 1–2 mL; ou</li>
+            <li>Lidocaína 2% 5 mL + Ropivacaína 0,5% 5 mL (cirurgias prolongadas)</li>
+          </ul>
+        </div></div>
+        <div class="dose-row"><div class="tag">Infusão contínua</div><div class="detail">Adjuvante na analgesia multimodal — 1,0 a 1,5 mg/kg em bolus, seguido de 1,0 a 1,5 mg/kg/h (até 2,0)</div></div>
+        <div class="warn">Cuidado com dose tóxica, especialmente da Ropivacaína — é cardiotóxica.</div>
+        <div class="tip">Usar peso ajustado em vez de peso real.</div>
+      </div>
+    </div>
+
+    <div class="drug">
+      <div class="drug-head">
+        <h3>Fentanil</h3>
+        <span class="conc">50 mcg/mL</span>
+        <span class="gest-badge c">Gestação C</span>
+      </div>
+      <div class="drug-body">
+        <div class="dose-row"><div class="tag">Indução (IOT)</div><div class="detail">1 a 3 mcg/kg <span class="sub-item">Início 2–3 min · Duração 30–60 min</span></div></div>
+        <div class="dose-row"><div class="tag">Infusão contínua</div><div class="detail">0,3 a 2,0 mcg/kg/h <span class="sub-item">Preferir puro</span></div></div>
+      </div>
+    </div>
+
+    <div class="drug">
+      <div class="drug-head">
+        <h3>Propofol</h3>
+        <span class="conc">10 mg/mL (1%) e 20 mg/mL (2%)</span>
+        <span class="gest-badge b">Gestação B</span>
+      </div>
+      <div class="drug-body">
+        <div class="dose-row"><div class="tag">Indução (IOT)</div><div class="detail">1,5 a 2,0 mg/kg <span class="sub-item">Início 15–45 seg · Duração 5–10 min</span></div></div>
+        <div class="dose-row"><div class="tag">Infusão contínua</div><div class="detail">0,4 a 7,0 mg/kg/h <span class="sub-item">Evitar ultrapassar 4 mg/kg/h</span></div></div>
+        <div class="warn">Risco de síndrome de infusão do propofol acima de 4 mg/kg/h — acidose lática, rabdomiólise, colapso cardiovascular. Tratamento: suspensão da droga, suporte e diálise.</div>
+        <div class="warn">Cuidado com antecedente de anafilaxia a proteína de ovo.</div>
+        <div class="tip">Provoca dor no sítio de infusão — associar Lidocaína EV antes pode ajudar.</div>
+      </div>
+    </div>
+
+    <div class="drug">
+      <div class="drug-head">
+        <h3>Midazolam</h3>
+        <span class="conc">5 mg/mL e 1 mg/mL</span>
+        <span class="gest-badge d">Gestação D</span>
+      </div>
+      <div class="drug-body">
+        <div class="dose-row"><div class="tag">Indução (IOT)</div><div class="detail">0,1 a 0,3 mg/kg <span class="sub-item">Início 60–90 seg · Duração 15–30 min</span></div></div>
+        <div class="dose-row"><div class="tag">Infusão contínua</div><div class="detail">0,02 a 0,20 mg/kg/h</div></div>
+      </div>
+    </div>
+
+    <div class="drug">
+      <div class="drug-head">
+        <h3>Dexmedetomidina <span style="font-weight:400; font-size:14px;">(Precedex®)</span></h3>
+        <span class="conc">200 mcg/2 mL (100 mcg/mL)</span>
+        <span class="gest-badge c">Gestação C</span>
+      </div>
+      <div class="drug-body">
+        <div class="dose-row"><div class="tag">Dose contínua</div><div class="detail">0,2 a 1,4 mcg/kg/h</div></div>
+      </div>
+    </div>
+
+    <div class="drug">
+      <div class="drug-head">
+        <h3>Etomidato</h3>
+        <span class="conc">20 mg/mL</span>
+        <span class="gest-badge c">Gestação C</span>
+      </div>
+      <div class="drug-body">
+        <div class="dose-row"><div class="tag">Indução (IOT)</div><div class="detail">0,3 mg/kg <span class="sub-item">Início 15–45 seg · Duração 3–12 min</span></div></div>
+        <div class="warn">Evitar repiques — pode suprimir a adrenal.</div>
+        <div class="tip">Em obesos, calcular pelo peso corporal magro (PCM): para cada 1 kg de sobrepeso, acrescentar 0,3 kg ao PCI. Ex.: paciente 170 cm / 90 kg → PCI 66 kg, PCM 73,2 kg.</div>
+      </div>
+    </div>
+
+    <div class="drug">
+      <div class="drug-head">
+        <h3>Quetamina</h3>
+        <span class="conc">50 mg/mL</span>
+        <span class="gest-badge na">Sem classe definida</span>
+      </div>
+      <div class="drug-body">
+        <div class="dose-row"><div class="tag">Indução EV (IOT)</div><div class="detail">1 a 2 mg/kg <span class="sub-item">Início 30 seg · Duração 10–15 min</span></div></div>
+        <div class="dose-row"><div class="tag">Indução IM (IOT)</div><div class="detail">5 a 10 mg/kg <span class="sub-item">Início 3–4 min · Duração 12–25 min</span></div></div>
+        <div class="dose-row"><div class="tag">Infusão — analgésica</div><div class="detail">0,05 a 0,4 mg/kg/h</div></div>
+        <div class="dose-row"><div class="tag">Infusão — dissociativa</div><div class="detail">1,0 a 5,0 mg/kg/h <span class="sub-item">Se tudo der errado e não sedar com nada</span></div></div>
+        <div class="dose-row"><div class="tag">Espectro por dose</div><div class="detail">
+          <ul class="plain">
+            <li>Analgésica: 0,1–0,3</li>
+            <li>Recreativa: 0,2–0,5 (alucinação — indesejável)</li>
+            <li>Dissociativa: 0,4–0,8 (paciente começa a sedar)</li>
+            <li>Indução: 1,0–2,0 (completamente dissociado)</li>
+          </ul>
+        </div></div>
+        <div class="dose-row"><div class="tag">Outros usos</div><div class="detail">
+          <ul class="plain">
+            <li>Dor aguda: bolus 0,25–0,50 mg/kg + infusão 0,05–1,00 mg/kg/h</li>
+            <li>Dor crônica: infusão 0,02–0,15 mg/kg/h</li>
+            <li>Depressão: infusão 0,5 mg/kg em 40 min, 1–3x/semana</li>
+          </ul>
+        </div></div>
+        <div class="tip">Reduzir a dose em 25–50% em choque refratário, depressão miocárdica ou depleção catecolaminérgica. Pós-IOTSR, considerar Lorazepam 0,05 mg/kg ou Midazolam 0,1 mg/kg para reduzir fenômeno de emergência (comum nas 3h pós-despertar). Repiques ao longo de procedimentos associam-se a despertar agitado.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BNM -->
+  <section class="panel" id="bnm">
+    <div class="section-head">
+      <h2>Bloqueadores Neuromusculares (BNM)</h2>
+    </div>
+
+    <div class="drug">
+      <div class="drug-head">
+        <h3>Succinilcolina</h3>
+        <span class="conc">100 mg (10 mg/mL)</span>
+        <span class="gest-badge c">Gestação C</span>
+      </div>
+      <div class="drug-body">
+        <div class="dose-row"><div class="tag">BNM EV — IOTSR</div><div class="detail">1,5 mg/kg <span class="sub-item">Início 45 seg · Duração 10–15 min</span></div></div>
+        <div class="dose-row"><div class="tag">BNM IM — IOTSR</div><div class="detail">4,0 mg/kg (máx. 150 mg) <span class="sub-item">Início 30 seg · Duração 10–15 min</span></div></div>
+        <div class="warn">Contraindicações: hipertermia maligna prévia, miopatias, doenças neurodegenerativas, denervação aguda (especialmente pós-72h), hipercalemia.</div>
+      </div>
+    </div>
+
+    <div class="drug">
+      <div class="drug-head">
+        <h3>Rocurônio <span style="font-weight:400; font-size:14px;">(Esmeron®)</span></h3>
+        <span class="conc">10 mg/mL</span>
+        <span class="gest-badge c">Gestação C</span>
+      </div>
+      <div class="drug-body">
+        <div class="dose-row"><div class="tag">BNM EV — IOTSC</div><div class="detail">0,6 mg/kg</div></div>
+        <div class="dose-row"><div class="tag">BNM EV — IOTSR</div><div class="detail">1,2 mg/kg <span class="sub-item">Início 60 seg · Duração 40–60 min</span></div></div>
+        <div class="dose-row"><div class="tag">Reversão — Sugamadex</div><div class="detail">(Bridium® 100 mg/mL) 2 a 16 mg/kg
+          <ul class="plain">
+            <li>Rotina no CC: 2 a 4 mg/kg</li>
+            <li>Reversão imediata: 16 mg/kg</li>
+            <li>Principal efeito adverso: bradicardia</li>
+          </ul>
+        </div></div>
+        <div class="dose-row"><div class="tag">BNM EV contínuo</div><div class="detail">
+          Preparo: Rocurônio 10 mg/mL 50 mL + SF 200 mL (conc. 2 mg/mL), ou puro (10 mg/mL)
+          <ul class="plain">
+            <li>Iniciar 0,6 a 1,0 mg/kg EV</li>
+            <li>Manter 0,18 a 0,96 mg/kg/h (3 a 16 mcg/kg/min)</li>
+          </ul>
+        </div></div>
+        <div class="warn">Excreção renal — em DRC há risco de o efeito do sugamadex passar antes de o rocurônio ser excretado.</div>
+      </div>
+    </div>
+
+    <div class="drug">
+      <div class="drug-head">
+        <h3>Cisatracúrio</h3>
+        <span class="conc">2 mg/mL</span>
+      </div>
+      <div class="drug-body">
+        <div class="dose-row"><div class="tag">BNM EV — IOT</div><div class="detail">0,15 a 0,2 mg/kg <span class="sub-item">Demora ~7 min para BNM</span></div></div>
+        <div class="dose-row"><div class="tag">BNM EV contínuo</div><div class="detail">
+          Preparo: Cisatracúrio 2 mg/mL 50 mL + SF 50 mL (conc. 1 mg/mL)
+          <ul class="plain">
+            <li>Bolus 0,1 a 0,2 mg/kg</li>
+            <li>Manutenção 0,06–0,18 mg/kg/h (1 a 3 mcg/kg/min) após evidência de bloqueio</li>
+          </ul>
+        </div></div>
+        <div class="tip">Metabolizado no plasma por metabolismo de Hoffman — teoricamente mais seguro que o rocurônio em DRC, inclusive para indução (demora 3–5 min, contra 30–60 seg do rocurônio).</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DVA -->
+  <section class="panel" id="dva">
+    <div class="section-head">
+      <h2>Fármacos Vasoativos (DVAs)</h2>
+    </div>
+
+    <div class="drug">
+      <div class="drug-head">
+        <h3>Dopamina</h3>
+        <span class="conc">5 mg/mL — 50 mL + SG5% 200 mL (1.000 mcg/mL)</span>
+      </div>
+      <div class="drug-body">
+        <div class="dose-row"><div class="tag">1–2 mcg/kg/min</div><div class="detail">Age em receptores dopaminérgicos (dopa-1) — leitos renal, mesentérico, cerebral e coronário → vasodilatação seletiva. Aumenta diurese, sem melhora de desfechos; uso não indicado.</div></div>
+        <div class="dose-row"><div class="tag">2–5 mcg/kg/min</div><div class="detail">Efeitos variáveis</div></div>
+        <div class="dose-row"><div class="tag">5–10 mcg/kg/min</div><div class="detail">Efeito beta-1 — aumento do débito cardíaco</div></div>
+        <div class="dose-row"><div class="tag">&gt; 10 mcg/kg/min</div><div class="detail">Estímulo alfa-1 — vasoconstrição e aumento da RVS</div></div>
+      </div>
+    </div>
+
+    <div class="drug">
+      <div class="drug-head">
+        <h3>Noradrenalina</h3>
+        <span class="conc">1 mg/mL — 16 mL + SG5% 234 mL (64 mcg/mL)</span>
+      </div>
+      <div class="drug-body">
+        <div class="dose-row"><div class="tag">Dose</div><div class="detail">0,05 a 2 mcg/kg/min</div></div>
+      </div>
+    </div>
+
+    <div class="drug">
+      <div class="drug-head">
+        <h3>Adrenalina</h3>
+        <span class="conc">1 mg/mL — 6 mL + SF 94 mL</span>
+      </div>
+      <div class="drug-body">
+        <div class="dose-row"><div class="tag">Dose</div><div class="detail">0,01 a 2,00 mcg/kg/min</div></div>
+        <div class="tip">Nesta diluição, 1 mL/h ≈ 1 mcg/min.</div>
+      </div>
+    </div>
+
+    <div class="drug">
+      <div class="drug-head">
+        <h3>Vasopressina <span style="font-weight:400; font-size:14px;">(Encrise®)</span></h3>
+        <span class="conc">20 U/mL — 1 mL + SF 99 mL (0,2 U/mL)</span>
+      </div>
+      <div class="drug-body">
+        <div class="dose-row"><div class="tag">Dose</div><div class="detail">0,01 a 0,04 UI/min</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- INOTROPICOS -->
+  <section class="panel" id="inotropicos">
+    <div class="section-head">
+      <h2>Inotrópicos</h2>
+    </div>
+
+    <div class="drug">
+      <div class="drug-head">
+        <h3>Dobutamina</h3>
+        <span class="conc">12,5 mg/mL — 80 mL + SG5% 170 mL (4.000 mcg/mL)</span>
+      </div>
+      <div class="drug-body">
+        <div class="dose-row"><div class="tag">Dose</div><div class="detail">2,5 a 20 mcg/kg/min <span class="sub-item">Dose inicial: 5–10 mcg/kg</span></div></div>
+      </div>
+    </div>
+
+    <div class="drug">
+      <div class="drug-head">
+        <h3>Milrinone <span style="font-weight:400; font-size:14px;">(Primacor IV®)</span></h3>
+        <span class="conc">1 mg/mL</span>
+      </div>
+      <div class="drug-body">
+        <div class="dose-row"><div class="tag">Dose</div><div class="detail">0,125 a 0,75 mcg/kg/min <span class="sub-item">Dose de ataque opcional (50 mcg/kg) — pode causar hipotensão</span></div></div>
+        <div class="tip">Meia-vida longa (2–4h) — titular a cada 4–6h.</div>
+        <div class="warn">Eliminação renal — cuidado em DRC.</div>
+      </div>
+    </div>
+
+    <div class="drug">
+      <div class="drug-head">
+        <h3>Levosimedan <span style="font-weight:400; font-size:14px;">(Simdax®)</span></h3>
+        <span class="conc">2,5 mg/mL</span>
+      </div>
+      <div class="drug-body">
+        <div class="dose-row"><div class="tag">Dose</div><div class="detail">Ataque de 12 mcg/kg em 10 min, seguido de infusão 0,1 mcg/kg/min (titulável até 0,2 mcg/kg/min)</div></div>
+        <div class="warn">Dose de ataque pode causar hipotensão. Duração da infusão não deve ultrapassar 24 horas.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- VASODILATADORES -->
+  <section class="panel" id="vasodilat">
+    <div class="section-head">
+      <h2>Vasodilatadores</h2>
+    </div>
+
+    <div class="drug">
+      <div class="drug-head">
+        <h3>Nitroprussiato de sódio <span style="font-weight:400; font-size:14px;">(Nipride®)</span></h3>
+        <span class="conc">50 mg — 2 mL + SG5% 248 mL (200 mcg/mL)</span>
+      </div>
+      <div class="drug-body">
+        <div class="dose-row"><div class="tag">Dose</div><div class="detail">0,3 a 0,5 mcg/kg/min (inicial), até 2,0 mcg/kg/min (máx.) <span class="sub-item">Efeito cessa em ~10 min</span></div></div>
+        <div class="warn">Uso em altas doses por &gt; 24–48h associado a intoxicação por cianeto (estado mental alterado, acidose...). Antídoto: hidroxicobalamina, nitrito de sódio ou tiossulfato de sódio.</div>
+      </div>
+    </div>
+
+    <div class="drug">
+      <div class="drug-head">
+        <h3>Nitroglicerina <span style="font-weight:400; font-size:14px;">(Tridil®)</span></h3>
+        <span class="conc">5 mg/mL — 10 mL + SG5% 240 mL (200 mcg/mL)</span>
+      </div>
+      <div class="drug-body">
+        <div class="dose-row"><div class="tag">Dose</div><div class="detail">5 a 10 mcg/min, até 200 mcg/min</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TROMBOLISE -->
+  <section class="panel" id="trombolise">
+    <div class="section-head">
+      <h2>Trombólise no AVC Isquêmico</h2>
+      <div class="sub">Diretriz AHA/ASA 2026 — protocolo para decisão rápida no PS</div>
+    </div>
+
+    <div class="note"><strong>Tempo é cérebro.</strong> A meta é porta–agulha ≤ 60 min. Não aguardar exames laboratoriais (exceto glicemia capilar) nem imagem avançada para trombolisar dentro de 4,5h — TC de crânio sem contraste já é suficiente.</div>
+
+    <!-- CALCULADORA TROMBOLÍTICOS -->
+    <div class="calc">
+      <h3>Calculadora de dose — Trombolíticos</h3>
+      <div class="sub">Informe o peso do paciente e escolha o fármaco.</div>
+
+      <div class="calc-mode">
+        <button class="trombo-btn active" data-trombo="alteplase">Alteplase</button>
+        <button class="trombo-btn" data-trombo="tenecteplase">Tenecteplase</button>
+      </div>
+
+      <div class="calc-grid" id="tromboFields"></div>
+
+      <div id="tromboResults"></div>
+    </div>
+
+
+    <div class="drug">
+      <div class="drug-head">
+        <h3>1. Janela terapêutica</h3>
+      </div>
+      <div class="drug-body">
+        <div class="dose-row"><div class="tag">Janela clássica</div><div class="detail">Até 4,5h do início dos sintomas (ou do último momento visto assintomático)</div></div>
+        <div class="dose-row"><div class="tag">Janela estendida</div><div class="detail">4,5h a 9h, ou wake-up stroke / início desconhecido — exige seleção por imagem avançada (RM com mismatch DWI-FLAIR, ou TC/RM de perfusão), recomendação classe 2a</div></div>
+        <div class="tip">NIHSS baixo isolado não deve excluir trombólise — avaliar se o déficit é clinicamente incapacitante. Trombólise não indicada em déficits leves e não incapacitantes (ex: PRISMS).</div>
+      </div>
+    </div>
+
+    <div class="drug">
+      <div class="drug-head">
+        <h3>2. Antes de trombolisar — checklist rápido</h3>
+      </div>
+      <div class="drug-body">
+        <div class="dose-row"><div class="tag">Sempre fazer</div><div class="detail">
+          <ul class="plain">
+            <li>TC de crânio sem contraste — excluir hemorragia (obrigatório antes de qualquer trombolítico)</li>
+            <li>Glicemia capilar — hipoglicemia &lt;50 mg/dL pode mimetizar AVC e deve ser corrigida antes</li>
+            <li>NIHSS basal</li>
+            <li>Definir horário exato do início dos sintomas / último visto bem</li>
+          </ul>
+        </div></div>
+        <div class="dose-row"><div class="tag">PA antes da infusão</div><div class="detail">Deve estar &lt;185/110 mmHg (3 medidas, 10 min de intervalo). Se acima, tratar com anti-hipertensivo IV (ex: labetalol, nicardipina) até atingir a meta antes de iniciar o trombolítico.</div></div>
+      </div>
+    </div>
+
+    <div class="drug">
+      <div class="drug-head">
+        <h3>3. Contraindicações absolutas</h3>
+      </div>
+      <div class="drug-body">
+        <ul class="plain">
+          <li>Hemorragia intracraniana atual ou história pregressa</li>
+          <li>AVC isquêmico ou TCE grave nos últimos 3 meses</li>
+          <li>Neoplasia intracraniana, malformação vascular ou aneurisma cerebral</li>
+          <li>Cirurgia intracraniana ou intraespinhal recente</li>
+          <li>Sangramento ativo ou diátese hemorrágica conhecida (plaquetas &lt;100.000/mm³)</li>
+          <li>Anticoagulante oral com RNI &gt;1,7 ou TP &gt;15 seg</li>
+          <li>Heparina nas últimas 48h com TTPa elevado, ou uso de NOAC nas últimas 48h (sem exames que comprovem ausência de efeito)</li>
+          <li>TC com hipodensidade precoce ≥ 1/3 do território da ACM</li>
+          <li>PA ≥185/110 mmHg refratária ao tratamento</li>
+          <li>Melhora completa e espontânea dos sintomas (possível AIT)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="drug">
+      <div class="drug-head">
+        <h3>4. Dose — Alteplase</h3>
+        <span class="gest-badge">Classe I, evidência A</span>
+      </div>
+      <div class="drug-body">
+        <div class="dose-row"><div class="tag">Dose padrão</div><div class="detail">0,9 mg/kg (máx. 90 mg) — 10% em bolus IV em 1 min + 90% restante em bomba de infusão em 60 min
+          <span class="sub-item">Ex.: paciente de 80 kg → dose total 72 mg (7,2 mg em bolus + 64,8 mg em 1h)</span>
+        </div></div>
+        <div class="dose-row"><div class="tag">Alto risco de sangramento</div><div class="detail">0,6 mg/kg (máx. 90 mg) — 15% em bolus + restante em infusão de 1h (protocolo MS para casos selecionados)</div></div>
+        <div class="warn">Acesso venoso calibroso, exclusivo para a alteplase. Monitorização contínua obrigatória (sala de emergência, UTI ou unidade de AVC).</div>
+      </div>
+    </div>
+
+    <div class="drug">
+      <div class="drug-head">
+        <h3>5. Dose — Tenecteplase (TNK)</h3>
+        <span class="gest-badge">Classe I, evidência A</span>
+      </div>
+      <div class="drug-body">
+        <div class="dose-row"><div class="tag">Dose</div><div class="detail">0,25 mg/kg (máx. 25 mg) — bolus único IV em 5–10 seg</div></div>
+        <div class="tip">Alternativa não inferior à alteplase dentro de 4,5h, com vantagem prática: bolus único, sem necessidade de bomba de infusão por 1h — reduz tempo porta-agulha e risco de erro. Especialmente vantajosa antes de trombectomia.</div>
+        <div class="warn">Dose de 0,4 mg/kg NÃO é recomendada — maior risco de sangramento sem benefício adicional.</div>
+      </div>
+    </div>
+
+    <div class="drug">
+      <div class="drug-head">
+        <h3>6. Cuidados pós-trombólise (primeiras 24h)</h3>
+      </div>
+      <div class="drug-body">
+        <div class="dose-row"><div class="tag">Pressão arterial</div><div class="detail">Monitorizar continuamente. Manter &lt;180/105 mmHg. Se ultrapassar, iniciar anti-hipertensivo IV.</div></div>
+        <div class="dose-row"><div class="tag">Neurológico</div><div class="detail">NIHSS seriado (ex: de hora em hora nas primeiras 6h) — piora súbita sugere sangramento, interromper infusão se ainda em curso e solicitar TC de crânio urgente</div></div>
+        <div class="dose-row"><div class="tag">Evitar nas 24h</div><div class="detail">
+          <ul class="plain">
+            <li>Antiagregantes e anticoagulantes (aguardar TC de controle em 24h antes de iniciar)</li>
+            <li>Punção arterial em sítio não compressível, cateteres centrais, sondagem vesical/gástrica se evitável</li>
+          </ul>
+        </div></div>
+        <div class="dose-row"><div class="tag">Imagem de controle</div><div class="detail">TC de crânio em 24h antes de liberar antiagregação/anticoagulação</div></div>
+      </div>
+    </div>
+
+    <div class="drug">
+      <div class="drug-head">
+        <h3>7. Se houver suspeita de sangramento</h3>
+      </div>
+      <div class="drug-body">
+        <div class="warn">
+          Interromper a infusão imediatamente → TC de crânio urgente → hemograma, coagulograma e fibrinogênio → considerar crioprecipitado ou plasma fresco congelado e ácido tranexâmico (ou complexo protrombínico, conforme protocolo local) → avaliação neurocirúrgica.
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  Fonte: Medway — Guia rápido de drogas em infusão contínua (UpToDate, acesso mar/2025) · Ferramenta de estudo pessoal
+</footer>
+
+<script>
+  // TAB SWITCHING
+  const tabBtns = document.querySelectorAll('.tab-btn');
+  const panels = document.querySelectorAll('.panel');
+  tabBtns.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      tabBtns.forEach(b=>b.classList.remove('active'));
+      panels.forEach(p=>p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.panel).classList.add('active');
+      window.scrollTo({top: document.querySelector('nav.tabs').offsetTop - 10, behavior:'smooth'});
+    });
+  });
+
+  // CALCULATOR
+  const calcFields = document.getElementById('calcFields');
+  const resultLabel = document.getElementById('resultLabel');
+  const resultValue = document.getElementById('resultValue');
+  const modeBtns = document.querySelectorAll('.mode-btn');
+  let currentMode = 'dosemin';
+
+  const configs = {
+    dosemin: {
+      fields: [
+        {id:'dose', label:'Dose (mcg/min)', placeholder:'ex: 50'},
+        {id:'conc', label:'Concentração (mcg/mL)', placeholder:'ex: 200'}
+      ],
+      label: 'Vazão calculada',
+      calc: v => (v.dose / v.conc) * 60,
+      unit: 'mL/h'
+    },
+    dosekg: {
+      fields: [
+        {id:'dose', label:'Dose (mcg/kg/min)', placeholder:'ex: 0.5'},
+        {id:'conc', label:'Concentração (mcg/mL)', placeholder:'ex: 4000'},
+        {id:'peso', label:'Peso (kg)', placeholder:'ex: 70'}
+      ],
+      label: 'Vazão calculada',
+      calc: v => (v.dose / v.conc) * v.peso * 60,
+      unit: 'mL/h'
+    },
+    vazao: {
+      fields: [
+        {id:'vazao', label:'Vazão (mL/h)', placeholder:'ex: 10'},
+        {id:'conc', label:'Concentração (mcg/mL)', placeholder:'ex: 4000'},
+        {id:'peso', label:'Peso (kg)', placeholder:'ex: 70'}
+      ],
+      label: 'Dose calculada',
+      calc: v => (v.vazao * v.conc) / v.peso / 60,
+      unit: 'mcg/kg/min'
+    }
+  };
+
+  function renderFields(mode){
+    calcFields.innerHTML = '';
+    configs[mode].fields.forEach(f=>{
+      const div = document.createElement('div');
+      div.className = 'field';
+      div.innerHTML = `<label for="${f.id}">${f.label}</label><input type="number" step="any" id="${f.id}" placeholder="${f.placeholder}">`;
+      calcFields.appendChild(div);
+    });
+    resultLabel.textContent = configs[mode].label;
+    resultValue.textContent = '— ' + configs[mode].unit;
+    calcFields.querySelectorAll('input').forEach(inp=>{
+      inp.addEventListener('input', ()=>computeResult(mode));
+    });
+  }
+
+  function computeResult(mode){
+    const cfg = configs[mode];
+    const values = {};
+    let complete = true;
+    cfg.fields.forEach(f=>{
+      const el = document.getElementById(f.id);
+      const val = parseFloat(el.value);
+      if(isNaN(val)){ complete = false; }
+      values[f.id] = val;
+    });
+    if(!complete){
+      resultValue.textContent = '— ' + cfg.unit;
+      return;
+    }
+    const result = cfg.calc(values);
+    resultValue.textContent = (isFinite(result) ? result.toFixed(2) : '—') + ' ' + cfg.unit;
+  }
+
+  modeBtns.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      modeBtns.forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      currentMode = btn.dataset.mode;
+      renderFields(currentMode);
+    });
+  });
+
+  renderFields(currentMode);
+
+  // CALCULADORA DE TROMBOLÍTICOS
+  const tromboBtns = document.querySelectorAll('.trombo-btn');
+  const tromboFields = document.getElementById('tromboFields');
+  const tromboResults = document.getElementById('tromboResults');
+  let tromboDrug = 'alteplase';
+
+  function renderTromboFields(){
+    tromboFields.innerHTML = `
+      <div class="field">
+        <label for="pesoTrombo">Peso (kg)</label>
+        <input type="number" step="any" id="pesoTrombo" placeholder="ex: 70">
+      </div>
+    `;
+    document.getElementById('pesoTrombo').addEventListener('input', computeTrombo);
+    computeTrombo();
+  }
+
+  function computeTrombo(){
+    const peso = parseFloat(document.getElementById('pesoTrombo').value);
+    if(isNaN(peso) || peso <= 0){
+      tromboResults.innerHTML = `<div class="trombo-cap-note">Informe o peso para calcular a dose.</div>`;
+      return;
+    }
+
+    if(tromboDrug === 'alteplase'){
+      let doseTotal = peso * 0.9;
+      let atMax = false;
+      if(doseTotal > 90){ doseTotal = 90; atMax = true; }
+      const bolus = doseTotal * 0.10;
+      const infusao = doseTotal * 0.90;
+
+      tromboResults.innerHTML = `
+        <div class="trombo-result-grid">
+          <div class="trombo-result-card"><div class="label">Dose total</div><div class="value">${doseTotal.toFixed(1)} mg</div></div>
+          <div class="trombo-result-card"><div class="label">Bolus (1 min)</div><div class="value">${bolus.toFixed(1)} mg</div></div>
+          <div class="trombo-result-card"><div class="label">Infusão (60 min)</div><div class="value">${infusao.toFixed(1)} mg</div></div>
+        </div>
+        <div class="trombo-cap-note">0,9 mg/kg — 10% em bolus IV + 90% em bomba de infusão em 1h. ${atMax ? 'Dose máxima de 90 mg atingida (peso ≥ 100 kg).' : 'Dose máxima: 90 mg.'}</div>
+      `;
+    } else {
+      let dose = peso * 0.25;
+      let atMax = false;
+      if(dose > 25){ dose = 25; atMax = true; }
+
+      tromboResults.innerHTML = `
+        <div class="trombo-result-grid">
+          <div class="trombo-result-card"><div class="label">Dose — bolus único</div><div class="value">${dose.toFixed(1)} mg</div></div>
+        </div>
+        <div class="trombo-cap-note">0,25 mg/kg em bolus único IV (5–10 seg). ${atMax ? 'Dose máxima de 25 mg atingida (peso ≥ 100 kg).' : 'Dose máxima: 25 mg.'} Não usar 0,4 mg/kg — maior risco de sangramento sem benefício adicional.</div>
+      `;
+    }
+  }
+
+  tromboBtns.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      tromboBtns.forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      tromboDrug = btn.dataset.trombo;
+      computeTrombo();
+    });
+  });
+
+  renderTromboFields();
+</script>
+
+</body>
+</html>
