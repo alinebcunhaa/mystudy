@@ -12,8 +12,8 @@
     --cream-2:#ECE7DC;
     --ink:#2B2620;
     --ink-soft:#5B5346;
-    --terracotta:#C1694F;
-    --terracotta-deep:#A6543D;
+    --terracotta:#93C596;
+    --terracotta-deep:#6FA974;
     --sage:#8A9A7E;
     --sage-deep:#6E7F63;
     --line:#DBD4C4;
@@ -246,6 +246,17 @@
     color:var(--ink);
   }
   .field input:focus{outline:2px solid var(--sage); outline-offset:1px;}
+  .field select{
+    width:100%;
+    padding:10px 12px;
+    border-radius:8px;
+    border:1px solid var(--line);
+    background:var(--cream);
+    font-family:'Source Sans 3', sans-serif;
+    font-size:15px;
+    color:var(--ink);
+  }
+  .field select:focus{outline:2px solid var(--sage); outline-offset:1px;}
   .calc-result{
     background:linear-gradient(135deg, var(--sage) 0%, var(--sage-deep) 100%);
     color:#fff;
@@ -452,7 +463,59 @@
         <span class="value" id="resultValue">— mL/h</span>
       </div>
     </div>
+
+    <!-- CALCULADORA POR DROGA -->
+    <div class="calc">
+      <h3>Calculadora por droga <span style="font-weight:400; font-size:14px; color:var(--ink-soft);">(concentração já embutida)</span></h3>
+      <div class="sub">Escolha a droga — a concentração-padrão da diluição já entra na conta automaticamente. Você só informa peso e dose.</div>
+
+      <div class="note sage">
+        <strong>Qual peso usar?</strong> Não é sempre o mesmo. A maioria das drogas vasoativas (Noradrenalina, Adrenalina, Dopamina, Dobutamina etc.) é calculada pelo <strong>peso real</strong> do paciente. Já para sedação/indução, o guia orienta usar o <strong>peso corporal ideal (PCI)</strong> como base — com a ressalva do Etomidato, que em obesos usa peso corporal magro (PCM), e da Lidocaína, que usa peso ajustado. Na dúvida sobre qual peso a droga específica pede, veja a observação na seção correspondente (Sedoanalgesia/BNM).
+      </div>
+
+      <!-- CALCULADORA DE PESO IDEAL -->
+      <div style="background:var(--cream-2); border-radius:10px; padding:16px 18px; margin-bottom:18px;">
+        <h4 style="font-size:14.5px; margin-bottom:10px; color:var(--terracotta-deep);">Calculadora de peso ideal (PCI) — fórmula de Devine</h4>
+        <div class="calc-grid" style="margin-bottom:10px;">
+          <div class="field">
+            <label for="pciSexo">Sexo</label>
+            <select id="pciSexo">
+              <option value="M">Masculino</option>
+              <option value="F">Feminino</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="pciAltura">Altura (cm)</label>
+            <input type="number" step="any" id="pciAltura" placeholder="ex: 170">
+          </div>
+        </div>
+        <div class="calc-result" style="margin-bottom:0;">
+          <span class="label">Peso ideal (PCI)</span>
+          <span class="value" id="pciValue">— kg</span>
+        </div>
+        <button id="pciUseBtn" style="margin-top:10px; font-family:'Source Sans 3',sans-serif; font-weight:600; font-size:13.5px; border:1px solid var(--line); background:#fff; color:var(--terracotta-deep); padding:8px 14px; border-radius:100px; cursor:pointer;">Usar este peso na calculadora abaixo ↓</button>
+      </div>
+
+      <div class="calc-grid">
+        <div class="field" style="grid-column:1/-1;">
+          <label for="drugSelect">Droga</label>
+          <select id="drugSelect"></select>
+        </div>
+      </div>
+
+      <div id="drugConcInfo" class="trombo-cap-note" style="margin-bottom:14px;"></div>
+
+      <div class="calc-grid" id="drugCalcFields"></div>
+
+      <div class="calc-result">
+        <span class="label" id="drugResultLabel">Vazão calculada</span>
+        <span class="value" id="drugResultValue">— mL/h</span>
+      </div>
+
+      <div id="drugPrepBox" class="note sage" style="display:none; margin-top:14px;"></div>
+    </div>
   </section>
+
 
   <!-- SEDOANALGESIA -->
   <section class="panel" id="sedo">
@@ -993,6 +1056,186 @@
   });
 
   renderFields(currentMode);
+
+  // CALCULADORA POR DROGA (concentração pré-cadastrada)
+  const DRUG_PRESETS = [
+    // Vasoativas
+    {group:'Vasoativas', id:'nora', label:'Noradrenalina (padrão)', conc:64, unit:'mcg/kg/min', perKg:true, range:'0,05 a 2 mcg/kg/min',
+      isPure:false, ampConc:'1 mg/mL', ampVol:16, diluent:'SG5%', diluentVol:234},
+    {group:'Vasoativas', id:'nora_conc', label:'Noradrenalina (concentrada)', conc:128, unit:'mcg/kg/min', perKg:true, range:'0,05 a 2 mcg/kg/min',
+      isPure:false, ampConc:'1 mg/mL', ampVol:32, diluent:'SG5%', diluentVol:218,
+      concNote:'Diluição concentrada — reduz o volume infundido pela metade em relação à padrão. Útil em choque refratário com doses altas, para não sobrecarregar o paciente de volume.'},
+    {group:'Vasoativas', id:'adre', label:'Adrenalina (padrão)', conc:60, unit:'mcg/kg/min', perKg:true, range:'0,01 a 2,00 mcg/kg/min',
+      isPure:false, ampConc:'1 mg/mL', ampVol:6, diluent:'SF 0,9%', diluentVol:94},
+    {group:'Vasoativas', id:'adre_conc', label:'Adrenalina (concentrada)', conc:120, unit:'mcg/kg/min', perKg:true, range:'0,01 a 2,00 mcg/kg/min',
+      isPure:false, ampConc:'1 mg/mL', ampVol:12, diluent:'SF 0,9%', diluentVol:88,
+      concNote:'Diluição concentrada — reduz o volume infundido pela metade em relação à padrão. Útil em choque refratário com doses altas, para não sobrecarregar o paciente de volume.'},
+    {group:'Vasoativas', id:'dopa', label:'Dopamina', conc:1000, unit:'mcg/kg/min', perKg:true, range:'1 a 20 mcg/kg/min (efeito varia por faixa)',
+      isPure:false, ampConc:'5 mg/mL', ampVol:50, diluent:'SG5%', diluentVol:200},
+    {group:'Vasoativas', id:'vaso', label:'Vasopressina', conc:0.2, unit:'UI/min', perKg:false, range:'0,01 a 0,04 UI/min',
+      isPure:false, ampConc:'20 U/mL', ampVol:1, diluent:'SF 0,9%', diluentVol:99},
+    // Inotrópicos
+    {group:'Inotrópicos', id:'dobu', label:'Dobutamina', conc:4000, unit:'mcg/kg/min', perKg:true, range:'2,5 a 20 mcg/kg/min',
+      isPure:false, ampConc:'12,5 mg/mL', ampVol:80, diluent:'SG5%', diluentVol:170},
+    {group:'Inotrópicos', id:'milri', label:'Milrinone', conc:1000, unit:'mcg/kg/min', perKg:true, range:'0,125 a 0,75 mcg/kg/min',
+      isPure:true, ampConc:'1 mg/mL'},
+    {group:'Inotrópicos', id:'levo', label:'Levosimedan (infusão)', conc:2500, unit:'mcg/kg/min', perKg:true, range:'0,1 a 0,2 mcg/kg/min (após ataque)',
+      isPure:true, ampConc:'2,5 mg/mL'},
+    // Vasodilatadores
+    {group:'Vasodilatadores', id:'nipride', label:'Nitroprussiato de sódio', conc:200, unit:'mcg/kg/min', perKg:true, range:'0,3 a 2,0 mcg/kg/min',
+      isPure:false, ampConc:'25 mg/mL (amp 50 mg/2 mL)', ampVol:2, diluent:'SG5%', diluentVol:248},
+    {group:'Vasodilatadores', id:'tridil', label:'Nitroglicerina', conc:200, unit:'mcg/min', perKg:false, range:'5 a 200 mcg/min',
+      isPure:false, ampConc:'5 mg/mL', ampVol:10, diluent:'SG5%', diluentVol:240},
+    // Sedoanalgesia (infusão contínua)
+    {group:'Sedoanalgesia', id:'fenta', label:'Fentanil', conc:50, unit:'mcg/kg/h', perKg:true, range:'0,3 a 2,0 mcg/kg/h',
+      isPure:true, ampConc:'50 mcg/mL'},
+    {group:'Sedoanalgesia', id:'prece', label:'Dexmedetomidina (Precedex®)', conc:100, unit:'mcg/kg/h', perKg:true, range:'0,2 a 1,4 mcg/kg/h',
+      isPure:true, ampConc:'200 mcg/2 mL (100 mcg/mL)'},
+    {group:'Sedoanalgesia', id:'mida', label:'Midazolam', conc:5000, unit:'mg/kg/h', perKg:true, range:'0,02 a 0,20 mg/kg/h',
+      isPure:true, ampConc:'5 mg/mL'},
+    {group:'Sedoanalgesia', id:'propo1', label:'Propofol 1% (10 mg/mL)', conc:10000, unit:'mg/kg/h', perKg:true, range:'0,4 a 7,0 mg/kg/h (evitar >4)',
+      isPure:true, ampConc:'10 mg/mL'},
+    {group:'Sedoanalgesia', id:'propo2', label:'Propofol 2% (20 mg/mL)', conc:20000, unit:'mg/kg/h', perKg:true, range:'0,4 a 7,0 mg/kg/h (evitar >4)',
+      isPure:true, ampConc:'20 mg/mL'},
+    {group:'Sedoanalgesia', id:'lido', label:'Lidocaína (infusão contínua)', conc:20000, unit:'mg/kg/h', perKg:true, range:'1,0 a 2,0 mg/kg/h (após bolus)',
+      isPure:true, ampConc:'20 mg/mL (2%)'},
+    {group:'Sedoanalgesia', id:'keta', label:'Quetamina (infusão)', conc:50000, unit:'mg/kg/h', perKg:true, range:'0,05–0,4 (analgésica) / 1,0–5,0 (dissociativa) mg/kg/h',
+      isPure:true, ampConc:'50 mg/mL'},
+    // BNM contínuo
+    {group:'Bloqueio neuromuscular', id:'rocu_dil', label:'Rocurônio contínuo (diluído 2 mg/mL)', conc:2000, unit:'mg/kg/h', perKg:true, range:'0,18 a 0,96 mg/kg/h',
+      isPure:false, ampConc:'10 mg/mL', ampVol:50, diluent:'SF 0,9%', diluentVol:200},
+    {group:'Bloqueio neuromuscular', id:'rocu_puro', label:'Rocurônio contínuo (puro 10 mg/mL)', conc:10000, unit:'mg/kg/h', perKg:true, range:'0,18 a 0,96 mg/kg/h',
+      isPure:true, ampConc:'10 mg/mL'},
+    {group:'Bloqueio neuromuscular', id:'cisa', label:'Cisatracúrio contínuo', conc:1000, unit:'mg/kg/h', perKg:true, range:'0,06 a 0,18 mg/kg/h',
+      isPure:false, ampConc:'2 mg/mL', ampVol:50, diluent:'SF 0,9%', diluentVol:50},
+  ];
+
+  const drugSelect = document.getElementById('drugSelect');
+  const drugConcInfo = document.getElementById('drugConcInfo');
+  const drugCalcFields = document.getElementById('drugCalcFields');
+  const drugResultLabel = document.getElementById('drugResultLabel');
+  const drugResultValue = document.getElementById('drugResultValue');
+
+  // popula o select agrupado
+  const drugGroups = [...new Set(DRUG_PRESETS.map(d=>d.group))];
+  drugGroups.forEach(g=>{
+    const optgroup = document.createElement('optgroup');
+    optgroup.label = g;
+    DRUG_PRESETS.filter(d=>d.group===g).forEach(d=>{
+      const opt = document.createElement('option');
+      opt.value = d.id;
+      opt.textContent = d.label;
+      optgroup.appendChild(opt);
+    });
+    drugSelect.appendChild(optgroup);
+  });
+
+  function getPreset(id){
+    return DRUG_PRESETS.find(d=>d.id===id);
+  }
+
+  function renderDrugFields(){
+    const preset = getPreset(drugSelect.value);
+    drugConcInfo.innerHTML = `<strong>Concentração final:</strong> ${preset.conc} ${preset.unit.includes('UI') ? 'UI/mL' : 'mcg/mL'} · <strong>Faixa de dose usual:</strong> ${preset.range}`;
+
+    const prepBox = document.getElementById('drugPrepBox');
+    if(preset.isPure){
+      prepBox.innerHTML = `<strong>Como preparar:</strong> usar puro, direto da ampola/frasco (${preset.ampConc}) — sem necessidade de diluição adicional.`;
+    } else {
+      const total = preset.ampVol + preset.diluentVol;
+      let prepHtml = `<strong>Como preparar:</strong> pegue <strong>${preset.ampVol} mL</strong> de ${preset.label.replace(/\s*\(padrão\)|\s*\(concentrada\)/,'')} (${preset.ampConc}) e complete com <strong>${preset.diluentVol} mL</strong> de ${preset.diluent} → volume total <strong>${total} mL</strong> → concentração final <strong>${preset.conc} ${preset.unit.includes('UI') ? 'UI/mL' : 'mcg/mL'}</strong>.`;
+      if(preset.concNote){
+        prepHtml += `<br><br><strong>Por que concentrada:</strong> ${preset.concNote}`;
+      }
+      prepBox.innerHTML = prepHtml;
+    }
+    prepBox.style.display = 'block';
+
+    let fieldsHtml = '';
+    if(preset.perKg){
+      fieldsHtml += `<div class="field"><label for="drugPeso">Peso (kg)</label><input type="number" step="any" id="drugPeso" placeholder="ex: 70"></div>`;
+    }
+    fieldsHtml += `<div class="field"><label for="drugDose">Dose (${preset.unit})</label><input type="number" step="any" id="drugDose" placeholder="ex: valor dentro da faixa"></div>`;
+    drugCalcFields.innerHTML = fieldsHtml;
+
+    document.getElementById('drugDose').addEventListener('input', computeDrugResult);
+    if(preset.perKg){
+      document.getElementById('drugPeso').addEventListener('input', computeDrugResult);
+    }
+    computeDrugResult();
+  }
+
+  function computeDrugResult(){
+    const preset = getPreset(drugSelect.value);
+    const dose = parseFloat(document.getElementById('drugDose').value);
+    const peso = preset.perKg ? parseFloat(document.getElementById('drugPeso').value) : 1;
+
+    if(isNaN(dose) || (preset.perKg && isNaN(peso))){
+      drugResultValue.textContent = '— mL/h';
+      return;
+    }
+
+    // normaliza tudo para mcg (ou UI) por minuto, depois converte pra mL/h
+    let doseNormalized = dose;
+    let timeFactor = 1; // multiplicador para levar a dose "por min" -> "por hora" quando aplicável
+
+    if(preset.unit === 'mcg/kg/min' || preset.unit === 'mcg/min'){
+      timeFactor = 60; // dose é por minuto, vazão é por hora
+    } else if(preset.unit === 'UI/min'){
+      timeFactor = 60;
+    } else if(preset.unit === 'mcg/kg/h'){
+      timeFactor = 1;
+    } else if(preset.unit === 'mg/kg/h'){
+      doseNormalized = dose * 1000; // mg -> mcg
+      timeFactor = 1;
+    }
+
+    let numerator = doseNormalized * timeFactor;
+    if(preset.perKg) numerator *= peso;
+
+    const vazao = numerator / preset.conc;
+    drugResultValue.textContent = (isFinite(vazao) ? vazao.toFixed(2) : '—') + ' mL/h';
+  }
+
+  drugSelect.addEventListener('change', renderDrugFields);
+  renderDrugFields();
+
+  // CALCULADORA DE PESO IDEAL (PCI) — Fórmula de Devine
+  const pciSexo = document.getElementById('pciSexo');
+  const pciAltura = document.getElementById('pciAltura');
+  const pciValue = document.getElementById('pciValue');
+  const pciUseBtn = document.getElementById('pciUseBtn');
+  let lastPCI = null;
+
+  function computePCI(){
+    const alturaCm = parseFloat(pciAltura.value);
+    if(isNaN(alturaCm) || alturaCm <= 0){
+      pciValue.textContent = '— kg';
+      lastPCI = null;
+      return;
+    }
+    const alturaIn = alturaCm / 2.54;
+    const base = pciSexo.value === 'M' ? 50 : 45.5;
+    let pci = base + 2.3 * (alturaIn - 60);
+    if(pci < 0) pci = 0;
+    lastPCI = pci;
+    pciValue.textContent = pci.toFixed(1) + ' kg';
+  }
+
+  pciSexo.addEventListener('change', computePCI);
+  pciAltura.addEventListener('input', computePCI);
+
+  pciUseBtn.addEventListener('click', ()=>{
+    if(lastPCI === null) return;
+    const preset = getPreset(drugSelect.value);
+    if(preset.perKg){
+      const pesoField = document.getElementById('drugPeso');
+      if(pesoField){
+        pesoField.value = lastPCI.toFixed(1);
+        computeDrugResult();
+      }
+    }
+  });
 
   // CALCULADORA DE TROMBOLÍTICOS
   const tromboBtns = document.querySelectorAll('.trombo-btn');
