@@ -382,6 +382,105 @@
     font-size:12.5px;
   }
 
+  /* IOT SCENARIO */
+  .step-block{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:22px;
+    margin-bottom:16px;
+  }
+  .step-block.dimmed{opacity:.45; pointer-events:none;}
+  .step-title{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:14px;
+  }
+  .step-num{
+    flex:0 0 auto;
+    width:26px; height:26px;
+    border-radius:50%;
+    background:var(--terracotta);
+    color:#fff;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Lora', serif;
+    font-weight:700;
+    font-size:13px;
+  }
+  .step-title h3{font-size:16.5px; font-weight:700;}
+  .option-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(150px,1fr));
+    gap:10px;
+    margin-bottom:14px;
+  }
+  .option-card{
+    border:2px solid var(--line);
+    background:var(--cream-2);
+    border-radius:10px;
+    padding:12px 14px;
+    cursor:pointer;
+    transition:all .15s ease;
+    text-align:left;
+    font-family:'Source Sans 3', sans-serif;
+  }
+  .option-card:hover{border-color:var(--terracotta);}
+  .option-card.selected{
+    border-color:var(--terracotta-deep);
+    background:#EAF4EA;
+  }
+  .option-card .opt-title{font-weight:700; font-size:14.5px; color:var(--ink);}
+  .option-card .opt-sub{font-size:12.5px; color:var(--ink-soft); margin-top:3px;}
+  .inline-check{
+    display:flex; align-items:center; gap:8px;
+    font-size:14px;
+    margin-top:6px;
+    cursor:pointer;
+  }
+  .inline-check input{width:16px; height:16px; accent-color:var(--terracotta-deep); cursor:pointer;}
+  .dose-output{
+    background:linear-gradient(135deg, var(--sage) 0%, var(--sage-deep) 100%);
+    color:#fff;
+    border-radius:10px;
+    padding:14px 16px;
+    margin-top:8px;
+  }
+  .dose-output .d-label{font-size:12.5px; font-weight:600; opacity:.9; text-transform:uppercase; letter-spacing:.03em;}
+  .dose-output .d-value{font-family:'Lora', serif; font-size:22px; font-weight:700; margin-top:3px;}
+  .dose-output .d-sub{font-size:12.5px; opacity:.9; margin-top:4px;}
+
+  .summary-card{
+    background:linear-gradient(155deg, var(--terracotta) 0%, var(--terracotta-deep) 100%);
+    color:#fff;
+    border-radius:16px;
+    padding:26px;
+    margin-top:8px;
+  }
+  .summary-card h3{color:#fff; font-size:19px; margin-bottom:16px;}
+  .summary-item{
+    background:rgba(255,255,255,0.14);
+    border:1px solid rgba(255,255,255,0.25);
+    border-radius:10px;
+    padding:12px 16px;
+    margin-bottom:10px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:6px;
+  }
+  .summary-item .si-label{font-size:13.5px; font-weight:600;}
+  .summary-item .si-value{font-family:'Lora', serif; font-size:18px; font-weight:700;}
+  .summary-empty{
+    background:rgba(255,255,255,0.1);
+    border-radius:10px;
+    padding:16px;
+    font-size:14px;
+    text-align:center;
+    opacity:.9;
+  }
+
   @media (max-width:600px){
     header.hero h1{font-size:28px;}
     .drug-head{flex-direction:column; align-items:flex-start;}
@@ -408,6 +507,7 @@
     <button class="tab-btn" data-panel="inotropicos">Inotrópicos</button>
     <button class="tab-btn" data-panel="vasodilat">Vasodilatadores</button>
     <button class="tab-btn" data-panel="trombolise">Trombólise (AVCi)</button>
+    <button class="tab-btn" data-panel="iot">IOT — Sequência</button>
   </div>
 </nav>
 
@@ -954,6 +1054,125 @@
     </div>
   </section>
 
+  <!-- IOT SCENARIO -->
+  <section class="panel" id="iot">
+    <div class="section-head">
+      <h2>Intubação Orotraqueal — Passo a Passo</h2>
+      <div class="sub">Clique nas opções na ordem — as doses são calculadas automaticamente conforme você avança.</div>
+    </div>
+
+    <div class="note">Ferramenta de apoio à decisão rápida. Sempre use o julgamento clínico e os protocolos do seu serviço.</div>
+
+    <!-- STEP 1 -->
+    <div class="step-block">
+      <div class="step-title"><div class="step-num">1</div><h3>Tipo de sequência</h3></div>
+      <div class="option-grid" id="iotTypeOptions">
+        <div class="option-card selected" data-type="sr">
+          <div class="opt-title">Sequência Rápida (IOTSR)</div>
+          <div class="opt-sub">Risco de aspiração / estômago cheio — sem ventilação sob máscara entre indução e IOT</div>
+        </div>
+        <div class="option-card" data-type="sc">
+          <div class="opt-title">Sequência Convencional (IOTSC)</div>
+          <div class="opt-sub">Eletiva — permite testar ventilação sob máscara antes do BNM</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 2 -->
+    <div class="step-block">
+      <div class="step-title"><div class="step-num">2</div><h3>Peso do paciente</h3></div>
+      <div class="calc-grid" style="margin-bottom:10px;">
+        <div class="field">
+          <label for="iotPeso">Peso a usar (kg)</label>
+          <input type="number" step="any" id="iotPeso" placeholder="ex: 70">
+        </div>
+      </div>
+      <details>
+        <summary style="cursor:pointer; font-size:13.5px; font-weight:600; color:var(--terracotta-deep);">Não sei o peso ideal — calcular PCI (Devine)</summary>
+        <div style="background:var(--cream-2); border-radius:10px; padding:14px 16px; margin-top:10px;">
+          <div class="calc-grid" style="margin-bottom:10px;">
+            <div class="field">
+              <label for="iotPciSexo">Sexo</label>
+              <select id="iotPciSexo">
+                <option value="M">Masculino</option>
+                <option value="F">Feminino</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="iotPciAltura">Altura (cm)</label>
+              <input type="number" step="any" id="iotPciAltura" placeholder="ex: 170">
+            </div>
+          </div>
+          <div class="calc-result" style="margin-bottom:10px;">
+            <span class="label">Peso ideal (PCI)</span>
+            <span class="value" id="iotPciValue">— kg</span>
+          </div>
+          <button id="iotPciUseBtn" style="font-family:'Source Sans 3',sans-serif; font-weight:600; font-size:13.5px; border:1px solid var(--line); background:#fff; color:var(--terracotta-deep); padding:8px 14px; border-radius:100px; cursor:pointer;">Usar este peso ↑</button>
+        </div>
+      </details>
+    </div>
+
+    <!-- STEP 3 -->
+    <div class="step-block">
+      <div class="step-title"><div class="step-num">3</div><h3>Droga de indução</h3></div>
+      <div class="option-grid" id="iotInducaoOptions">
+        <div class="option-card selected" data-drug="quetamina">
+          <div class="opt-title">Quetamina</div>
+          <div class="opt-sub">1 a 2 mg/kg EV — estabilidade hemodinâmica</div>
+        </div>
+        <div class="option-card" data-drug="etomidato">
+          <div class="opt-title">Etomidato</div>
+          <div class="opt-sub">0,3 mg/kg — estabilidade hemodinâmica</div>
+        </div>
+        <div class="option-card" data-drug="propofol1">
+          <div class="opt-title">Propofol 1%</div>
+          <div class="opt-sub">1,5 a 2,0 mg/kg — 10 mg/mL</div>
+        </div>
+        <div class="option-card" data-drug="propofol2">
+          <div class="opt-title">Propofol 2%</div>
+          <div class="opt-sub">1,5 a 2,0 mg/kg — 20 mg/mL</div>
+        </div>
+      </div>
+
+      <label class="inline-check">
+        <input type="checkbox" id="iotChoqueCheck">
+        Paciente instável / choque refratário / depleção catecolaminérgica (reduz dose quando aplicável)
+      </label>
+
+      <div class="dose-output" id="iotInducaoResult"></div>
+    </div>
+
+    <!-- STEP 4 (opcional) -->
+    <div class="step-block">
+      <div class="step-title"><div class="step-num">4</div><h3>Pré-medicação opcional</h3></div>
+
+      <label class="inline-check">
+        <input type="checkbox" id="iotFentaCheck">
+        Analgesia prévia com Fentanil (1 a 3 mcg/kg — 50 mcg/mL)
+      </label>
+      <div class="dose-output" id="iotFentaResult" style="display:none;"></div>
+
+      <label class="inline-check" style="margin-top:14px;">
+        <input type="checkbox" id="iotLidoCheck">
+        Lidocaína EV pré-laringoscopia (1,0 a 1,5 mg/kg — 20 mg/mL)
+      </label>
+      <div class="dose-output" id="iotLidoResult" style="display:none;"></div>
+    </div>
+
+    <!-- STEP 5 -->
+    <div class="step-block">
+      <div class="step-title"><div class="step-num">5</div><h3>Bloqueador neuromuscular</h3></div>
+      <div class="option-grid" id="iotBnmOptions"></div>
+      <div class="dose-output" id="iotBnmResult"></div>
+    </div>
+
+    <!-- SUMMARY -->
+    <div class="summary-card">
+      <h3>📋 Resumo da sequência</h3>
+      <div id="iotSummary"></div>
+    </div>
+  </section>
+
 </main>
 
 <footer>
@@ -1236,6 +1455,308 @@
       }
     }
   });
+
+  // ==========================================================
+  // CENÁRIO DE IOT — PASSO A PASSO
+  // ==========================================================
+  const iotState = {
+    type: 'sr',
+    peso: null,
+    inducao: 'quetamina',
+    choque: false,
+    fenta: false,
+    lido: false,
+    bnm: null
+  };
+
+  const INDUCAO_DRUGS = {
+    quetamina: {label:'Quetamina', concMgMl:50, doseLow:1, doseHigh:2, doseLowChoque:0.5, doseHighChoque:1.5, note:'Reduzir 25–50% em choque refratário, depressão miocárdica ou depleção catecolaminérgica.'},
+    etomidato: {label:'Etomidato', concMgMl:20, doseLow:0.3, doseHigh:0.3, note:'Evitar repiques — pode suprimir a adrenal.'},
+    propofol1: {label:'Propofol 1%', concMgMl:10, doseLow:1.5, doseHigh:2.0, note:'Cuidado com hipotensão — atenção redobrada se choque.'},
+    propofol2: {label:'Propofol 2%', concMgMl:20, doseLow:1.5, doseHigh:2.0, note:'Cuidado com hipotensão — atenção redobrada se choque.'}
+  };
+
+  const BNM_DRUGS = {
+    succinilcolina_ev: {label:'Succinilcolina EV', concMgMl:10, doseLow:1.5, doseHigh:1.5, onlyFor:'sr', sub:'1,5 mg/kg EV'},
+    succinilcolina_im: {label:'Succinilcolina IM', concMgMl:10, doseLow:4, doseHigh:4, maxMg:150, onlyFor:'sr', sub:'4,0 mg/kg IM (máx 150 mg)'},
+    rocuronio: {label:'Rocurônio', concMgMl:10, sub:'Dose depende do tipo de sequência (auto)'},
+    cisatracurio: {label:'Cisatracúrio', concMgMl:2, doseLow:0.15, doseHigh:0.2, sub:'0,15 a 0,2 mg/kg EV'}
+  };
+
+  function iotFormatRange(low, high, unit){
+    if(low === high) return `${low} ${unit}`;
+    return `${low} a ${high} ${unit}`;
+  }
+
+  // STEP 1 — tipo de sequência
+  const iotTypeOptions = document.querySelectorAll('#iotTypeOptions .option-card');
+  iotTypeOptions.forEach(card=>{
+    card.addEventListener('click', ()=>{
+      iotTypeOptions.forEach(c=>c.classList.remove('selected'));
+      card.classList.add('selected');
+      iotState.type = card.dataset.type;
+      renderBnmOptions();
+      updateIotAll();
+    });
+  });
+
+  // STEP 2 — peso
+  const iotPeso = document.getElementById('iotPeso');
+  iotPeso.addEventListener('input', ()=>{
+    iotState.peso = parseFloat(iotPeso.value);
+    updateIotAll();
+  });
+
+  const iotPciSexo = document.getElementById('iotPciSexo');
+  const iotPciAltura = document.getElementById('iotPciAltura');
+  const iotPciValue = document.getElementById('iotPciValue');
+  const iotPciUseBtn = document.getElementById('iotPciUseBtn');
+  let iotLastPCI = null;
+
+  function computeIotPCI(){
+    const alturaCm = parseFloat(iotPciAltura.value);
+    if(isNaN(alturaCm) || alturaCm <= 0){
+      iotPciValue.textContent = '— kg';
+      iotLastPCI = null;
+      return;
+    }
+    const alturaIn = alturaCm / 2.54;
+    const base = iotPciSexo.value === 'M' ? 50 : 45.5;
+    let pci = base + 2.3 * (alturaIn - 60);
+    if(pci < 0) pci = 0;
+    iotLastPCI = pci;
+    iotPciValue.textContent = pci.toFixed(1) + ' kg';
+  }
+  iotPciSexo.addEventListener('change', computeIotPCI);
+  iotPciAltura.addEventListener('input', computeIotPCI);
+  iotPciUseBtn.addEventListener('click', ()=>{
+    if(iotLastPCI === null) return;
+    iotPeso.value = iotLastPCI.toFixed(1);
+    iotState.peso = iotLastPCI;
+    updateIotAll();
+  });
+
+  // STEP 3 — indução
+  const iotInducaoOptions = document.querySelectorAll('#iotInducaoOptions .option-card');
+  iotInducaoOptions.forEach(card=>{
+    card.addEventListener('click', ()=>{
+      iotInducaoOptions.forEach(c=>c.classList.remove('selected'));
+      card.classList.add('selected');
+      iotState.inducao = card.dataset.drug;
+      updateIotAll();
+    });
+  });
+
+  const iotChoqueCheck = document.getElementById('iotChoqueCheck');
+  iotChoqueCheck.addEventListener('change', ()=>{
+    iotState.choque = iotChoqueCheck.checked;
+    updateIotAll();
+  });
+
+  function renderInducaoResult(){
+    const el = document.getElementById('iotInducaoResult');
+    const drug = INDUCAO_DRUGS[iotState.inducao];
+    const peso = iotState.peso;
+
+    if(isNaN(peso) || peso === null || !peso){
+      el.innerHTML = `<div class="d-label">${drug.label}</div><div class="d-sub">Informe o peso no passo 2 para calcular.</div>`;
+      return;
+    }
+
+    let low = drug.doseLow, high = drug.doseHigh;
+    let choqueTag = '';
+    if(iotState.choque && drug.doseLowChoque !== undefined){
+      low = drug.doseLowChoque; high = drug.doseHighChoque;
+      choqueTag = ' (dose reduzida — choque/instabilidade)';
+    }
+
+    const doseLowMg = (low * peso).toFixed(1);
+    const doseHighMg = (high * peso).toFixed(1);
+    const mlLow = (low * peso / drug.concMgMl).toFixed(1);
+    const mlHigh = (high * peso / drug.concMgMl).toFixed(1);
+
+    const doseStr = low === high ? `${doseLowMg} mg` : `${doseLowMg} a ${doseHighMg} mg`;
+    const mlStr = low === high ? `${mlLow} mL` : `${mlLow} a ${mlHigh} mL`;
+
+    el.innerHTML = `
+      <div class="d-label">${drug.label}${choqueTag}</div>
+      <div class="d-value">${doseStr}</div>
+      <div class="d-sub">≈ ${mlStr} (ampola ${drug.concMgMl} mg/mL) · ${drug.note}</div>
+    `;
+  }
+
+  // STEP 4 — pré-medicação opcional
+  const iotFentaCheck = document.getElementById('iotFentaCheck');
+  const iotFentaResult = document.getElementById('iotFentaResult');
+  const iotLidoCheck = document.getElementById('iotLidoCheck');
+  const iotLidoResult = document.getElementById('iotLidoResult');
+
+  iotFentaCheck.addEventListener('change', ()=>{
+    iotState.fenta = iotFentaCheck.checked;
+    iotFentaResult.style.display = iotState.fenta ? 'block' : 'none';
+    updateIotAll();
+  });
+  iotLidoCheck.addEventListener('change', ()=>{
+    iotState.lido = iotLidoCheck.checked;
+    iotLidoResult.style.display = iotState.lido ? 'block' : 'none';
+    updateIotAll();
+  });
+
+  function renderPreMedResults(){
+    const peso = iotState.peso;
+    if(iotState.fenta){
+      if(!peso){
+        iotFentaResult.innerHTML = `<div class="d-label">Fentanil</div><div class="d-sub">Informe o peso no passo 2.</div>`;
+      } else {
+        const doseLow = (1 * peso).toFixed(1);
+        const doseHigh = (3 * peso).toFixed(1);
+        const mlLow = (1 * peso / 50).toFixed(2);
+        const mlHigh = (3 * peso / 50).toFixed(2);
+        iotFentaResult.innerHTML = `<div class="d-label">Fentanil</div><div class="d-value">${doseLow} a ${doseHigh} mcg</div><div class="d-sub">≈ ${mlLow} a ${mlHigh} mL (50 mcg/mL)</div>`;
+      }
+    }
+    if(iotState.lido){
+      if(!peso){
+        iotLidoResult.innerHTML = `<div class="d-label">Lidocaína EV</div><div class="d-sub">Informe o peso no passo 2.</div>`;
+      } else {
+        const doseLow = (1.0 * peso).toFixed(1);
+        const doseHigh = (1.5 * peso).toFixed(1);
+        const mlLow = (1.0 * peso / 20).toFixed(2);
+        const mlHigh = (1.5 * peso / 20).toFixed(2);
+        iotLidoResult.innerHTML = `<div class="d-label">Lidocaína EV (2%)</div><div class="d-value">${doseLow} a ${doseHigh} mg</div><div class="d-sub">≈ ${mlLow} a ${mlHigh} mL (20 mg/mL)</div>`;
+      }
+    }
+  }
+
+  // STEP 5 — BNM
+  const iotBnmOptionsEl = document.getElementById('iotBnmOptions');
+
+  function renderBnmOptions(){
+    const availableKeys = Object.keys(BNM_DRUGS).filter(k=>{
+      const d = BNM_DRUGS[k];
+      return !d.onlyFor || d.onlyFor === iotState.type;
+    });
+
+    if(!iotState.bnm || !availableKeys.includes(iotState.bnm)){
+      iotState.bnm = availableKeys.includes('rocuronio') ? 'rocuronio' : availableKeys[0];
+    }
+
+    iotBnmOptionsEl.innerHTML = availableKeys.map(k=>{
+      const d = BNM_DRUGS[k];
+      const sel = k === iotState.bnm ? 'selected' : '';
+      return `<div class="option-card ${sel}" data-bnm="${k}"><div class="opt-title">${d.label}</div><div class="opt-sub">${d.sub}</div></div>`;
+    }).join('');
+
+    iotBnmOptionsEl.querySelectorAll('.option-card').forEach(card=>{
+      card.addEventListener('click', ()=>{
+        iotBnmOptionsEl.querySelectorAll('.option-card').forEach(c=>c.classList.remove('selected'));
+        card.classList.add('selected');
+        iotState.bnm = card.dataset.bnm;
+        updateIotAll();
+      });
+    });
+  }
+
+  function renderBnmResult(){
+    const el = document.getElementById('iotBnmResult');
+    const drug = BNM_DRUGS[iotState.bnm];
+    const peso = iotState.peso;
+
+    if(isNaN(peso) || peso === null || !peso){
+      el.innerHTML = `<div class="d-label">${drug.label}</div><div class="d-sub">Informe o peso no passo 2 para calcular.</div>`;
+      return;
+    }
+
+    let low, high;
+    if(iotState.bnm === 'rocuronio'){
+      const doseKg = iotState.type === 'sr' ? 1.2 : 0.6;
+      low = high = doseKg;
+    } else {
+      low = drug.doseLow; high = drug.doseHigh;
+    }
+
+    let doseLowMg = low * peso;
+    let doseHighMg = high * peso;
+    let maxNote = '';
+    if(drug.maxMg){
+      if(doseLowMg > drug.maxMg){ doseLowMg = drug.maxMg; maxNote = ` (dose máxima de ${drug.maxMg} mg atingida)`; }
+      if(doseHighMg > drug.maxMg){ doseHighMg = drug.maxMg; }
+    }
+
+    const mlLow = (doseLowMg / drug.concMgMl).toFixed(1);
+    const mlHigh = (doseHighMg / drug.concMgMl).toFixed(1);
+
+    const doseStr = low === high ? `${doseLowMg.toFixed(1)} mg` : `${doseLowMg.toFixed(1)} a ${doseHighMg.toFixed(1)} mg`;
+    const mlStr = low === high ? `${mlLow} mL` : `${mlLow} a ${mlHigh} mL`;
+
+    el.innerHTML = `
+      <div class="d-label">${drug.label}${iotState.bnm==='rocuronio' ? (iotState.type==='sr' ? ' — dose IOTSR' : ' — dose IOTSC') : ''}</div>
+      <div class="d-value">${doseStr}${maxNote}</div>
+      <div class="d-sub">≈ ${mlStr} (ampola ${drug.concMgMl} mg/mL)</div>
+    `;
+  }
+
+  // RESUMO FINAL
+  function renderIotSummary(){
+    const el = document.getElementById('iotSummary');
+    const peso = iotState.peso;
+
+    if(!peso){
+      el.innerHTML = `<div class="summary-empty">Informe o peso do paciente para gerar o resumo da sequência.</div>`;
+      return;
+    }
+
+    const drug = INDUCAO_DRUGS[iotState.inducao];
+    let indLow = drug.doseLow, indHigh = drug.doseHigh;
+    if(iotState.choque && drug.doseLowChoque !== undefined){
+      indLow = drug.doseLowChoque; indHigh = drug.doseHighChoque;
+    }
+    const indDoseStr = indLow === indHigh ? `${(indLow*peso).toFixed(1)} mg` : `${(indLow*peso).toFixed(1)}–${(indHigh*peso).toFixed(1)} mg`;
+
+    const bnmDrug = BNM_DRUGS[iotState.bnm];
+    let bnmLow, bnmHigh;
+    if(iotState.bnm === 'rocuronio'){
+      const doseKg = iotState.type === 'sr' ? 1.2 : 0.6;
+      bnmLow = bnmHigh = doseKg;
+    } else {
+      bnmLow = bnmDrug.doseLow; bnmHigh = bnmDrug.doseHigh;
+    }
+    let bnmLowMg = bnmLow*peso, bnmHighMg = bnmHigh*peso;
+    if(bnmDrug.maxMg){
+      bnmLowMg = Math.min(bnmLowMg, bnmDrug.maxMg);
+      bnmHighMg = Math.min(bnmHighMg, bnmDrug.maxMg);
+    }
+    const bnmDoseStr = bnmLow === bnmHigh ? `${bnmLowMg.toFixed(1)} mg` : `${bnmLowMg.toFixed(1)}–${bnmHighMg.toFixed(1)} mg`;
+
+    let html = '';
+    html += `<div class="summary-item"><span class="si-label">Tipo de sequência</span><span class="si-value">${iotState.type === 'sr' ? 'IOTSR' : 'IOTSC'}</span></div>`;
+    html += `<div class="summary-item"><span class="si-label">Peso usado</span><span class="si-value">${peso} kg</span></div>`;
+
+    if(iotState.fenta){
+      const fLow=(1*peso).toFixed(1), fHigh=(3*peso).toFixed(1);
+      html += `<div class="summary-item"><span class="si-label">1. Pré-analgesia — Fentanil</span><span class="si-value">${fLow}–${fHigh} mcg</span></div>`;
+    }
+    if(iotState.lido){
+      const lLow=(1.0*peso).toFixed(1), lHigh=(1.5*peso).toFixed(1);
+      html += `<div class="summary-item"><span class="si-label">${iotState.fenta?'2':'1'}. Lidocaína pré-laringoscopia</span><span class="si-value">${lLow}–${lHigh} mg</span></div>`;
+    }
+    const stepOffset = (iotState.fenta?1:0) + (iotState.lido?1:0);
+    html += `<div class="summary-item"><span class="si-label">${stepOffset+1}. Indução — ${drug.label}</span><span class="si-value">${indDoseStr}</span></div>`;
+    html += `<div class="summary-item"><span class="si-label">${stepOffset+2}. Bloqueio neuromuscular — ${bnmDrug.label}</span><span class="si-value">${bnmDoseStr}</span></div>`;
+    html += `<div class="summary-item"><span class="si-label">${stepOffset+3}. Laringoscopia e intubação</span><span class="si-value">Confirmar tubo (capnografia/ausculta)</span></div>`;
+
+    el.innerHTML = html;
+  }
+
+  function updateIotAll(){
+    renderInducaoResult();
+    renderPreMedResults();
+    renderBnmResult();
+    renderIotSummary();
+  }
+
+  renderBnmOptions();
+  updateIotAll();
 
   // CALCULADORA DE TROMBOLÍTICOS
   const tromboBtns = document.querySelectorAll('.trombo-btn');
