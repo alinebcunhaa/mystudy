@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inventário Breve de Dor · Pré-avaliação</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;0,700;1,500&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cream:#F4F1EA; --cream-2:#ECE7DC; --ink:#2E2A24; --ink-soft:#5B564C;
+  --terracotta:#C1694F; --terracotta-dark:#A2543D; --sage:#8A9A7E; --sage-dark:#6F7F64;
+  --amarelo:#E3B23C; --vermelho:#C63C3C; --line:#DAD3C4; --white:#FFFDF9;
+  --radius:14px; --shadow: 0 2px 10px rgba(46,42,36,0.06);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{background:var(--cream); color:var(--ink); font-family:'Source Sans 3', sans-serif; line-height:1.5; padding-bottom:80px;}
+.wrap{max-width:980px;margin:0 auto;padding:0 20px;}
+.hidden{display:none !important;}
+
+header.top{
+  background:linear-gradient(135deg,var(--terracotta) 0%, var(--terracotta-dark) 55%, var(--sage-dark) 100%);
+  color:var(--white); padding:34px 0 26px; position:relative; overflow:hidden;
+}
+header.top::after{content:"";position:absolute;right:-60px;top:-60px;width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,0.08);}
+header.top .eyebrow{font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;opacity:.85;font-weight:600;margin-bottom:8px;}
+header.top h1{font-family:'Lora', serif;font-weight:700;font-size:clamp(24px,4vw,34px);margin:0 0 6px;}
+header.top p.sub{margin:0;opacity:.92;font-size:14.5px;max-width:560px;}
+.topbar-row{display:flex; justify-content:space-between; align-items:flex-start; gap:16px; flex-wrap:wrap;}
+.topbar-right{display:flex; flex-direction:column; align-items:flex-end; gap:8px;}
+.chip{background:rgba(255,255,255,0.16); border:1px solid rgba(255,255,255,0.35); padding:7px 14px; border-radius:999px; font-size:13px; font-weight:600;}
+.link-btn{background:none;border:none;color:white;opacity:.9;font-size:12.5px;text-decoration:underline;cursor:pointer;padding:0;font-family:inherit;}
+
+.auth-shell{max-width:560px;margin:40px auto;padding:0 20px;}
+.card{background:var(--white); border-radius:var(--radius); border:1px solid var(--line); box-shadow:var(--shadow); padding:30px 28px; margin-bottom:18px;}
+.card h2{font-family:'Lora',serif; color:var(--terracotta-dark); margin:0 0 6px; font-size:21px;}
+.card p.hint{color:var(--ink-soft); font-size:14px; margin:0 0 18px;}
+.field{margin-bottom:14px;}
+.field label{display:block; font-size:13px; font-weight:600; margin-bottom:5px;}
+.field input{width:100%; padding:11px 13px; border-radius:9px; border:1.5px solid var(--line); font-family:inherit; font-size:15px; background:var(--cream);}
+.field input:focus{outline:none; border-color:var(--terracotta);}
+.field input.code-input{letter-spacing:.12em; font-weight:700; text-transform:uppercase;}
+.btn-full{width:100%;}
+.tab-switch{display:flex; gap:8px; margin-bottom:20px;}
+.tab-switch button{flex:1; padding:10px; border-radius:9px; border:1.5px solid var(--line); background:var(--cream); font-weight:600; font-size:13.5px; cursor:pointer; color:var(--ink-soft);}
+.tab-switch button.active{background:var(--terracotta); color:white; border-color:var(--terracotta-dark);}
+.error-msg{color:var(--vermelho); font-size:13.5px; margin-top:8px; font-weight:600;}
+.code-reveal{background:var(--cream-2); border:1.5px dashed var(--sage-dark); border-radius:12px; padding:20px; text-align:center; margin:10px 0 18px;}
+.code-reveal .code-big{font-family:'Lora', serif; font-size:30px; font-weight:700; letter-spacing:.1em; color:var(--terracotta-dark); margin:6px 0 10px;}
+.mode-select-grid{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:8px;}
+@media (max-width:560px){.mode-select-grid{grid-template-columns:1fr;}}
+.mode-card{background:var(--white); border:1.5px solid var(--line); border-radius:var(--radius); padding:26px 20px; text-align:center; cursor:pointer; transition:.15s; box-shadow:var(--shadow);}
+.mode-card:hover{border-color:var(--terracotta); transform:translateY(-2px);}
+.mode-card .emoji{font-size:32px; margin-bottom:10px; display:block;}
+.mode-card h3{font-family:'Lora',serif; margin:0 0 6px; font-size:18px; color:var(--ink);}
+.mode-card p{margin:0; color:var(--ink-soft); font-size:13.5px;}
+.config-note{background:#FBF3E4; border:1px solid #E9D6A8; color:#7A5B15; font-size:12.5px; padding:10px 14px; border-radius:9px; margin-top:16px;}
+
+section{background:var(--white); border-radius:var(--radius); padding:26px 28px; margin-top:22px; box-shadow:var(--shadow); border:1px solid var(--line);}
+section h2{font-family:'Lora', serif; font-size:20px; margin:0 0 4px; color:var(--terracotta-dark); display:flex; align-items:center; gap:10px;}
+section h2 .num{font-family:'Source Sans 3'; font-size:12px; font-weight:700; background:var(--sage); color:white; border-radius:50%; width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center; flex:none;}
+section .desc{color:var(--ink-soft); font-size:14.5px; margin:2px 0 18px;}
+.readonly-badge{display:inline-flex; align-items:center; gap:6px; background:#EFEDE7; color:var(--ink-soft); font-size:12px; font-weight:700; padding:5px 11px; border-radius:999px; margin-bottom:16px;}
+
+.yn{display:flex; gap:22px; align-items:center;}
+.yn label{display:flex; align-items:center; gap:7px; font-size:15px; cursor:pointer;}
+.yn input{width:18px;height:18px; accent-color:var(--terracotta);}
+
+.map-toolbar{display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-bottom:16px;}
+.mode-btn{border:1.5px solid var(--line); background:var(--cream); color:var(--ink); padding:9px 15px; border-radius:999px; font-size:13.5px; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:8px; transition:.15s;}
+.mode-btn .swatch{width:13px;height:13px;border-radius:4px; display:inline-block; border:1px solid rgba(0,0,0,.15);}
+.mode-btn.active{border-color:var(--terracotta); background:#FBEEE9; color:var(--terracotta-dark);}
+.mode-btn.active.mode-clear{border-color:var(--ink-soft); background:#EFEDE7; color:var(--ink);}
+.legend-note{font-size:12.5px; color:var(--ink-soft); margin-left:auto;}
+
+.maps-grid{display:grid; grid-template-columns:1fr 1fr; gap:24px;}
+@media (max-width:640px){.maps-grid{grid-template-columns:1fr;}}
+.map-card{text-align:center;}
+.map-card h3{font-size:13.5px; font-weight:700; letter-spacing:.03em; text-transform:uppercase; color:var(--ink-soft); margin:0 0 8px;}
+.map-card svg{width:100%; height:auto; max-width:280px; touch-action:manipulation;}
+.body-zone{fill:#EFE9DC; stroke:#C9BFA8; stroke-width:1.4; cursor:pointer; transition:fill .12s ease;}
+.body-zone:hover{stroke:var(--terracotta-dark); stroke-width:2;}
+.body-zone.pain-mild{fill:var(--amarelo);}
+.body-zone.pain-severe{fill:var(--vermelho);}
+.readonly .body-zone{cursor:default;}
+.readonly .body-zone:hover{stroke:#C9BFA8; stroke-width:1.4;}
+.worst-x{font-family:'Source Sans 3'; font-weight:800; font-size:20px; fill:var(--ink); pointer-events:none; text-anchor:middle; dominant-baseline:central; paint-order:stroke; stroke:white; stroke-width:3px;}
+.silhouette-outline{fill:none; stroke:#B7AC93; stroke-width:1.2;}
+
+.scale-block{margin-bottom:20px;}
+.scale-block:last-child{margin-bottom:0;}
+.scale-block .scale-label{font-weight:600; font-size:14.5px; margin-bottom:8px; display:block;}
+.numline{display:flex; align-items:center; gap:8px; flex-wrap:nowrap; overflow-x:auto; padding:2px 0;}
+.numline .endcap{font-size:11.5px; color:var(--ink-soft); white-space:nowrap; flex:none;}
+.numline .nums{display:flex; gap:6px; flex:none;}
+.num-btn{width:30px;height:30px;border-radius:50%; border:1.5px solid var(--line); background:var(--cream); font-size:13px; font-weight:600; color:var(--ink); cursor:pointer; display:flex; align-items:center; justify-content:center; flex:none; transition:.12s;}
+.num-btn:hover{border-color:var(--terracotta);}
+.num-btn.selected{background:var(--terracotta); border-color:var(--terracotta-dark); color:white;}
+.readonly .num-btn{cursor:default;}
+.readonly .num-btn:hover{border-color:var(--line);}
+
+table.dyn{width:100%; border-collapse:collapse; margin-bottom:12px;}
+table.dyn th{text-align:left; font-size:12px; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-soft); padding:0 8px 8px; border-bottom:2px solid var(--line);}
+table.dyn td{padding:6px 8px; border-bottom:1px solid var(--line); vertical-align:top;}
+table.dyn input, table.dyn textarea{width:100%; border:1px solid var(--line); border-radius:7px; padding:7px 9px; font-family:inherit; font-size:14px; background:var(--cream); resize:vertical;}
+table.dyn textarea{min-height:38px;}
+table.dyn input:disabled, table.dyn textarea:disabled{background:var(--cream-2); color:var(--ink);}
+.row-del{border:none; background:none; color:var(--terracotta-dark); cursor:pointer; font-size:18px; line-height:1; padding:4px 6px;}
+.add-row-btn{border:1.5px dashed var(--sage-dark); background:transparent; color:var(--sage-dark); padding:9px 16px; border-radius:9px; font-weight:600; font-size:13.5px; cursor:pointer;}
+.add-row-btn:hover{background:#F1F4EE;}
+
+.actions-bar{position:sticky; bottom:0; left:0; right:0; background:rgba(244,241,234,0.94); backdrop-filter:blur(6px); border-top:1px solid var(--line); padding:14px 20px; margin-top:26px; display:flex; justify-content:center; gap:12px; flex-wrap:wrap;}
+.btn{padding:12px 22px; border-radius:999px; border:none; font-weight:700; font-size:14.5px; cursor:pointer; font-family:inherit;}
+.btn-primary{background:var(--terracotta); color:white;}
+.btn-primary:hover{background:var(--terracotta-dark);}
+.btn-ghost{background:transparent; border:1.5px solid var(--line); color:var(--ink);}
+.btn-ghost:hover{border-color:var(--ink-soft);}
+.save-msg{text-align:center; font-size:12.5px; color:var(--sage-dark); font-weight:600; height:16px; margin-top:6px;}
+
+.mod-table{width:100%; border-collapse:collapse; margin-top:14px;}
+.mod-table th{text-align:left; font-size:12px; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-soft); padding:8px; border-bottom:2px solid var(--line);}
+.mod-table td{padding:11px 8px; border-bottom:1px solid var(--line); font-size:14.5px;}
+.mod-table tr.patient-row{cursor:pointer;}
+.mod-table tr.patient-row:hover{background:var(--cream);}
+.mod-table td.iniciais{font-weight:700; color:var(--terracotta-dark);}
+.mod-table .code-tag{font-family:monospace; font-size:12.5px; background:var(--cream-2); padding:2px 7px; border-radius:5px;}
+.empty-note{color:var(--ink-soft); font-size:14px; text-align:center; padding:24px 0;}
+
+@media print{
+  body{background:white; padding:0;}
+  header.top{background:var(--terracotta) !important; -webkit-print-color-adjust:exact; print-color-adjust:exact;}
+  .map-toolbar, .actions-bar, .add-row-btn, .row-del, .topbar-right{display:none !important;}
+  section{box-shadow:none; break-inside:avoid; border:1px solid #ccc;}
+  .num-btn{border:1px solid #999;}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="topbar-row">
+      <div>
+        <div class="eyebrow">Pré-avaliação · antes da consulta</div>
+        <h1>Inventário Breve de Dor</h1>
+        <p class="sub" id="header-sub">Toque no corpo para marcar onde você sente dor — isso ajuda muito na avaliação.</p>
+      </div>
+      <div class="topbar-right" id="topbar-right"></div>
+    </div>
+  </div>
+</header>
+
+<div class="auth-shell" id="screen-select">
+  <div class="mode-select-grid">
+    <div class="mode-card" id="pick-patient">
+      <span class="emoji">🧍</span>
+      <h3>Sou paciente</h3>
+      <p>Preencher meu inventário de dor antes da consulta.</p>
+    </div>
+    <div class="mode-card" id="pick-moderator">
+      <span class="emoji">🩺</span>
+      <h3>Sou profissional</h3>
+      <p>Acessar os inventários preenchidos pelos pacientes.</p>
+    </div>
+  </div>
+  <div class="config-note hidden" id="config-note">
+    Sincronização em nuvem ainda não configurada — os dados ficam salvos apenas neste navegador. Veja <code>supabase-setup.sql</code> para ativar o acesso pelo código em qualquer aparelho.
+  </div>
+</div>
+
+<div class="auth-shell hidden" id="screen-patient-auth">
+  <div class="tab-switch">
+    <button id="tab-new" class="active">Primeira vez aqui</button>
+    <button id="tab-resume">Já tenho meu código</button>
+  </div>
+
+  <div class="card" id="card-new-patient">
+    <h2>Criar meu acesso</h2>
+    <p class="hint">Suas iniciais e data de nascimento ajudam sua médica a te identificar na lista — nenhum outro dado pessoal é necessário.</p>
+    <div class="field"><label>Suas iniciais</label><input type="text" id="new-iniciais" placeholder="Ex: A.B.C."></div>
+    <div class="field"><label>Data de nascimento</label><input type="date" id="new-nascimento"></div>
+    <button class="btn btn-primary btn-full" id="btn-new-patient">Criar meu código de acesso</button>
+    <div class="error-msg hidden" id="new-error"></div>
+  </div>
+
+  <div class="card hidden" id="card-code-reveal">
+    <h2>Pronto! Guarde seu código</h2>
+    <p class="hint">Você vai precisar dele para continuar respondendo depois, e sua médica vai usá-lo para localizar suas respostas.</p>
+    <div class="code-reveal">
+      <div style="font-size:12.5px;color:var(--ink-soft);">SEU CÓDIGO</div>
+      <div class="code-big" id="code-big-display">------</div>
+    </div>
+    <button class="btn btn-primary btn-full" id="btn-continue-to-form">Continuar para o formulário</button>
+  </div>
+
+  <div class="card hidden" id="card-resume-patient">
+    <h2>Já tenho meu código</h2>
+    <p class="hint">Digite o código que você recebeu para continuar de onde parou.</p>
+    <div class="field"><label>Código de acesso</label><input type="text" id="resume-code" class="code-input" placeholder="XXXX-XXXX"></div>
+    <button class="btn btn-primary btn-full" id="btn-resume-patient">Acessar meu formulário</button>
+    <div class="error-msg hidden" id="resume-error"></div>
+  </div>
+
+  <button class="link-btn" style="color:var(--ink-soft); margin-top:4px;" id="back-from-patient-auth">← Voltar</button>
+</div>
+
+<div class="auth-shell hidden" id="screen-mod-auth">
+  <div class="card">
+    <h2>Acesso profissional</h2>
+    <p class="hint">Digite sua senha de moderadora para ver a lista de pacientes.</p>
+    <div class="field"><label>Senha</label><input type="password" id="mod-senha"></div>
+    <button class="btn btn-primary btn-full" id="btn-mod-login">Entrar</button>
+    <div class="error-msg hidden" id="mod-error"></div>
+  </div>
+  <button class="link-btn" style="color:var(--ink-soft);" id="back-from-mod-auth">← Voltar</button>
+</div>
+
+<div class="wrap hidden" id="screen-mod-list">
+  <section>
+    <h2><span class="num">☰</span>Pacientes</h2>
+    <p class="desc">Toque em um paciente para abrir o inventário preenchido.</p>
+    <table class="mod-table" id="mod-table">
+      <thead><tr><th>Iniciais</th><th>Nascimento</th><th>Código</th><th>Última atualização</th></tr></thead>
+      <tbody id="mod-table-body"></tbody>
+    </table>
+    <div class="empty-note hidden" id="mod-empty">Nenhum paciente cadastrado ainda.</div>
+  </section>
+</div>
+
+<div class="wrap hidden" id="main-content">
+
+  <section id="readonly-flag-section" class="hidden">
+    <span class="readonly-badge">🔒 Somente leitura — visão da moderadora</span>
+  </section>
+
+  <section>
+    <h2><span class="num">1</span>Dor atual</h2>
+    <p class="desc">Todos temos alguma dor em algum momento da vida (dor de cabeça, contusões, dor de dente, por exemplo). Atualmente, você tem sentido alguma dor <strong>distinta</strong> dessas dores comuns?</p>
+    <div class="yn">
+      <label><input type="radio" name="dor-distinta" value="sim">Sim</label>
+      <label><input type="radio" name="dor-distinta" value="nao">Não</label>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">2</span>Onde você sente dor?</h2>
+    <p class="desc">Toque nas áreas do corpo onde sente dor. Escolha um modo abaixo e depois toque na região — toque novamente para apagar.</p>
+    <div class="map-toolbar" id="map-toolbar">
+      <button class="mode-btn active" data-mode="mild"><span class="swatch" style="background:var(--amarelo)"></span>Dor leve/moderada</button>
+      <button class="mode-btn" data-mode="severe"><span class="swatch" style="background:var(--vermelho)"></span>Dor intensa</button>
+      <button class="mode-btn" data-mode="worst"><span class="swatch" style="background:transparent;border-color:var(--ink)">✕</span>Ponto de dor mais forte</button>
+      <button class="mode-btn mode-clear" data-mode="erase"><span class="swatch" style="background:#EFE9DC"></span>Apagar</button>
+      <span class="legend-note">Toque de novo na mesma área para desfazer</span>
+    </div>
+    <div class="maps-grid">
+      <div class="map-card"><h3>Frente</h3><svg id="svg-front" viewBox="0 0 220 470" xmlns="http://www.w3.org/2000/svg"></svg></div>
+      <div class="map-card"><h3>Costas</h3><svg id="svg-back" viewBox="0 0 220 470" xmlns="http://www.w3.org/2000/svg"></svg></div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">3</span>Intensidade da dor</h2>
+    <p class="desc">Toque no número que melhor descreve cada situação, de 0 (sem dor) a 10 (pior dor possível).</p>
+    <div id="scales-intensidade"></div>
+  </section>
+
+  <section>
+    <h2><span class="num">4</span>Tratamentos e medicações atuais</h2>
+    <p class="desc">Quais tratamentos ou medicações você está recebendo para a dor?</p>
+    <table class="dyn" id="tbl-medicacoes">
+      <thead><tr><th style="width:38%">Nome</th><th style="width:30%">Dose / Frequência</th><th style="width:24%">Data de início</th><th></th></tr></thead>
+      <tbody></tbody>
+    </table>
+    <button class="add-row-btn" data-target="medicacoes">+ Adicionar medicação</button>
+  </section>
+
+  <section>
+    <h2><span class="num">5</span>Exames já realizados</h2>
+    <p class="desc">Liste exames relacionados à sua dor que você já fez (imagem, laboratório, etc.) e o resultado, se souber.</p>
+    <table class="dyn" id="tbl-exames">
+      <thead><tr><th style="width:30%">Exame</th><th style="width:18%">Data</th><th style="width:44%">Resultado / observações</th><th></th></tr></thead>
+      <tbody></tbody>
+    </table>
+    <button class="add-row-btn" data-target="exames">+ Adicionar exame</button>
+  </section>
+
+  <section>
+    <h2><span class="num">6</span>Alívio com o tratamento</h2>
+    <p class="desc">Nas últimas 24 horas, qual a intensidade de melhora proporcionada pelos tratamentos ou medicações que você está usando?</p>
+    <div class="numline" id="scale-alivio">
+      <span class="endcap">Sem alívio</span>
+      <div class="nums" id="alivio-nums"></div>
+      <span class="endcap">Alívio completo</span>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">7</span>Como a dor interferiu, nas últimas 24 horas</h2>
+    <div id="scales-interferencia"></div>
+  </section>
+
+</div>
+
+<div class="actions-bar hidden" id="actions-bar-patient">
+  <button class="btn btn-ghost" id="btn-clear-all">Limpar tudo</button>
+  <button class="btn btn-ghost" id="btn-print">Imprimir / salvar PDF</button>
+  <button class="btn btn-primary" id="btn-save">Salvar respostas</button>
+</div>
+<div class="actions-bar hidden" id="actions-bar-mod">
+  <button class="btn btn-ghost" id="btn-back-to-list">← Voltar à lista</button>
+  <button class="btn btn-ghost" id="btn-print-mod">Imprimir / salvar PDF</button>
+</div>
+<div class="save-msg" id="save-msg"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script>
+const SUPABASE_CONFIG = {
+  url: "",
+  anonKey: ""
+};
+
+let sb = null;
+const CLOUD_ON = !!(SUPABASE_CONFIG.url && SUPABASE_CONFIG.anonKey);
+if(CLOUD_ON && window.supabase){
+  sb = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
+}
+
+let session = { role:null, code:null, iniciais:null, nascimento:null, modSenha:null };
+let readOnly = false;
+let currentMode = "mild";
+
+const intensidadeItems = [
+  {id:"pior", label:"Pior dor nas últimas 24 horas"},
+  {id:"fraca", label:"Dor mais fraca nas últimas 24 horas"},
+  {id:"media", label:"Média da sua dor"},
+  {id:"agora", label:"Dor que você sente agora"},
+];
+const interferenciaItems = [
+  {id:"atividade_geral", label:"Atividade geral"},
+  {id:"humor", label:"Humor"},
+  {id:"caminhar", label:"Habilidade de caminhar"},
+  {id:"trabalho", label:"Trabalho"},
+  {id:"relacionamento", label:"Relacionamento com outras pessoas"},
+  {id:"sono", label:"Sono"},
+  {id:"vida", label:"Habilidade para apreciar a vida"},
+];
+let state = {
+  dorDistinta:"", zones:{}, worst:{}, intensidade:{}, alivio:null,
+  interferencia:{}, medicacoes:[], exames:[],
+};
+
+function generateCode(){
+  const chars = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
+  let out = "";
+  for(let i=0;i<8;i++){
+    if(i===4) out += "-";
+    out += chars[Math.floor(Math.random()*chars.length)];
+  }
+  return out;
+}
+
+function rect(x,y,w,h,rx){return {tag:"rect",attrs:{x,y,width:w,height:h,rx:rx||9}};}
+const frontZones = [
+  {id:"f_cabeca", label:"Cabeça", shape:{tag:"ellipse",attrs:{cx:110,cy:34,rx:26,ry:30}}},
+  {id:"f_pescoco", label:"Pescoço", shape:rect(97,60,26,17,6)},
+  {id:"f_ombro_d", label:"Ombro direito", shape:rect(53,78,42,22,9)},
+  {id:"f_ombro_e", label:"Ombro esquerdo", shape:rect(125,78,42,22,9)},
+  {id:"f_torax", label:"Tórax", shape:rect(80,98,60,48,10)},
+  {id:"f_abdomen", label:"Abdômen", shape:rect(82,148,56,48,10)},
+  {id:"f_braco_d", label:"Braço direito", shape:rect(32,98,26,78,10)},
+  {id:"f_braco_e", label:"Braço esquerdo", shape:rect(162,98,26,78,10)},
+  {id:"f_antebraco_d", label:"Antebraço direito", shape:rect(28,178,24,68,10)},
+  {id:"f_antebraco_e", label:"Antebraço esquerdo", shape:rect(168,178,24,68,10)},
+  {id:"f_mao_d", label:"Mão direita", shape:rect(26,248,24,32,7)},
+  {id:"f_mao_e", label:"Mão esquerda", shape:rect(170,248,24,32,7)},
+  {id:"f_quadril_d", label:"Quadril direito", shape:rect(74,198,30,32,8)},
+  {id:"f_quadril_e", label:"Quadril esquerdo", shape:rect(116,198,30,32,8)},
+  {id:"f_coxa_d", label:"Coxa direita", shape:rect(72,232,34,88,10)},
+  {id:"f_coxa_e", label:"Coxa esquerda", shape:rect(114,232,34,88,10)},
+  {id:"f_joelho_d", label:"Joelho direito", shape:rect(74,322,30,22,8)},
+  {id:"f_joelho_e", label:"Joelho esquerdo", shape:rect(116,322,30,22,8)},
+  {id:"f_perna_d", label:"Perna direita (canela)", shape:rect(76,346,26,86,10)},
+  {id:"f_perna_e", label:"Perna esquerda (canela)", shape:rect(118,346,26,86,10)},
+  {id:"f_pe_d", label:"Pé direito", shape:rect(68,434,34,20,7)},
+  {id:"f_pe_e", label:"Pé esquerdo", shape:rect(118,434,34,20,7)},
+];
+const backZones = [
+  {id:"b_cabeca", label:"Cabeça (posterior)", shape:{tag:"ellipse",attrs:{cx:110,cy:34,rx:26,ry:30}}},
+  {id:"b_pescoco", label:"Pescoço (posterior)", shape:rect(97,60,26,17,6)},
+  {id:"b_ombro_d", label:"Ombro direito (posterior)", shape:rect(53,78,42,22,9)},
+  {id:"b_ombro_e", label:"Ombro esquerdo (posterior)", shape:rect(125,78,42,22,9)},
+  {id:"b_costas_sup", label:"Costas — região superior", shape:rect(80,98,60,44,10)},
+  {id:"b_lombar", label:"Costas — região lombar", shape:rect(82,146,56,50,10)},
+  {id:"b_braco_d", label:"Braço direito (posterior)", shape:rect(32,98,26,78,10)},
+  {id:"b_braco_e", label:"Braço esquerdo (posterior)", shape:rect(162,98,26,78,10)},
+  {id:"b_antebraco_d", label:"Antebraço direito (posterior)", shape:rect(28,178,24,68,10)},
+  {id:"b_antebraco_e", label:"Antebraço esquerdo (posterior)", shape:rect(168,178,24,68,10)},
+  {id:"b_mao_d", label:"Mão direita (posterior)", shape:rect(26,248,24,32,7)},
+  {id:"b_mao_e", label:"Mão esquerda (posterior)", shape:rect(170,248,24,32,7)},
+  {id:"b_gluteo_d", label:"Glúteo direito", shape:rect(74,198,30,32,8)},
+  {id:"b_gluteo_e", label:"Glúteo esquerdo", shape:rect(116,198,30,32,8)},
+  {id:"b_coxa_d", label:"Coxa direita (posterior)", shape:rect(72,232,34,88,10)},
+  {id:"b_coxa_e", label:"Coxa esquerda (posterior)", shape:rect(114,232,34,88,10)},
+  {id:"b_joelho_d", label:"Joelho (posterior) direito", shape:rect(74,322,30,22,8)},
+  {id:"b_joelho_e", label:"Joelho (posterior) esquerdo", shape:rect(116,322,30,22,8)},
+  {id:"b_perna_d", label:"Perna direita (posterior)", shape:rect(76,346,26,86,10)},
+  {id:"b_perna_e", label:"Perna esquerda (posterior)", shape:rect(118,346,26,86,10)},
+  {id:"b_pe_d", label:"Pé direito (posterior)", shape:rect(68,434,34,20,7)},
+  {id:"b_pe_e", label:"Pé esquerdo (posterior)", shape:rect(118,434,34,20,7)},
+];
+
+function buildSilhouette(svg){
+  const ns="http://www.w3.org/2000/svg";
+  const outline = document.createElementNS(ns,"path");
+  outline.setAttribute("class","silhouette-outline");
+  outline.setAttribute("d","M110,4 C124,4 136,16 136,32 C136,44 130,54 122,60 L122,72 C150,74 168,86 172,110 L188,180 C190,188 184,194 176,192 L166,246 L172,262 C174,300 168,320 158,330 L156,420 C156,436 152,452 148,464 L136,464 L136,400 L128,330 L112,330 L104,400 L104,464 L92,464 C88,452 84,436 84,420 L82,330 C72,320 66,300 68,262 L74,246 L64,192 C56,194 50,188 52,180 L68,110 C72,86 90,74 118,72 L118,60 C110,54 104,44 104,32 C104,16 96,4 110,4 Z");
+  svg.appendChild(outline);
+}
+function buildZones(svg, zones){
+  const ns="http://www.w3.org/2000/svg";
+  zones.forEach(z=>{
+    const el = document.createElementNS(ns, z.shape.tag);
+    for(const [k,v] of Object.entries(z.shape.attrs)) el.setAttribute(k, v);
+    el.setAttribute("class","body-zone");
+    el.setAttribute("data-id", z.id);
+    const title = document.createElementNS(ns,"title");
+    title.textContent = z.label;
+    el.appendChild(title);
+    el.addEventListener("click", ()=>onZoneClick(z.id, el));
+    svg.appendChild(el);
+  });
+}
+function onZoneClick(id, el){
+  if(readOnly) return;
+  if(currentMode === "erase"){ delete state.zones[id]; delete state.worst[id]; refreshZoneVisual(id); scheduleBackup(); return; }
+  if(currentMode === "worst"){
+    if(state.worst[id]) delete state.worst[id]; else state.worst[id] = true;
+    refreshZoneVisual(id); scheduleBackup(); return;
+  }
+  if(state.zones[id] === currentMode) delete state.zones[id];
+  else state.zones[id] = currentMode;
+  refreshZoneVisual(id); scheduleBackup();
+}
+function refreshZoneVisual(id){
+  document.querySelectorAll(`[data-id="${id}"]`).forEach(el=>{
+    el.classList.remove("pain-mild","pain-severe");
+    const val = state.zones[id];
+    if(val === "mild") el.classList.add("pain-mild");
+    if(val === "severe") el.classList.add("pain-severe");
+    const svg = el.ownerSVGElement;
+    if(!svg) return;
+    let mark = svg.querySelector(`[data-mark="${id}"]`);
+    if(state.worst[id]){
+      if(!mark){
+        const bb = el.getBBox();
+        const ns="http://www.w3.org/2000/svg";
+        mark = document.createElementNS(ns,"text");
+        mark.setAttribute("class","worst-x");
+        mark.setAttribute("data-mark", id);
+        mark.setAttribute("x", bb.x+bb.width/2);
+        mark.setAttribute("y", bb.y+bb.height/2);
+        mark.textContent = "✕";
+        svg.appendChild(mark);
+      }
+    } else if(mark){ mark.remove(); }
+  });
+}
+function renderModeButtons(){
+  document.querySelectorAll("#map-toolbar .mode-btn").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      if(readOnly) return;
+      currentMode = btn.dataset.mode;
+      document.querySelectorAll("#map-toolbar .mode-btn").forEach(b=>b.classList.remove("active"));
+      btn.classList.add("active");
+    });
+  });
+}
+
+function buildNumline(container, key, bucket){
+  container.innerHTML = "";
+  const wrap = document.createElement("div"); wrap.className = "numline";
+  const left = document.createElement("span"); left.className="endcap"; left.textContent="Sem dor";
+  const nums = document.createElement("div"); nums.className="nums";
+  for(let i=0;i<=10;i++){
+    const b = document.createElement("button");
+    b.type="button"; b.className="num-btn"; b.textContent=i;
+    b.addEventListener("click", ()=>{
+      if(readOnly) return;
+      bucket[key] = i;
+      nums.querySelectorAll(".num-btn").forEach(n=>n.classList.remove("selected"));
+      b.classList.add("selected");
+      scheduleBackup();
+    });
+    nums.appendChild(b);
+  }
+  const right = document.createElement("span"); right.className="endcap"; right.textContent="Pior dor possível";
+  wrap.append(left,nums,right); container.appendChild(wrap);
+}
+function renderScaleGroup(containerId, items, bucket){
+  const container = document.getElementById(containerId);
+  container.innerHTML = "";
+  items.forEach(it=>{
+    const block = document.createElement("div"); block.className = "scale-block";
+    const label = document.createElement("span"); label.className = "scale-label"; label.textContent = it.label;
+    block.appendChild(label);
+    const holder = document.createElement("div"); block.appendChild(holder);
+    buildNumline(holder, it.id, bucket);
+    container.appendChild(block);
+  });
+}
+function buildAlivioScale(){
+  const nums = document.getElementById("alivio-nums"); nums.innerHTML = "";
+  for(let i=0;i<=100;i+=10){
+    const b = document.createElement("button");
+    b.type="button"; b.className="num-btn"; b.style.width="38px"; b.textContent = i;
+    b.addEventListener("click", ()=>{
+      if(readOnly) return;
+      state.alivio = i;
+      nums.querySelectorAll(".num-btn").forEach(n=>n.classList.remove("selected"));
+      b.classList.add("selected");
+      scheduleBackup();
+    });
+    nums.appendChild(b);
+  }
+}
+
+function addMedRow(data){
+  data = data || {nome:"",dose:"",inicio:""};
+  const tbody = document.querySelector("#tbl-medicacoes tbody");
+  const tr = document.createElement("tr");
+  tr.innerHTML = `
+    <td><input type="text" class="med-nome" value="${escapeHtml(data.nome)}" placeholder="Ex: Dipirona" ${readOnly?"disabled":""}></td>
+    <td><input type="text" class="med-dose" value="${escapeHtml(data.dose)}" placeholder="Ex: 500mg 6/6h" ${readOnly?"disabled":""}></td>
+    <td><input type="date" class="med-inicio" value="${data.inicio||''}" ${readOnly?"disabled":""}></td>
+    <td>${readOnly?"":'<button type="button" class="row-del" title="Remover">✕</button>'}</td>`;
+  if(!readOnly){
+    tr.querySelector(".row-del").addEventListener("click", ()=>{tr.remove(); scheduleBackup();});
+    tr.querySelectorAll("input").forEach(inp=>inp.addEventListener("input", scheduleBackup));
+  }
+  tbody.appendChild(tr);
+}
+function addExameRow(data){
+  data = data || {nome:"",data:"",resultado:""};
+  const tbody = document.querySelector("#tbl-exames tbody");
+  const tr = document.createElement("tr");
+  tr.innerHTML = `
+    <td><input type="text" class="ex-nome" value="${escapeHtml(data.nome)}" placeholder="Ex: RM de coluna lombar" ${readOnly?"disabled":""}></td>
+    <td><input type="date" class="ex-data" value="${data.data||''}" ${readOnly?"disabled":""}></td>
+    <td><textarea class="ex-resultado" placeholder="Resultado / achados" ${readOnly?"disabled":""}>${escapeHtml(data.resultado)}</textarea></td>
+    <td>${readOnly?"":'<button type="button" class="row-del" title="Remover">✕</button>'}</td>`;
+  if(!readOnly){
+    tr.querySelector(".row-del").addEventListener("click", ()=>{tr.remove(); scheduleBackup();});
+    tr.querySelectorAll("input,textarea").forEach(inp=>inp.addEventListener("input", scheduleBackup));
+  }
+  tbody.appendChild(tr);
+}
+function escapeHtml(s){ return (s||"").replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+
+function collectState(){
+  const dd = document.querySelector('input[name="dor-distinta"]:checked');
+  state.dorDistinta = dd ? dd.value : "";
+  state.medicacoes = [...document.querySelectorAll("#tbl-medicacoes tbody tr")].map(tr=>({
+    nome: tr.querySelector(".med-nome").value, dose: tr.querySelector(".med-dose").value, inicio: tr.querySelector(".med-inicio").value,
+  }));
+  state.exames = [...document.querySelectorAll("#tbl-exames tbody tr")].map(tr=>({
+    nome: tr.querySelector(".ex-nome").value, data: tr.querySelector(".ex-data").value, resultado: tr.querySelector(".ex-resultado").value,
+  }));
+  return state;
+}
+function resetFormDom(){
+  document.getElementById("scales-intensidade").innerHTML = "";
+  document.getElementById("scales-interferencia").innerHTML = "";
+  document.querySelector("#tbl-medicacoes tbody").innerHTML = "";
+  document.querySelector("#tbl-exames tbody").innerHTML = "";
+  document.getElementById("svg-front").innerHTML = "";
+  document.getElementById("svg-back").innerHTML = "";
+  document.querySelectorAll('input[name="dor-distinta"]').forEach(r=>r.checked=false);
+}
+function renderFormFromState(){
+  resetFormDom();
+  buildSilhouette(document.getElementById("svg-front"));
+  buildZones(document.getElementById("svg-front"), frontZones);
+  buildSilhouette(document.getElementById("svg-back"));
+  buildZones(document.getElementById("svg-back"), backZones);
+  renderScaleGroup("scales-intensidade", intensidadeItems, state.intensidade);
+  renderScaleGroup("scales-interferencia", interferenciaItems, state.interferencia);
+  buildAlivioScale();
+
+  if(state.dorDistinta){
+    const el = document.querySelector(`input[name="dor-distinta"][value="${state.dorDistinta}"]`);
+    if(el) el.checked = true;
+  }
+  Object.keys(state.zones).forEach(id=>refreshZoneVisual(id));
+  Object.keys(state.worst).forEach(id=>refreshZoneVisual(id));
+  Object.entries(state.intensidade).forEach(([k,v])=>selectNumInGroup("scales-intensidade",k,v,intensidadeItems));
+  Object.entries(state.interferencia).forEach(([k,v])=>selectNumInGroup("scales-interferencia",k,v,interferenciaItems));
+  if(state.alivio!==null && state.alivio!==undefined){
+    const nums = document.getElementById("alivio-nums");
+    const btn = [...nums.children].find(b=>parseInt(b.textContent)===state.alivio);
+    if(btn) btn.classList.add("selected");
+  }
+  (state.medicacoes||[]).forEach(addMedRow);
+  (state.exames||[]).forEach(addExameRow);
+  if(!readOnly){
+    if(!state.medicacoes || state.medicacoes.length===0) addMedRow();
+    if(!state.exames || state.exames.length===0) addExameRow();
+  }
+  document.querySelectorAll('input[name="dor-distinta"]').forEach(r=>r.addEventListener("change", scheduleBackup));
+
+  document.getElementById("main-content").classList.toggle("readonly", readOnly);
+  document.getElementById("readonly-flag-section").classList.toggle("hidden", !readOnly);
+  document.querySelectorAll(".add-row-btn").forEach(b=>b.classList.toggle("hidden", readOnly));
+  document.getElementById("map-toolbar").classList.toggle("hidden", readOnly);
+}
+function selectNumInGroup(containerId, key, value, items){
+  const container = document.getElementById(containerId);
+  const blocks = container.querySelectorAll(".scale-block");
+  const idx = items.findIndex(i=>i.id===key);
+  if(idx<0) return;
+  const block = blocks[idx]; if(!block) return;
+  block.querySelectorAll(".num-btn").forEach(b=>{ if(parseInt(b.textContent)===value) b.classList.add("selected"); });
+}
+
+async function syncSave(codigo, iniciais, nascimento, dados){
+  if(CLOUD_ON && sb){
+    const { error } = await sb.rpc('salvar_paciente', { p_codigo: codigo, p_iniciais: iniciais, p_nascimento: nascimento, p_dados: dados });
+    if(error) throw error;
+  } else {
+    localStorage.setItem(`ibd_v2_${codigo}`, JSON.stringify({ iniciais, nascimento, dados, atualizado_em: new Date().toISOString() }));
+  }
+}
+async function syncLoad(codigo){
+  if(CLOUD_ON && sb){
+    const { data, error } = await sb.rpc('buscar_paciente', { p_codigo: codigo });
+    if(error) throw error;
+    if(!data || data.length===0) return null;
+    return data[0];
+  } else {
+    const raw = localStorage.getItem(`ibd_v2_${codigo}`);
+    if(!raw) return null;
+    return JSON.parse(raw);
+  }
+}
+async function modList(senha){
+  if(CLOUD_ON && sb){
+    const { data, error } = await sb.rpc('listar_pacientes', { p_senha: senha });
+    if(error) throw error;
+    return data || [];
+  } else {
+    const out = [];
+    for(let i=0;i<localStorage.length;i++){
+      const k = localStorage.key(i);
+      if(k && k.startsWith("ibd_v2_")){
+        const rec = JSON.parse(localStorage.getItem(k));
+        out.push({ codigo: k.replace("ibd_v2_",""), iniciais: rec.iniciais, nascimento: rec.nascimento, atualizado_em: rec.atualizado_em });
+      }
+    }
+    out.sort((a,b)=> (b.atualizado_em||"").localeCompare(a.atualizado_em||""));
+    return out;
+  }
+}
+async function modDetail(senha, codigo){
+  if(CLOUD_ON && sb){
+    const { data, error } = await sb.rpc('buscar_detalhe_moderador', { p_senha: senha, p_codigo: codigo });
+    if(error) throw error;
+    if(!data || data.length===0) return null;
+    return data[0];
+  } else {
+    const raw = localStorage.getItem(`ibd_v2_${codigo}`);
+    if(!raw) return null;
+    return JSON.parse(raw);
+  }
+}
+
+let backupTimer = null;
+function scheduleBackup(){
+  if(readOnly || !session.code) return;
+  clearTimeout(backupTimer);
+  backupTimer = setTimeout(()=>{
+    collectState();
+    localStorage.setItem(`ibd_draft_${session.code}`, JSON.stringify(state));
+  }, 600);
+}
+
+function showScreen(id){
+  ["screen-select","screen-patient-auth","screen-mod-auth","screen-mod-list","main-content"].forEach(s=>{
+    document.getElementById(s).classList.toggle("hidden", s!==id);
+  });
+  document.getElementById("actions-bar-patient").classList.toggle("hidden", !(id==="main-content" && session.role==="patient"));
+  document.getElementById("actions-bar-mod").classList.toggle("hidden", !(id==="main-content" && session.role==="moderator"));
+}
+function updateTopbar(){
+  const right = document.getElementById("topbar-right");
+  const sub = document.getElementById("header-sub");
+  right.innerHTML = "";
+  if(session.role==="patient" && session.code){
+    sub.textContent = "Toque no corpo para marcar onde você sente dor — isso ajuda muito na avaliação.";
+    right.innerHTML = `<span class="chip">Código: ${session.code}</span><button class="link-btn" id="logout-btn">Sair</button>`;
+  } else if(session.role==="moderator"){
+    sub.textContent = "Visão profissional — lista de inventários preenchidos pelos pacientes.";
+    right.innerHTML = `<span class="chip">Modo moderadora</span><button class="link-btn" id="logout-btn">Sair</button>`;
+  } else {
+    sub.textContent = "Toque no corpo para marcar onde você sente dor — isso ajuda muito na avaliação.";
+  }
+  const lb = document.getElementById("logout-btn");
+  if(lb) lb.addEventListener("click", doLogout);
+}
+function doLogout(){
+  session = { role:null, code:null, iniciais:null, nascimento:null, modSenha:null };
+  readOnly = false;
+  showScreen("screen-select");
+  updateTopbar();
+}
+
+document.getElementById("pick-patient").addEventListener("click", ()=>{
+  showScreen("screen-patient-auth");
+  document.getElementById("tab-new").click();
+});
+document.getElementById("pick-moderator").addEventListener("click", ()=> showScreen("screen-mod-auth"));
+document.getElementById("back-from-patient-auth").addEventListener("click", ()=> showScreen("screen-select"));
+document.getElementById("back-from-mod-auth").addEventListener("click", ()=> showScreen("screen-select"));
+if(!CLOUD_ON) document.getElementById("config-note").classList.remove("hidden");
+
+document.getElementById("tab-new").addEventListener("click", ()=>{
+  document.getElementById("tab-new").classList.add("active");
+  document.getElementById("tab-resume").classList.remove("active");
+  document.getElementById("card-new-patient").classList.remove("hidden");
+  document.getElementById("card-code-reveal").classList.add("hidden");
+  document.getElementById("card-resume-patient").classList.add("hidden");
+});
+document.getElementById("tab-resume").addEventListener("click", ()=>{
+  document.getElementById("tab-resume").classList.add("active");
+  document.getElementById("tab-new").classList.remove("active");
+  document.getElementById("card-resume-patient").classList.remove("hidden");
+  document.getElementById("card-new-patient").classList.add("hidden");
+  document.getElementById("card-code-reveal").classList.add("hidden");
+});
+
+document.getElementById("btn-new-patient").addEventListener("click", async ()=>{
+  const iniciais = document.getElementById("new-iniciais").value.trim();
+  const nascimento = document.getElementById("new-nascimento").value;
+  const errBox = document.getElementById("new-error");
+  errBox.classList.add("hidden");
+  if(!iniciais || !nascimento){
+    errBox.textContent = "Preencha suas iniciais e data de nascimento."; errBox.classList.remove("hidden"); return;
+  }
+  const codigo = generateCode();
+  try{
+    await syncSave(codigo, iniciais.toUpperCase(), nascimento, {});
+    session = { role:"patient", code:codigo, iniciais: iniciais.toUpperCase(), nascimento };
+    document.getElementById("code-big-display").textContent = codigo;
+    document.getElementById("card-new-patient").classList.add("hidden");
+    document.getElementById("card-code-reveal").classList.remove("hidden");
+  }catch(e){
+    errBox.textContent = "Não foi possível criar seu acesso agora. Tente novamente."; errBox.classList.remove("hidden");
+  }
+});
+document.getElementById("btn-continue-to-form").addEventListener("click", ()=>{
+  readOnly = false;
+  state = {dorDistinta:"", zones:{}, worst:{}, intensidade:{}, alivio:null, interferencia:{}, medicacoes:[], exames:[]};
+  renderFormFromState();
+  updateTopbar();
+  showScreen("main-content");
+});
+
+document.getElementById("btn-resume-patient").addEventListener("click", async ()=>{
+  const codigo = document.getElementById("resume-code").value.trim().toUpperCase();
+  const errBox = document.getElementById("resume-error");
+  errBox.classList.add("hidden");
+  if(!codigo){ errBox.textContent = "Digite seu código."; errBox.classList.remove("hidden"); return; }
+  try{
+    const rec = await syncLoad(codigo);
+    if(!rec){ errBox.textContent = "Código não encontrado."; errBox.classList.remove("hidden"); return; }
+    session = { role:"patient", code:codigo, iniciais: rec.iniciais, nascimento: rec.nascimento };
+    readOnly = false;
+    const draft = localStorage.getItem(`ibd_draft_${codigo}`);
+    state = Object.assign({dorDistinta:"", zones:{}, worst:{}, intensidade:{}, alivio:null, interferencia:{}, medicacoes:[], exames:[]}, rec.dados||{});
+    if(draft){ try{ state = JSON.parse(draft); }catch(e){} }
+    renderFormFromState();
+    updateTopbar();
+    showScreen("main-content");
+  }catch(e){
+    errBox.textContent = "Não foi possível acessar agora. Tente novamente."; errBox.classList.remove("hidden");
+  }
+});
+
+document.getElementById("btn-mod-login").addEventListener("click", async ()=>{
+  const senha = document.getElementById("mod-senha").value;
+  const errBox = document.getElementById("mod-error");
+  errBox.classList.add("hidden");
+  try{
+    const rows = await modList(senha);
+    session = { role:"moderator", modSenha: senha };
+    renderModList(rows);
+    updateTopbar();
+    showScreen("screen-mod-list");
+  }catch(e){
+    errBox.textContent = "Senha inválida."; errBox.classList.remove("hidden");
+  }
+});
+function renderModList(rows){
+  const tbody = document.getElementById("mod-table-body");
+  tbody.innerHTML = "";
+  document.getElementById("mod-empty").classList.toggle("hidden", rows.length>0);
+  rows.forEach(r=>{
+    const tr = document.createElement("tr");
+    tr.className = "patient-row";
+    const dataFmt = r.nascimento ? new Date(r.nascimento+"T00:00:00").toLocaleDateString("pt-BR") : "—";
+    const atualFmt = r.atualizado_em ? new Date(r.atualizado_em).toLocaleString("pt-BR") : "—";
+    tr.innerHTML = `<td class="iniciais">${escapeHtml(r.iniciais)}</td><td>${dataFmt}</td><td><span class="code-tag">${r.codigo}</span></td><td>${atualFmt}</td>`;
+    tr.addEventListener("click", ()=> openModeratorDetail(r.codigo));
+    tbody.appendChild(tr);
+  });
+}
+async function openModeratorDetail(codigo){
+  try{
+    const rec = await modDetail(session.modSenha, codigo);
+    if(!rec) return;
+    readOnly = true;
+    state = Object.assign({dorDistinta:"", zones:{}, worst:{}, intensidade:{}, alivio:null, interferencia:{}, medicacoes:[], exames:[]}, rec.dados||{});
+    renderFormFromState();
+    showScreen("main-content");
+  }catch(e){ /* silencioso */ }
+}
+document.getElementById("btn-back-to-list").addEventListener("click", async ()=>{
+  const rows = await modList(session.modSenha);
+  renderModList(rows);
+  showScreen("screen-mod-list");
+});
+
+renderModeButtons();
+document.querySelectorAll(".add-row-btn").forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    if(btn.dataset.target==="medicacoes") addMedRow(); else addExameRow();
+    scheduleBackup();
+  });
+});
+document.getElementById("btn-save").addEventListener("click", async ()=>{
+  collectState();
+  const msg = document.getElementById("save-msg");
+  try{
+    await syncSave(session.code, session.iniciais, session.nascimento, state);
+    localStorage.removeItem(`ibd_draft_${session.code}`);
+    msg.textContent = CLOUD_ON ? "Respostas salvas ✓ (sincronizado)" : "Respostas salvas neste aparelho ✓";
+  }catch(e){
+    msg.textContent = "Não foi possível salvar agora — tente novamente.";
+  }
+  setTimeout(()=>msg.textContent="", 3000);
+});
+document.getElementById("btn-print").addEventListener("click", ()=>{ collectState(); window.print(); });
+document.getElementById("btn-print-mod").addEventListener("click", ()=> window.print());
+document.getElementById("btn-clear-all").addEventListener("click", ()=>{
+  if(confirm("Limpar todas as respostas preenchidas neste formulário?")){
+    state = {dorDistinta:"", zones:{}, worst:{}, intensidade:{}, alivio:null, interferencia:{}, medicacoes:[], exames:[]};
+    localStorage.removeItem(`ibd_draft_${session.code}`);
+    renderFormFromState();
+  }
+});
+
+showScreen("screen-select");
+</script>
+</body>
+</html>
