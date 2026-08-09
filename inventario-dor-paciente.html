@@ -300,6 +300,32 @@ table.dyn input:disabled, table.dyn textarea:disabled{background:var(--cream-2);
     <div id="scales-interferencia"></div>
   </section>
 
+  <section class="hidden" id="section-evolucoes">
+    <h2><span class="num">👩‍⚕️</span>Evolução clínica <span style="font-weight:400;font-size:13px;color:var(--ink-soft);">(uso da profissional)</span></h2>
+    <p class="desc">Registre aqui o que aconteceu em cada consulta: local da dor no dia, procedimentos realizados (bloqueio, agulhamento etc.) e fotos.</p>
+    <a href="ficha-dor-pelvica.html" target="_blank" rel="noopener" id="atlas-link-btn" class="add-row-btn" style="display:inline-block; text-decoration:none; margin-bottom:16px;">📖 Abrir atlas de inervação e pontos-gatilho</a>
+    <div id="evolucoes-list"></div>
+    <div class="card" id="evo-form-card" style="margin-top:14px;">
+      <h2 style="font-size:17px;">Nova evolução</h2>
+      <div class="field"><label>Data</label><input type="date" id="evo-data"></div>
+      <div class="field"><label>Área da dor hoje</label><input type="text" id="evo-area" placeholder="Ex: Trapézio direito"></div>
+      <div class="yn" style="margin-bottom:10px;">
+        <label><input type="checkbox" id="evo-bloqueio">Bloqueio realizado</label>
+        <label><input type="checkbox" id="evo-agulhamento">Agulhamento realizado</label>
+      </div>
+      <div class="field"><label>Outro procedimento</label><input type="text" id="evo-outro" placeholder="Opcional"></div>
+      <div class="field"><label>Observações</label><textarea id="evo-obs" style="width:100%; min-height:70px; border:1px solid var(--line); border-radius:9px; padding:9px 11px; font-family:inherit; font-size:14.5px; background:var(--cream);"></textarea></div>
+      <div class="field">
+        <label>Fotos (opcional)</label>
+        <div id="evo-fotos-preview" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:8px;"></div>
+        <button type="button" class="add-row-btn" id="evo-add-foto-btn">+ Adicionar foto</button>
+        <input type="file" id="evo-foto-input" accept="image/*" style="display:none">
+      </div>
+      <button class="btn btn-primary" id="btn-salvar-evolucao" style="margin-top:6px;">Salvar evolução</button>
+      <div class="save-msg" id="evo-save-msg"></div>
+    </div>
+  </section>
+
 </div>
 
 <div class="actions-bar hidden" id="actions-bar-patient">
@@ -316,7 +342,7 @@ table.dyn input:disabled, table.dyn textarea:disabled{background:var(--cream-2);
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script>
 const SUPABASE_CONFIG = {
-  url: "https://ymdtygcxjopjikbloydp.supabase.co",
+  url: "https://ymdtygcxjopjikbloyc.supabase.co",
   anonKey: "sb_publishable_mAEcwyxSlnCO6YtfZnj-Zg_p2YvxdzA"
 };
 
@@ -347,7 +373,7 @@ const interferenciaItems = [
 ];
 let state = {
   dorDistinta:"", zones:{}, worst:{}, intensidade:{}, alivio:null,
-  interferencia:{}, medicacoes:[], exames:[],
+  interferencia:{}, medicacoes:[], exames:[], evolucoes:[],
 };
 
 function generateCode(){
@@ -557,6 +583,119 @@ function addExameRow(data){
 }
 function escapeHtml(s){ return (s||"").replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
 
+/* ===================== EVOLUÇÃO CLÍNICA (moderadora) ===================== */
+let evoFotosTemp = [];
+function compressImage(file, cb){
+  const reader = new FileReader();
+  reader.onload = e=>{
+    const img = new Image();
+    img.onload = ()=>{
+      const max = 900;
+      let {width:w, height:h} = img;
+      if(w > max){ h = h*max/w; w = max; }
+      const c = document.createElement("canvas");
+      c.width = w; c.height = h;
+      c.getContext("2d").drawImage(img, 0, 0, w, h);
+      cb(c.toDataURL("image/jpeg", 0.7));
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+function renderEvoFotosPreview(){
+  const el = document.getElementById("evo-fotos-preview");
+  el.innerHTML = "";
+  evoFotosTemp.forEach((f, i)=>{
+    const wrap = document.createElement("div");
+    wrap.style.cssText = "position:relative;";
+    wrap.innerHTML = `<img src="${f}" style="width:70px;height:70px;object-fit:cover;border-radius:8px;border:1px solid var(--line);">
+      <button type="button" style="position:absolute;top:-6px;right:-6px;background:var(--vermelho);color:white;border:none;border-radius:50%;width:20px;height:20px;font-size:12px;cursor:pointer;">✕</button>`;
+    wrap.querySelector("button").addEventListener("click", ()=>{ evoFotosTemp.splice(i,1); renderEvoFotosPreview(); });
+    el.appendChild(wrap);
+  });
+}
+function renderEvolucoes(){
+  const container = document.getElementById("evolucoes-list");
+  container.innerHTML = "";
+  const list = (state.evolucoes||[]).slice().sort((a,b)=> (b.data||"").localeCompare(a.data||""));
+  if(list.length===0){
+    container.innerHTML = '<div class="empty-note">Nenhuma evolução registrada ainda.</div>';
+  }
+  list.forEach(evo=>{
+    const dataFmt = evo.data ? new Date(evo.data+"T00:00:00").toLocaleDateString("pt-BR") : "—";
+    const procs = [];
+    if(evo.bloqueio) procs.push("Bloqueio");
+    if(evo.agulhamento) procs.push("Agulhamento");
+    if(evo.outro) procs.push(evo.outro);
+    const card = document.createElement("div");
+    card.className = "card";
+    card.style.marginBottom = "10px";
+    card.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;">
+        <div>
+          <div style="font-weight:700;color:var(--terracotta-dark);">${dataFmt} — ${escapeHtml(evo.area||"área não informada")}</div>
+          ${procs.length ? `<div style="font-size:13.5px;color:var(--ink-soft);margin-top:2px;">${escapeHtml(procs.join(", "))}</div>` : ""}
+          ${evo.obs ? `<div style="font-size:14px;margin-top:6px;">${escapeHtml(evo.obs)}</div>` : ""}
+        </div>
+        <button type="button" class="row-del" title="Remover">✕</button>
+      </div>
+      ${(evo.fotos&&evo.fotos.length) ? `<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;">${evo.fotos.map(f=>`<img src="${f}" style="width:70px;height:70px;object-fit:cover;border-radius:8px;border:1px solid var(--line);">`).join("")}</div>` : ""}
+    `;
+    card.querySelector(".row-del").addEventListener("click", async ()=>{
+      if(!confirm("Remover esta evolução?")) return;
+      state.evolucoes = (state.evolucoes||[]).filter(e=>e.id!==evo.id);
+      renderEvolucoes();
+      try{ await syncSave(session.viewingCode, session.viewingIniciais, session.viewingNascimento, state); }catch(e){}
+    });
+    container.appendChild(card);
+  });
+}
+document.getElementById("evo-add-foto-btn").addEventListener("click", ()=> document.getElementById("evo-foto-input").click());
+document.getElementById("evo-foto-input").addEventListener("change", (e)=>{
+  const file = e.target.files[0];
+  if(!file) return;
+  compressImage(file, dataUrl=>{ evoFotosTemp.push(dataUrl); renderEvoFotosPreview(); });
+  e.target.value = "";
+});
+document.getElementById("btn-salvar-evolucao").addEventListener("click", async ()=>{
+  const msg = document.getElementById("evo-save-msg");
+  const data = document.getElementById("evo-data").value;
+  const area = document.getElementById("evo-area").value.trim();
+  if(!data || !area){
+    msg.textContent = "Preencha ao menos a data e a área."; msg.style.color = "var(--vermelho)";
+    setTimeout(()=>msg.textContent="", 3000); return;
+  }
+  const evo = {
+    id: Date.now(),
+    data, area,
+    bloqueio: document.getElementById("evo-bloqueio").checked,
+    agulhamento: document.getElementById("evo-agulhamento").checked,
+    outro: document.getElementById("evo-outro").value.trim(),
+    obs: document.getElementById("evo-obs").value.trim(),
+    fotos: evoFotosTemp.slice(),
+  };
+  state.evolucoes = state.evolucoes || [];
+  state.evolucoes.push(evo);
+  try{
+    await syncSave(session.viewingCode, session.viewingIniciais, session.viewingNascimento, state);
+    msg.style.color = "var(--sage-dark)";
+    msg.textContent = "Evolução salva ✓";
+  }catch(e){
+    msg.style.color = "var(--vermelho)";
+    msg.textContent = "Não foi possível salvar agora.";
+  }
+  document.getElementById("evo-data").value = "";
+  document.getElementById("evo-area").value = "";
+  document.getElementById("evo-bloqueio").checked = false;
+  document.getElementById("evo-agulhamento").checked = false;
+  document.getElementById("evo-outro").value = "";
+  document.getElementById("evo-obs").value = "";
+  evoFotosTemp = [];
+  renderEvoFotosPreview();
+  renderEvolucoes();
+  setTimeout(()=>msg.textContent="", 3000);
+});
+
 function collectState(){
   const dd = document.querySelector('input[name="dor-distinta"]:checked');
   state.dorDistinta = dd ? dd.value : "";
@@ -610,8 +749,18 @@ function renderFormFromState(){
 
   document.getElementById("main-content").classList.toggle("readonly", readOnly);
   document.getElementById("readonly-flag-section").classList.toggle("hidden", !readOnly);
-  document.querySelectorAll(".add-row-btn").forEach(b=>b.classList.toggle("hidden", readOnly));
+  document.querySelectorAll(".add-row-btn").forEach(b=>{
+    if(b.id !== "evo-add-foto-btn" && b.id !== "atlas-link-btn") b.classList.toggle("hidden", readOnly);
+  });
   document.getElementById("map-toolbar").classList.toggle("hidden", readOnly);
+
+  const isMod = session.role === "moderator";
+  document.getElementById("section-evolucoes").classList.toggle("hidden", !isMod);
+  if(isMod){
+    evoFotosTemp = [];
+    renderEvoFotosPreview();
+    renderEvolucoes();
+  }
 }
 function selectNumInGroup(containerId, key, value, items){
   const container = document.getElementById(containerId);
@@ -758,7 +907,7 @@ document.getElementById("btn-new-patient").addEventListener("click", async ()=>{
 });
 document.getElementById("btn-continue-to-form").addEventListener("click", ()=>{
   readOnly = false;
-  state = {dorDistinta:"", zones:{}, worst:{}, intensidade:{}, alivio:null, interferencia:{}, medicacoes:[], exames:[]};
+  state = {dorDistinta:"", zones:{}, worst:{}, intensidade:{}, alivio:null, interferencia:{}, medicacoes:[], exames:[], evolucoes:[]};
   renderFormFromState();
   updateTopbar();
   showScreen("main-content");
@@ -775,7 +924,7 @@ document.getElementById("btn-resume-patient").addEventListener("click", async ()
     session = { role:"patient", code:codigo, iniciais: rec.iniciais, nascimento: rec.nascimento };
     readOnly = false;
     const draft = localStorage.getItem(`ibd_draft_${codigo}`);
-    state = Object.assign({dorDistinta:"", zones:{}, worst:{}, intensidade:{}, alivio:null, interferencia:{}, medicacoes:[], exames:[]}, rec.dados||{});
+    state = Object.assign({dorDistinta:"", zones:{}, worst:{}, intensidade:{}, alivio:null, interferencia:{}, medicacoes:[], exames:[], evolucoes:[]}, rec.dados||{});
     if(draft){ try{ state = JSON.parse(draft); }catch(e){} }
     renderFormFromState();
     updateTopbar();
@@ -818,7 +967,10 @@ async function openModeratorDetail(codigo){
     const rec = await modDetail(session.modSenha, codigo);
     if(!rec) return;
     readOnly = true;
-    state = Object.assign({dorDistinta:"", zones:{}, worst:{}, intensidade:{}, alivio:null, interferencia:{}, medicacoes:[], exames:[]}, rec.dados||{});
+    session.viewingCode = codigo;
+    session.viewingIniciais = rec.iniciais;
+    session.viewingNascimento = rec.nascimento;
+    state = Object.assign({dorDistinta:"", zones:{}, worst:{}, intensidade:{}, alivio:null, interferencia:{}, medicacoes:[], exames:[], evolucoes:[]}, rec.dados||{});
     renderFormFromState();
     showScreen("main-content");
   }catch(e){ /* silencioso */ }
@@ -852,7 +1004,7 @@ document.getElementById("btn-print").addEventListener("click", ()=>{ collectStat
 document.getElementById("btn-print-mod").addEventListener("click", ()=> window.print());
 document.getElementById("btn-clear-all").addEventListener("click", ()=>{
   if(confirm("Limpar todas as respostas preenchidas neste formulário?")){
-    state = {dorDistinta:"", zones:{}, worst:{}, intensidade:{}, alivio:null, interferencia:{}, medicacoes:[], exames:[]};
+    state = {dorDistinta:"", zones:{}, worst:{}, intensidade:{}, alivio:null, interferencia:{}, medicacoes:[], exames:[], evolucoes:[]};
     localStorage.removeItem(`ibd_draft_${session.code}`);
     renderFormFromState();
   }
