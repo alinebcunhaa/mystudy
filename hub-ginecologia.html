@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hub de Ginecologia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#F7F3EA;
+    --cream-2:#EFE8D8;
+    --terracotta:#C77B58;
+    --terracotta-dark:#A85F42;
+    --sage:#8FA290;
+    --sage-dark:#6B7F6C;
+    --pastel-green:#D9E4D3;
+    --ink:#3A342C;
+    --ink-soft:#6B6355;
+    --line:#DCD3BF;
+    --white:#FFFFFF;
+    --mauve:#B98CA6;
+    --mauve-bg:#F5E9F0;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--cream);
+    color:var(--ink);
+    font-family:'Source Sans 3', sans-serif;
+    line-height:1.5;
+  }
+  .wrap{max-width:960px;margin:0 auto;padding:0 16px 80px;}
+
+  .hub-nav{
+    position:sticky;top:0;z-index:50;
+    background:var(--cream);border-bottom:1.5px solid var(--line);
+    padding:14px 16px;
+  }
+  .hub-nav-inner{
+    max-width:960px;margin:0 auto;display:flex;align-items:center;
+    gap:14px;flex-wrap:wrap;
+  }
+  .hub-brand{
+    font-family:'Lora',serif;font-weight:700;font-size:15px;
+    color:var(--ink);white-space:nowrap;margin-right:4px;
+  }
+  .hub-tab{
+    font-family:'Source Sans 3',sans-serif;font-weight:600;font-size:13.5px;
+    padding:8px 16px;border-radius:999px;border:1.5px solid var(--line);
+    background:var(--white);color:var(--ink-soft);cursor:pointer;
+    transition:all .18s ease;white-space:nowrap;
+  }
+  .hub-tab:hover{border-color:var(--mauve);color:var(--mauve);}
+  .hub-tab.active{background:var(--ink);border-color:var(--ink);color:var(--cream);}
+  .hub-tab.disabled{
+    opacity:.45;cursor:default;
+    background:var(--white);color:var(--ink-soft);
+  }
+  .hub-tab.disabled:hover{border-color:var(--line);color:var(--ink-soft);}
+
+  .topic{display:none;padding-top:28px;}
+  .topic.active{display:block;}
+
+  header.topic-head{margin-bottom:28px;}
+  .eyebrow{
+    font-size:12px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--mauve);font-weight:600;margin-bottom:6px;
+  }
+  h1{
+    font-family:'Lora',serif;font-weight:600;font-size:clamp(24px,4vw,32px);
+    margin:0 0 8px;
+  }
+  .subtitle{color:var(--ink-soft);font-size:15px;max-width:65ch;}
+  h2{
+    font-family:'Lora',serif;font-weight:600;font-size:20px;
+    margin:36px 0 14px;padding-bottom:8px;border-bottom:1.5px solid var(--line);
+  }
+
+  table{
+    width:100%;border-collapse:collapse;background:var(--white);
+    border-radius:12px;overflow:hidden;border:1.5px solid var(--line);font-size:14px;
+  }
+  th,td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--line);}
+  th{
+    background:var(--cream-2);font-weight:700;font-size:12.5px;
+    text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft);
+  }
+  tr:last-child td{border-bottom:none;}
+
+  .highlight-box{
+    background:var(--mauve-bg);border:1.5px solid var(--mauve);
+    border-radius:12px;padding:16px 20px;margin:18px 0;font-size:14.5px;
+  }
+  .highlight-box strong{color:var(--ink);}
+
+  /* FIGO diagram */
+  .figo-diagram{
+    display:flex;justify-content:center;margin:24px 0;
+    background:var(--white);border:1.5px solid var(--line);
+    border-radius:16px;padding:24px;
+  }
+
+  .figo-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:12px;
+    margin-top:20px;
+  }
+  @media(max-width:720px){.figo-grid{grid-template-columns:1fr 1fr;}}
+  @media(max-width:480px){.figo-grid{grid-template-columns:1fr;}}
+
+  .figo-card{
+    background:var(--white);border:1.5px solid var(--line);
+    border-radius:14px;padding:16px;position:relative;
+  }
+  .figo-card.submucoso{border-top:4px solid var(--terracotta);}
+  .figo-card.outros{border-top:4px solid var(--sage);}
+  .figo-card.hibrido{border-top:4px solid var(--mauve);}
+
+  .figo-num{
+    font-family:'Lora',serif;font-weight:700;font-size:26px;
+    color:var(--ink);line-height:1;margin-bottom:6px;
+  }
+  .figo-name{font-weight:600;font-size:13.5px;margin-bottom:6px;}
+  .figo-desc{font-size:12.5px;color:var(--ink-soft);}
+
+  .figo-cat-label{
+    font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+    font-weight:700;margin:24px 0 10px;
+  }
+  .figo-cat-label.submucoso{color:var(--terracotta-dark);}
+  .figo-cat-label.outros{color:var(--sage-dark);}
+  .figo-cat-label.hibrido{color:var(--mauve);}
+
+  .compl-list{display:grid;gap:10px;margin-top:14px;}
+  .compl-item{
+    background:var(--white);border:1.5px solid var(--line);border-left:4px solid var(--mauve);
+    border-radius:10px;padding:12px 16px;font-size:14px;
+  }
+  .compl-item strong{color:var(--terracotta-dark);}
+
+  /* Cancer staging / subtype cards */
+  .stage-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:16px 0;}
+  @media(max-width:720px){.stage-grid{grid-template-columns:1fr 1fr;}}
+  @media(max-width:480px){.stage-grid{grid-template-columns:1fr;}}
+  .stage-card{
+    background:var(--white);border:1.5px solid var(--line);border-radius:12px;padding:14px;
+  }
+  .stage-num{font-family:'Lora',serif;font-weight:700;font-size:20px;color:var(--mauve);margin-bottom:4px;}
+  .stage-name{font-weight:600;font-size:13px;margin-bottom:4px;}
+  .stage-desc{font-size:12px;color:var(--ink-soft);}
+
+  .subtype-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0;}
+  @media(max-width:640px){.subtype-grid{grid-template-columns:1fr;}}
+  .subtype-card{
+    background:var(--white);border:1.5px solid var(--line);border-radius:14px;padding:18px;
+  }
+  .subtype-card.luminal-a{border-top:4px solid var(--sage);}
+  .subtype-card.luminal-b{border-top:4px solid #A8BFA0;}
+  .subtype-card.her2{border-top:4px solid var(--terracotta);}
+  .subtype-card.tnbc{border-top:4px solid var(--ink);}
+  .subtype-title{font-family:'Lora',serif;font-weight:600;font-size:16px;margin-bottom:6px;}
+  .receptor-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
+  .rtag{font-size:11px;font-weight:700;padding:2px 9px;border-radius:999px;background:var(--cream-2);color:var(--ink-soft);}
+  .rtag.pos{background:var(--pastel-green);color:var(--sage-dark);}
+  .rtag.neg{background:#FBEEE7;color:var(--terracotta-dark);}
+
+  .risk-tags{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0;}
+  .risk-tag{
+    font-size:13px;font-weight:600;padding:6px 14px;border-radius:999px;
+    background:var(--mauve-bg);color:var(--mauve);border:1px solid var(--mauve);
+  }
+
+  /* Mastite x Ectasia compare */
+  .breast-compare{display:grid;grid-template-columns:1fr 1fr;gap:0;margin:18px 0;border-radius:14px;overflow:hidden;border:1.5px solid var(--line);}
+  @media(max-width:680px){.breast-compare{grid-template-columns:1fr;}}
+  .bc-col{padding:20px;background:var(--white);}
+  .bc-col.mastite{background:#FBEEE7;border-right:1.5px solid var(--line);}
+  @media(max-width:680px){.bc-col.mastite{border-right:none;border-bottom:1.5px solid var(--line);}}
+  .bc-col.ectasia{background:var(--mauve-bg);}
+  .bc-title{font-family:'Lora',serif;font-weight:700;font-size:18px;margin-bottom:10px;}
+  .bc-row{margin-bottom:10px;font-size:13.5px;}
+  .bc-label{font-weight:700;color:var(--ink);display:block;font-size:11px;text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px;}
+  .fever-pill{
+    display:inline-block;font-size:12px;font-weight:700;padding:3px 12px;border-radius:999px;margin-top:6px;
+  }
+  .fever-pill.yes{background:#FBEEE7;color:var(--terracotta-dark);}
+  .fever-pill.no{background:var(--pastel-green);color:var(--sage-dark);}
+
+  footer{
+    margin-top:44px;padding-top:18px;border-top:1px solid var(--line);
+    font-size:12.5px;color:var(--ink-soft);text-align:center;
+  }
+
+  /* ===== Galeria de Fotos / Mapas Mentais ===== */
+  .photo-section{
+    margin-top:36px;padding-top:24px;border-top:1.5px dashed var(--line);
+  }
+  .photo-header{
+    display:flex;align-items:center;justify-content:space-between;
+    margin-bottom:14px;flex-wrap:wrap;gap:10px;
+  }
+  .photo-title{
+    font-family:'Lora',serif;font-weight:600;font-size:17px;
+    display:flex;align-items:center;gap:8px;
+  }
+  .photo-add-btn{
+    display:inline-flex;align-items:center;gap:6px;
+    font-family:'Source Sans 3',sans-serif;font-weight:600;font-size:13px;
+    padding:8px 16px;border-radius:999px;border:1.5px dashed var(--terracotta);
+    background:#FCF6F0;color:var(--terracotta-dark);cursor:pointer;
+    transition:all .15s ease;
+  }
+  .photo-add-btn:hover{background:var(--terracotta);color:var(--white);border-style:solid;}
+  .photo-grid{
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));
+    gap:12px;
+  }
+  .photo-thumb{
+    position:relative;border-radius:12px;overflow:hidden;
+    border:1.5px solid var(--line);background:var(--white);
+    aspect-ratio:1;cursor:pointer;
+  }
+  .photo-thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+  .photo-thumb .photo-del{
+    position:absolute;top:6px;right:6px;width:22px;height:22px;
+    border-radius:50%;background:rgba(58,52,44,0.75);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-size:13px;
+    cursor:pointer;border:none;line-height:1;
+  }
+  .photo-empty{
+    font-size:13px;color:var(--ink-soft);font-style:italic;
+    grid-column:1/-1;padding:14px 0;
+  }
+  .photo-lightbox{
+    display:none;position:fixed;inset:0;background:rgba(20,18,15,0.9);
+    z-index:200;align-items:center;justify-content:center;padding:32px;
+    cursor:zoom-out;
+  }
+  .photo-lightbox.active{display:flex;}
+  .photo-lightbox img{max-width:100%;max-height:100%;border-radius:8px;box-shadow:0 20px 60px rgba(0,0,0,0.5);}
+
+  /* ===== Import/Export na nav ===== */
+  .hub-io{display:flex;gap:6px;margin-left:auto;}
+  .hub-io-btn{
+    display:inline-flex;align-items:center;gap:5px;
+    font-family:'Source Sans 3',sans-serif;font-weight:600;font-size:12.5px;
+    padding:7px 13px;border-radius:999px;border:1.5px solid var(--line);
+    background:var(--white);color:var(--ink-soft);cursor:pointer;
+    transition:all .15s ease;white-space:nowrap;
+  }
+  .hub-io-btn:hover{border-color:var(--terracotta);color:var(--terracotta-dark);}
+</style>
+</head>
+<body>
+
+<nav class="hub-nav">
+  <div class="hub-nav-inner">
+    <span class="hub-brand">Hub Ginecologia</span>
+    <button class="hub-tab active" data-topic="mioma">Miomas — FIGO</button>
+    <button class="hub-tab" data-topic="endometrio">Ca. Endométrio</button>
+    <button class="hub-tab" data-topic="mama">Ca. Mama</button>
+    <button class="hub-tab" data-topic="ovario">Ca. Ovário</button>
+    <button class="hub-tab" data-topic="mama-benigna">Doenças Benignas da Mama</button>
+
+    <div class="hub-io">
+      <label class="hub-io-btn" title="Importar fotos salvas">
+        📥 Importar
+        <input type="file" accept="application/json" style="display:none" onchange="importPhotosFile(event)">
+      </label>
+      <button class="hub-io-btn" onclick="exportPhotos()" title="Exportar fotos para usar em outro dispositivo">💾 Exportar</button>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <!-- ============================================= -->
+  <!-- TOPIC: MIOMAS — CLASSIFICAÇÃO FIGO -->
+  <!-- ============================================= -->
+  <section class="topic active" id="topic-mioma">
+
+    <header class="topic-head">
+      <div class="eyebrow">Ginecologia · Patologia Uterina Benigna</div>
+      <h1>Classificação FIGO dos Leiomiomas Uterinos</h1>
+      <p class="subtitle">Sistema numérico (0–8) que localiza o mioma em relação ao endométrio e à serosa — usado para prever sintomas, guiar via de tratamento (histeroscópica vs. laparoscópica/aberta) e padronizar a comunicação entre exame de imagem e conduta cirúrgica.</p>
+    </header>
+
+    <div class="highlight-box">
+      <strong>Lógica do sistema:</strong> quanto menor o número, mais próximo da cavidade endometrial (submucoso) — maior impacto em sangramento e fertilidade. Quanto maior o número, mais próximo da serosa (subseroso) — menor impacto em sangramento, mas pode causar efeito de massa/compressão.
+    </div>
+
+    <h2 style="margin-top:28px;">Categoria 1 — Submucosos (contato com a cavidade)</h2>
+    <div class="figo-cat-label submucoso">Tipos 0, 1, 2</div>
+    <div class="figo-grid">
+      <div class="figo-card submucoso">
+        <div class="figo-num">0</div>
+        <div class="figo-name">Pediculado intracavitário</div>
+        <div class="figo-desc">Totalmente dentro da cavidade, preso por pedículo fino — sem extensão para o miométrio. Mais fácil de ressecar via histeroscopia.</div>
+      </div>
+      <div class="figo-card submucoso">
+        <div class="figo-num">1</div>
+        <div class="figo-name">Submucoso &lt;50% intramural</div>
+        <div class="figo-desc">Maior parte do mioma projeta-se na cavidade; menos de 50% do volume está dentro do miométrio.</div>
+      </div>
+      <div class="figo-card submucoso">
+        <div class="figo-num">2</div>
+        <div class="figo-name">Submucoso ≥50% intramural</div>
+        <div class="figo-desc">Maior parte do mioma está dentro do miométrio; ≥50% do volume é intramural, mas ainda distorce a cavidade.</div>
+      </div>
+    </div>
+
+    <h2>Categoria 2 — Outros (sem contato direto com a cavidade)</h2>
+    <div class="figo-cat-label outros">Tipos 3 a 7</div>
+    <div class="figo-grid">
+      <div class="figo-card outros">
+        <div class="figo-num">3</div>
+        <div class="figo-name">Contacta o endométrio, 100% intramural</div>
+        <div class="figo-desc">Encosta na cavidade mas não a invade — totalmente dentro do miométrio.</div>
+      </div>
+      <div class="figo-card outros">
+        <div class="figo-num">4</div>
+        <div class="figo-name">Intramural</div>
+        <div class="figo-desc">Totalmente dentro do miométrio, sem contato com endométrio nem serosa.</div>
+      </div>
+      <div class="figo-card outros">
+        <div class="figo-num">5</div>
+        <div class="figo-name">Subseroso ≥50% intramural</div>
+        <div class="figo-desc">Maior parte intramural, com pequena projeção para a superfície serosa.</div>
+      </div>
+      <div class="figo-card outros">
+        <div class="figo-num">6</div>
+        <div class="figo-name">Subseroso &lt;50% intramural</div>
+        <div class="figo-desc">Maior parte do mioma projeta-se para fora do útero, na serosa.</div>
+      </div>
+      <div class="figo-card outros">
+        <div class="figo-num">7</div>
+        <div class="figo-name">Subseroso pediculado</div>
+        <div class="figo-desc">Totalmente fora do miométrio, preso por pedículo — pode torcer (risco de torção aguda).</div>
+      </div>
+    </div>
+
+    <h2>Categoria 3 — Outras localizações</h2>
+    <div class="figo-cat-label hibrido">Tipo 8</div>
+    <div class="figo-grid" style="grid-template-columns:1fr;">
+      <div class="figo-card hibrido">
+        <div class="figo-num">8</div>
+        <div class="figo-name">Outros / sem relação com o miométrio</div>
+        <div class="figo-desc">Miomas cervicais, de ligamento largo (parasitários), ou outras localizações que não se encaixam no sistema 0-7.</div>
+      </div>
+    </div>
+
+    <h2>Miomas híbridos (dois números)</h2>
+    <div class="highlight-box" style="background:var(--white);border-color:var(--line);">
+      Quando o mioma afeta tanto o endométrio quanto a serosa, usa-se <strong>dois números separados por hífen</strong> — o primeiro refere-se à relação com o endométrio, o segundo à relação com a serosa. Exemplo: <strong>mioma 2-5</strong> = submucoso (≥50% intramural, categoria 2 em relação à cavidade) que também tem extensão subserosa (categoria 5).
+    </div>
+
+    <h2>Relevância clínica</h2>
+    <div class="compl-list">
+      <div class="compl-item"><strong>Tipos 0, 1, 2 (submucosos):</strong> maior associação com sangramento uterino anormal (menorragia) e infertilidade/perda gestacional — são os que mais distorcem a cavidade endometrial. Candidatos à <strong>miomectomia histeroscópica</strong>.</div>
+      <div class="compl-item"><strong>Tipos 3-6 (intramurais/subserosos):</strong> impacto variável em sangramento; tipos maiores podem causar sintomas compressivos (urinários, intestinais) e dor pélvica. Geralmente abordagem laparoscópica ou aberta.</div>
+      <div class="compl-item"><strong>Tipo 7 (subseroso pediculado):</strong> risco de torção aguda (dor pélvica súbita) — diagnóstico diferencial de abdome agudo ginecológico.</div>
+      <div class="compl-item"><strong>Tipo 2-5 (híbrido):</strong> mais desafiador cirurgicamente por acometer as duas superfícies — geralmente requer via de acesso combinada ou laparotômica.</div>
+      <div class="compl-item"><strong>Uso prático:</strong> o número FIGO no laudo de USG/RM orienta diretamente a decisão entre histeroscopia cirúrgica, laparoscopia ou laparotomia antes mesmo da consulta cirúrgica.</div>
+    </div>
+
+    <div class="photo-section">
+      <div class="photo-header">
+        <div class="photo-title">📷 Meus mapas mentais / imagens</div>
+        <label class="photo-add-btn">
+          + Adicionar foto
+          <input type="file" accept="image/*" multiple style="display:none" onchange="handlePhotoUpload(this,'mioma')">
+        </label>
+      </div>
+      <div class="photo-grid" data-topic="mioma"></div>
+    </div>
+
+  </section>
+
+  <!-- ============================================= -->
+  <!-- TOPIC: CÂNCER DE ENDOMÉTRIO -->
+  <!-- ============================================= -->
+  <section class="topic" id="topic-endometrio">
+
+    <header class="topic-head">
+      <div class="eyebrow">Ginecologia · Oncologia</div>
+      <h1>Câncer de Endométrio</h1>
+      <p class="subtitle">O câncer ginecológico mais comum nos países desenvolvidos — geralmente diagnosticado precocemente pelo sintoma de alerta: sangramento pós-menopausa.</p>
+    </header>
+
+    <h2 style="margin-top:0;">Fatores de risco — exposição estrogênica sem oposição</h2>
+    <div class="risk-tags">
+      <span class="risk-tag">Obesidade</span>
+      <span class="risk-tag">Nuliparidade</span>
+      <span class="risk-tag">Menarca precoce</span>
+      <span class="risk-tag">Menopausa tardia</span>
+      <span class="risk-tag">SOP</span>
+      <span class="risk-tag">Tamoxifeno</span>
+      <span class="risk-tag">Terapia estrogênica isolada</span>
+      <span class="risk-tag">Diabetes / HAS</span>
+      <span class="risk-tag">Síndrome de Lynch (HNPCC)</span>
+    </div>
+
+    <h2>Dois tipos histológicos — prognósticos opostos</h2>
+    <table>
+      <tr><th></th><th>Tipo I (endometrioide)</th><th>Tipo II (não-endometrioide)</th></tr>
+      <tr><td><strong>Frequência</strong></td><td>~80% dos casos</td><td>~10-20%</td></tr>
+      <tr><td><strong>Relação com estrogênio</strong></td><td>Estrogênio-dependente</td><td>Não relacionado ao estrogênio</td></tr>
+      <tr><td><strong>Precursor</strong></td><td>Hiperplasia endometrial atípica</td><td>Endométrio atrófico (carcinoma intraepitelial seroso)</td></tr>
+      <tr><td><strong>Histologia</strong></td><td>Endometrioide</td><td>Seroso, células claras — mais agressivos</td></tr>
+      <tr><td><strong>Prognóstico</strong></td><td>Bom, diagnóstico precoce</td><td>Reservado — maior taxa de recorrência</td></tr>
+    </table>
+
+    <h2>Diagnóstico</h2>
+    <div class="compl-list">
+      <div class="compl-item"><strong>Sintoma de alerta:</strong> sangramento pós-menopausa — qualquer sangramento após 12 meses de amenorreia deve ser investigado</div>
+      <div class="compl-item"><strong>USG transvaginal:</strong> espessura endometrial &gt;4-5mm em mulher pós-menopausa é indicação de investigação adicional</div>
+      <div class="compl-item"><strong>Biópsia endometrial ambulatorial (pipelle)</strong> — 1ª linha, alta sensibilidade</div>
+      <div class="compl-item"><strong>Histeroscopia com biópsia dirigida</strong> — padrão-ouro, principalmente se biópsia às cegas for inconclusiva ou sangramento persistir</div>
+    </div>
+
+    <h2>Estadiamento FIGO (resumo)</h2>
+    <div class="stage-grid">
+      <div class="stage-card">
+        <div class="stage-num">I</div>
+        <div class="stage-name">Confinado ao corpo uterino</div>
+        <div class="stage-desc">IA: &lt;50% miométrio · IB: ≥50% miométrio</div>
+      </div>
+      <div class="stage-card">
+        <div class="stage-num">II</div>
+        <div class="stage-name">Invade estroma cervical</div>
+        <div class="stage-desc">Sem extensão extrauterina</div>
+      </div>
+      <div class="stage-card">
+        <div class="stage-num">III</div>
+        <div class="stage-name">Disseminação local/regional</div>
+        <div class="stage-desc">Serosa, anexos, vagina, linfonodos pélvicos/para-aórticos</div>
+      </div>
+      <div class="stage-card">
+        <div class="stage-num">IV</div>
+        <div class="stage-name">Bexiga/intestino ou metástase a distância</div>
+        <div class="stage-desc">Doença avançada</div>
+      </div>
+    </div>
+
+    <h2>Tratamento</h2>
+    <div class="compl-list">
+      <div class="compl-item"><strong>Cirurgia é a base do tratamento:</strong> histerectomia total + salpingooforectomia bilateral + estadiamento cirúrgico (linfonodos pélvicos/para-aórticos ou linfonodo sentinela)</div>
+      <div class="compl-item"><strong>Radioterapia adjuvante</strong> — conforme fatores de risco (invasão miometrial profunda, grau histológico, tipo II)</div>
+      <div class="compl-item"><strong>Quimioterapia</strong> — casos de alto risco, tipo II, ou doença avançada/metastática</div>
+      <div class="compl-item"><strong>Tratamento hormonal (progestágeno)</strong> — opção para preservação de fertilidade em casos muito selecionados (jovens, doença inicial, tipo I bem diferenciado) ou pacientes inoperáveis</div>
+    </div>
+
+    <div class="photo-section">
+      <div class="photo-header">
+        <div class="photo-title">📷 Meus mapas mentais / imagens</div>
+        <label class="photo-add-btn">
+          + Adicionar foto
+          <input type="file" accept="image/*" multiple style="display:none" onchange="handlePhotoUpload(this,'endometrio')">
+        </label>
+      </div>
+      <div class="photo-grid" data-topic="endometrio"></div>
+    </div>
+
+  </section>
+
+  <!-- ============================================= -->
+  <!-- TOPIC: CÂNCER DE MAMA -->
+  <!-- ============================================= -->
+  <section class="topic" id="topic-mama">
+
+    <header class="topic-head">
+      <div class="eyebrow">Ginecologia · Oncologia</div>
+      <h1>Câncer de Mama</h1>
+      <p class="subtitle">Rastreio, diagnóstico por imagem (BI-RADS), subtipos moleculares e princípios gerais de tratamento.</p>
+    </header>
+
+    <h2 style="margin-top:0;">Rastreio (Brasil — MS/FEBRASGO)</h2>
+    <div class="compl-list">
+      <div class="compl-item"><strong>Mamografia bienal dos 50 aos 69 anos</strong> — recomendação oficial do Ministério da Saúde para risco habitual</div>
+      <div class="compl-item">Faixas de 40-49 e 70-74 anos: decisão compartilhada, sem consenso absoluto entre sociedades (FEBRASGO/CBR recomendam início aos 40, anual)</div>
+      <div class="compl-item"><strong>Alto risco</strong> (BRCA, história familiar forte, radioterapia torácica prévia): rastreio individualizado, mais precoce, associando RM de mamas</div>
+    </div>
+
+    <h2>BI-RADS — categorias de laudo</h2>
+    <table>
+      <tr><th>Categoria</th><th>Significado</th><th>Conduta</th></tr>
+      <tr><td>0</td><td>Inconclusivo</td><td>Necessita exame adicional</td></tr>
+      <tr><td>1</td><td>Negativo</td><td>Rotina</td></tr>
+      <tr><td>2</td><td>Achado benigno</td><td>Rotina</td></tr>
+      <tr><td>3</td><td>Provavelmente benigno</td><td>Seguimento em 6 meses (risco malignidade &lt;2%)</td></tr>
+      <tr><td>4</td><td>Suspeito</td><td>Biópsia (risco 2-95%, subdividido 4A/4B/4C)</td></tr>
+      <tr><td>5</td><td>Altamente sugestivo de malignidade</td><td>Biópsia (risco &gt;95%)</td></tr>
+      <tr><td>6</td><td>Malignidade já confirmada por biópsia</td><td>Conduta oncológica</td></tr>
+    </table>
+
+    <h2>Subtipos moleculares — define tratamento sistêmico</h2>
+    <div class="subtype-grid">
+      <div class="subtype-card luminal-a">
+        <div class="subtype-title">Luminal A</div>
+        <div class="receptor-tags">
+          <span class="rtag pos">RE+</span><span class="rtag pos">RP+</span><span class="rtag neg">HER2-</span><span class="rtag">Ki-67 baixo</span>
+        </div>
+        <div class="node-body">Melhor prognóstico. Tratamento predominantemente hormonal (tamoxifeno/inibidor de aromatase) ± quimioterapia conforme escore genômico.</div>
+      </div>
+      <div class="subtype-card luminal-b">
+        <div class="subtype-title">Luminal B</div>
+        <div class="receptor-tags">
+          <span class="rtag pos">RE+</span><span class="rtag">RP variável</span><span class="rtag">HER2 +/-</span><span class="rtag">Ki-67 alto</span>
+        </div>
+        <div class="node-body">Mais proliferativo que Luminal A. Geralmente hormonioterapia + quimioterapia (± terapia anti-HER2 se HER2+).</div>
+      </div>
+      <div class="subtype-card her2">
+        <div class="subtype-title">HER2-enriquecido</div>
+        <div class="receptor-tags">
+          <span class="rtag neg">RE-</span><span class="rtag neg">RP-</span><span class="rtag pos">HER2+</span>
+        </div>
+        <div class="node-body">Terapia-alvo anti-HER2 (trastuzumabe ± pertuzumabe) + quimioterapia. Prognóstico transformado pela terapia-alvo (antes era o pior subtipo).</div>
+      </div>
+      <div class="subtype-card tnbc">
+        <div class="subtype-title">Triplo-negativo</div>
+        <div class="receptor-tags">
+          <span class="rtag neg">RE-</span><span class="rtag neg">RP-</span><span class="rtag neg">HER2-</span>
+        </div>
+        <div class="node-body">Sem alvo hormonal ou HER2 — quimioterapia é a base (± imunoterapia em contextos específicos). Mais associado a BRCA1. Maior agressividade, mas boa resposta à quimio se completa (pCR).</div>
+      </div>
+    </div>
+
+    <h2>Estadiamento TNM (lógica geral)</h2>
+    <div class="stage-grid">
+      <div class="stage-card">
+        <div class="stage-num">T</div>
+        <div class="stage-name">Tumor</div>
+        <div class="stage-desc">Tamanho e invasão local (pele/parede torácica)</div>
+      </div>
+      <div class="stage-card">
+        <div class="stage-num">N</div>
+        <div class="stage-name">Linfonodos</div>
+        <div class="stage-desc">Axilares, mamários internos, supraclaviculares</div>
+      </div>
+      <div class="stage-card">
+        <div class="stage-num">M</div>
+        <div class="stage-name">Metástase</div>
+        <div class="stage-desc">Distante — ossos, fígado, pulmão, SNC</div>
+      </div>
+    </div>
+
+    <h2>Princípios de tratamento</h2>
+    <div class="compl-list">
+      <div class="compl-item"><strong>Cirurgia:</strong> conservadora (setorectomia + RT adjuvante) ou mastectomia, conforme tamanho/multicentricidade/preferência</div>
+      <div class="compl-item"><strong>Avaliação axilar:</strong> linfonodo sentinela (doença inicial) ou esvaziamento axilar (axila clinicamente positiva)</div>
+      <div class="compl-item"><strong>Radioterapia:</strong> quase sempre após cirurgia conservadora; após mastectomia se fatores de risco (tumor grande, linfonodos+)</div>
+      <div class="compl-item"><strong>Sistêmico:</strong> definido pelo subtipo molecular — hormonioterapia, quimioterapia, terapia-alvo anti-HER2, conforme tabela acima</div>
+    </div>
+
+    <div class="photo-section">
+      <div class="photo-header">
+        <div class="photo-title">📷 Meus mapas mentais / imagens</div>
+        <label class="photo-add-btn">
+          + Adicionar foto
+          <input type="file" accept="image/*" multiple style="display:none" onchange="handlePhotoUpload(this,'mama')">
+        </label>
+      </div>
+      <div class="photo-grid" data-topic="mama"></div>
+    </div>
+
+  </section>
+
+  <!-- ============================================= -->
+  <!-- TOPIC: CÂNCER DE OVÁRIO -->
+  <!-- ============================================= -->
+  <section class="topic" id="topic-ovario">
+
+    <header class="topic-head">
+      <div class="eyebrow">Ginecologia · Oncologia</div>
+      <h1>Câncer de Ovário</h1>
+      <p class="subtitle">O câncer ginecológico de pior prognóstico — geralmente diagnosticado em estágio avançado por ausência de sintomas específicos precoces.</p>
+    </header>
+
+    <h2 style="margin-top:0;">Por que o prognóstico é ruim</h2>
+    <div class="highlight-box">
+      Sintomas iniciais são inespecíficos (distensão abdominal, saciedade precoce, dor pélvica vaga) — <strong>&gt;70% dos casos são diagnosticados em estágio III/IV</strong>, já com disseminação peritoneal. Não há método de rastreio eficaz validado para população geral (CA-125 + USTV não reduzem mortalidade em rastreio populacional).
+    </div>
+
+    <h2>Fatores de risco e proteção</h2>
+    <table>
+      <tr><th>Aumentam risco</th><th>Reduzem risco</th></tr>
+      <tr><td>Mutação BRCA1/2, Síndrome de Lynch</td><td>Uso de anticoncepcional oral combinado</td></tr>
+      <tr><td>Nuliparidade, infertilidade</td><td>Multiparidade</td></tr>
+      <tr><td>Menarca precoce, menopausa tardia</td><td>Amamentação prolongada</td></tr>
+      <tr><td>História familiar de ca. ovário/mama</td><td>Laqueadura tubária / salpingectomia</td></tr>
+      <tr><td>Endometriose (subtipos endometrioide/células claras)</td><td>—</td></tr>
+    </table>
+
+    <h2>Principais subtipos histológicos (epiteliais — ~90% dos casos)</h2>
+    <div class="compl-list">
+      <div class="compl-item"><strong>Seroso</strong> — mais comum; alto grau tem forte associação com mutação BRCA e origem na trompa (fímbria)</div>
+      <div class="compl-item"><strong>Mucinoso</strong> — geralmente unilateral, grandes dimensões; considerar metástase de TGI (tumor de Krukenberg) como diferencial</div>
+      <div class="compl-item"><strong>Endometrioide</strong> — associado à endometriose; pode coexistir com câncer de endométrio primário</div>
+      <div class="compl-item"><strong>Células claras</strong> — associado à endometriose; maior resistência à quimioterapia padrão</div>
+    </div>
+
+    <h2>Diagnóstico</h2>
+    <div class="compl-list">
+      <div class="compl-item"><strong>USG transvaginal</strong> — caracteriza a massa anexial (septos, componente sólido, vascularização ao Doppler)</div>
+      <div class="compl-item"><strong>CA-125</strong> — marcador tumoral, mais útil para seguimento/resposta ao tratamento do que para diagnóstico isolado (pode elevar em endometriose, DIP, miomas, gestação)</div>
+      <div class="compl-item"><strong>RM/TC de abdome e pelve</strong> — avaliação de disseminação peritoneal e planejamento cirúrgico</div>
+      <div class="compl-item"><strong>Diagnóstico definitivo é cirúrgico</strong> — biópsia por punção não é rotina pelo risco de disseminação de células tumorais na cavidade</div>
+    </div>
+
+    <h2>Estadiamento FIGO (resumo)</h2>
+    <div class="stage-grid">
+      <div class="stage-card">
+        <div class="stage-num">I</div>
+        <div class="stage-name">Limitado aos ovários/trompas</div>
+        <div class="stage-desc">IA unilateral · IB bilateral · IC com ruptura capsular/citologia+</div>
+      </div>
+      <div class="stage-card">
+        <div class="stage-num">II</div>
+        <div class="stage-name">Extensão pélvica</div>
+        <div class="stage-desc">Útero, trompas, outros órgãos pélvicos</div>
+      </div>
+      <div class="stage-card">
+        <div class="stage-num">III</div>
+        <div class="stage-name">Disseminação peritoneal/linfonodal</div>
+        <div class="stage-desc">Fora da pelve, retroperitônio, linfonodos</div>
+      </div>
+      <div class="stage-card">
+        <div class="stage-num">IV</div>
+        <div class="stage-name">Metástase a distância</div>
+        <div class="stage-desc">Derrame pleural citologia+, parênquima hepático/pulmonar</div>
+      </div>
+    </div>
+
+    <h2>Tratamento</h2>
+    <div class="compl-list">
+      <div class="compl-item"><strong>Cirurgia citorredutora (debulking)</strong> — objetivo é doença residual zero; inclui histerectomia + salpingooforectomia bilateral + omentectomia + estadiamento linfonodal</div>
+      <div class="compl-item"><strong>Quimioterapia</strong> — carboplatina + paclitaxel é o esquema padrão, adjuvante ou neoadjuvante conforme ressecabilidade inicial</div>
+      <div class="compl-item"><strong>Manutenção com inibidores de PARP</strong> (ex: olaparibe) — especialmente eficaz em tumores BRCA-mutados, prolonga sobrevida livre de progressão</div>
+      <div class="compl-item"><strong>Bevacizumabe</strong> — antiangiogênico usado em combinação em casos selecionados</div>
+    </div>
+
+    <div class="photo-section">
+      <div class="photo-header">
+        <div class="photo-title">📷 Meus mapas mentais / imagens</div>
+        <label class="photo-add-btn">
+          + Adicionar foto
+          <input type="file" accept="image/*" multiple style="display:none" onchange="handlePhotoUpload(this,'ovario')">
+        </label>
+      </div>
+      <div class="photo-grid" data-topic="ovario"></div>
+    </div>
+
+  </section>
+
+  <!-- ============================================= -->
+  <!-- TOPIC: DOENÇAS BENIGNAS DA MAMA -->
+  <!-- ============================================= -->
+  <section class="topic" id="topic-mama-benigna">
+
+    <header class="topic-head">
+      <div class="eyebrow">Ginecologia · Mastologia</div>
+      <h1>Doenças Benignas da Mama</h1>
+      <p class="subtitle">Mastite x Ectasia Ductal — causas, faixa etária, quadro clínico e por que apenas uma delas costuma cursar com febre.</p>
+    </header>
+
+    <h2 style="margin-top:0;">Mastite x Ectasia Ductal — comparativo direto</h2>
+    <div class="breast-compare">
+      <div class="bc-col mastite">
+        <div class="bc-title">Mastite</div>
+        <div class="bc-row"><span class="bc-label">O que é</span>Processo infeccioso/inflamatório agudo do parênquima mamário</div>
+        <div class="bc-row"><span class="bc-label">Contexto típico</span>Lactante — mais comum nas primeiras semanas de amamentação</div>
+        <div class="bc-row"><span class="bc-label">Causa</span>Obstrução de ducto lactífero + infecção bacteriana (geralmente <em>S. aureus</em>), por fissura mamilar ou pega inadequada</div>
+        <div class="bc-row"><span class="bc-label">Quadro clínico</span>Dor, calor, hiperemia localizada, edema — sinais flogísticos evidentes</div>
+        <div class="bc-row"><span class="bc-label">Febre</span><span class="fever-pill yes">Sim, comum</span><br>Acompanha mal-estar, calafrios, taquicardia — quadro infeccioso sistêmico clássico</div>
+        <div class="bc-row"><span class="bc-label">Complicação temida</span>Abscesso mamário, se não tratada</div>
+        <div class="bc-row"><span class="bc-label">Tratamento</span>Antibiótico com cobertura para <em>S. aureus</em>, manter amamentação/esvaziamento da mama, analgesia</div>
+      </div>
+      <div class="bc-col ectasia">
+        <div class="bc-title">Ectasia Ductal</div>
+        <div class="bc-row"><span class="bc-label">O que é</span>Dilatação e espessamento crônico dos ductos subareolares, com estase de secreção</div>
+        <div class="bc-row"><span class="bc-label">Contexto típico</span>Mulher perimenopausa/pós-menopausa, não lactante</div>
+        <div class="bc-row"><span class="bc-label">Causa</span>Processo degenerativo/involutivo dos ductos com o envelhecimento — não infeccioso na maioria dos casos</div>
+        <div class="bc-row"><span class="bc-label">Quadro clínico</span>Descarga papilar espessa (esverdeada/amarronzada), retração mamilar, massa subareolar palpável — geralmente indolor</div>
+        <div class="bc-row"><span class="bc-label">Febre</span><span class="fever-pill no">Não é típico</span><br>Processo crônico e indolente. Só ocorre com infecção secundária sobreposta</div>
+        <div class="bc-row"><span class="bc-label">Complicação/alerta</span>Pode mimetizar câncer de mama pela retração mamilar e massa — diagnóstico diferencial importante de imagem/biópsia</div>
+        <div class="bc-row"><span class="bc-label">Tratamento</span>Geralmente conservador; cirurgia (ressecção ductal) se sintomática/recorrente ou dúvida diagnóstica com malignidade</div>
+      </div>
+    </div>
+
+    <div class="highlight-box">
+      <strong>Ponto-chave de prova:</strong> lactante com dor + calor + hiperemia + febre → mastite. Mulher mais velha, não lactante, com secreção papilar espessa + retração do mamilo, sem febre → ectasia ductal (sempre correlacionar com exame de imagem para excluir malignidade, já que a retração mamilar também é sinal de alerta para câncer de mama).
+    </div>
+
+    <div class="photo-section">
+      <div class="photo-header">
+        <div class="photo-title">📷 Meus mapas mentais / imagens</div>
+        <label class="photo-add-btn">
+          + Adicionar foto
+          <input type="file" accept="image/*" multiple style="display:none" onchange="handlePhotoUpload(this,'mama-benigna')">
+        </label>
+      </div>
+      <div class="photo-grid" data-topic="mama-benigna"></div>
+    </div>
+
+  </section>
+
+</div>
+
+<footer>Hub de referência para estudo — sempre correlacionar com protocolo institucional e literatura atualizada (FIGO Munro et al., Tratado de Ginecologia).</footer>
+
+<script>
+  const hubTabs = document.querySelectorAll('.hub-tab');
+  const topics = document.querySelectorAll('.topic');
+
+  hubTabs.forEach(tab=>{
+    if(tab.classList.contains('disabled')) return;
+    tab.addEventListener('click', ()=>{
+      hubTabs.forEach(t=>t.classList.remove('active'));
+      tab.classList.add('active');
+      topics.forEach(s=>s.classList.remove('active'));
+      const target = document.getElementById('topic-' + tab.dataset.topic);
+      if(target) target.classList.add('active');
+      window.scrollTo({top:0, behavior:'smooth'});
+    });
+  });
+</script>
+
+
+<div class="photo-lightbox" id="photoLightbox" onclick="closeLightbox()">
+  <img id="photoLightboxImg" src="" onclick="event.stopPropagation()">
+</div>
+
+<script>
+(function(){
+  const STORAGE_KEY = 'medstudy_photos_ginecologia';
+
+  function loadPhotoStore(){
+    try{ return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }catch(e){ return {}; }
+  }
+  function savePhotoStore(store){
+    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(store)); return true; }
+    catch(e){ alert('Não foi possível salvar — armazenamento cheio. Tente exportar e limpar fotos antigas.'); return false; }
+  }
+
+  window.renderAllPhotoGrids = function(){
+    const store = loadPhotoStore();
+    document.querySelectorAll('.photo-grid').forEach(grid=>{
+      const topic = grid.dataset.topic;
+      const imgs = store[topic] || [];
+      if(imgs.length===0){
+        grid.innerHTML = '<div class="photo-empty">Nenhuma foto ainda — clique em "Adicionar foto" para anexar seu mapa mental.</div>';
+        return;
+      }
+      grid.innerHTML = imgs.map((src,i)=>`
+        <div class="photo-thumb" onclick="openLightbox('${topic}',${i})">
+          <img src="${src}" loading="lazy">
+          <button class="photo-del" onclick="event.stopPropagation();deletePhoto('${topic}',${i})">✕</button>
+        </div>
+      `).join('');
+    });
+  };
+
+  window.handlePhotoUpload = function(input, topic){
+    const files = Array.from(input.files||[]);
+    if(!files.length) return;
+    const store = loadPhotoStore();
+    if(!store[topic]) store[topic]=[];
+    let pending = files.length;
+    files.forEach(file=>{
+      const reader = new FileReader();
+      reader.onload = e=>{
+        store[topic].push(e.target.result);
+        pending--;
+        if(pending===0){
+          savePhotoStore(store);
+          renderAllPhotoGrids();
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+    input.value='';
+  };
+
+  window.deletePhoto = function(topic, idx){
+    const store = loadPhotoStore();
+    if(store[topic]){
+      store[topic].splice(idx,1);
+      savePhotoStore(store);
+      renderAllPhotoGrids();
+    }
+  };
+
+  window.openLightbox = function(topic, idx){
+    const store = loadPhotoStore();
+    const src = (store[topic]||[])[idx];
+    if(!src) return;
+    const lb = document.getElementById('photoLightbox');
+    document.getElementById('photoLightboxImg').src = src;
+    lb.classList.add('active');
+  };
+  window.closeLightbox = function(){
+    document.getElementById('photoLightbox').classList.remove('active');
+  };
+
+  window.exportPhotos = function(){
+    const store = loadPhotoStore();
+    const hasAny = Object.values(store).some(arr=>arr && arr.length);
+    if(!hasAny){ alert('Nenhuma foto para exportar ainda.'); return; }
+    const blob = new Blob([JSON.stringify(store,null,2)], {type:'application/json'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'fotos-ginecologia-' + new Date().toISOString().slice(0,10) + '.json';
+    a.click();
+  };
+
+  window.importPhotosFile = function(event){
+    const file = event.target.files[0]; if(!file) return;
+    const reader = new FileReader();
+    reader.onload = e=>{
+      try{
+        const imported = JSON.parse(e.target.result);
+        const store = loadPhotoStore();
+        Object.keys(imported).forEach(topic=>{
+          if(!store[topic]) store[topic]=[];
+          store[topic] = store[topic].concat(imported[topic]);
+        });
+        if(savePhotoStore(store)){
+          renderAllPhotoGrids();
+          alert('Fotos importadas com sucesso!');
+        }
+      }catch(err){ alert('Arquivo inválido.'); }
+    };
+    reader.readAsText(file);
+    event.target.value='';
+  };
+
+  document.addEventListener('DOMContentLoaded', renderAllPhotoGrids);
+  if(document.readyState !== 'loading') renderAllPhotoGrids();
+})();
+</script>
+</body>
+</html>

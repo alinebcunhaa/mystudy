@@ -1,0 +1,1829 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hub de Obstetrícia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#F7F3EA;
+    --cream-2:#EFE8D8;
+    --terracotta:#C77B58;
+    --terracotta-dark:#A85F42;
+    --sage:#8FA290;
+    --sage-dark:#6B7F6C;
+    --pastel-green:#D9E4D3;
+    --ink:#3A342C;
+    --ink-soft:#6B6355;
+    --line:#DCD3BF;
+    --white:#FFFFFF;
+    --blue-mono:#7B92A8;
+    --blue-mono-bg:#EBF0F4;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--cream);
+    color:var(--ink);
+    font-family:'Source Sans 3', sans-serif;
+    line-height:1.5;
+  }
+  .wrap{max-width:960px;margin:0 auto;padding:0 16px 80px;}
+
+  /* ===== TOP NAV (persistent across all topics) ===== */
+  .hub-nav{
+    position:sticky;
+    top:0;
+    z-index:50;
+    background:var(--cream);
+    border-bottom:1.5px solid var(--line);
+    padding:14px 16px;
+  }
+  .hub-nav-inner{
+    max-width:960px;
+    margin:0 auto;
+    display:flex;
+    align-items:center;
+    gap:14px;
+    flex-wrap:wrap;
+  }
+  .hub-brand{
+    font-family:'Lora',serif;
+    font-weight:700;
+    font-size:15px;
+    color:var(--ink);
+    white-space:nowrap;
+    margin-right:4px;
+  }
+  .hub-tab{
+    font-family:'Source Sans 3',sans-serif;
+    font-weight:600;
+    font-size:13.5px;
+    padding:8px 16px;
+    border-radius:999px;
+    border:1.5px solid var(--line);
+    background:var(--white);
+    color:var(--ink-soft);
+    cursor:pointer;
+    transition:all .18s ease;
+    white-space:nowrap;
+  }
+  .hub-tab:hover{border-color:var(--terracotta);color:var(--terracotta-dark);}
+  .hub-tab.active{
+    background:var(--ink);
+    border-color:var(--ink);
+    color:var(--cream);
+  }
+
+  .topic{display:none;padding-top:28px;}
+  .topic.active{display:block;}
+
+  header.topic-head{margin-bottom:28px;}
+  .eyebrow{
+    font-size:12px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    color:var(--sage-dark);
+    font-weight:600;
+    margin-bottom:6px;
+  }
+  h1{
+    font-family:'Lora',serif;
+    font-weight:600;
+    font-size:clamp(24px,4vw,32px);
+    margin:0 0 8px;
+  }
+  .subtitle{color:var(--ink-soft);font-size:15px;max-width:65ch;}
+  h2{
+    font-family:'Lora',serif;
+    font-weight:600;
+    font-size:20px;
+    margin:36px 0 14px;
+    padding-bottom:8px;
+    border-bottom:1.5px solid var(--line);
+  }
+
+  /* ===== Sub-toggle (within a topic) ===== */
+  .toggle-row{
+    display:flex;
+    gap:10px;
+    margin:22px 0 26px;
+    flex-wrap:wrap;
+  }
+  .toggle-btn{
+    font-family:'Source Sans 3',sans-serif;
+    font-weight:600;
+    font-size:14px;
+    padding:10px 18px;
+    border-radius:999px;
+    border:1.5px solid var(--line);
+    background:var(--white);
+    color:var(--ink-soft);
+    cursor:pointer;
+    transition:all .18s ease;
+  }
+  .toggle-btn:hover{border-color:var(--terracotta);color:var(--terracotta-dark);}
+  .toggle-btn.active{
+    background:var(--terracotta);
+    border-color:var(--terracotta);
+    color:var(--white);
+  }
+
+  /* ===== Flow nodes (Rh topic) ===== */
+  .flow{position:relative;}
+  .node{
+    background:var(--white);
+    border:1.5px solid var(--line);
+    border-radius:14px;
+    padding:18px 20px;
+    position:relative;
+  }
+  .node.start{background:var(--ink);color:var(--cream);border-color:var(--ink);}
+  .node.start .node-label{color:var(--cream-2);}
+  .node.decision{border-color:var(--terracotta);background:#FCF6F0;}
+  .node.action{border-left:4px solid var(--sage);}
+  .node.endpoint{border-color:var(--sage-dark);background:var(--pastel-green);}
+  .node.warning{border-color:var(--terracotta-dark);background:#FBEEE7;}
+  .node-label{
+    font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+    font-weight:700;color:var(--terracotta-dark);margin-bottom:6px;
+  }
+  .node-title{font-family:'Lora',serif;font-weight:600;font-size:17px;margin:0 0 6px;}
+  .node-body{font-size:14.5px;color:var(--ink-soft);}
+  .node-body strong{color:var(--ink);font-weight:600;}
+  .node-body ul{margin:8px 0 0;padding-left:18px;}
+  .node-body li{margin-bottom:4px;}
+
+  .connector{display:flex;justify-content:center;padding:10px 0;}
+  .connector svg{color:var(--sage-dark);}
+
+  .branch{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  @media(max-width:640px){.branch{grid-template-columns:1fr;}}
+  .branch-col{display:flex;flex-direction:column;}
+  .branch-label{
+    font-family:'Lora',serif;font-style:italic;font-size:14px;
+    text-align:center;color:var(--ink-soft);margin-bottom:10px;
+  }
+
+  .pill{
+    display:inline-block;font-size:12px;font-weight:600;padding:2px 10px;
+    border-radius:999px;background:var(--sage);color:var(--white);margin-left:6px;
+  }
+  .pill.alert{background:var(--terracotta-dark);}
+
+  .indic-section{margin-top:12px;}
+  .indic-intro{margin-bottom:20px;}
+  .indic-h2{font-family:'Lora',serif;font-weight:600;font-size:22px;margin:0 0 8px;}
+  .indic-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+  @media(max-width:640px){.indic-grid{grid-template-columns:1fr;}}
+  .indic-card{background:var(--white);border:1.5px solid var(--line);border-radius:14px;padding:20px;}
+  .indic-card-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;flex-wrap:wrap;}
+  .indic-note{
+    margin-top:12px;font-size:13px;font-weight:600;color:var(--terracotta-dark);
+    background:#FBEEE7;border-radius:8px;padding:8px 12px;
+  }
+
+  /* ===== Gemelaridade timeline ===== */
+  .timeline{display:flex;gap:0;margin:20px 0 8px;border-radius:14px;overflow:hidden;border:1.5px solid var(--line);}
+  .tl-seg{flex:1;padding:16px 14px;background:var(--white);border-right:1.5px solid var(--line);}
+  .tl-seg:last-child{border-right:none;}
+  .tl-seg.dizyg{background:var(--pastel-green);}
+  .tl-seg.mcda{background:var(--blue-mono-bg);}
+  .tl-seg.mcma{background:#F0E4D8;}
+  .tl-seg.siamese{background:#FBEEE7;}
+  .tl-day{font-family:'Lora',serif;font-weight:700;font-size:15px;color:var(--terracotta-dark);margin-bottom:4px;}
+  .tl-title{font-weight:600;font-size:13.5px;margin-bottom:4px;}
+  .tl-desc{font-size:12.5px;color:var(--ink-soft);}
+  @media(max-width:720px){
+    .timeline{flex-direction:column;}
+    .tl-seg{border-right:none;border-bottom:1.5px solid var(--line);}
+    .tl-seg:last-child{border-bottom:none;}
+  }
+
+  .highlight-box{
+    background:var(--blue-mono-bg);border:1.5px solid var(--blue-mono);
+    border-radius:12px;padding:16px 20px;margin:18px 0;font-size:14.5px;
+  }
+  .highlight-box strong{color:var(--ink);}
+  .highlight-box.terracotta{background:#FCF0EA;border-color:var(--terracotta);}
+
+  table{
+    width:100%;border-collapse:collapse;background:var(--white);
+    border-radius:12px;overflow:hidden;border:1.5px solid var(--line);font-size:14px;
+  }
+  th,td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--line);}
+  th{
+    background:var(--cream-2);font-weight:700;font-size:12.5px;
+    text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft);
+  }
+  tr:last-child td{border-bottom:none;}
+
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:16px;}
+  @media(max-width:640px){.grid-2{grid-template-columns:1fr;}}
+
+  .sign-card{background:var(--white);border:1.5px solid var(--line);border-radius:14px;padding:20px;}
+  .sign-card.lambda{border-color:var(--sage);}
+  .sign-card.t-sign{border-color:var(--blue-mono);}
+  .sign-visual{display:flex;justify-content:center;margin:12px 0;}
+  .sign-title{font-family:'Lora',serif;font-weight:600;font-size:17px;margin-bottom:4px;}
+  .sign-pill{display:inline-block;font-size:11.5px;font-weight:700;padding:3px 10px;border-radius:999px;margin-bottom:10px;}
+  .sign-pill.di{background:var(--sage);color:var(--white);}
+  .sign-pill.mo{background:var(--blue-mono);color:var(--white);}
+
+  .compl-list{display:grid;gap:10px;margin-top:14px;}
+  .compl-item{
+    background:var(--white);border:1.5px solid var(--line);border-left:4px solid var(--terracotta);
+    border-radius:10px;padding:12px 16px;font-size:14px;
+  }
+  .compl-item strong{color:var(--terracotta-dark);}
+
+  /* ===== HELLP ===== */
+  .hellp-triad{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin:20px 0;}
+  @media(max-width:720px){.hellp-triad{grid-template-columns:1fr;}}
+  .triad-card{
+    background:var(--white);border:1.5px solid var(--line);border-radius:14px;
+    padding:18px;text-align:center;
+  }
+  .triad-letter{
+    font-family:'Lora',serif;font-weight:700;font-size:32px;color:var(--terracotta-dark);
+    line-height:1;margin-bottom:8px;
+  }
+  .triad-title{font-weight:600;font-size:14px;margin-bottom:6px;}
+  .triad-desc{font-size:13px;color:var(--ink-soft);}
+
+  .mississippi{display:grid;gap:10px;margin-top:14px;}
+  .miss-row{
+    display:flex;align-items:center;gap:14px;background:var(--white);
+    border:1.5px solid var(--line);border-radius:10px;padding:12px 16px;
+  }
+  .miss-class{
+    font-family:'Lora',serif;font-weight:700;font-size:14px;
+    min-width:90px;color:var(--terracotta-dark);
+  }
+  .miss-desc{font-size:13.5px;color:var(--ink-soft);}
+
+  /* ===== Ectópica ===== */
+  .ectopica-compare{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:20px 0;}
+  @media(max-width:680px){.ectopica-compare{grid-template-columns:1fr;}}
+  .ec-card{background:var(--white);border:1.5px solid var(--line);border-radius:14px;padding:20px;}
+  .ec-card.tubaria{border-top:4px solid var(--sage);}
+  .ec-card.atipica{border-top:4px solid var(--terracotta);}
+  .ec-card-title{font-family:'Lora',serif;font-weight:600;font-size:17px;margin-bottom:4px;}
+  .ec-card-sub{font-size:12.5px;color:var(--ink-soft);margin-bottom:12px;}
+
+  .route-pill{
+    display:inline-flex;align-items:center;gap:6px;
+    font-size:12.5px;font-weight:700;padding:4px 12px;border-radius:999px;
+    margin:4px 6px 4px 0;
+  }
+  .route-pill.no{background:#FBEEE7;color:var(--terracotta-dark);}
+  .route-pill.yes{background:var(--pastel-green);color:var(--sage-dark);}
+
+  /* ===== Rastreio infeccioso ===== */
+  .infec-card{
+    background:var(--white);border:1.5px solid var(--line);border-radius:14px;
+    padding:22px;margin-bottom:22px;
+  }
+  .infec-card.toxo{border-top:4px solid var(--terracotta);}
+  .infec-card.cmv{border-top:4px solid var(--blue-mono);}
+  .infec-card.hepb{border-top:4px solid var(--sage);}
+  .infec-card.hepc{border-top:4px solid var(--sage-dark);}
+  .infec-title{
+    font-family:'Lora',serif;font-weight:600;font-size:19px;margin-bottom:4px;
+    display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  }
+  .infec-badge{
+    font-size:11px;font-weight:700;padding:3px 10px;border-radius:999px;
+    background:var(--cream-2);color:var(--ink-soft);text-transform:uppercase;letter-spacing:.04em;
+  }
+
+  /* ===== Estática Fetal ===== */
+  .deflex-scale{display:flex;gap:0;margin:20px 0;border-radius:14px;overflow:hidden;border:1.5px solid var(--line);}
+  .deflex-seg{flex:1;padding:16px 14px;background:var(--white);border-right:1.5px solid var(--line);text-align:center;}
+  .deflex-seg:last-child{border-right:none;}
+  .deflex-seg.vertice{background:var(--pastel-green);}
+  .deflex-seg.bregma{background:#F3EAD8;}
+  .deflex-seg.fronte{background:#FBEEE7;}
+  .deflex-seg.face{background:var(--blue-mono-bg);}
+  .deflex-grade{font-family:'Lora',serif;font-weight:700;font-size:13px;color:var(--terracotta-dark);margin-bottom:4px;}
+  .deflex-name{font-weight:600;font-size:13.5px;margin-bottom:4px;}
+  .deflex-diam{font-size:12px;color:var(--ink-soft);}
+  @media(max-width:720px){
+    .deflex-scale{flex-direction:column;}
+    .deflex-seg{border-right:none;border-bottom:1.5px solid var(--line);}
+    .deflex-seg:last-child{border-bottom:none;}
+  }
+
+  .skull-diagram{
+    display:flex;justify-content:center;margin:20px 0;
+    background:var(--white);border:1.5px solid var(--line);border-radius:16px;padding:24px;
+  }
+
+  /* ===== Fórceps ===== */
+  .req-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0;}
+  @media(max-width:720px){.req-grid{grid-template-columns:1fr 1fr;}}
+  @media(max-width:480px){.req-grid{grid-template-columns:1fr;}}
+  .req-card{
+    background:var(--pastel-green);border:1.5px solid var(--sage);border-radius:12px;
+    padding:14px;font-size:13px;font-weight:600;text-align:center;color:var(--sage-dark);
+  }
+
+  .indic-split{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:18px 0;}
+  @media(max-width:680px){.indic-split{grid-template-columns:1fr;}}
+  .indic-split-card{background:var(--white);border:1.5px solid var(--line);border-radius:14px;padding:20px;}
+  .indic-split-card.fetal{border-top:4px solid var(--sage);}
+  .indic-split-card.materna{border-top:4px solid var(--terracotta);}
+
+  .contra-box{
+    background:#FBEEE7;border:1.5px solid var(--terracotta-dark);
+    border-radius:12px;padding:16px 20px;margin:18px 0;font-size:14.5px;
+  }
+  .contra-box strong{color:var(--terracotta-dark);}
+
+  /* ===== Fisiologia Hormonal ===== */
+  .horm-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:18px 0;}
+  @media(max-width:680px){.horm-grid{grid-template-columns:1fr;}}
+  .horm-card{
+    background:var(--white);border:1.5px solid var(--line);border-radius:14px;
+    padding:16px 18px;border-left:4px solid var(--sage);
+  }
+  .horm-card.key{border-left-color:var(--terracotta);background:#FCF6F0;}
+  .horm-name{font-family:'Lora',serif;font-weight:600;font-size:15.5px;margin-bottom:4px;}
+  .horm-origin{font-size:11.5px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.04em;font-weight:700;margin-bottom:6px;}
+  .horm-func{font-size:13.5px;color:var(--ink-soft);}
+
+  .mucus-flow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center;margin:20px 0;}
+  .mucus-step{
+    background:var(--white);border:1.5px solid var(--line);border-radius:12px;
+    padding:14px 18px;font-size:13.5px;text-align:center;min-width:140px;
+  }
+  .mucus-step.hormone{background:var(--pastel-green);border-color:var(--sage);font-weight:700;}
+  .mucus-arrow{color:var(--sage-dark);font-size:18px;}
+
+  /* ===== Sangramentos ===== */
+  .abort-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:18px 0;}
+  @media(max-width:680px){.abort-grid{grid-template-columns:1fr;}}
+  .abort-card{
+    background:var(--white);border:1.5px solid var(--line);border-radius:14px;padding:18px;
+  }
+  .abort-card.ameaca{border-top:4px solid var(--sage);}
+  .abort-card.inevitavel{border-top:4px solid var(--terracotta);}
+  .abort-card.incompleto{border-top:4px solid var(--terracotta-dark);}
+  .abort-card.completo{border-top:4px solid var(--sage-dark);}
+  .abort-card.infectado{border-top:4px solid #8B3A3A;}
+  .abort-card.retido{border-top:4px solid var(--blue-mono);}
+  .abort-title{font-family:'Lora',serif;font-weight:600;font-size:16px;margin-bottom:8px;}
+  .abort-status{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;}
+  .abort-tag{font-size:11px;font-weight:700;padding:2px 9px;border-radius:999px;background:var(--cream-2);color:var(--ink-soft);}
+
+  .compare-vs{display:grid;grid-template-columns:1fr 1fr;gap:0;margin:18px 0;border-radius:14px;overflow:hidden;border:1.5px solid var(--line);}
+  @media(max-width:680px){.compare-vs{grid-template-columns:1fr;}}
+  .vs-col{padding:20px;background:var(--white);}
+  .vs-col:first-child{border-right:1.5px solid var(--line);background:#FBEEE7;}
+  @media(max-width:680px){.vs-col:first-child{border-right:none;border-bottom:1.5px solid var(--line);}}
+  .vs-col.pp{background:var(--blue-mono-bg);}
+  .vs-title{font-family:'Lora',serif;font-weight:700;font-size:18px;margin-bottom:10px;}
+  .vs-row{margin-bottom:10px;font-size:13.5px;}
+  .vs-label{font-weight:700;color:var(--ink);display:block;font-size:11px;text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px;}
+
+  .tt-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0;}
+  @media(max-width:720px){.tt-grid{grid-template-columns:1fr 1fr;}}
+  .tt-card{background:var(--white);border:1.5px solid var(--line);border-radius:12px;padding:14px;text-align:center;}
+  .tt-letter{font-family:'Lora',serif;font-weight:700;font-size:24px;color:var(--terracotta-dark);}
+  .tt-name{font-weight:600;font-size:13px;margin:4px 0;}
+  .tt-desc{font-size:11.5px;color:var(--ink-soft);}
+
+  .step-ladder{display:grid;gap:8px;margin:16px 0;}
+  .step-ladder-item{
+    display:flex;align-items:center;gap:12px;background:var(--white);
+    border:1.5px solid var(--line);border-radius:10px;padding:10px 16px;font-size:13.5px;
+  }
+  .step-num{
+    font-family:'Lora',serif;font-weight:700;font-size:14px;color:var(--white);
+    background:var(--terracotta);border-radius:50%;width:26px;height:26px;
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  }
+
+  footer{
+    margin-top:44px;padding-top:18px;border-top:1px solid var(--line);
+    font-size:12.5px;color:var(--ink-soft);text-align:center;
+  }
+
+  /* ===== Galeria de Fotos / Mapas Mentais ===== */
+  .photo-section{
+    margin-top:36px;padding-top:24px;border-top:1.5px dashed var(--line);
+  }
+  .photo-header{
+    display:flex;align-items:center;justify-content:space-between;
+    margin-bottom:14px;flex-wrap:wrap;gap:10px;
+  }
+  .photo-title{
+    font-family:'Lora',serif;font-weight:600;font-size:17px;
+    display:flex;align-items:center;gap:8px;
+  }
+  .photo-add-btn{
+    display:inline-flex;align-items:center;gap:6px;
+    font-family:'Source Sans 3',sans-serif;font-weight:600;font-size:13px;
+    padding:8px 16px;border-radius:999px;border:1.5px dashed var(--terracotta);
+    background:#FCF6F0;color:var(--terracotta-dark);cursor:pointer;
+    transition:all .15s ease;
+  }
+  .photo-add-btn:hover{background:var(--terracotta);color:var(--white);border-style:solid;}
+  .photo-grid{
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));
+    gap:12px;
+  }
+  .photo-thumb{
+    position:relative;border-radius:12px;overflow:hidden;
+    border:1.5px solid var(--line);background:var(--white);
+    aspect-ratio:1;cursor:pointer;
+  }
+  .photo-thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+  .photo-thumb .photo-del{
+    position:absolute;top:6px;right:6px;width:22px;height:22px;
+    border-radius:50%;background:rgba(58,52,44,0.75);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-size:13px;
+    cursor:pointer;border:none;line-height:1;
+  }
+  .photo-empty{
+    font-size:13px;color:var(--ink-soft);font-style:italic;
+    grid-column:1/-1;padding:14px 0;
+  }
+  .photo-lightbox{
+    display:none;position:fixed;inset:0;background:rgba(20,18,15,0.9);
+    z-index:200;align-items:center;justify-content:center;padding:32px;
+    cursor:zoom-out;
+  }
+  .photo-lightbox.active{display:flex;}
+  .photo-lightbox img{max-width:100%;max-height:100%;border-radius:8px;box-shadow:0 20px 60px rgba(0,0,0,0.5);}
+
+  /* ===== Import/Export na nav ===== */
+  .hub-io{display:flex;gap:6px;margin-left:auto;}
+  .hub-io-btn{
+    display:inline-flex;align-items:center;gap:5px;
+    font-family:'Source Sans 3',sans-serif;font-weight:600;font-size:12.5px;
+    padding:7px 13px;border-radius:999px;border:1.5px solid var(--line);
+    background:var(--white);color:var(--ink-soft);cursor:pointer;
+    transition:all .15s ease;white-space:nowrap;
+  }
+  .hub-io-btn:hover{border-color:var(--terracotta);color:var(--terracotta-dark);}
+</style>
+</head>
+<body>
+
+<nav class="hub-nav">
+  <div class="hub-nav-inner">
+    <span class="hub-brand">Hub Obstetrícia</span>
+    <button class="hub-tab active" data-topic="rh">Aloimunização Rh</button>
+    <button class="hub-tab" data-topic="gemelar">Gemelaridade</button>
+    <button class="hub-tab" data-topic="hellp">Síndrome HELLP</button>
+    <button class="hub-tab" data-topic="ectopica">Gestação Ectópica</button>
+    <button class="hub-tab" data-topic="rastreio">Toxo · CMV · Hepatites</button>
+    <button class="hub-tab" data-topic="estatica">Estática Fetal</button>
+    <button class="hub-tab" data-topic="forceps">Fórceps</button>
+    <button class="hub-tab" data-topic="hormonios">Fisiologia Hormonal</button>
+    <button class="hub-tab" data-topic="sangra1">Sangramento 1ª Metade</button>
+    <button class="hub-tab" data-topic="sangra2">Sangramento 2ª Metade</button>
+
+    <div class="hub-io">
+      <label class="hub-io-btn" title="Importar fotos salvas">
+        📥 Importar
+        <input type="file" accept="application/json" style="display:none" onchange="importPhotosFile(event)">
+      </label>
+      <button class="hub-io-btn" onclick="exportPhotos()" title="Exportar fotos para usar em outro dispositivo">💾 Exportar</button>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <!-- ============================================= -->
+  <!-- TOPIC 1: ALOIMUNIZAÇÃO RH -->
+  <!-- ============================================= -->
+  <section class="topic active" id="topic-rh">
+
+    <header class="topic-head">
+      <div class="eyebrow">Obstetrícia · Medicina Materno-Fetal</div>
+      <h1>Aloimunização Rh: fluxograma de conduta</h1>
+      <p class="subtitle">Gestante Rh negativo — investigação, profilaxia e manejo conforme status de sensibilização (Coombs indireto).</p>
+    </header>
+
+    <div class="toggle-row">
+      <button class="toggle-btn active" data-view="all">Ver fluxo completo</button>
+      <button class="toggle-btn" data-view="nao-sens">Não sensibilizada</button>
+      <button class="toggle-btn" data-view="sens">Sensibilizada</button>
+      <button class="toggle-btn" data-view="indic">Indicações dos procedimentos</button>
+    </div>
+
+    <div class="flow">
+
+      <div class="node start" data-group="all">
+        <div class="node-label">Ponto de partida</div>
+        <div class="node-title">Gestante Rh (D) negativo</div>
+        <div class="node-body">Solicitar Coombs indireto (pesquisa de anticorpos irregulares) na 1ª consulta de pré-natal.</div>
+      </div>
+
+      <div class="connector" data-group="all"><svg width="20" height="28" viewBox="0 0 20 28" fill="none"><path d="M10 0V22M10 22L3 15M10 22L17 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+
+      <div class="branch" data-group="all">
+        <div class="branch-col" data-group="nao-sens">
+          <div class="branch-label">Coombs indireto negativo</div>
+          <div class="node action">
+            <div class="node-title">Não sensibilizada</div>
+            <div class="node-body">Ainda não há anticorpos anti-D. Situação de <strong>baixo risco atual</strong>, mas requer profilaxia.</div>
+          </div>
+        </div>
+        <div class="branch-col" data-group="sens">
+          <div class="branch-label">Coombs indireto positivo</div>
+          <div class="node warning">
+            <div class="node-title">Sensibilizada</div>
+            <div class="node-body">Já há anticorpos anti-D circulantes. Risco de <strong>doença hemolítica perinatal</strong> no feto atual (se Rh+).</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="connector" data-group="nao-sens"><svg width="20" height="28" viewBox="0 0 20 28" fill="none"><path d="M10 0V22M10 22L3 15M10 22L17 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+
+      <div class="node action" data-group="nao-sens">
+        <div class="node-label">Rastreio seriado</div>
+        <div class="node-title">Coombs indireto mensal a partir de 24–28 semanas</div>
+        <div class="node-body">Repetir a cada resultado negativo. Se positivar em qualquer momento → migrar para fluxo de sensibilizada.</div>
+      </div>
+
+      <div class="connector" data-group="nao-sens"><svg width="20" height="28" viewBox="0 0 20 28" fill="none"><path d="M10 0V22M10 22L3 15M10 22L17 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+
+      <div class="node endpoint" data-group="nao-sens">
+        <div class="node-label">Profilaxia — Imunoglobulina anti-D</div>
+        <div class="node-title">Rhogam <span class="pill">300 mcg IM</span></div>
+        <div class="node-body">
+          <strong>Administrar em:</strong>
+          <ul>
+            <li>Rotina: <strong>28 semanas</strong> (mesmo sem sangramento)</li>
+            <li>Pós-parto, em até <strong>72h</strong>, se RN for Rh(+)</li>
+            <li>Após qualquer evento de sensibilização potencial: sangramento/metrorragia, trauma abdominal, amniocentese, cordocentese, biópsia de vilo corial, abortamento, gravidez ectópica, mola</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="connector" data-group="sens"><svg width="20" height="28" viewBox="0 0 20 28" fill="none"><path d="M10 0V22M10 22L3 15M10 22L17 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+
+      <div class="node action" data-group="sens">
+        <div class="node-label">Passo 1</div>
+        <div class="node-title">Genotipagem fetal (Rh do pai e/ou feto)</div>
+        <div class="node-body">Se pai homozigoto Rh(+) ou genotipagem fetal confirma Rh(+) → feto em risco. Se feto Rh(-) → sem risco, seguir pré-natal de rotina.</div>
+      </div>
+
+      <div class="connector" data-group="sens"><svg width="20" height="28" viewBox="0 0 20 28" fill="none"><path d="M10 0V22M10 22L3 15M10 22L17 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+
+      <div class="node action" data-group="sens">
+        <div class="node-label">Passo 2 — se feto Rh(+)</div>
+        <div class="node-title">Dopplervelocimetria seriada da Artéria Cerebral Média (ACM)</div>
+        <div class="node-body">Método não invasivo de escolha para rastreio de anemia fetal. Repetir a cada 1–2 semanas a partir de ~16–18 semanas ou conforme gravidade.</div>
+      </div>
+
+      <div class="connector" data-group="sens"><svg width="20" height="28" viewBox="0 0 20 28" fill="none"><path d="M10 0V22M10 22L3 15M10 22L17 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+
+      <div class="node decision" data-group="sens">
+        <div class="node-label">Ponto de decisão</div>
+        <div class="node-title">PVS-ACM &gt; 1,5 MoM? <span class="pill alert">sugestivo de anemia</span></div>
+        <div class="node-body">Pico de velocidade sistólica elevado na ACM indica provável anemia fetal moderada a grave.</div>
+      </div>
+
+      <div class="connector" data-group="sens"><svg width="20" height="28" viewBox="0 0 20 28" fill="none"><path d="M10 0V22M10 22L3 15M10 22L17 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+
+      <div class="node endpoint" data-group="sens">
+        <div class="node-label">Passo 3 — diagnóstico + terapêutico</div>
+        <div class="node-title">Cordocentese</div>
+        <div class="node-body">
+          Punção da veia umbilical guiada por US: confirma Ht/Hb fetal e permite <strong>transfusão intrauterina intravascular</strong> na mesma punção, se indicado.
+          <ul>
+            <li>Risco de perda fetal: ~1–2%</li>
+            <li>Bradicardia fetal transitória</li>
+            <li>Sangramento no local de punção</li>
+            <li>Corioamnionite (raro)</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="indic-section" data-group="indic">
+      <div class="indic-intro">
+        <div class="eyebrow">Referência rápida</div>
+        <h2 class="indic-h2" style="border:none;margin-top:0;">Indicações dos procedimentos invasivos</h2>
+        <p class="subtitle">A aloimunização Rh é apenas uma das indicações de cada procedimento — veja o quadro completo abaixo.</p>
+      </div>
+
+      <div class="indic-grid">
+        <div class="indic-card">
+          <div class="indic-card-head">
+            <div class="node-title">Cordocentese</div>
+            <span class="pill">18–20 sem em diante</span>
+          </div>
+          <div class="node-body">
+            <ul>
+              <li><strong>Anemia fetal</strong> — confirmação de Doppler-ACM alterado (aloimunização Rh, Kell, outras isoimunizações eritrocitárias) + transfusão intrauterina intravascular no mesmo tempo</li>
+              <li><strong>Hidropisia fetal não imune</strong> — investigação etiológica (infecciosa, cardíaca, cromossômica, metabólica)</li>
+              <li><strong>Trombocitopenia aloimune fetal/neonatal</strong> — contagem plaquetária fetal e transfusão de plaquetas, se indicado</li>
+              <li><strong>Cariótipo/estudo genético rápido</strong> — quando malformação é achada tardiamente no US e não há tempo hábil para amniocentese convencional</li>
+              <li><strong>Infecções congênitas</strong> — pesquisa de IgM fetal específica ou PCR viral (parvovírus B19, toxoplasmose, CMV) quando outros métodos são inconclusivos</li>
+              <li><strong>Coagulopatias fetais hereditárias</strong> — avaliação em famílias de risco (ex: hemofilia)</li>
+              <li><strong>Terapia intrauterina</strong> — via de acesso para administração de medicamentos/hemoderivados diretamente na circulação fetal</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="indic-card">
+          <div class="indic-card-head">
+            <div class="node-title">Biópsia de Vilo Corial (BVC)</div>
+            <span class="pill">10–13 semanas</span>
+          </div>
+          <div class="node-body">
+            <ul>
+              <li><strong>Rastreio de 1º trimestre alterado</strong> — translucência nucal aumentada, risco combinado (TN + PAPP-A + β-hCG) elevado para aneuploidias</li>
+              <li><strong>Diagnóstico citogenético precoce</strong> — cariótipo fetal quando se deseja resultado antes da amniocentese ser possível</li>
+              <li><strong>Doença genética monogênica conhecida na família</strong> — mutação já identificada (ex: fibrose cística, distrofias musculares, hemoglobinopatias, atrofia muscular espinhal)</li>
+              <li><strong>Casal portador de translocação cromossômica balanceada</strong> — risco de desequilíbrio cromossômico no feto</li>
+              <li><strong>Anomalia estrutural identificada em US precoce</strong> — ex: higroma cístico, onfalocele</li>
+              <li><strong>Diagnóstico precoce de sexo fetal</strong> — em doenças ligadas ao X quando relevante para conduta</li>
+              <li><strong>Idade materna avançada</strong> — quando há desejo explícito de diagnóstico o mais precoce possível</li>
+            </ul>
+            <div class="indic-note">⚠ Antes de 10 semanas: risco aumentado de defeitos de redução de membros — não realizar.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="photo-section">
+      <div class="photo-header">
+        <div class="photo-title">📷 Meus mapas mentais / imagens</div>
+        <label class="photo-add-btn">
+          + Adicionar foto
+          <input type="file" accept="image/*" multiple style="display:none" onchange="handlePhotoUpload(this,'rh')">
+        </label>
+      </div>
+      <div class="photo-grid" data-topic="rh"></div>
+    </div>
+
+  </section>
+
+  <!-- ============================================= -->
+  <!-- TOPIC 2: GEMELARIDADE -->
+  <!-- ============================================= -->
+  <section class="topic" id="topic-gemelar">
+
+    <header class="topic-head">
+      <div class="eyebrow">Obstetrícia · Gestação Múltipla</div>
+      <h1>Gemelaridade: zigosidade, corionicidade e diagnóstico</h1>
+      <p class="subtitle">Do dia da clivagem embrionária aos sinais ultrassonográficos que definem a corionicidade e as complicações associadas.</p>
+    </header>
+
+    <h2 style="margin-top:0;">1. Dizigótica vs. Monozigótica</h2>
+    <table>
+      <tr><th></th><th>Dizigótica</th><th>Monozigótica</th></tr>
+      <tr><td><strong>Origem</strong></td><td>2 óvulos + 2 espermatozoides</td><td>1 zigoto único que se divide</td></tr>
+      <tr><td><strong>Frequência</strong></td><td>~2/3 dos gemelares</td><td>~1/3 dos gemelares</td></tr>
+      <tr><td><strong>Fatores associados</strong></td><td>Idade materna, indução de ovulação/FIV, etnia, história familiar</td><td>Não tem fator de risco identificado — ocorre ao acaso</td></tr>
+      <tr><td><strong>Corionicidade</strong></td><td>Sempre dicoriônica/diamniótica</td><td>Variável — depende do dia da clivagem</td></tr>
+    </table>
+
+    <h2>2. Momento da clivagem — define a placentação</h2>
+    <div class="timeline">
+      <div class="tl-seg dizyg">
+        <div class="tl-day">0–3 dias</div>
+        <div class="tl-title">Dicoriônica / Diamniótica</div>
+        <div class="tl-desc">Clivagem no estágio de mórula, antes da diferenciação do trofoblasto. 2 placentas, 2 âmnios.</div>
+      </div>
+      <div class="tl-seg mcda">
+        <div class="tl-day">4–8 dias</div>
+        <div class="tl-title">Monocoriônica / Diamniótica</div>
+        <div class="tl-desc">Clivagem no blastocisto, após diferenciação do córion mas antes do âmnio. 1 placenta, 2 âmnios.</div>
+      </div>
+      <div class="tl-seg mcma">
+        <div class="tl-day">8–13 dias</div>
+        <div class="tl-title">Monocoriônica / Monoamniótica</div>
+        <div class="tl-desc">Clivagem após formação do âmnio. 1 placenta, 1 âmnio — maior risco.</div>
+      </div>
+      <div class="tl-seg siamese">
+        <div class="tl-day">&gt;13 dias</div>
+        <div class="tl-title">Gêmeos siameses</div>
+        <div class="tl-desc">Clivagem tardia e incompleta do disco embrionário já formado.</div>
+      </div>
+    </div>
+
+    <div class="highlight-box">
+      <strong>Ponto-chave:</strong> a gestação monocoriônica diamniótica resulta de clivagem entre o <strong>4º e 8º dia</strong> pós-fertilização.
+    </div>
+
+    <h2>3. Diagnóstico ultrassonográfico da corionicidade</h2>
+    <p style="color:var(--ink-soft);font-size:14.5px;margin-top:-6px;">Idealmente avaliado no 1º trimestre (10–14 semanas) — a acurácia diminui com o avanço da gestação.</p>
+
+    <div class="grid-2">
+      <div class="sign-card lambda">
+        <span class="sign-pill di">Dicoriônica</span>
+        <div class="sign-title">Sinal do Lambda (λ) / Twin Peak</div>
+        <div class="sign-visual">
+          <svg width="140" height="90" viewBox="0 0 140 90" fill="none">
+            <path d="M20 80 L70 20 L120 80" stroke="#8FA290" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M45 80 Q70 45 95 80" stroke="#C77B58" stroke-width="4" fill="none" stroke-linecap="round"/>
+            <circle cx="70" cy="80" r="3" fill="#3A342C"/>
+          </svg>
+        </div>
+        <div class="node-body">
+          Projeção triangular de tecido placentário (córion) que se insinua entre as duas membranas amnióticas na base da septação — formato de "λ". Reflete a presença de <strong>2 córions</strong> justapostos.
+        </div>
+      </div>
+
+      <div class="sign-card t-sign">
+        <span class="sign-pill mo">Monocoriônica</span>
+        <div class="sign-title">Sinal do T</div>
+        <div class="sign-visual">
+          <svg width="140" height="90" viewBox="0 0 140 90" fill="none">
+            <path d="M20 30 L120 30" stroke="#7B92A8" stroke-width="3" stroke-linecap="round"/>
+            <path d="M70 30 L70 80" stroke="#C77B58" stroke-width="4" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="node-body">
+          A membrana divisória encontra a placenta em ângulo reto (90°), sem projeção triangular — formato de "T". Reflete <strong>1 córion único</strong> compartilhado.
+        </div>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top:18px;">
+      <strong>Regra prática:</strong> contar as camadas de membrana ajuda — dicoriônica = 4 camadas (2 córions + 2 âmnios); monocoriônica diamniótica = 2 camadas (apenas os 2 âmnios).
+    </div>
+
+    <h2>4. Por que a corionicidade importa — complicações</h2>
+    <div class="compl-list">
+      <div class="compl-item"><strong>Síndrome de Transfusão Feto-Fetal (STFF):</strong> anastomoses vasculares placentárias compartilhadas causam desequilíbrio de fluxo — um doador (oligoâmnio, anemia) e um receptor (polidrâmnio, sobrecarga). Exclusiva de monocoriônicas.</div>
+      <div class="compl-item"><strong>Sequência TRAP (gêmeo acárdico):</strong> um feto perfunde o outro de forma reversa via anastomose artério-arterial.</div>
+      <div class="compl-item"><strong>Restrição seletiva de crescimento fetal:</strong> discordância de crescimento por divisão desigual da placenta compartilhada.</div>
+      <div class="compl-item"><strong>Entrelaçamento de cordão:</strong> risco específico e grave de monoamnióticas.</div>
+      <div class="compl-item"><strong>Conduta:</strong> USG seriada quinzenal a partir de 16 semanas em monocoriônicas para rastreio precoce de STFF.</div>
+    </div>
+
+    <div class="photo-section">
+      <div class="photo-header">
+        <div class="photo-title">📷 Meus mapas mentais / imagens</div>
+        <label class="photo-add-btn">
+          + Adicionar foto
+          <input type="file" accept="image/*" multiple style="display:none" onchange="handlePhotoUpload(this,'gemelar')">
+        </label>
+      </div>
+      <div class="photo-grid" data-topic="gemelar"></div>
+    </div>
+
+  </section>
+
+  <!-- ============================================= -->
+  <!-- TOPIC 3: HELLP -->
+  <!-- ============================================= -->
+  <section class="topic" id="topic-hellp">
+
+    <header class="topic-head">
+      <div class="eyebrow">Obstetrícia · Emergência / PSA</div>
+      <h1>Síndrome HELLP</h1>
+      <p class="subtitle">Forma grave de pré-eclâmpsia — hemólise, elevação de enzimas hepáticas e plaquetopenia.</p>
+    </header>
+
+    <div class="hellp-triad">
+      <div class="triad-card">
+        <div class="triad-letter">H</div>
+        <div class="triad-title">Hemolysis</div>
+        <div class="triad-desc">Hemólise — esquizócitos, LDH↑, bilirrubina↑, haptoglobina↓</div>
+      </div>
+      <div class="triad-card">
+        <div class="triad-letter">EL</div>
+        <div class="triad-title">Elevated Liver enzymes</div>
+        <div class="triad-desc">TGO/AST elevado — necrose periportal, risco de hematoma subcapsular</div>
+      </div>
+      <div class="triad-card">
+        <div class="triad-letter">LP</div>
+        <div class="triad-title">Low Platelets</div>
+        <div class="triad-desc">Plaquetopenia — consumo/agregação no endotélio lesado</div>
+      </div>
+    </div>
+
+    <h2>Critérios diagnósticos (Sibai/Tennessee)</h2>
+    <table>
+      <tr><th>Componente</th><th>Critério</th></tr>
+      <tr><td><strong>Hemólise</strong></td><td>Esquizócitos no esfregaço, bilirrubina total &gt;1,2 mg/dL, LDH &gt;600 UI/L, haptoglobina baixa</td></tr>
+      <tr><td><strong>Enzimas hepáticas elevadas</strong></td><td>TGO/AST &gt;70 UI/L (algumas referências &gt;2x limite superior)</td></tr>
+      <tr><td><strong>Plaquetopenia</strong></td><td>&lt;100.000/mm³</td></tr>
+    </table>
+
+    <h2>Classificação Mississippi (por gravidade)</h2>
+    <div class="mississippi">
+      <div class="miss-row">
+        <div class="miss-class">Classe 1</div>
+        <div class="miss-desc">Plaquetas &lt;50.000/mm³ — forma grave</div>
+      </div>
+      <div class="miss-row">
+        <div class="miss-class">Classe 2</div>
+        <div class="miss-desc">Plaquetas 50.000–100.000/mm³</div>
+      </div>
+      <div class="miss-row">
+        <div class="miss-class">Classe 3</div>
+        <div class="miss-desc">Plaquetas 100.000–150.000/mm³ — forma leve</div>
+      </div>
+    </div>
+
+    <h2>Quadro clínico</h2>
+    <div class="compl-list">
+      <div class="compl-item"><strong>Dor em hipocôndrio direito ou epigástrio</strong> — sintoma mais característico, por distensão da cápsula de Glisson</div>
+      <div class="compl-item">Náuseas, vômitos, mal-estar geral, cefaleia</div>
+      <div class="compl-item"><strong>Atenção:</strong> até 15-20% dos casos não preenchem critério pressórico clássico de pré-eclâmpsia</div>
+      <div class="compl-item">Geralmente 3º trimestre, mas <strong>15-30% surgem no puerpério</strong> (até 7 dias pós-parto)</div>
+    </div>
+
+    <h2>Complicações temidas</h2>
+    <div class="compl-list">
+      <div class="compl-item">Hematoma / ruptura hepática — emergência cirúrgica</div>
+      <div class="compl-item">CIVD</div>
+      <div class="compl-item">Descolamento prematuro de placenta</div>
+      <div class="compl-item">Insuficiência renal aguda</div>
+      <div class="compl-item">Edema pulmonar / eclâmpsia associada</div>
+    </div>
+
+    <h2>Conduta</h2>
+    <div class="compl-list">
+      <div class="compl-item"><strong>1. Sulfato de magnésio</strong> — ataque 4-6g IV + manutenção 1-2g/h (profilaxia/tratamento de convulsão)</div>
+      <div class="compl-item"><strong>2. Controle pressórico</strong> se hipertensão associada — hidralazina, labetalol, nifedipina</div>
+      <div class="compl-item"><strong>3. Corticoide (dexametasona)</strong> — melhora plaquetas e função hepática, e maturação pulmonar fetal se pré-termo</div>
+      <div class="compl-item"><strong>4. Interrupção da gestação</strong> — tratamento definitivo; se estável e &lt;34 semanas, corticoide por 24-48h antes do parto</div>
+      <div class="compl-item"><strong>5. Transfusão de plaquetas</strong> se &lt;20.000/mm³ (parto vaginal) ou &lt;50.000/mm³ (cesárea)</div>
+    </div>
+
+    <h2>Diagnóstico diferencial</h2>
+    <table>
+      <tr><th>Condição</th><th>Diferencial chave</th></tr>
+      <tr><td>Esteatose hepática aguda da gravidez</td><td>Hipoglicemia, coagulopatia mais intensa, encefalopatia</td></tr>
+      <tr><td>PTT / SHU</td><td>Plaquetopenia + hemólise sem elevação hepática tão marcada, função renal mais afetada</td></tr>
+      <tr><td>Hepatite viral</td><td>Sorologias, sem plaquetopenia importante</td></tr>
+    </table>
+
+    <div class="photo-section">
+      <div class="photo-header">
+        <div class="photo-title">📷 Meus mapas mentais / imagens</div>
+        <label class="photo-add-btn">
+          + Adicionar foto
+          <input type="file" accept="image/*" multiple style="display:none" onchange="handlePhotoUpload(this,'hellp')">
+        </label>
+      </div>
+      <div class="photo-grid" data-topic="hellp"></div>
+    </div>
+
+  </section>
+
+  <!-- ============================================= -->
+  <!-- TOPIC 4: GESTAÇÃO ECTÓPICA -->
+  <!-- ============================================= -->
+  <section class="topic" id="topic-ectopica">
+
+    <header class="topic-head">
+      <div class="eyebrow">Obstetrícia · Emergência / PSA</div>
+      <h1>Gestação Ectópica: diagnóstico e conduta</h1>
+      <p class="subtitle">Diagnóstico clínico-laboratorial, fluxograma de decisão terapêutica e o que muda nas localizações atípicas (cervical, cicatriz de cesárea, cornual).</p>
+    </header>
+
+    <h2 style="margin-top:0;">Suspeita clínica</h2>
+    <div class="highlight-box">
+      <strong>Tríade clássica:</strong> amenorreia + dor pélvica (geralmente unilateral) + sangramento vaginal irregular (spotting escuro) — nem sempre presente.<br><br>
+      <strong>Sinais de gravidade (suspeitar de rotura tubária):</strong> dor súbita e intensa, sinais de choque, dor em ombro (irritação diafragmática por hemoperitônio), abdome em tábua.
+    </div>
+
+    <h2>Confirmação diagnóstica</h2>
+    <table>
+      <tr><th>Exame</th><th>O que buscar</th></tr>
+      <tr><td><strong>β-hCG quantitativo seriado</strong></td><td>Incremento &lt;35% em 48h sugere ectópica (gestação intrauterina viável dobra a cada 48-72h)</td></tr>
+      <tr><td><strong>US transvaginal</strong></td><td>Zona discriminatória: com β-hCG ≥1.500-2.000 mUI/mL, já deveria haver saco gestacional intrauterino visível</td></tr>
+    </table>
+
+    <div class="compl-list" style="margin-top:14px;">
+      <div class="compl-item">Massa anexial heterogênea (não confundir com corpo lúteo)</div>
+      <div class="compl-item">Anel tubário ("ring sign")</div>
+      <div class="compl-item">Líquido livre em fundo de saco de Douglas (sugere sangramento)</div>
+      <div class="compl-item"><strong>Sítios mais comuns:</strong> ampola tubária (~70%) &gt; istmo &gt; fímbria &gt; outros (cervical, cornual/intersticial, ovariano, abdominal — mais raros e mais graves)</div>
+    </div>
+
+    <h2>Conduta — ectópica tubária (forma clássica)</h2>
+    <table>
+      <tr><th>Situação</th><th>Conduta</th></tr>
+      <tr><td>Instabilidade hemodinâmica / rotura</td><td><strong>Emergência cirúrgica</strong> — laparotomia ou laparoscopia, salpingectomia</td></tr>
+      <tr><td>Estável, sem rotura, critérios favoráveis</td><td><strong>Metotrexato sistêmico</strong> (protocolo dose única)</td></tr>
+      <tr><td>Estável, fora dos critérios ou falha do MTX</td><td>Cirúrgica eletiva — laparoscopia: salpingostomia (preserva a trompa) ou salpingectomia</td></tr>
+      <tr><td>β-hCG muito baixo, em queda espontânea</td><td>Conduta expectante em casos muito selecionados</td></tr>
+    </table>
+
+    <div class="highlight-box" style="margin-top:16px;">
+      <strong>Critérios para MTX sistêmico (dose única):</strong> estabilidade hemodinâmica · massa ≤3,5-4cm · β-hCG idealmente &lt;5.000 mUI/mL · sem BCF visível · sem contraindicações (função renal/hepática normal, sem imunodeficiência, sem doença péptica ativa, sem amamentação) · paciente com condições de seguimento ambulatorial.<br><br>
+      <strong>Protocolo:</strong> 50 mg/m² IM, dose única. β-hCG nos dias 4 e 7 — se queda &lt;15% entre esses dias, considerar 2ª dose ou cirurgia.
+    </div>
+
+    <h2>Localizações atípicas — o que muda</h2>
+    <p style="color:var(--ink-soft);font-size:14.5px;margin-top:-6px;">Gestação cervical, em cicatriz de cesárea e cornual/intersticial seguem lógica própria — maior risco de hemorragia catastrófica e sem protocolo único estabelecido.</p>
+
+    <div class="ectopica-compare">
+      <div class="ec-card tubaria">
+        <div class="ec-card-title">Ectópica tubária</div>
+        <div class="ec-card-sub">~95-97% dos casos — forma clássica</div>
+        <span class="route-pill no">✕ Misoprostol</span>
+        <span class="route-pill yes">✓ MTX sistêmico IM</span>
+        <div class="node-body" style="margin-top:10px;">
+          Misoprostol <strong>não tem papel</strong> — sua ação contrátil não atinge tecido gestacional fora do útero. Usar pode atrasar diagnóstico/tratamento e favorecer rotura. MTX pela via sistêmica é o padrão quando há indicação clínica.
+        </div>
+      </div>
+
+      <div class="ec-card atipica">
+        <div class="ec-card-title">Cervical / cicatriz de cesárea / cornual</div>
+        <div class="ec-card-sub">Raras — alto risco hemorrágico</div>
+        <span class="route-pill yes">✓ MTX local intrasaco</span>
+        <span class="route-pill yes">✓ Embolização uterina</span>
+        <div class="node-body" style="margin-top:10px;">
+          MTX local (1mg/kg, guiado por USTV, agulha 20-22G) ± KCl intra-amniótico se BCF+. Embolização das artérias uterinas reduz risco de hemorragia antes de curetagem/MTX. Misoprostol pode entrar em protocolos combinados, após MTX/KCl, para ajudar a expelir restos intrauterinos — nunca como monoterapia da ectópica.
+        </div>
+      </div>
+    </div>
+
+    <h2>Via do Metotrexato — resumo</h2>
+    <table>
+      <tr><th>Via</th><th>Quando usar</th></tr>
+      <tr><td><strong>Sistêmica (IM)</strong></td><td>Protocolo padrão — dose única 50mg/m² — ectópica tubária, sem BCF, critérios favoráveis</td></tr>
+      <tr><td><strong>Local intrasaco (USG-guiada)</strong></td><td>MTX 1mg/kg direto no saco gestacional — embrião vivo (BCF+) ou localização atípica</td></tr>
+      <tr><td><strong>Associado a KCl intra-amniótico</strong></td><td>Gestação cervical/cornual com BCF+ — KCl para interromper atividade cardíaca antes do MTX agir</td></tr>
+    </table>
+
+    <h2>Embolização das artérias uterinas (EAU)</h2>
+    <div class="compl-list">
+      <div class="compl-item"><strong>Não é 1ª linha</strong> na ectópica tubária comum.</div>
+      <div class="compl-item">Indicada para <strong>reduzir risco de hemorragia maciça</strong> antes de cirurgia conservadora ou terapia com MTX, principalmente em cicatriz de cesárea, cervical e cornual/intersticial.</div>
+      <div class="compl-item">Objetivo: diminuir vascularização da área antes de curetagem — permite abordagem conservadora com <strong>preservação uterina</strong> em vez de histerectomia.</div>
+    </div>
+
+    <h2>Pontos-chave para prova</h2>
+    <div class="compl-list">
+      <div class="compl-item">Sempre excluir ectópica em mulher em idade fértil com dor abdominal + atraso menstrual, mesmo com β-hCG baixo.</div>
+      <div class="compl-item"><strong>Fatores de risco:</strong> DIP prévia, cirurgia tubária, DIU, tabagismo, FIV, ectópica prévia.</div>
+      <div class="compl-item">Administrar <strong>imunoglobulina anti-D</strong> se a paciente for Rh negativo (evento de sensibilização).</div>
+      <div class="compl-item">Misoprostol isolado <strong>nunca</strong> é tratamento de ectópica — pegadinha clássica de prova.</div>
+    </div>
+
+    <div class="photo-section">
+      <div class="photo-header">
+        <div class="photo-title">📷 Meus mapas mentais / imagens</div>
+        <label class="photo-add-btn">
+          + Adicionar foto
+          <input type="file" accept="image/*" multiple style="display:none" onchange="handlePhotoUpload(this,'ectopica')">
+        </label>
+      </div>
+      <div class="photo-grid" data-topic="ectopica"></div>
+    </div>
+
+  </section>
+
+  <!-- ============================================= -->
+  <!-- TOPIC 5: RASTREIO INFECCIOSO NO PRÉ-NATAL -->
+  <!-- ============================================= -->
+  <section class="topic" id="topic-rastreio">
+
+    <header class="topic-head">
+      <div class="eyebrow">Obstetrícia · Pré-Natal</div>
+      <h1>Rastreio infeccioso: Toxoplasmose, CMV e Hepatites B/C</h1>
+      <p class="subtitle">Diagnóstico, conduta e tratamento das principais infecções rastreadas (ou discutidas) no pré-natal.</p>
+    </header>
+
+    <!-- TOXOPLASMOSE -->
+    <div class="infec-card toxo">
+      <div class="infec-title">🦠 Toxoplasmose <span class="infec-badge">Rastreio universal recomendado</span></div>
+
+      <h2 style="margin-top:16px;">Rastreio</h2>
+      <p style="font-size:14.5px;color:var(--ink-soft);">IgG e IgM na 1ª consulta. Se suscetível (IgG-/IgM-): repetir a cada 1-3 meses (idealmente mensal) e no parto.</p>
+
+      <table>
+        <tr><th>IgG</th><th>IgM</th><th>Interpretação</th><th>Conduta</th></tr>
+        <tr><td>+</td><td>−</td><td>Imunidade prévia</td><td>Sem necessidade de nova sorologia. Pré-natal de rotina.</td></tr>
+        <tr><td>−</td><td>−</td><td>Suscetível</td><td>Reforçar prevenção primária. Repetir sorologia periodicamente e no parto.</td></tr>
+        <tr><td>−/+</td><td>+</td><td>Indeterminado</td><td>Repetir em 2-3 semanas (ELFA ou ELISA)</td></tr>
+        <tr><td>+</td><td>+</td><td>Infecção aguda provável</td><td><strong>Iniciar espiramicina imediatamente</strong> + notificar SINAN + solicitar avidez de IgG se &lt;16 sem</td></tr>
+      </table>
+
+      <h2>IgG+/IgM+ sempre precisa de amniocentese?</h2>
+      <div class="highlight-box">
+        <strong>Não necessariamente — depende de como se chegou nesse resultado.</strong> Existem dois cenários bem diferentes:
+      </div>
+
+      <div class="grid-2" style="margin-top:14px;">
+        <div class="sign-card" style="border-color:var(--terracotta);">
+          <span class="sign-pill" style="background:var(--terracotta);">Cenário 1</span>
+          <div class="sign-title">IgG+/IgM+ isolado, sem sorologia prévia</div>
+          <div class="node-body">
+            Não se sabe se é infecção recente ou antiga com IgM residual (pode persistir meses a anos). <strong>Solicitar avidez de IgG</strong> (só interpretável se coletada até 16 semanas):
+            <ul>
+              <li><strong>Alta avidez</strong> → infecção anterior à concepção → <strong>sem indicação de amniocentese</strong>, sem tratamento</li>
+              <li><strong>Baixa avidez ou coletada após 16 sem</strong> (resultado não confiável) → trata como infecção aguda → amniocentese indicada</li>
+            </ul>
+          </div>
+        </div>
+        <div class="sign-card" style="border-color:var(--sage-dark);">
+          <span class="sign-pill" style="background:var(--sage-dark);">Cenário 2</span>
+          <div class="sign-title">Soroconversão documentada</div>
+          <div class="node-body">
+            Ex: sorologia negativa em 16 semanas → positiva em 30 semanas. <strong>Padrão-ouro de confirmação</strong> — dispensa avidez, pois já se sabe com certeza que a infecção ocorreu na gestação atual.
+            <ul>
+              <li><strong>Amniocentese indicada</strong> — PCR a partir de 18 sem e ≥4 sem após a data estimada da soroconversão</li>
+              <li>Diagnóstico após 16 sem → iniciar <strong>esquema tríplice direto</strong> (não espiramicina isolada)</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <h2>Por que investigar o feto se a mãe já será tratada?</h2>
+      <div class="highlight-box">
+        <strong>Tratar a mãe e investigar o feto respondem perguntas diferentes.</strong> O tratamento materno reduz o <em>risco</em> de transmissão — mas não garante que ela não tenha ocorrido. A amniocentese confirma <em>se</em> a transmissão já aconteceu, e isso muda a conduta em vários pontos:
+        <ul style="margin-top:8px;">
+          <li><strong>Define o esquema terapêutico:</strong> PCR negativo → pode manter/voltar para espiramicina (mais tolerável); PCR positivo → precisa manter esquema tríplice até o parto, apesar da maior toxicidade materna</li>
+          <li><strong>Prognóstico e aconselhamento:</strong> confirmar infecção fetal muda a intensidade do seguimento e as expectativas discutidas com a família</li>
+          <li><strong>Seguimento neonatal:</strong> se PCR positivo, o RN já nasce com investigação e tratamento programados (coriorretinite, calcificações, hidrocefalia), mesmo que assintomático ao nascer</li>
+          <li><strong>Intensidade do US seriado</strong> e planejamento do parto são ajustados conforme o resultado</li>
+        </ul>
+      </div>
+
+      <h2>Tratamento</h2>
+      <div class="highlight-box">
+        <strong>Espiramicina</strong> (1ª linha até 16-18 semanas, ou enquanto infecção fetal não confirmada): 500mg — 2 comp. 8/8h VO em jejum (1g a cada 8h). Reduz ~60% a transmissão vertical se iniciada antes de 18 semanas. Não atravessa bem a barreira placentária — não trata o feto, só reduz a transmissão.<br><br>
+        <strong>Esquema tríplice</strong> (a partir de 16-18 semanas com infecção confirmada, ou PCR de líquido amniótico positivo, ou alterações ultrassonográficas sugestivas):
+        <ul style="margin-top:8px;">
+          <li>Sulfadiazina 500mg — 2 a 3 comp. de 8/8h ou 12/12h (dose ~3g/dia)</li>
+          <li>Pirimetamina 25mg — 2 comp. 1x/dia (evitar no 1º trimestre — risco teratogênico)</li>
+          <li>Ácido folínico 15mg — 1x/dia (NUNCA substituir por ácido fólico) — manter até 1 semana após suspensão da pirimetamina</li>
+        </ul>
+      </div>
+
+      <h2>Investigação fetal</h2>
+      <div class="compl-list">
+        <div class="compl-item"><strong>Amniocentese com PCR:</strong> a partir de 18 semanas, após pelo menos 4 semanas da soroconversão materna estimada (sensibilidade ~70%)</div>
+        <div class="compl-item">Se PCR negativo + US normal → pode-se voltar para espiramicina até o parto</div>
+        <div class="compl-item">Se PCR positivo ou US alterada (microcefalia, hidrocefalia, calcificações cerebrais, catarata, hepatomegalia) → manter esquema tríplice até o parto, sem suspender</div>
+        <div class="compl-item">Monitorar hemograma quinzenal durante uso do esquema tríplice (risco de neutropenia/anemia/trombocitopenia)</div>
+        <div class="compl-item">US obstétrico seriado mensal em toda gestante com infecção confirmada/em investigação</div>
+      </div>
+    </div>
+
+    <!-- CMV -->
+    <div class="infec-card cmv">
+      <div class="infec-title">🔬 Citomegalovírus (CMV) <span class="infec-badge">Rastreio NÃO recomendado de rotina</span></div>
+
+      <div class="highlight-box">
+        <strong>Ponto-chave de prova:</strong> Ministério da Saúde, FEBRASGO e CDC <strong>não recomendam</strong> rastreio sorológico universal de CMV no pré-natal — soroprevalência muito alta (~90-95% já têm IgG+) e sem tratamento materno aprovado com bom nível de evidência que reduza a doença fetal.
+      </div>
+
+      <h2 style="margin-top:20px;">Se solicitado (contextos individualizados)</h2>
+      <table>
+        <tr><th>IgG</th><th>IgM</th><th>Interpretação</th></tr>
+        <tr><td>−</td><td>−</td><td>Suscetível — nunca teve contato</td></tr>
+        <tr><td>+</td><td>−</td><td>Infecção prévia / imunidade — ainda pode reativar (risco bem menor)</td></tr>
+        <tr><td>+ ou −</td><td>+</td><td>Suspeita de infecção recente — solicitar <strong>avidez de IgG</strong></td></tr>
+      </table>
+      <div class="highlight-box" style="margin-top:14px;">
+        <strong>Avidez de IgG:</strong> alta avidez (&gt;60-80%) exclui infecção nos últimos ~3 meses. Baixa avidez sugere infecção recente — maior risco de transmissão vertical.
+      </div>
+
+      <h2>Diagnóstico de infecção fetal</h2>
+      <div class="compl-list">
+        <div class="compl-item"><strong>Amniocentese com PCR:</strong> padrão-ouro — realizar após pelo menos 6-8 semanas da suspeita de infecção materna e após 21 semanas de IG (sensibilidade 87,5% a partir de 21 sem, ~100% a partir de 23 sem)</div>
+        <div class="compl-item"><strong>Sinais ultrassonográficos sugestivos:</strong> calcificações periventriculares, ventriculomegalia, microcefalia, intestino hiperecogênico, RCIU, hepatoesplenomegalia, calcificações hepáticas, oligo/polidrâmnio, ascite/hidropisia</div>
+      </div>
+
+      <h2>Tratamento</h2>
+      <div class="compl-list">
+        <div class="compl-item">Não há antiviral aprovado de rotina para gestante — ganciclovir/valganciclovir têm toxicidade e potencial teratogênico, reservados a casos maternos graves com imunodepressão</div>
+        <div class="compl-item"><strong>Valaciclovir em alta dose (8g/dia)</strong> vem sendo estudado/usado em alguns centros diante de avidez baixa/intermediária no 1º trimestre, até viabilizar amniocentese — pode reduzir transmissão vertical em até 71% em estudo randomizado, mas não é conduta universalmente padronizada</div>
+        <div class="compl-item">Imunoglobulina anti-CMV específica: não recomendada de rotina, evidência inconsistente</div>
+        <div class="compl-item">RN sintomático com acometimento de SNC/auditivo: valganciclovir oral (ou ganciclovir parenteral) para reduzir progressão de perda auditiva</div>
+      </div>
+    </div>
+
+    <!-- HEPATITE B -->
+    <div class="infec-card hepb">
+      <div class="infec-title">💉 Hepatite B <span class="infec-badge">Rastreio universal — 1º trimestre</span></div>
+
+      <p style="font-size:14.5px;color:var(--ink-soft);">HBsAg (teste rápido ou sorologia) obrigatório na 1ª consulta de pré-natal. Checar/completar esquema vacinal se suscetível.</p>
+
+      <h2>Se HBsAg reagente</h2>
+      <div class="compl-list">
+        <div class="compl-item">Notificar + solicitar HBeAg, anti-HBe, anti-HBc, TGO/TGP e carga viral (HBV-DNA)</div>
+        <div class="compl-item">Repetir TGO/TGP e carga viral na 28ª semana (não repetir HBsAg)</div>
+        <div class="compl-item">Encaminhar para infectologia/SAE — mas <strong>não aguardar consulta</strong> para iniciar profilaxia se indicada</div>
+      </div>
+
+      <h2>Profilaxia da transmissão vertical (Tenofovir)</h2>
+      <div class="highlight-box">
+        <strong>Indicação:</strong> carga viral HBV &gt;200.000 UI/mL <strong>e/ou</strong> HBeAg reagente (alguns protocolos: também TGP &gt;2x LSN)<br><br>
+        <strong>Esquema:</strong> Tenofovir (TDF) 300mg VO 1x/dia, iniciado entre <strong>24ª-28ª semana</strong> (idealmente antes de 32 sem), mantido até <strong>12 semanas pós-parto</strong> (definição de suspensão por especialista)<br><br>
+        Sem indicação de profilaxia (carga viral baixa, HBeAg não reagente): seguimento habitual, sem antiviral
+      </div>
+
+      <h2>Cuidados com o RN</h2>
+      <div class="compl-list">
+        <div class="compl-item"><strong>Vacina + Imunoglobulina anti-hepatite B (IGHAHB)</strong> em grupos musculares diferentes, idealmente nas primeiras 2h (até 12-24h) de vida — reduz drasticamente a transmissão</div>
+        <div class="compl-item">Completar esquema vacinal do RN aos 2, 4 e 6 meses</div>
+        <div class="compl-item">Via de parto: não há diferença significativa — decisão por indicação obstétrica</div>
+        <div class="compl-item">Amamentação liberada — concentração viral no leite é baixa</div>
+        <div class="compl-item"><strong>Contraindicadas:</strong> amniocentese e cordocentese em gestante HBV+ (risco de inoculação fetal)</div>
+        <div class="compl-item">Sem transmissão profilática: risco de transmissão vertical varia de 5-30% (média 8%); se HBeAg+, sobe para 80-90%</div>
+      </div>
+    </div>
+
+    <!-- HEPATITE C -->
+    <div class="infec-card hepc">
+      <div class="infec-title">🩸 Hepatite C <span class="infec-badge">Rastreio universal — atualização recente</span></div>
+
+      <div class="highlight-box">
+        <strong>Mudança de protocolo (2022):</strong> rastreio baseado em fatores de risco não se mostrou efetivo — agora a testagem (Anti-HCV) é <strong>universal</strong> para todas as gestantes na 1ª consulta, junto com HIV, sífilis, HBV e toxoplasmose.
+      </div>
+
+      <h2 style="margin-top:16px;">Tratamento na gestação</h2>
+      <div class="compl-list">
+        <div class="compl-item"><strong>Não há tratamento antiviral indicado durante a gestação</strong> — ribavirina, interferon e sofosbuvir são teratogênicos ou não têm segurança comprovada em gestantes</div>
+        <div class="compl-item">O diagnóstico no pré-natal é uma <strong>janela de oportunidade</strong>: encaminhar para tratamento com antivirais de ação direta (DAA) após o parto — altíssima taxa de cura</div>
+        <div class="compl-item">Evitar procedimentos invasivos (amniocentese) e fatores associados a maior transmissão: tempo prolongado de bolsa rota, fórceps</div>
+      </div>
+
+      <h2>Parto e amamentação</h2>
+      <div class="compl-list">
+        <div class="compl-item">Via de parto: sem indicação obrigatória de cesárea por HCV isoladamente</div>
+        <div class="compl-item">Amamentação: liberada — sem evidência de transmissão pelo leite materno. Suspender temporariamente apenas se houver fissura/ferida sangrante na mama até cicatrização</div>
+        <div class="compl-item">Criança exposta: seguimento laboratorial conforme fluxograma específico</div>
+      </div>
+    </div>
+
+    <h2 style="margin-top:8px;">Resumo comparativo</h2>
+    <table>
+      <tr><th>Infecção</th><th>Rastreio de rotina?</th><th>Tratamento na gestação</th></tr>
+      <tr><td>Toxoplasmose</td><td>Sim — sorologia seriada se suscetível</td><td>Espiramicina → esquema tríplice se infecção fetal confirmada</td></tr>
+      <tr><td>CMV</td><td><strong>Não</strong> (MS/FEBRASGO/CDC)</td><td>Sem antiviral padronizado — valaciclovir em estudo/casos selecionados</td></tr>
+      <tr><td>Hepatite B</td><td>Sim — HBsAg no 1º trimestre</td><td>Tenofovir profilático se carga viral alta/HBeAg+ (24-28 sem)</td></tr>
+      <tr><td>Hepatite C</td><td>Sim — Anti-HCV universal (atualizado)</td><td>Nenhum — tratamento pós-parto</td></tr>
+    </table>
+
+    <div class="photo-section">
+      <div class="photo-header">
+        <div class="photo-title">📷 Meus mapas mentais / imagens</div>
+        <label class="photo-add-btn">
+          + Adicionar foto
+          <input type="file" accept="image/*" multiple style="display:none" onchange="handlePhotoUpload(this,'rastreio')">
+        </label>
+      </div>
+      <div class="photo-grid" data-topic="rastreio"></div>
+    </div>
+
+  </section>
+
+  <!-- ============================================= -->
+  <!-- TOPIC 6: ESTÁTICA FETAL -->
+  <!-- ============================================= -->
+  <section class="topic" id="topic-estatica">
+
+    <header class="topic-head">
+      <div class="eyebrow">Obstetrícia · Mecanismo de Parto</div>
+      <h1>Estática Fetal: deflexão, suturas e linhas de orientação</h1>
+      <p class="subtitle">Graus de deflexão da cabeça fetal e os pontos de reparo/linhas de orientação usados no toque vaginal para diagnosticar apresentação e posição.</p>
+    </header>
+
+    <h2 style="margin-top:0;">Graus de deflexão cefálica</h2>
+    <div class="deflex-scale">
+      <div class="deflex-seg vertice">
+        <div class="deflex-grade">Flexão máxima</div>
+        <div class="deflex-name">Vértice (occipital)</div>
+        <div class="deflex-diam">Suboccipitobregmático · ~9,5cm</div>
+      </div>
+      <div class="deflex-seg bregma">
+        <div class="deflex-grade">1º grau</div>
+        <div class="deflex-name">Bregmática (sincipital)</div>
+        <div class="deflex-diam">Occipitofrontal · ~12cm</div>
+      </div>
+      <div class="deflex-seg fronte">
+        <div class="deflex-grade">2º grau</div>
+        <div class="deflex-name">Fronte</div>
+        <div class="deflex-diam">Occipitomentoniano · ~13,5cm (maior de todos)</div>
+      </div>
+      <div class="deflex-seg face">
+        <div class="deflex-grade">3º grau (máxima)</div>
+        <div class="deflex-name">Face</div>
+        <div class="deflex-diam">Submentobregmático · ~9,5cm</div>
+      </div>
+    </div>
+
+    <div class="highlight-box">
+      <strong>Contraintuitivo e muito cobrado:</strong> a deflexão não piora progressivamente — a apresentação de <strong>fronte (2º grau)</strong> é a mais desfavorável de todas, pois expõe o maior diâmetro cefálico possível à pelve. Na deflexão máxima (face), o diâmetro volta a ser favorável, permitindo parto vaginal se mento-anterior.
+    </div>
+
+    <h2>Diagrama do crânio fetal — pontos de reparo</h2>
+    <div class="skull-diagram">
+      <svg width="280" height="220" viewBox="0 0 280 220" fill="none">
+        <!-- skull outline (top view simplified) -->
+        <ellipse cx="140" cy="120" rx="110" ry="85" stroke="#3A342C" stroke-width="2" fill="#F7F3EA"/>
+        <!-- sagittal suture -->
+        <path d="M90 60 L140 100 L190 165" stroke="#C77B58" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <!-- metopic suture continuation -->
+        <path d="M90 60 L60 40" stroke="#7B92A8" stroke-width="3" fill="none" stroke-linecap="round" stroke-dasharray="6 4"/>
+        <!-- bregma point -->
+        <circle cx="90" cy="60" r="6" fill="#A85F42"/>
+        <text x="60" y="45" font-size="12" fill="#3A342C" font-family="Source Sans 3">Bregma</text>
+        <!-- lambda point -->
+        <circle cx="190" cy="165" r="6" fill="#6B7F6C"/>
+        <text x="195" y="185" font-size="12" fill="#3A342C" font-family="Source Sans 3">Lambda</text>
+        <!-- glabela -->
+        <circle cx="60" cy="40" r="5" fill="#7B92A8"/>
+        <text x="15" y="30" font-size="11" fill="#3A342C" font-family="Source Sans 3">Glabela</text>
+        <!-- labels for sutures -->
+        <text x="105" y="90" font-size="11" fill="#A85F42" font-family="Source Sans 3" transform="rotate(35 105 90)">sagital</text>
+        <text x="55" y="55" font-size="10" fill="#7B92A8" font-family="Source Sans 3" transform="rotate(-40 55 55)">metópica</text>
+      </svg>
+    </div>
+
+    <table>
+      <tr><th>Estrutura</th><th>Descrição</th><th>Usada para</th></tr>
+      <tr><td><strong>Sutura sagital</strong></td><td>Entre os dois ossos parietais — vai do bregma ao lambda</td><td>Linha de orientação da apresentação de vértice (fletida)</td></tr>
+      <tr><td><strong>Sutura metópica (frontal)</strong></td><td>Entre as duas metades do osso frontal, ainda não fundidas</td><td>Linha de orientação da apresentação de fronte</td></tr>
+      <tr><td><strong>Sutura sagitometópica</strong></td><td>Linha contínua percebida ao seguir a sagital além do bregma, entrando na metópica</td><td>Diferencia bregma (só alcança o bregma) de fronte (segue até glabela/órbita)</td></tr>
+      <tr><td><strong>Linha facial</strong></td><td>Da raiz do nariz, passando por nariz e boca, até o mento</td><td>Linha de orientação da apresentação de face</td></tr>
+      <tr><td><strong>Sulco interglúteo</strong></td><td>Fenda entre as nádegas fetais (não é sutura craniana)</td><td>Linha de orientação da apresentação pélvica — localiza o sacro</td></tr>
+    </table>
+
+    <h2>Ponto de reparo x linha de orientação por apresentação</h2>
+    <table>
+      <tr><th>Apresentação</th><th>Ponto de reparo</th><th>Linha de orientação</th></tr>
+      <tr><td>Cefálica fletida (vértice)</td><td>Lambda (occipício)</td><td>Sutura sagital</td></tr>
+      <tr><td>Bregmática (1º grau)</td><td>Bregma</td><td>Sutura sagital (até o losango)</td></tr>
+      <tr><td>Fronte (2º grau)</td><td>Glabela</td><td>Sutura metópica (sagitometópica)</td></tr>
+      <tr><td>Face (3º grau)</td><td>Mento</td><td>Linha facial</td></tr>
+      <tr><td>Pélvica (podálica)</td><td>Sacro</td><td>Sulco interglúteo</td></tr>
+    </table>
+
+    <div class="compl-list" style="margin-top:14px;">
+      <div class="compl-item"><strong>Bregma:</strong> fontanela anterior, formato losangular, onde se encontram 4 suturas.</div>
+      <div class="compl-item"><strong>Lambda:</strong> fontanela posterior, formato triangular, onde se encontram 3 suturas.</div>
+      <div class="compl-item">No toque vaginal em apresentação de fronte, palpam-se glabela, raiz do nariz e órbitas — sem alcançar facilmente occipício ou mento, o que a diferencia de bregma (só fontanela anterior) e de face (mento, boca, nariz completos).</div>
+    </div>
+
+    <div class="photo-section">
+      <div class="photo-header">
+        <div class="photo-title">📷 Meus mapas mentais / imagens</div>
+        <label class="photo-add-btn">
+          + Adicionar foto
+          <input type="file" accept="image/*" multiple style="display:none" onchange="handlePhotoUpload(this,'estatica')">
+        </label>
+      </div>
+      <div class="photo-grid" data-topic="estatica"></div>
+    </div>
+
+  </section>
+
+  <!-- ============================================= -->
+  <!-- TOPIC 7: FÓRCEPS -->
+  <!-- ============================================= -->
+  <section class="topic" id="topic-forceps">
+
+    <header class="topic-head">
+      <div class="eyebrow">Obstetrícia · Parto Operatório</div>
+      <h1>Fórceps: pré-requisitos, indicações e contraindicações</h1>
+      <p class="subtitle">Parto vaginal operatório — quando o esforço expulsivo precisa ser antecipado ou substituído para proteger mãe ou feto.</p>
+    </header>
+
+    <h2 style="margin-top:0;">Pré-requisitos obrigatórios</h2>
+    <div class="req-grid">
+      <div class="req-card">Dilatação cervical completa (10cm)</div>
+      <div class="req-card">Membranas rotas</div>
+      <div class="req-card">Cabeça insinuada</div>
+      <div class="req-card">Variedade de posição conhecida</div>
+      <div class="req-card">Sem desproporção cefalopélvica</div>
+      <div class="req-card">Bexiga vazia + analgesia adequada</div>
+    </div>
+
+    <h2>Período expulsivo prolongado — definição por tempo</h2>
+    <table>
+      <tr><th></th><th>Sem analgesia peridural</th><th>Com analgesia peridural</th></tr>
+      <tr><td><strong>Nulípara</strong></td><td>&gt;2 horas</td><td>&gt;3 horas</td></tr>
+      <tr><td><strong>Multípara</strong></td><td>&gt;1 hora</td><td>&gt;2 horas</td></tr>
+    </table>
+    <div class="highlight-box">
+      A peridural relaxa a musculatura do assoalho pélvico e reduz o reflexo de puxo espontâneo — por isso tolera-se mais tempo antes de rotular como "prolongado". Não é sinal de disfunção, é efeito esperado da analgesia.
+    </div>
+
+    <h2>Indicações — fetais x maternas</h2>
+    <div class="indic-split">
+      <div class="indic-split-card fetal">
+        <div class="node-title">Indicações fetais</div>
+        <div class="node-body">
+          <ul>
+            <li>Condição fetal não tranquilizadora / sofrimento fetal no período expulsivo</li>
+            <li>Parada de progressão da descida ou rotação da cabeça fetal</li>
+            <li>Período expulsivo prolongado (indicação mais comum na prática)</li>
+            <li>Distócia de rotação</li>
+            <li>Cabeça derradeira no parto pélvico</li>
+          </ul>
+        </div>
+      </div>
+      <div class="indic-split-card materna">
+        <div class="node-title">Indicações maternas</div>
+        <div class="node-body">
+          Situações em que o esforço expulsivo (manobra de Valsalva) é fator de risco para complicações:
+          <ul>
+            <li><strong>Cardiopatia</strong> — risco de descompensação pelo esforço</li>
+            <li><strong>Pneumopatia</strong> — reserva pulmonar diminuída</li>
+            <li><strong>Tumores cerebrais / aneurismas</strong> — risco de AVC hemorrágico</li>
+            <li>Descolamento de retina, varizes esofagianas</li>
+            <li>Exaustão materna, sangramento excessivo no período expulsivo</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <h2>Contraindicações</h2>
+    <div class="contra-box">
+      <strong>Parto vaginal operatório é contraindicado se:</strong> cabeça fetal não insinuada · variedade de posição desconhecida · suspeita/diagnóstico de desmineralização óssea fetal ou distúrbios hemorrágicos · apresentação defletida de 3º grau (face mento-posterior) · suspeita de desproporção cefalopélvica absoluta · idade gestacional &lt;34 semanas.
+    </div>
+
+    <h2>Referências</h2>
+    <div class="compl-list">
+      <div class="compl-item">FEBRASGO Position Statement Nº7, julho/2023 — "Parto vaginal operatório"</div>
+      <div class="compl-item">Femina 2011;39(12) — "Indicações do parto a fórceps", Comissão de Abortamento, Parto e Puerpério da FEBRASGO</div>
+      <div class="compl-item">Zugaib Obstetrícia — capítulo de Parto Operatório (conferir página/edição no seu exemplar para citação exata)</div>
+    </div>
+
+    <div class="photo-section">
+      <div class="photo-header">
+        <div class="photo-title">📷 Meus mapas mentais / imagens</div>
+        <label class="photo-add-btn">
+          + Adicionar foto
+          <input type="file" accept="image/*" multiple style="display:none" onchange="handlePhotoUpload(this,'forceps')">
+        </label>
+      </div>
+      <div class="photo-grid" data-topic="forceps"></div>
+    </div>
+
+  </section>
+
+  <!-- ============================================= -->
+  <!-- TOPIC 8: FISIOLOGIA HORMONAL DA GESTAÇÃO -->
+  <!-- ============================================= -->
+  <section class="topic" id="topic-hormonios">
+
+    <header class="topic-head">
+      <div class="eyebrow">Obstetrícia · Fisiologia</div>
+      <h1>Fisiologia Hormonal da Gestação</h1>
+      <p class="subtitle">Os principais hormônios elevados na gravidez, sua origem e função — e por que a progesterona é a responsável pela mudança do muco cervical.</p>
+    </header>
+
+    <h2 style="margin-top:0;">Hormônios elevados na gestação</h2>
+    <div class="horm-grid">
+      <div class="horm-card key">
+        <div class="horm-name">β-hCG</div>
+        <div class="horm-origin">Sinciciotrofoblasto</div>
+        <div class="horm-func">Mantém o corpo lúteo produzindo progesterona até a placenta assumir (~8-10 sem). Primeiro a subir — dobra a cada 48-72h no início. Base do diagnóstico de gravidez.</div>
+      </div>
+      <div class="horm-card key">
+        <div class="horm-name">Progesterona</div>
+        <div class="horm-origin">Corpo lúteo → placenta</div>
+        <div class="horm-func">Mantém quiescência uterina (relaxamento miometrial), espessa o muco cervical, promove imunomodulação (tolerância ao "enxerto" fetal). Hormônio-chave da manutenção da gestação.</div>
+      </div>
+      <div class="horm-card">
+        <div class="horm-name">Estrogênio (estriol)</div>
+        <div class="horm-origin">Placenta + precursores fetais/maternos</div>
+        <div class="horm-func">Promove crescimento uterino e mamário; aumenta fluxo sanguíneo uteroplacentário.</div>
+      </div>
+      <div class="horm-card">
+        <div class="horm-name">Lactogênio placentário (hPL)</div>
+        <div class="horm-origin">Sinciciotrofoblasto</div>
+        <div class="horm-func">Efeito "diabetogênico" — poupa glicose materna para o feto, mobiliza ácidos graxos maternos como fonte de energia alternativa.</div>
+      </div>
+      <div class="horm-card">
+        <div class="horm-name">Prolactina</div>
+        <div class="horm-origin">Hipófise materna</div>
+        <div class="horm-func">Prepara a mama para a lactação.</div>
+      </div>
+      <div class="horm-card">
+        <div class="horm-name">Relaxina</div>
+        <div class="horm-origin">Corpo lúteo / placenta</div>
+        <div class="horm-func">Relaxa ligamentos pélvicos; colabora no amolecimento cervical.</div>
+      </div>
+      <div class="horm-card">
+        <div class="horm-name">Cortisol (livre e total)</div>
+        <div class="horm-origin">Adrenal materna (via CRH placentário)</div>
+        <div class="horm-func">Aumenta resistência insulínica; contribui para amadurecimento pulmonar fetal no fim da gestação.</div>
+      </div>
+      <div class="horm-card">
+        <div class="horm-name">Hormônios tireoidianos (T3/T4 totais)</div>
+        <div class="horm-origin">Tireoide materna</div>
+        <div class="horm-func">Aumentam pela elevação de TBG (estrogênio-induzida). TSH pode cair discretamente no 1º trimestre pela reação cruzada do hCG com o receptor de TSH.</div>
+      </div>
+    </div>
+
+    <h2>Muco cervical na gestação — quem comanda a mudança</h2>
+    <div class="mucus-flow">
+      <div class="mucus-step hormone">Progesterona</div>
+      <span class="mucus-arrow">→</span>
+      <div class="mucus-step">Muco espesso, viscoso e escasso</div>
+      <span class="mucus-arrow">→</span>
+      <div class="mucus-step">Pouco penetrável por espermatozoides/patógenos</div>
+      <span class="mucus-arrow">→</span>
+      <div class="mucus-step">Forma o tampão mucoso (rolha)</div>
+    </div>
+
+    <div class="highlight-box">
+      <strong>Mecanismo:</strong> após a implantação, a progesterona domina o ambiente hormonal (diferente do meio do ciclo dominado por estrogênio) — o muco deixa de ser fino/elástico ("clara de ovo", fértil) e se torna espesso e hostil. Esse muco forma o <strong>tampão mucoso</strong>, que veda o canal cervical durante toda a gestação como barreira física e imunológica contra ascensão de patógenos da vagina para a cavidade uterina.
+    </div>
+
+    <div class="compl-list">
+      <div class="compl-item">É o mesmo princípio usado por contraceptivos hormonais à base de progestágeno isolado (minipílula, DIU hormonal) — muco cervical hostil como mecanismo contraceptivo</div>
+      <div class="compl-item">A eliminação do tampão mucoso (com raias de sangue — "sinal do parto") ocorre próximo ao trabalho de parto, quando o amadurecimento cervical e as prostaglandinas locais alteram novamente a estrutura do muco</div>
+    </div>
+
+    <div class="photo-section">
+      <div class="photo-header">
+        <div class="photo-title">📷 Meus mapas mentais / imagens</div>
+        <label class="photo-add-btn">
+          + Adicionar foto
+          <input type="file" accept="image/*" multiple style="display:none" onchange="handlePhotoUpload(this,'hormonios')">
+        </label>
+      </div>
+      <div class="photo-grid" data-topic="hormonios"></div>
+    </div>
+
+  </section>
+
+  <!-- ============================================= -->
+  <!-- TOPIC 9: SANGRAMENTO DE 1ª METADE -->
+  <!-- ============================================= -->
+  <section class="topic" id="topic-sangra1">
+
+    <header class="topic-head">
+      <div class="eyebrow">Obstetrícia · Emergência / PSA</div>
+      <h1>Sangramento da 1ª Metade da Gestação</h1>
+      <p class="subtitle">Tipos de abortamento — classificação clínica pelo achado ao exame, ao toque e à USG, com a conduta de cada um.</p>
+    </header>
+
+    <div class="highlight-box">
+      <strong>Principais diagnósticos diferenciais de sangramento na 1ª metade:</strong> abortamento (em suas várias formas), gestação ectópica (ver aba própria), doença trofoblástica gestacional (mola hidatiforme), e causas ginecológicas não relacionadas à gestação (pólipo, cervicite, ectopia).
+    </div>
+
+    <h2 style="margin-top:0;">Tipos de abortamento</h2>
+    <div class="abort-grid">
+      <div class="abort-card ameaca">
+        <div class="abort-title">Ameaça de abortamento</div>
+        <div class="abort-status">
+          <span class="abort-tag">Colo fechado</span>
+          <span class="abort-tag">Embrião vivo</span>
+        </div>
+        <div class="node-body">Sangramento discreto, cólica leve/ausente. USG mostra gestação tópica com BCF presente. <strong>Conduta:</strong> repouso relativo, acompanhamento — não há tratamento que comprovadamente reverta o quadro, mas a maioria evolui bem.</div>
+      </div>
+      <div class="abort-card inevitavel">
+        <div class="abort-title">Abortamento inevitável</div>
+        <div class="abort-status">
+          <span class="abort-tag">Colo aberto</span>
+          <span class="abort-tag">Ainda com conteúdo</span>
+        </div>
+        <div class="node-body">Sangramento e cólica mais intensos, colo já dilatado, mas ainda há material ovular na cavidade (feto pode ou não ter BCF+). <strong>Conduta:</strong> esvaziamento uterino (expectante, medicamentoso com misoprostol, ou AMIU/curetagem) conforme IG e estabilidade.</div>
+      </div>
+      <div class="abort-card incompleto">
+        <div class="abort-title">Abortamento incompleto</div>
+        <div class="abort-status">
+          <span class="abort-tag">Colo aberto</span>
+          <span class="abort-tag">Restos ovulares</span>
+        </div>
+        <div class="node-body">Eliminação parcial do conteúdo uterino — USG mostra material heterogêneo residual na cavidade. Sangramento persistente. <strong>Conduta:</strong> esvaziamento uterino (AMIU é preferível à curetagem — menor risco de perfuração/sinéquia).</div>
+      </div>
+      <div class="abort-card completo">
+        <div class="abort-title">Abortamento completo</div>
+        <div class="abort-status">
+          <span class="abort-tag">Colo fechado</span>
+          <span class="abort-tag">Cavidade vazia</span>
+        </div>
+        <div class="node-body">Eliminação total do conteúdo ovular — USG mostra cavidade vazia/endométrio fino, sem necessidade de intervenção. Sangramento e cólica cessam ou diminuem muito. <strong>Conduta:</strong> expectante, sem necessidade de esvaziamento.</div>
+      </div>
+      <div class="abort-card infectado">
+        <div class="abort-title">Abortamento infectado</div>
+        <div class="abort-status">
+          <span class="abort-tag">Febre</span>
+          <span class="abort-tag">Emergência</span>
+        </div>
+        <div class="node-body">Geralmente associado a abortamento provocado em condições inseguras. Febre, secreção fétida, dor abdominal, leucocitose, pode evoluir para sepse. <strong>Conduta:</strong> antibioticoterapia de amplo espectro + esvaziamento uterino urgente, independentemente do estado do colo.</div>
+      </div>
+      <div class="abort-card retido">
+        <div class="abort-title">Abortamento retido (missed abortion)</div>
+        <div class="abort-status">
+          <span class="abort-tag">Colo fechado</span>
+          <span class="abort-tag">Sem BCF</span>
+        </div>
+        <div class="node-body">Óbito embrionário/fetal sem expulsão espontânea — muitas vezes assintomático, achado incidental na USG de rotina (ausência de BCF, saco gestacional sem embrião/ovo anembrionado). <strong>Conduta:</strong> esvaziamento uterino (expectante, medicamentoso ou cirúrgico, conforme IG e preferência).</div>
+      </div>
+    </div>
+
+    <h2>Abortamento habitual</h2>
+    <div class="highlight-box">
+      Definido como <strong>≥3 perdas gestacionais consecutivas</strong> (algumas referências já consideram investigar a partir de 2 perdas). Investigação inclui: cariótipo do casal, avaliação anatômica uterina (malformações müllerianas, miomas submucosos, incompetência istmocervical), rastreio de trombofilias e síndrome antifosfolípide, função tireoidiana, e controle glicêmico.
+    </div>
+
+    <h2>Achados que diferenciam os tipos</h2>
+    <table>
+      <tr><th>Tipo</th><th>Colo</th><th>USG</th><th>BCF</th></tr>
+      <tr><td>Ameaça</td><td>Fechado</td><td>Gestação tópica normal</td><td>Presente</td></tr>
+      <tr><td>Inevitável</td><td>Aberto</td><td>Material ovular presente</td><td>Variável</td></tr>
+      <tr><td>Incompleto</td><td>Aberto</td><td>Restos ovulares heterogêneos</td><td>Ausente</td></tr>
+      <tr><td>Completo</td><td>Fechado</td><td>Cavidade vazia</td><td>Ausente</td></tr>
+      <tr><td>Retido</td><td>Fechado</td><td>Saco gestacional/embrião sem atividade cardíaca</td><td>Ausente</td></tr>
+      <tr><td>Infectado</td><td>Aberto (geralmente)</td><td>Variável + sinais de infecção</td><td>Variável</td></tr>
+    </table>
+
+    <div class="photo-section">
+      <div class="photo-header">
+        <div class="photo-title">📷 Meus mapas mentais / imagens</div>
+        <label class="photo-add-btn">
+          + Adicionar foto
+          <input type="file" accept="image/*" multiple style="display:none" onchange="handlePhotoUpload(this,'sangra1')">
+        </label>
+      </div>
+      <div class="photo-grid" data-topic="sangra1"></div>
+    </div>
+
+  </section>
+
+  <!-- ============================================= -->
+  <!-- TOPIC 10: SANGRAMENTO DE 2ª METADE -->
+  <!-- ============================================= -->
+  <section class="topic" id="topic-sangra2">
+
+    <header class="topic-head">
+      <div class="eyebrow">Obstetrícia · Emergência / PSA</div>
+      <h1>Sangramento da 2ª Metade da Gestação e Puerpério</h1>
+      <p class="subtitle">DPP x Placenta Prévia — o comparativo mais cobrado em prova — e atonia uterina como principal causa de hemorragia pós-parto.</p>
+    </header>
+
+    <h2 style="margin-top:0;">DPP x Placenta Prévia — comparativo direto</h2>
+    <div class="compare-vs">
+      <div class="vs-col">
+        <div class="vs-title">Descolamento Prematuro de Placenta (DPP)</div>
+        <div class="vs-row"><span class="vs-label">Sangramento</span>Escuro, pode ser oculto (hematoma retroplacentário sem exteriorização)</div>
+        <div class="vs-row"><span class="vs-label">Dor</span>Intensa, súbita, contínua</div>
+        <div class="vs-row"><span class="vs-label">Útero</span>Hipertonia, "útero em madeira"</div>
+        <div class="vs-row"><span class="vs-label">Fatores de risco</span>Hipertensão/pré-eclâmpsia (principal), trauma abdominal, cocaína, tabagismo, polidrâmnio com esvaziamento rápido, gestação múltipla</div>
+        <div class="vs-row"><span class="vs-label">Sofrimento fetal</span>Frequente e precoce</div>
+        <div class="vs-row"><span class="vs-label">Conduta</span>Parto imediato pela via mais rápida — geralmente cesárea de urgência (parto vaginal se iminente/estágio avançado)</div>
+      </div>
+      <div class="vs-col pp">
+        <div class="vs-title">Placenta Prévia (PP)</div>
+        <div class="vs-row"><span class="vs-label">Sangramento</span>Vermelho vivo, de repetição, autolimitado</div>
+        <div class="vs-row"><span class="vs-label">Dor</span>Ausente (indolor — clássico de prova)</div>
+        <div class="vs-row"><span class="vs-label">Útero</span>Tônus normal, indolor à palpação</div>
+        <div class="vs-row"><span class="vs-label">Fatores de risco</span>Cesárea prévia, multiparidade, idade materna avançada, tabagismo, curetagens prévias, gestação múltipla</div>
+        <div class="vs-row"><span class="vs-label">Sofrimento fetal</span>Incomum, a menos que sangramento maciço</div>
+        <div class="vs-row"><span class="vs-label">Conduta</span>Depende do grau (total/parcial/marginal), IG e intensidade do sangramento — via de parto frequentemente cesárea se prévia total</div>
+      </div>
+    </div>
+
+    <h2>Classificação da Placenta Prévia</h2>
+    <table>
+      <tr><th>Tipo</th><th>Descrição</th><th>Via de parto</th></tr>
+      <tr><td><strong>Total</strong></td><td>Recobre totalmente o orifício interno do colo</td><td>Cesárea obrigatória</td></tr>
+      <tr><td><strong>Parcial</strong></td><td>Recobre parcialmente o orifício interno</td><td>Geralmente cesárea</td></tr>
+      <tr><td><strong>Marginal</strong></td><td>Borda tangencia o orifício interno, sem recobri-lo</td><td>Parto vaginal pode ser tentado, conforme sangramento</td></tr>
+      <tr><td><strong>Inserção baixa</strong></td><td>Próxima ao orifício interno (&lt;2cm), sem alcançá-lo</td><td>Parto vaginal geralmente possível</td></tr>
+    </table>
+
+    <div class="highlight-box">
+      <strong>Regra prática:</strong> jamais realizar toque vaginal digital antes de excluir placenta prévia por USG em gestante com sangramento indolor no 2º/3º trimestre — risco de precipitar hemorragia maciça.
+    </div>
+
+    <h2 style="margin-top:32px;">Atonia Uterina — principal causa de hemorragia pós-parto</h2>
+    <div class="highlight-box">
+      Responsável por até <strong>70-80% das hemorragias pós-parto (HPP)</strong>. Definida como falha do útero em contrair adequadamente após a dequitação, mantendo os vasos do leito placentário abertos.
+    </div>
+
+    <h3 style="font-family:'Lora',serif;font-weight:600;font-size:17px;margin:20px 0 10px;">Fatores de risco</h3>
+    <div class="compl-list">
+      <div class="compl-item">Sobredistensão uterina — polidrâmnio, gestação múltipla, macrossomia</div>
+      <div class="compl-item">Trabalho de parto prolongado ou muito rápido, uso de ocitocina prolongado</div>
+      <div class="compl-item">Multiparidade, corioamnionite, miomas uterinos</div>
+      <div class="compl-item">Uso de sulfato de magnésio, anestésicos halogenados</div>
+    </div>
+
+    <h3 style="font-family:'Lora',serif;font-weight:600;font-size:17px;margin:24px 0 10px;">4 T's — causas de hemorragia pós-parto (diagnóstico diferencial)</h3>
+    <div class="tt-grid">
+      <div class="tt-card">
+        <div class="tt-letter">T</div>
+        <div class="tt-name">Tono</div>
+        <div class="tt-desc">Atonia uterina — ~70-80% dos casos</div>
+      </div>
+      <div class="tt-card">
+        <div class="tt-letter">T</div>
+        <div class="tt-name">Trauma</div>
+        <div class="tt-desc">Lacerações de trajeto, rotura uterina</div>
+      </div>
+      <div class="tt-card">
+        <div class="tt-letter">T</div>
+        <div class="tt-name">Tecido</div>
+        <div class="tt-desc">Retenção de restos placentários</div>
+      </div>
+      <div class="tt-card">
+        <div class="tt-letter">T</div>
+        <div class="tt-name">Trombina</div>
+        <div class="tt-desc">Coagulopatias (CIVD, plaquetopenia)</div>
+      </div>
+    </div>
+
+    <h3 style="font-family:'Lora',serif;font-weight:600;font-size:17px;margin:24px 0 10px;">Conduta escalonada na atonia</h3>
+    <div class="step-ladder">
+      <div class="step-ladder-item"><span class="step-num">1</span><div><strong>Massagem uterina bimanual</strong> + esvaziamento vesical</div></div>
+      <div class="step-ladder-item"><span class="step-num">2</span><div><strong>Ocitocina</strong> IV (1ª linha) — infusão contínua</div></div>
+      <div class="step-ladder-item"><span class="step-num">3</span><div><strong>Metilergometrina</strong> IM — contraindicada se hipertensão/pré-eclâmpsia</div></div>
+      <div class="step-ladder-item"><span class="step-num">4</span><div><strong>Misoprostol</strong> retal — associado quando resposta insuficiente</div></div>
+      <div class="step-ladder-item"><span class="step-num">5</span><div><strong>Ácido tranexâmico</strong> IV — reduz mortalidade por sangramento, usar precocemente</div></div>
+      <div class="step-ladder-item"><span class="step-num">6</span><div><strong>Balão de tamponamento (Bakri)</strong> — se refratário às medidas farmacológicas</div></div>
+      <div class="step-ladder-item"><span class="step-num">7</span><div><strong>Sutura compressiva (B-Lynch)</strong> ou ligadura de artérias uterinas/hipogástricas — via cirúrgica conservadora</div></div>
+      <div class="step-ladder-item"><span class="step-num">8</span><div><strong>Histerectomia</strong> — último recurso, se hemorragia refratária e risco de vida</div></div>
+    </div>
+
+    <div class="photo-section">
+      <div class="photo-header">
+        <div class="photo-title">📷 Meus mapas mentais / imagens</div>
+        <label class="photo-add-btn">
+          + Adicionar foto
+          <input type="file" accept="image/*" multiple style="display:none" onchange="handlePhotoUpload(this,'sangra2')">
+        </label>
+      </div>
+      <div class="photo-grid" data-topic="sangra2"></div>
+    </div>
+
+  </section>
+
+  <footer>Hub de referência para estudo — sempre correlacionar com protocolo institucional e literatura atualizada (Ministério da Saúde, FEBRASGO, PCDT-TV, Tratado de Obstetrícia).</footer>
+
+</div>
+
+<script>
+  // Top-level topic switcher
+  const hubTabs = document.querySelectorAll('.hub-tab');
+  const topics = document.querySelectorAll('.topic');
+
+  hubTabs.forEach(tab=>{
+    tab.addEventListener('click', ()=>{
+      hubTabs.forEach(t=>t.classList.remove('active'));
+      tab.classList.add('active');
+      topics.forEach(s=>s.classList.remove('active'));
+      document.getElementById('topic-' + tab.dataset.topic).classList.add('active');
+      window.scrollTo({top:0, behavior:'smooth'});
+    });
+  });
+
+  // Rh sub-toggle (within topic-rh)
+  const rhButtons = document.querySelectorAll('#topic-rh .toggle-btn');
+  const rhNodes = document.querySelectorAll('#topic-rh [data-group]');
+
+  function applyRhView(view){
+    rhNodes.forEach(el=>{
+      const groups = el.getAttribute('data-group').split(' ');
+      if(view==='indic'){
+        el.style.display = groups.includes('indic') ? '' : 'none';
+        return;
+      }
+      if(groups.includes('indic')){
+        el.style.display = 'none';
+        return;
+      }
+      if(view==='all' || groups.includes('all') || groups.includes(view)){
+        el.style.display = '';
+      } else {
+        el.style.display = 'none';
+      }
+    });
+  }
+
+  rhButtons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      rhButtons.forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      applyRhView(btn.dataset.view);
+    });
+  });
+
+  applyRhView('all');
+</script>
+
+
+<div class="photo-lightbox" id="photoLightbox" onclick="closeLightbox()">
+  <img id="photoLightboxImg" src="" onclick="event.stopPropagation()">
+</div>
+
+<script>
+(function(){
+  const STORAGE_KEY = 'medstudy_photos_obstetricia';
+
+  function loadPhotoStore(){
+    try{ return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }catch(e){ return {}; }
+  }
+  function savePhotoStore(store){
+    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(store)); return true; }
+    catch(e){ alert('Não foi possível salvar — armazenamento cheio. Tente exportar e limpar fotos antigas.'); return false; }
+  }
+
+  window.renderAllPhotoGrids = function(){
+    const store = loadPhotoStore();
+    document.querySelectorAll('.photo-grid').forEach(grid=>{
+      const topic = grid.dataset.topic;
+      const imgs = store[topic] || [];
+      if(imgs.length===0){
+        grid.innerHTML = '<div class="photo-empty">Nenhuma foto ainda — clique em "Adicionar foto" para anexar seu mapa mental.</div>';
+        return;
+      }
+      grid.innerHTML = imgs.map((src,i)=>`
+        <div class="photo-thumb" onclick="openLightbox('${topic}',${i})">
+          <img src="${src}" loading="lazy">
+          <button class="photo-del" onclick="event.stopPropagation();deletePhoto('${topic}',${i})">✕</button>
+        </div>
+      `).join('');
+    });
+  };
+
+  window.handlePhotoUpload = function(input, topic){
+    const files = Array.from(input.files||[]);
+    if(!files.length) return;
+    const store = loadPhotoStore();
+    if(!store[topic]) store[topic]=[];
+    let pending = files.length;
+    files.forEach(file=>{
+      const reader = new FileReader();
+      reader.onload = e=>{
+        store[topic].push(e.target.result);
+        pending--;
+        if(pending===0){
+          savePhotoStore(store);
+          renderAllPhotoGrids();
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+    input.value='';
+  };
+
+  window.deletePhoto = function(topic, idx){
+    const store = loadPhotoStore();
+    if(store[topic]){
+      store[topic].splice(idx,1);
+      savePhotoStore(store);
+      renderAllPhotoGrids();
+    }
+  };
+
+  window.openLightbox = function(topic, idx){
+    const store = loadPhotoStore();
+    const src = (store[topic]||[])[idx];
+    if(!src) return;
+    const lb = document.getElementById('photoLightbox');
+    document.getElementById('photoLightboxImg').src = src;
+    lb.classList.add('active');
+  };
+  window.closeLightbox = function(){
+    document.getElementById('photoLightbox').classList.remove('active');
+  };
+
+  window.exportPhotos = function(){
+    const store = loadPhotoStore();
+    const hasAny = Object.values(store).some(arr=>arr && arr.length);
+    if(!hasAny){ alert('Nenhuma foto para exportar ainda.'); return; }
+    const blob = new Blob([JSON.stringify(store,null,2)], {type:'application/json'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'fotos-obstetricia-' + new Date().toISOString().slice(0,10) + '.json';
+    a.click();
+  };
+
+  window.importPhotosFile = function(event){
+    const file = event.target.files[0]; if(!file) return;
+    const reader = new FileReader();
+    reader.onload = e=>{
+      try{
+        const imported = JSON.parse(e.target.result);
+        const store = loadPhotoStore();
+        Object.keys(imported).forEach(topic=>{
+          if(!store[topic]) store[topic]=[];
+          store[topic] = store[topic].concat(imported[topic]);
+        });
+        if(savePhotoStore(store)){
+          renderAllPhotoGrids();
+          alert('Fotos importadas com sucesso!');
+        }
+      }catch(err){ alert('Arquivo inválido.'); }
+    };
+    reader.readAsText(file);
+    event.target.value='';
+  };
+
+  document.addEventListener('DOMContentLoaded', renderAllPhotoGrids);
+  if(document.readyState !== 'loading') renderAllPhotoGrids();
+})();
+</script>
+</body>
+</html>
