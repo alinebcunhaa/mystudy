@@ -188,6 +188,19 @@
   .fever-pill.yes{background:#FBEEE7;color:var(--terracotta-dark);}
   .fever-pill.no{background:var(--pastel-green);color:var(--sage-dark);}
 
+  /* ===== Ca. Colo Uterino / Amenorreia / SOP ===== */
+  .compartment-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:18px 0;}
+  @media(max-width:680px){.compartment-grid{grid-template-columns:1fr;}}
+  .compartment-card{background:var(--white);border:1.5px solid var(--line);border-radius:14px;padding:18px;border-top:4px solid var(--mauve);}
+  .compartment-title{font-family:'Lora',serif;font-weight:600;font-size:15.5px;margin-bottom:4px;}
+  .compartment-sub{font-size:11.5px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.04em;font-weight:700;margin-bottom:8px;}
+
+  .criteria-box{
+    background:var(--mauve-bg);border:1.5px solid var(--mauve);border-radius:12px;
+    padding:16px 20px;margin:18px 0;font-size:14.5px;
+  }
+  .criteria-box strong{color:var(--ink);}
+
   footer{
     margin-top:44px;padding-top:18px;border-top:1px solid var(--line);
     font-size:12.5px;color:var(--ink-soft);text-align:center;
@@ -263,6 +276,9 @@
     <button class="hub-tab" data-topic="mama">Ca. Mama</button>
     <button class="hub-tab" data-topic="ovario">Ca. Ovário</button>
     <button class="hub-tab" data-topic="mama-benigna">Doenças Benignas da Mama</button>
+    <button class="hub-tab" data-topic="colo-uterino">Ca. Colo Uterino</button>
+    <button class="hub-tab" data-topic="amenorreia">Amenorreia</button>
+    <button class="hub-tab" data-topic="sop">SOP</button>
 
     <div class="hub-io">
       <label class="hub-io-btn" title="Importar fotos salvas">
@@ -702,6 +718,256 @@
         </label>
       </div>
       <div class="photo-grid" data-topic="mama-benigna"></div>
+    </div>
+
+  </section>
+
+  <!-- ============================================= -->
+  <!-- TOPIC: CÂNCER DE COLO UTERINO -->
+  <!-- ============================================= -->
+  <section class="topic" id="topic-colo-uterino">
+
+    <header class="topic-head">
+      <div class="eyebrow">Ginecologia · Oncologia / Rastreamento</div>
+      <h1>Câncer de Colo Uterino</h1>
+      <p class="subtitle">Rastreamento, nomenclatura citológica, diagnóstico, estadiamento e tratamento — quase sempre associado ao HPV de alto risco (16/18).</p>
+    </header>
+
+    <h2 style="margin-top:0;">Rastreamento (Brasil — MS/INCA)</h2>
+    <div class="criteria-box">
+      <strong>Papanicolaou (citologia oncótica):</strong> iniciar aos <strong>25 anos</strong> (ou após início da vida sexual, o que vier depois) até <strong>64 anos</strong>.<br><br>
+      <strong>Periodicidade:</strong> 2 exames anuais consecutivos negativos → depois <strong>trienal</strong> (a cada 3 anos).<br><br>
+      Mulheres sem história de atividade sexual não precisam rastrear. Pode-se interromper aos 64 anos se os 2 últimos exames (nos últimos 5 anos) forem negativos.
+    </div>
+
+    <h2>Nomenclatura citológica (Bethesda) e conduta</h2>
+    <table>
+      <tr><th>Achado</th><th>Significado</th><th>Conduta</th></tr>
+      <tr><td>ASC-US</td><td>Células escamosas atípicas de significado indeterminado</td><td>Repetir citologia em 6 meses (ou 12 se &lt;25 anos) / colposcopia se ≥30 anos</td></tr>
+      <tr><td>LSIL (baixo grau)</td><td>Lesão intraepitelial escamosa de baixo grau — geralmente NIC I</td><td>Repetir em 6 meses; colposcopia se persistente</td></tr>
+      <tr><td>HSIL (alto grau)</td><td>Lesão intraepitelial de alto grau — NIC II/III</td><td>Colposcopia + biópsia dirigida sempre</td></tr>
+      <tr><td>ASC-H</td><td>Não exclui lesão de alto grau</td><td>Colposcopia obrigatória</td></tr>
+      <tr><td>AGC</td><td>Células glandulares atípicas</td><td>Colposcopia + avaliação de canal endocervical/endométrio</td></tr>
+    </table>
+
+    <h2>Diagnóstico</h2>
+    <div class="compl-list">
+      <div class="compl-item"><strong>Colposcopia</strong> — indicada para citologia alterada (HSIL, ASC-H, AGC, ou LSIL/ASC-US persistente); identifica área acetobranca, mosaico, pontilhado para biópsia dirigida</div>
+      <div class="compl-item"><strong>Biópsia dirigida</strong> — confirmação histológica (NIC I/II/III ou carcinoma invasor)</div>
+      <div class="compl-item"><strong>Conização (CAF/LEEP)</strong> — diagnóstica e terapêutica em NIC II/III, ou quando há discordância entre citologia/colposcopia/biópsia</div>
+    </div>
+
+    <h2>Estadiamento FIGO (resumo)</h2>
+    <div class="stage-grid">
+      <div class="stage-card">
+        <div class="stage-num">I</div>
+        <div class="stage-name">Restrito ao colo</div>
+        <div class="stage-desc">IA: microinvasivo (≤5mm profundidade) · IB: lesão clinicamente visível</div>
+      </div>
+      <div class="stage-card">
+        <div class="stage-num">II</div>
+        <div class="stage-name">Além do colo</div>
+        <div class="stage-desc">Invade paramétrio/vagina superior, sem atingir parede pélvica</div>
+      </div>
+      <div class="stage-card">
+        <div class="stage-num">III</div>
+        <div class="stage-name">Parede pélvica / 1/3 inferior vagina</div>
+        <div class="stage-desc">Hidronefrose/exclusão renal, linfonodos+</div>
+      </div>
+      <div class="stage-card">
+        <div class="stage-num">IV</div>
+        <div class="stage-name">Além da pelve</div>
+        <div class="stage-desc">Bexiga/reto (IVA) ou metástase a distância (IVB)</div>
+      </div>
+    </div>
+
+    <h2>Tratamento por estágio</h2>
+    <div class="compl-list">
+      <div class="compl-item"><strong>NIC II/III (lesão pré-invasiva):</strong> conização (CAF/LEEP) — resolutivo na maioria dos casos</div>
+      <div class="compl-item"><strong>IA1 (microinvasão mínima):</strong> conização com margens livres (preservação de fertilidade) ou histerectomia simples</div>
+      <div class="compl-item"><strong>IA2-IIA (invasivo inicial):</strong> histerectomia radical + linfadenectomia pélvica (Wertheim-Meigs), ou radioterapia se contraindicação cirúrgica</div>
+      <div class="compl-item"><strong>IIB-IVA (localmente avançado):</strong> quimiorradioterapia concomitante (cisplatina + radioterapia externa + braquiterapia) — padrão-ouro</div>
+      <div class="compl-item"><strong>IVB (metastático):</strong> tratamento paliativo/sistêmico</div>
+    </div>
+
+    <h2>Prevenção primária</h2>
+    <div class="highlight-box">
+      <strong>Vacina HPV</strong> (quadrivalente/nonavalente) — MS oferece rotineiramente para meninas e meninos de 9-14 anos. Previne infecção pelos subtipos de alto risco (16, 18) responsáveis por ~70% dos casos de câncer de colo.
+    </div>
+
+    <div class="photo-section">
+      <div class="photo-header">
+        <div class="photo-title">📷 Meus mapas mentais / imagens</div>
+        <label class="photo-add-btn">
+          + Adicionar foto
+          <input type="file" accept="image/*" multiple style="display:none" onchange="handlePhotoUpload(this,'colo-uterino')">
+        </label>
+      </div>
+      <div class="photo-grid" data-topic="colo-uterino"></div>
+    </div>
+
+  </section>
+
+  <!-- ============================================= -->
+  <!-- TOPIC: AMENORREIA -->
+  <!-- ============================================= -->
+  <section class="topic" id="topic-amenorreia">
+
+    <header class="topic-head">
+      <div class="eyebrow">Ginecologia · Endocrinologia Reprodutiva</div>
+      <h1>Amenorreia</h1>
+      <p class="subtitle">Classificação por compartimento anatômico-funcional — a lógica mais usada para organizar a investigação diagnóstica.</p>
+    </header>
+
+    <h2 style="margin-top:0;">Definições</h2>
+    <table>
+      <tr><th>Tipo</th><th>Critério</th></tr>
+      <tr><td><strong>Primária</strong></td><td>Ausência de menarca aos 15 anos com caracteres sexuais secundários presentes, OU ausência de menarca aos 13 anos sem caracteres sexuais secundários</td></tr>
+      <tr><td><strong>Secundária</strong></td><td>Ausência de menstruação por ≥3 meses (ciclos regulares prévios) ou ≥6 meses (ciclos irregulares prévios) em mulher que já menstruou</td></tr>
+    </table>
+
+    <div class="highlight-box">
+      <strong>Primeiro passo sempre:</strong> excluir gravidez (β-hCG), independentemente da história.
+    </div>
+
+    <h2>Classificação por compartimento</h2>
+    <div class="compartment-grid">
+      <div class="compartment-card">
+        <div class="compartment-sub">Compartimento I</div>
+        <div class="compartment-title">Uterovaginal (anatômico)</div>
+        <div class="node-body">Malformações müllerianas (agenesia de útero/vagina — Síndrome de Mayer-Rokitansky), hímen imperfurado, septo vaginal transverso, <strong>Síndrome de Asherman</strong> (sinéquias uterinas pós-curetagem/infecção).</div>
+      </div>
+      <div class="compartment-card">
+        <div class="compartment-sub">Compartimento II</div>
+        <div class="compartment-title">Ovariano</div>
+        <div class="node-body">Insuficiência ovariana prematura (POI), disgenesia gonadal (<strong>Síndrome de Turner — 45,X0</strong>), Síndrome do Ovário Resistente, quimio/radioterapia prévia.</div>
+      </div>
+      <div class="compartment-card">
+        <div class="compartment-sub">Compartimento III</div>
+        <div class="compartment-title">Hipófise anterior</div>
+        <div class="node-body">Prolactinoma (causa mais comum desse compartimento), Síndrome de Sheehan (necrose hipofisária pós-hemorragia obstétrica maciça), outros tumores hipofisários.</div>
+      </div>
+      <div class="compartment-card">
+        <div class="compartment-sub">Compartimento IV</div>
+        <div class="compartment-title">Hipotalâmico</div>
+        <div class="node-body">Amenorreia hipotalâmica funcional (estresse, perda de peso importante, exercício físico extremo), Síndrome de Kallmann (associada à anosmia), doenças crônicas/desnutrição.</div>
+      </div>
+    </div>
+
+    <h2>Investigação — sequência lógica</h2>
+    <div class="step-ladder">
+      <div class="step-ladder-item"><span class="step-num">1</span><div><strong>β-hCG</strong> — excluir gravidez sempre primeiro</div></div>
+      <div class="step-ladder-item"><span class="step-num">2</span><div><strong>TSH e Prolactina</strong> — rastreiam disfunção tireoidiana e hiperprolactinemia (causas comuns e tratáveis)</div></div>
+      <div class="step-ladder-item"><span class="step-num">3</span><div><strong>FSH/LH</strong> — FSH alto sugere causa ovariana (compartimento II); FSH baixo/normal sugere causa central (compartimento III/IV)</div></div>
+      <div class="step-ladder-item"><span class="step-num">4</span><div><strong>Teste de progesterona</strong> — sangramento após progesterona indica endométrio estrogenizado e trato de saída pérvio (anovulação); ausência de sangramento sugere hipoestrogenismo ou causa anatômica</div></div>
+      <div class="step-ladder-item"><span class="step-num">5</span><div><strong>USG pélvica/RM</strong> — avalia presença/anatomia de útero e ovários, investiga compartimento I</div></div>
+      <div class="step-ladder-item"><span class="step-num">6</span><div><strong>Cariótipo</strong> — se suspeita de disgenesia gonadal (Turner) ou amenorreia primária com FSH elevado</div></div>
+    </div>
+
+    <h2>Tratamento — direcionado à causa</h2>
+    <div class="compl-list">
+      <div class="compl-item"><strong>Hiperprolactinemia:</strong> agonista dopaminérgico (cabergolina/bromocriptina)</div>
+      <div class="compl-item"><strong>Amenorreia hipotalâmica funcional:</strong> correção do fator desencadeante (peso, estresse, exercício) — base do tratamento</div>
+      <div class="compl-item"><strong>Insuficiência ovariana prematura:</strong> terapia de reposição hormonal até idade média da menopausa</div>
+      <div class="compl-item"><strong>Síndrome de Asherman:</strong> lise histeroscópica de sinéquias</div>
+      <div class="compl-item"><strong>Malformações obstrutivas (hímen imperfurado):</strong> correção cirúrgica</div>
+    </div>
+
+    <div class="photo-section">
+      <div class="photo-header">
+        <div class="photo-title">📷 Meus mapas mentais / imagens</div>
+        <label class="photo-add-btn">
+          + Adicionar foto
+          <input type="file" accept="image/*" multiple style="display:none" onchange="handlePhotoUpload(this,'amenorreia')">
+        </label>
+      </div>
+      <div class="photo-grid" data-topic="amenorreia"></div>
+    </div>
+
+  </section>
+
+  <!-- ============================================= -->
+  <!-- TOPIC: SOP (SÍNDROME DOS OVÁRIOS POLICÍSTICOS) -->
+  <!-- ============================================= -->
+  <section class="topic" id="topic-sop">
+
+    <header class="topic-head">
+      <div class="eyebrow">Ginecologia · Endocrinologia Reprodutiva</div>
+      <h1>Síndrome dos Ovários Policísticos (SOP)</h1>
+      <p class="subtitle">Critérios de Rotterdam, diagnóstico diferencial obrigatório e tratamento direcionado ao objetivo da paciente (ciclo, hirsutismo ou fertilidade).</p>
+    </header>
+
+    <h2 style="margin-top:0;">Critérios diagnósticos — Rotterdam (2 de 3)</h2>
+    <div class="criteria-box">
+      <strong>Diagnóstico de exclusão — requer 2 dos 3 critérios abaixo, após afastar outras causas:</strong>
+      <ol style="margin-top:10px;padding-left:20px;">
+        <li><strong>Oligo/anovulação</strong> — ciclos irregulares (&gt;35 dias ou &lt;8 ciclos/ano)</li>
+        <li><strong>Hiperandrogenismo clínico ou laboratorial</strong> — hirsutismo (escore Ferriman-Gallwey), acne, alopecia androgenética, ou testosterona elevada</li>
+        <li><strong>Ovários policísticos ao USG</strong> — ≥20 folículos por ovário (critério atualizado) e/ou volume ovariano ≥10cm³</li>
+      </ol>
+    </div>
+
+    <h2>Diagnóstico diferencial obrigatório (excluir antes de fechar SOP)</h2>
+    <table>
+      <tr><th>Condição</th><th>Exame para excluir</th></tr>
+      <tr><td>Hiperplasia adrenal congênita não clássica</td><td>17-OH-progesterona</td></tr>
+      <tr><td>Hiperprolactinemia</td><td>Prolactina</td></tr>
+      <tr><td>Disfunção tireoidiana</td><td>TSH</td></tr>
+      <tr><td>Síndrome de Cushing</td><td>Cortisol/teste de supressão com dexametasona, se suspeita clínica</td></tr>
+      <tr><td>Tumor secretor de androgênio</td><td>Testosterona muito elevada, início abrupto de virilização</td></tr>
+    </table>
+
+    <h2>Quadro clínico e repercussões</h2>
+    <div class="compl-list">
+      <div class="compl-item"><strong>Reprodutivo:</strong> irregularidade menstrual, infertilidade anovulatória</div>
+      <div class="compl-item"><strong>Dermatológico:</strong> hirsutismo, acne, alopecia androgenética</div>
+      <div class="compl-item"><strong>Metabólico:</strong> resistência insulínica, obesidade (especialmente central), maior risco de DM2 e síndrome metabólica</div>
+      <div class="compl-item"><strong>Longo prazo:</strong> anovulação crônica → exposição estrogênica sem oposição da progesterona → risco aumentado de <strong>hiperplasia e câncer de endométrio</strong></div>
+    </div>
+
+    <h2>Tratamento — depende do objetivo da paciente</h2>
+    <div class="compartment-grid">
+      <div class="compartment-card">
+        <div class="compartment-sub">Base para todos</div>
+        <div class="compartment-title">Mudança de estilo de vida</div>
+        <div class="node-body">Perda de peso (mesmo 5-10%) melhora ovulação, hiperandrogenismo e resistência insulínica — primeira linha antes de qualquer fármaco.</div>
+      </div>
+      <div class="compartment-card">
+        <div class="compartment-sub">Sem desejo de gestar</div>
+        <div class="compartment-title">Anticoncepcional combinado</div>
+        <div class="node-body">Regula ciclo, reduz hiperandrogenismo (aumenta SHBG, reduz testosterona livre), protege endométrio da exposição estrogênica sem oposição.</div>
+      </div>
+      <div class="compartment-card">
+        <div class="compartment-sub">Resistência insulínica</div>
+        <div class="compartment-title">Metformina</div>
+        <div class="node-body">Melhora sensibilidade insulínica, pode auxiliar retorno de ciclos ovulatórios; frequentemente associada ao tratamento de 1ª linha em pacientes com sobrepeso/resistência insulínica.</div>
+      </div>
+      <div class="compartment-card">
+        <div class="compartment-sub">Desejo de gestar</div>
+        <div class="compartment-title">Letrozol (1ª linha) / Citrato de clomifeno</div>
+        <div class="node-body">Indutores de ovulação — letrozol tem taxas de nascidos vivos superiores ao clomifeno em SOP, sendo hoje a 1ª linha para indução de ovulação nessas pacientes.</div>
+      </div>
+      <div class="compartment-card">
+        <div class="compartment-sub">Hirsutismo refratário</div>
+        <div class="compartment-title">Espironolactona</div>
+        <div class="node-body">Antiandrogênico — associado ao ACO, nunca isolado (risco teratogênico se gestação não planejada), para casos de hirsutismo persistente.</div>
+      </div>
+      <div class="compartment-card">
+        <div class="compartment-sub">Rastreio associado</div>
+        <div class="compartment-title">Perfil metabólico</div>
+        <div class="node-body">Glicemia/TOTG, perfil lipídico periódicos — pelo maior risco cardiometabólico de longo prazo.</div>
+      </div>
+    </div>
+
+    <div class="photo-section">
+      <div class="photo-header">
+        <div class="photo-title">📷 Meus mapas mentais / imagens</div>
+        <label class="photo-add-btn">
+          + Adicionar foto
+          <input type="file" accept="image/*" multiple style="display:none" onchange="handlePhotoUpload(this,'sop')">
+        </label>
+      </div>
+      <div class="photo-grid" data-topic="sop"></div>
     </div>
 
   </section>
