@@ -83,7 +83,8 @@ dialog::backdrop{background:rgba(40,30,20,.45)}
 .sync{font-size:12px;padding:3px 9px;border-radius:99px;background:var(--sage-soft);color:#456b47;font-weight:600;cursor:pointer;white-space:nowrap}
 .sync.off{background:var(--amber-soft);color:#8a6416}.sync.err{background:#fde2e2;color:#a8384b}
 .err-txt{color:var(--alert);font-size:13px;min-height:18px;margin-top:6px}
-.chip.alert{border-color:#f3c46b}.chip.alert.on{background:#ffe7a8;color:#7a4b00}
+.chip[data-cat=alerta].on{background:#ffe7a8;color:#7a4b00}
+.pt.alerta{border-left-color:#f3c46b}
 .pt.alerta{background:linear-gradient(90deg,#fff6dd,var(--card) 60%)}
 .flag{cursor:pointer;font-size:18px;line-height:1;filter:grayscale(1);opacity:.35;user-select:none}
 .flag.on{filter:none;opacity:1}
@@ -121,12 +122,12 @@ dialog::backdrop{background:rgba(40,30,20,.45)}
     <label>Categoria</label>
     <div class="chips" id="f-cat">
       <button class="chip" data-cat="internar">Internar</button>
+      <button class="chip" data-cat="alerta">⚠️ Alerta</button>
       <button class="chip" data-cat="remedicar">Remedicar</button>
       <button class="chip" data-cat="priorizado">Priorizado</button>
       <button class="chip on" data-cat="exames">Aguarda exames</button>
       <button class="chip" data-cat="obs">Observação</button>
     </div>
-    <div class="chips" style="margin-top:6px"><button class="chip alert" id="f-alerta" onclick="this.classList.toggle('on')">⚠️ Alerta – mandar pro grupo</button></div>
     <label>Queixa / HD</label>
     <input type="text" id="f-hd" placeholder="Dor torácica · SCA a esclarecer">
     <label>Exames pendentes</label>
@@ -2512,6 +2513,7 @@ const KEY='medpsa_v1';
 const CATS={
   priorizado:{t:'Priorizados',c:'var(--red)'},
   internar:{t:'Internar',c:'var(--terra)'},
+  alerta:{t:'⚠️ Alerta',c:'#ffe7a8'},
   remedicar:{t:'Remedicação',c:'var(--amber)'},
   exames:{t:'Aguardando exames',c:'var(--blue)'},
   obs:{t:'Observação',c:'var(--sage)'}
@@ -2552,7 +2554,7 @@ function save(){
   const chosen=[...$('f-ex').querySelectorAll('.chip.on')].map(b=>b.dataset.ex);
   const prev=editing?pts.find(p=>p.id===editing):null;
   const exames=chosen.map(n=>(prev&&prev.exames.find(x=>x.n===n))||{n,s:'pend'});
-  const data={alerta:$('f-alerta').classList.contains('on'),leito,nome,idade:$('f-idade').value.trim(),atend:$('f-atend').value.trim(),cat,
+  const data={alerta:false,leito,nome,idade:$('f-idade').value.trim(),atend:$('f-atend').value.trim(),cat,
     hd:$('f-hd').value.trim(),exames,reav:$('f-reav').value,esp:$('f-esp').value.trim(),obs:$('f-obs').value.trim()};
   if(prev)Object.assign(prev,data);
   else pts.push({id:Date.now().toString(36),t:Date.now(),wa:false,...data});
@@ -2560,7 +2562,7 @@ function save(){
 }
 function resetForm(){
   editing=null;['f-leito','f-nome','f-idade','f-atend','f-hd','f-reav','f-esp','f-obs','f-exOutro'].forEach(i=>$(i).value='');
-  [...$('f-cat').children].forEach(x=>x.classList.toggle('on',x.dataset.cat==='exames'));$('f-alerta').classList.remove('on');
+  [...$('f-cat').children].forEach(x=>x.classList.toggle('on',x.dataset.cat==='exames'));
   [...$('f-ex').querySelectorAll('.chip')].forEach(b=>{if(!['Lab','Troponina','RX','TC','USG','ECG','Urina'].includes(b.dataset.ex))b.remove();else b.classList.remove('on')});
   $('formTitle').textContent='Novo paciente';$('saveBtn').textContent='Adicionar';$('cancelBtn').style.display='none';
 }
@@ -2568,18 +2570,19 @@ function edit(id){
   const p=pts.find(x=>x.id===id);if(!p)return;editing=id;
   $('f-leito').value=p.leito;$('f-nome').value=p.nome;$('f-idade').value=p.idade;$('f-atend').value=p.atend;
   $('f-hd').value=p.hd;$('f-reav').value=p.reav;$('f-esp').value=p.esp;$('f-obs').value=p.obs;
-  [...$('f-cat').children].forEach(x=>x.classList.toggle('on',x.dataset.cat===p.cat));$('f-alerta').classList.toggle('on',!!p.alerta);
+  [...$('f-cat').children].forEach(x=>x.classList.toggle('on',x.dataset.cat===p.cat));
   [...$('f-ex').querySelectorAll('.chip')].forEach(b=>b.classList.remove('on'));
   p.exames.forEach(e=>{let b=$('f-ex').querySelector(`[data-ex="${CSS.escape(e.n)}"]`);
     if(!b){b=document.createElement('button');b.className='chip';b.dataset.ex=e.n;b.textContent=e.n;$('f-ex').appendChild(b)}b.classList.add('on')});
   $('formTitle').textContent='Editando '+(p.leito||p.nome);$('saveBtn').textContent='Salvar';$('cancelBtn').style.display='block';
   window.scrollTo({top:0,behavior:'smooth'});
 }
-function setCat(id,cat){const p=pts.find(x=>x.id===id);p.cat=cat;if(cat!=='internar')p.wa=false;persist();render()}
+function setCat(id,cat){const p=pts.find(x=>x.id===id);p.cat=cat;p.alerta=false;if(cat!=='internar')p.wa=false;persist();render()}
 function cycleEx(id,i){const e=pts.find(x=>x.id===id).exames[i];e.s=e.s==='pend'?'ok':e.s==='ok'?'alt':'pend';persist();render()}
 function del(id){if(confirm('Remover paciente (alta/transferido)?')){pts=pts.filter(x=>x.id!==id);persist();render()}}
 function toggleAlert(id){const p=pts.find(x=>x.id===id);p.alerta=!p.alerta;if(!p.alerta&&p.cat!=='internar')p.wa=false;persist();render()}
-const sendable=p=>p.cat==='internar'||p.alerta;
+const isAl=p=>p.cat==='alerta'||!!p.alerta;
+const sendable=p=>p.cat==='internar'||isAl(p);
 function toggleWA(id){const p=pts.find(x=>x.id===id);p.wa=!p.wa;persist();render()}
 function closeShift(){
   if(viewing){toast('Volte ao plantão atual primeiro');return}
@@ -2591,7 +2594,7 @@ function closeShift(){
 }
 function openHist(){$('h-ret').value=String(ret);renderHist();$('hist').showModal()}
 function setRet(v){ret=+v;setJ(RK,ret);purge();renderHist()}
-function summary(list){return ['priorizado','internar','remedicar','exames','obs'].map(c=>{const n=list.filter(p=>p.cat===c).length;return n?`${CATS[c].t.split(' ')[0]} ${n}`:''}).filter(Boolean).join(' · ')}
+function summary(list){return ['priorizado','internar','alerta','remedicar','exames','obs'].map(c=>{const n=list.filter(p=>p.cat===c).length;return n?`${CATS[c].t.split(' ')[0]} ${n}`:''}).filter(Boolean).join(' · ')}
 function renderHist(){
   if(!hist.length){$('folders').innerHTML='<div class="empty">Nenhum plantão salvo ainda. Use “Encerrar plantão” no fim do turno.</div>';return}
   let lastM='';
@@ -2629,7 +2632,7 @@ function download(name,content,type){const a=document.createElement('a');a.href=
 const slug=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,'-');
 function dlTxt(id){
   const h=hist.find(x=>x.id===id);
-  const txt=`PLANTÃO ${fmtData(h.data)} · ${h.local}\n${summary(h.pts)}\n`+['priorizado','internar','remedicar','exames','obs'].filter(c=>h.pts.some(p=>p.cat===c)).map(c=>
+  const txt=`PLANTÃO ${fmtData(h.data)} · ${h.local}\n${summary(h.pts)}\n`+['priorizado','internar','alerta','remedicar','exames','obs'].filter(c=>h.pts.some(p=>p.cat===c)).map(c=>
     `\n== ${CATS[c].t.toUpperCase()} ==\n`+h.pts.filter(p=>p.cat===c).map(p=>`- ${[p.leito,p.nome].filter(Boolean).join(' – ')}${p.idade?', '+p.idade+'a':''}${p.hd?' | '+p.hd:''}${p.exames.length?'\n  Exames: '+p.exames.map(e=>e.n+(e.s==='pend'?' (pendente)':e.s==='alt'?' (alterado)':'')).join(', '):''}${p.obs?'\n  '+p.obs:''}${p.esp?'\n  → '+p.esp:''}`).join('\n')).join('\n');
   download(`plantao_${h.data}_${slug(h.local)}.txt`,txt,'text/plain;charset=utf-8');
 }
@@ -2693,10 +2696,9 @@ setInterval(()=>{if(!document.hidden)pull()},15000);
 function isLate(p){if(!p.reav)return false;const[h,m]=p.reav.split(':').map(Number);const n=new Date();return n.getHours()*60+n.getMinutes()>=h*60+m}
 
 function render(){
-  const order=['priorizado','internar','remedicar','exames','obs'];
+  const order=['priorizado','internar','alerta','remedicar','exames','obs'];
   $('stats').innerHTML=order.map(c=>{const n=pts.filter(p=>p.cat===c).length;
     return `<span class="stat" style="background:${CATS[c].c};color:var(--on)">${CATS[c].t.split(' ')[0]} ${n}</span>`}).join('');
-  {const na=pts.filter(p=>p.alerta).length;if(na)$('stats').innerHTML+=`<span class="stat" style="background:#ffe7a8;color:#7a4b00">⚠️ ${na}</span>`}
   $('board').innerHTML=order.map(c=>{
     const list=pts.filter(p=>p.cat===c).sort((a,b)=>(a.reav||'99')<(b.reav||'99')?-1:1);
     return `<div class="col"><h3><span class="dot" style="background:${CATS[c].c}"></span>${CATS[c].t} (${list.length})</h3>
@@ -2706,8 +2708,8 @@ function card(p){
   const late=isLate(p)&&p.cat!=='internar';
   const exs=p.exames.map((e,i)=>`<span class="tag ${e.s}" onclick="cycleEx('${p.id}',${i})">${esc(e.n)} ${e.s==='pend'?'⏳':e.s==='ok'?'✓':'⚠'}</span>`).join('');
   const sel=`<select onchange="setCat('${p.id}',this.value)" style="width:auto;padding:4px 6px;font-size:13px">${Object.keys(CATS).map(k=>`<option value="${k}" ${k===p.cat?'selected':''}>${CATS[k].t}</option>`).join('')}</select>`;
-  return `<div class="pt ${p.cat} ${late?'late':''} ${p.alerta?'alerta':''}">
-    <div class="pt-top"><span class="pt-name"><span class="flag ${p.alerta?'on':''}" title="Alerta: mandar pro grupo" onclick="toggleAlert('${p.id}')">⚠️</span> ${esc(p.leito)}${p.leito&&p.nome?' · ':''}${esc(p.nome)}${p.idade?', '+esc(p.idade)+'a':''}</span>
+  return `<div class="pt ${p.cat} ${late?'late':''} ${isAl(p)?'alerta':''}">
+    <div class="pt-top"><span class="pt-name">${esc(p.leito)}${p.leito&&p.nome?' · ':''}${esc(p.nome)}${p.idade?', '+esc(p.idade)+'a':''}</span>
     <span class="pt-meta">${p.reav?`<span class="${late?'late-txt':''}">⏰ ${p.reav}</span>`:''}</span></div>
     ${p.hd?`<div class="pt-body"><b>${esc(p.hd)}</b></div>`:''}
     ${exs?`<div class="tags">${exs}</div>`:''}
@@ -2724,7 +2726,7 @@ function card(p){
 function buildMsg(){
   const d=new Date(), hora=d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
   const lines=p=>{
-    let s=`${p.alerta&&p.cat!=='internar'?'⚠️':'▪️'} *${[p.leito,p.nome].filter(Boolean).join(' – ')}*${p.idade?`, ${p.idade}a`:''}${p.atend?` (at. ${p.atend})`:''}`;
+    let s=`${isAl(p)&&p.cat!=='internar'?'⚠️':'▪️'} *${[p.leito,p.nome].filter(Boolean).join(' – ')}*${p.idade?`, ${p.idade}a`:''}${p.atend?` (at. ${p.atend})`:''}`;
     if(p.hd)s+=`\n   HD: ${p.hd}`;
     const exs=p.exames.filter(e=>e.s!=='pend').map(e=>e.n+(e.s==='alt'?' (alterado)':''));
     const pend=p.exames.filter(e=>e.s==='pend').map(e=>e.n);
@@ -2735,14 +2737,14 @@ function buildMsg(){
     return s;
   };
   if(sendMode==='int'){
-    const L=pts.filter(p=>p.cat==='internar'), A=pts.filter(p=>p.alerta&&p.cat!=='internar');
+    const L=pts.filter(p=>p.cat==='internar'), A=pts.filter(p=>isAl(p)&&p.cat!=='internar');
     if(!L.length&&!A.length)return '';
     let out=`🏥 *Internações – Medicação · ${shortLocal(meta.local)}* (${hora})`;
     if(L.length)out+=`\n\n`+L.map(lines).join('\n\n');
     if(A.length)out+=`\n\n⚠️ *REAVALIAÇÃO*\n\n`+A.map(lines).join('\n\n');
     return out;
   }
-  const order=['priorizado','internar','remedicar','exames','obs'];
+  const order=['priorizado','internar','alerta','remedicar','exames','obs'];
   return `📋 *Medicação · ${shortLocal(meta.local)}* (${hora})\n`+order.filter(c=>pts.some(p=>p.cat===c)).map(c=>
     `\n*${CATS[c].t.toUpperCase()}*\n`+pts.filter(p=>p.cat===c).map(lines).join('\n')).join('\n');
 }
