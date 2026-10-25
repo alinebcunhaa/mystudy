@@ -2639,7 +2639,7 @@ function importAll(inp){
 async function cloud(fn,args){
   if(!PIN)throw new Error('sem PIN');
   const r=await fetch(SB_URL+'/rest/v1/rpc/'+fn,{method:'POST',headers:{apikey:SB_KEY,'Content-Type':'application/json'},body:JSON.stringify({p_pin:PIN,...args})});
-  if(!r.ok){const tx=await r.text();const e=new Error(tx);e.pin=/pin/i.test(tx);throw e}
+  if(!r.ok){const tx=await r.text();const e=new Error(tx);e.pin=/PIN invalido/i.test(tx);e.setup=r.status===404||/PGRST202|could not find/i.test(tx);throw e}
   const tx=await r.text();return tx?JSON.parse(tx):null;
 }
 function setSync(cls,txt){const s=$('sync');s.className='sync '+cls;s.textContent=txt}
@@ -2673,7 +2673,7 @@ function openLock(msg){$('pinErr').textContent=msg||'';$('pin').value='';$('logo
 async function tryPin(){
   const p=$('pin').value.trim();if(!p){$('pinErr').textContent='Digite o PIN';return}
   PIN=p;$('pinErr').textContent='Conectando…';
-  try{await cloud('psa_listar',{})}catch(e){PIN='';$('pinErr').textContent=e.pin?'PIN incorreto':'Não conectou ao Supabase (rede bloqueada ou SQL não instalado).';return}
+  try{await cloud('psa_listar',{})}catch(e){PIN='';$('pinErr').textContent=e.pin?'PIN incorreto':e.setup?'A nuvem ainda não foi configurada: rode o medicacao-setup.sql no Supabase.':'Não conectou ao Supabase (rede bloqueada?). Usando só este aparelho.';return}
   setJ(KEY+'_pin',PIN);$('lock').close();
   if(pts.length&&meta.upd)await pushNow();
   await pull();toast('Conectado à nuvem ☁️');
