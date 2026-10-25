@@ -105,7 +105,7 @@ dialog::backdrop{background:rgba(40,30,20,.45)}
       <option>Volks</option><option>São Luiz São Caetano</option><option>São Luiz São Bernardo</option><option>Outro</option>
     </select>
     <input type="date" id="s-data" onchange="saveMeta()">
-    <button class="btn" onclick="openSend()">📲 Enviar pro grupo</button>
+    <button class="btn" onclick="openSend()" id="sendBtn">📲 Enviar pro grupo</button>
     <button class="btn ghost" onclick="exportNow()">📊 Planilha</button>
     <button class="btn ghost" onclick="openHist()">📁 Histórico</button>
     <button class="btn ghost" onclick="closeShift()">Encerrar plantão</button>
@@ -163,13 +163,16 @@ dialog::backdrop{background:rgba(40,30,20,.45)}
   <div class="dlg">
     <h2 style="font-size:18px">Enviar para o grupo</h2>
     <div class="seg" id="seg">
-      <button data-m="int" class="on">Internações + ⚠️</button>
+      <button data-m="int" class="on">⚠️ Alertas a enviar</button>
       <button data-m="all">Todos os pacientes</button>
     </div>
     <pre id="msg"></pre>
     <div class="row" style="margin-top:8px">
       <button class="btn sage" onclick="copyMsg()">Copiar texto</button>
       <button class="btn ghost" onclick="openWA()">Abrir WhatsApp Web</button>
+    </div>
+    <div>
+      <button class="btn full" id="sentBtn" onclick="markSent();refreshDlg();toast('Marcados como enviados ✓')">✓ Já enviei – marcar como enviados</button>
     </div>
     <div class="seg" id="qrMode" style="margin-top:14px">
       <button data-q="wa" class="on">QR abre o WhatsApp</button>
@@ -2586,7 +2589,8 @@ function cycleEx(id,i){const e=pts.find(x=>x.id===id).exames[i];e.s=e.s==='pend'
 function del(id){if(confirm('Excluir este paciente de vez?')){pts=pts.filter(x=>x.id!==id);persist();render()}}
 function toggleAlert(id){const p=pts.find(x=>x.id===id);p.alerta=!p.alerta;if(!p.alerta&&p.cat!=='internar')p.wa=false;persist();render()}
 const isAl=p=>p.cat==='alerta'||!!p.alerta;
-const sendable=p=>p.cat==='internar'||isAl(p);
+const sendable=p=>isAl(p);
+const toSend=()=>pts.filter(p=>!p.done&&isAl(p)&&!p.wa);
 function toggleWA(id){const p=pts.find(x=>x.id===id);p.wa=!p.wa;persist();render()}
 function closeShift(){
   if(viewing){toast('Volte ao plantão atual primeiro');return}
@@ -2710,6 +2714,7 @@ function render(){
     return `<div class="col"><h3><span class="dot" style="background:${CATS[c].c}"></span>${CATS[c].t} (${list.length})</h3>
       ${list.length?list.map(card).join(''):'<div class="empty">Nenhum</div>'}</div>`}).join('')
     +box('done','✓ Salvos / feitos',D)+box('alta','🏠 Altas',A);
+  {const n=toSend().length;$('sendBtn').textContent='📲 Enviar pro grupo'+(n?` (${n})`:'')}
 }
 let boxOpen={};
 function box(k,title,list){
@@ -2793,7 +2798,7 @@ function buildMsg(){
     return s;
   };
   if(sendMode==='int'){
-    const L=pts.filter(p=>!p.done&&p.cat==='internar'), A=pts.filter(p=>!p.done&&isAl(p)&&p.cat!=='internar');
+    const L=[], A=toSend();
     if(!L.length&&!A.length)return '';
     const parts=[];
     if(L.length)parts.push(L.map(lines).join('\n\n'));
@@ -2810,7 +2815,8 @@ $('qrMode').onclick=e=>{const b=e.target.closest('button');if(!b)return;qrType=b
 
 function refreshDlg(){
   const m=buildMsg();
-  $('msg').textContent=m||'Nenhum paciente em "Internar" ou com ⚠️.';
+  $('msg').textContent=m||'Nenhum ⚠️ alerta pendente de envio. ✓';
+  $('sentBtn').style.display=(sendMode==='int'&&m)?'block':'none';
   $('qrs').innerHTML='';
   if(!m){$('qrHint').textContent='';return}
   const parts=splitForQR(m);
@@ -2845,7 +2851,7 @@ function copyMsg(){const m=buildMsg();if(!m)return;
   markSent();
 }
 function openWA(){const m=buildMsg();if(!m)return;window.open('https://web.whatsapp.com/send?text='+encodeURIComponent(m),'_blank');markSent()}
-function markSent(){if(sendMode==='int'){pts.forEach(p=>{if(!p.done&&sendable(p))p.wa=true});persist();render()}}
+function markSent(){if(sendMode==='int'){toSend().forEach(p=>p.wa=true);persist();render()}}
 function toast(t){$('toast').textContent=t;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),1600)}
 
 render();
