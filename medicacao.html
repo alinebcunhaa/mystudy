@@ -2795,13 +2795,13 @@ function buildMsg(){
   if(sendMode==='int'){
     const L=pts.filter(p=>!p.done&&p.cat==='internar'), A=pts.filter(p=>!p.done&&isAl(p)&&p.cat!=='internar');
     if(!L.length&&!A.length)return '';
-    let out=`🏥 *Internações – Medicação · ${shortLocal(meta.local)}* (${hora})`;
-    if(L.length)out+=`\n\n`+L.map(lines).join('\n\n');
-    if(A.length)out+=`\n\n⚠️ *REAVALIAÇÃO*\n\n`+A.map(lines).join('\n\n');
-    return out;
+    const parts=[];
+    if(L.length)parts.push(L.map(lines).join('\n\n'));
+    if(A.length)parts.push(`⚠️ *REAVALIAÇÃO*\n\n`+A.map(lines).join('\n\n'));
+    return parts.join('\n\n');
   }
   const order=['priorizado','internar','alerta','remedicar','exames','obs'];
-  return `📋 *Medicação · ${shortLocal(meta.local)}* (${hora})\n`+order.filter(c=>pts.some(p=>!p.done&&p.cat===c)).map(c=>
+  return order.filter(c=>pts.some(p=>!p.done&&p.cat===c)).map(c=>
     `\n*${CATS[c].t.toUpperCase()}*\n`+pts.filter(p=>!p.done&&p.cat===c).map(lines).join('\n')).join('\n');
 }
 function openSend(){refreshDlg();$('dlg').showModal()}
