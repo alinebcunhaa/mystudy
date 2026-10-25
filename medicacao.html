@@ -90,7 +90,7 @@ dialog::backdrop{background:rgba(40,30,20,.45)}
 .flag.on{filter:none;opacity:1}
 .done-box{grid-column:1/-1;background:var(--card);border:1px dashed var(--line);border-radius:10px;padding:8px 12px}
 .done-box summary{cursor:pointer;font-weight:700;color:var(--muted)}
-.done-row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 0;border-top:1px solid var(--line);font-size:14px;opacity:.75}
+.done-row{flex-wrap:wrap;display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 0;border-top:1px solid var(--line);font-size:14px;opacity:.75}
 .toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--on);color:#fff;padding:9px 16px;border-radius:99px;font-size:14px;opacity:0;transition:.25s;pointer-events:none;z-index:99}
 .toast.show{opacity:1}
 </style>
@@ -2582,7 +2582,7 @@ function edit(id){
 }
 function setCat(id,cat){const p=pts.find(x=>x.id===id);p.cat=cat;p.alerta=false;if(cat!=='internar')p.wa=false;persist();render()}
 function cycleEx(id,i){const e=pts.find(x=>x.id===id).exames[i];e.s=e.s==='pend'?'ok':e.s==='ok'?'alt':'pend';persist();render()}
-function del(id){if(confirm('Remover paciente (alta/transferido)?')){pts=pts.filter(x=>x.id!==id);persist();render()}}
+function del(id){if(confirm('Excluir este paciente de vez?')){pts=pts.filter(x=>x.id!==id);persist();render()}}
 function toggleAlert(id){const p=pts.find(x=>x.id===id);p.alerta=!p.alerta;if(!p.alerta&&p.cat!=='internar')p.wa=false;persist();render()}
 const isAl=p=>p.cat==='alerta'||!!p.alerta;
 const sendable=p=>p.cat==='internar'||isAl(p);
@@ -2707,18 +2707,19 @@ function render(){
     const list=L.filter(p=>p.cat===c).sort((a,b)=>(a.reav||'99')<(b.reav||'99')?-1:1);
     return `<div class="col"><h3><span class="dot" style="background:${CATS[c].c}"></span>${CATS[c].t} (${list.length})</h3>
       ${list.length?list.map(card).join(''):'<div class="empty">Nenhum</div>'}</div>`}).join('')
-    +(D.length?`<details class="done-box" ${doneOpen?'open':''} ontoggle="doneOpen=this.open"><summary>✓ Feitos (${D.length})</summary>${D.map(p=>`<div class="done-row"><span><b>${esc([p.leito,p.nome].filter(Boolean).join(' · '))}</b>${p.hd?' — '+esc(p.hd):''} <span class="pt-meta">· ${esc(CATS[p.cat]?.t||'')} · ${new Date(p.done).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</span></span><button class="btn small ghost" onclick="undone('${p.id}')">Desfazer</button></div>`).join('')}</details>`:'');
+    +(D.length?`<details class="done-box" ${doneOpen?'open':''} ontoggle="doneOpen=this.open"><summary>✓ Salvos / feitos (${D.length})</summary>${D.map(p=>`<div class="done-row"><span><b>${esc([p.leito,p.nome].filter(Boolean).join(' · '))}</b>${p.hd?' — '+esc(p.hd):''} <span class="pt-meta">· ${esc(CATS[p.cat]?.t||'')} · ${new Date(p.done).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</span></span><span class="pt-actions" style="margin:0;flex-wrap:nowrap">${p.cat!=='internar'?`<button class="btn small" onclick="backTo('${p.id}','internar')">↩ Internar</button>`:''}<button class="btn small ghost" onclick="backTo('${p.id}')">↩ Voltar p/ lista</button><button class="btn small ghost" onclick="if(confirm('Excluir de vez?')){pts=pts.filter(x=>x.id!=='${p.id}');persist();render()}">Excluir</button></span></div>`).join('')}</details>`:'');
 }
 let doneOpen=false;
 function done(id){const p=pts.find(x=>x.id===id);p.done=Date.now();persist();render();toast('✓ Feito')}
-function undone(id){const p=pts.find(x=>x.id===id);delete p.done;persist();render()}
+function undone(id){backTo(id)}
+function backTo(id,cat){const p=pts.find(x=>x.id===id);delete p.done;if(cat){p.cat=cat;p.alerta=false}persist();render();toast(cat==='internar'?'Voltou para Internar':'Voltou para a lista')}
 function card(p){
   const late=isLate(p)&&p.cat!=='internar';
   const exs=p.exames.map((e,i)=>`<span class="tag ${e.s}" onclick="cycleEx('${p.id}',${i})">${esc(e.n)} ${e.s==='pend'?'⏳':e.s==='ok'?'✓':'⚠'}</span>`).join('');
   const sel=`<select onchange="setCat('${p.id}',this.value)" style="width:auto;padding:4px 6px;font-size:13px">${Object.keys(CATS).map(k=>`<option value="${k}" ${k===p.cat?'selected':''}>${CATS[k].t}</option>`).join('')}</select>`;
   return `<div class="pt ${p.cat} ${late?'late':''} ${isAl(p)?'alerta':''}">
     <div class="pt-top"><span class="pt-name">${esc(p.leito)}${p.leito&&p.nome?' · ':''}${esc(p.nome)}${p.idade?', '+esc(p.idade)+'a':''}</span>
-    <span class="pt-meta">${p.reav?`<span class="${late?'late-txt':''}">⏰ ${p.reav}</span>`:''}</span></div>
+    <span class="pt-meta" style="display:flex;gap:8px;align-items:center">${p.reav?`<span class="${late?'late-txt':''}">⏰ ${p.reav}</span>`:''}<button class="btn small sage" style="font-size:16px;padding:3px 12px" title="Feito – vai para os salvos" onclick="done('${p.id}')">✓</button></span></div>
     ${p.hd?`<div class="pt-body"><b>${esc(p.hd)}</b></div>`:''}
     ${exs?`<div class="tags">${exs}</div>`:''}
     ${p.obs?`<div class="pt-body">${esc(p.obs)}</div>`:''}
@@ -2726,8 +2727,7 @@ function card(p){
     <div class="pt-actions">${sel}
       ${p.cat!=='internar'?`<button class="btn small" onclick="setCat('${p.id}','internar')">→ Internar</button>`:''}
       <button class="btn small ghost" onclick="edit('${p.id}')">Editar</button>
-      <button class="btn small sage" onclick="done('${p.id}')">✓ Feito</button>
-      <button class="btn small ghost" onclick="del('${p.id}')">Alta</button></div>
+      <button class="btn small ghost" onclick="del('${p.id}')">Excluir</button></div>
   </div>`;
 }
 
