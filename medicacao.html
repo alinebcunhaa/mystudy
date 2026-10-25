@@ -2724,7 +2724,7 @@ function card(p){
 function buildMsg(){
   const d=new Date(), hora=d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
   const lines=p=>{
-    let s=`▪️ *${[p.leito,p.nome].filter(Boolean).join(' – ')}*${p.idade?`, ${p.idade}a`:''}${p.atend?` (at. ${p.atend})`:''}`;
+    let s=`${p.alerta&&p.cat!=='internar'?'⚠️':'▪️'} *${[p.leito,p.nome].filter(Boolean).join(' – ')}*${p.idade?`, ${p.idade}a`:''}${p.atend?` (at. ${p.atend})`:''}`;
     if(p.hd)s+=`\n   HD: ${p.hd}`;
     const exs=p.exames.filter(e=>e.s!=='pend').map(e=>e.n+(e.s==='alt'?' (alterado)':''));
     const pend=p.exames.filter(e=>e.s==='pend').map(e=>e.n);
@@ -2732,7 +2732,6 @@ function buildMsg(){
     if(p.obs)s+=`\n   ${p.obs.replace(/\n/g,'\n   ')}`;
     if(pend.length)s+=`\n   Pendente: ${pend.join(', ')}`;
     if(p.cat==='internar')s+=`\n   ➡️ Indicação de internação${p.esp?` – ${p.esp}`:''}`;
-    else if(p.alerta)s+=`\n   ⚠️ Peço avaliação – possível internação${p.esp?` – ${p.esp}`:''}`;
     return s;
   };
   if(sendMode==='int'){
@@ -2740,7 +2739,7 @@ function buildMsg(){
     if(!L.length&&!A.length)return '';
     let out=`🏥 *Internações – Medicação · ${shortLocal(meta.local)}* (${hora})`;
     if(L.length)out+=`\n\n`+L.map(lines).join('\n\n');
-    if(A.length)out+=`\n\n⚠️ *Para avaliação*\n\n`+A.map(lines).join('\n\n');
+    if(A.length)out+=`\n\n⚠️ *REAVALIAÇÃO*\n\n`+A.map(lines).join('\n\n');
     return out;
   }
   const order=['priorizado','internar','remedicar','exames','obs'];
