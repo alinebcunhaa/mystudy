@@ -124,7 +124,7 @@ input[type=date]{padding:8px 10px;border:1px solid var(--line);border-radius:8px
     <button class="btn ghost" onclick="exportNow()">📊 Planilha</button>
     <button class="btn ghost" onclick="openHist()">📁 Histórico</button>
     <button class="btn ghost" onclick="closeShift()">Encerrar plantão</button></span>
-    <span class="casos-only" style="display:contents"><button class="btn ghost" onclick="casosXlsx()">📊 Planilha dos casos</button><button class="btn ghost" onclick="exportAll()">⬇ Backup</button></span>
+    <span class="casos-only" style="display:contents"><button class="btn" id="nAllBtn" onclick="notionAll()">📤 Notion</button><button class="btn ghost" onclick="casosXlsx()">📊 Planilha dos casos</button><button class="btn ghost" onclick="exportAll()">⬇ Backup</button></span>
   </div>
 </header>
 <div class="banner shift-only" id="viewBanner"><span id="viewTxt"></span><button class="btn small" onclick="exitView()">Voltar ao plantão atual</button></div>
@@ -2839,10 +2839,33 @@ function renderCases(){
       ${sec('Anamnese',c.anam)}${sec('Antecedentes · medicações · alergias',c.ant)}${sec('Exame físico',c.ef)}${sec('Exames complementares',c.ex)}
       ${sec('Diferenciais',c.dd)}${sec('Conduta',c.cond)}${sec('Destino',c.esp)}${sec('💡 Pérolas',c.perola)}${sec('📚 Pra estudar',c.estudar)}${c.atend?sec('Atendimento',c.atend):''}
     </details>
-    <div class="pt-actions"><button class="btn small ghost" onclick="editCase('${c.id}')">Editar</button><button class="btn small ghost" onclick="copyCase('${c.id}')">Copiar</button><button class="btn small ghost" onclick="delCase('${c.id}')">Excluir</button></div>
+    <div class="pt-actions"><button class="btn small ghost" onclick="editCase('${c.id}')">Editar</button>${notionBtn(c)}<button class="btn small ghost" onclick="copyCase('${c.id}')">Copiar</button><button class="btn small ghost" onclick="delCase('${c.id}')">Excluir</button></div>
   </div>`).join(''):`<div class="empty">${live.length?'Nada com esse filtro.':'Nenhum caso ainda. Preencha ao lado, ou use 📌 Caso num paciente do plantão.'}</div>`)
   +(live.length?`<p class="hint">${L.length} de ${live.length} caso(s)</p>`:'');
 }
+// ---------- Notion (via Supabase Edge Function notion-caso) ----------
+const nOut=c=>!c.del&&(!c.notion||(c.u||0)>(c.notionAt||0));
+function notionBtn(c){
+  if(c.notion&&!nOut(c))return `<a class="btn small sage" style="text-decoration:none" href="${esc(c.notionUrl||'https://www.notion.so/'+c.notion.replace(/-/g,''))}" target="_blank">✓ No Notion</a>`;
+  return `<button class="btn small" onclick="toNotion('${c.id}')">${c.notion?'🔄 Atualizar Notion':'📤 Notion'}</button>`}
+async function sendNotion(c){
+  const r=await fetch(SB_URL+'/functions/v1/notion-caso',{method:'POST',headers:{apikey:SB_KEY,'Content-Type':'application/json'},body:JSON.stringify({pin:PIN,caso:c})});
+  let d={};try{d=await r.json()}catch(e){}
+  if(!r.ok)throw new Error(r.status===404?'A função notion-caso ainda não está no Supabase':d.error||('erro '+r.status));
+  const now=Date.now();c.notion=d.id;c.notionUrl=d.url;c.u=now;c.notionAt=now;return d}
+async function toNotion(id){
+  if(!PIN){toast('Conecte o PIN da nuvem primeiro');openLock();return}
+  const c=casos.find(x=>x.id===id);toast('Enviando pro Notion…');
+  try{const d=await sendNotion(c);saveCases();renderCases();toast(d.updated?'Notion atualizado ✓':'Caso criado no Notion ✓')}
+  catch(e){toast('⚠ '+e.message)}}
+async function notionAll(){
+  if(!PIN){toast('Conecte o PIN da nuvem primeiro');openLock();return}
+  const L=casos.filter(nOut);if(!L.length){toast('Tudo já está no Notion ✓');return}
+  let ok=0,err='';$('nAllBtn').textContent=`📤 0/${L.length}`;
+  for(const c of L){try{await sendNotion(c);ok++;$('nAllBtn').textContent=`📤 ${ok}/${L.length}`}catch(e){err=e.message;break}}
+  saveCases();renderCases();$('nAllBtn').textContent='📤 Notion';
+  toast(err?`⚠ ${ok} enviado(s) · ${err}`:`${ok} caso(s) no Notion ✓`)}
+
 function casosXlsx(){const L=casos.filter(c=>!c.del);if(!L.length){toast('Nenhum caso');return}
   const head=['Data','Onde','Iniciais','Idade','Sexo','Atendimento','Tags','Anamnese','Antecedentes','Exame físico','Exames','HD','Diferenciais','Conduta','Desfecho','Especialidade','Pérolas','Pra estudar','Marcante'];
   const rows=L.sort((a,b)=>(a.data||'').localeCompare(b.data||'')).map(c=>[fmtData(c.data),c.onde,c.nome,c.idade,c.sexo,c.atend,(c.tags||[]).join(', '),c.anam,c.ant,c.ef,c.ex,c.hd,c.dd,c.cond,c.desf,c.esp,c.perola,c.estudar,c.star?'⭐':'']);
