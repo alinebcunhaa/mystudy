@@ -86,6 +86,21 @@ dialog::backdrop{background:rgba(40,30,20,.45)}
 .chip[data-cat=alerta].on{background:#ffe7a8;color:#7a4b00}
 .pt.alerta{border-left-color:#f3c46b}
 .pt.alerta{background:linear-gradient(90deg,#fff6dd,var(--card) 60%)}
+body.casos .shift-only{display:none !important}
+body:not(.casos) .casos-only{display:none !important}
+.newcase{display:none}
+@media(max-width:900px){main.casos-only>section:last-child{order:-1}.newcase{display:inline-block}}
+.case{background:var(--card);border:1px solid var(--line);border-left:5px solid var(--lilac);border-radius:10px;padding:10px 12px;margin-bottom:10px}
+.case.star{border-left-color:#f3c46b}
+.case details{margin-top:6px}
+.case summary{cursor:pointer;font-size:13px;font-weight:700;color:var(--muted)}
+.sec{margin:8px 0 0}.sec b{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.sec div{white-space:pre-wrap;font-size:14px;line-height:1.4}
+.tag.t{background:#efe6fa;color:#5b3f86;cursor:default}
+.chip[data-tg].on{background:var(--lilac)}
+.casebar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+.casebar input{flex:1;min-width:160px}
+input[type=date]{padding:8px 10px;border:1px solid var(--line);border-radius:8px;font:inherit;background:#fff;color:var(--ink)}
 .flag{cursor:pointer;font-size:18px;line-height:1;filter:grayscale(1);opacity:.35;user-select:none}
 .flag.on{filter:none;opacity:1}
 .done-box{grid-column:1/-1;background:var(--card);border:1px dashed var(--line);border-radius:10px;padding:8px 12px}
@@ -98,22 +113,23 @@ dialog::backdrop{background:rgba(40,30,20,.45)}
 <body>
 <header>
   <h1>🩺 Medicação · PSA</h1>
-  <div class="stats" id="stats"></div>
+  <div class="stats shift-only" id="stats"></div>
   <div class="shiftbar">
     <span class="sync off" id="sync" onclick="openLock()">💾 só neste aparelho</span>
-    <select id="s-local" onchange="saveMeta()">
-      <option>Volks</option><option>São Luiz São Caetano</option><option>São Luiz São Bernardo</option><option>Outro</option>
+    <select id="s-local" onchange="onLocal()">
+      <option>Volks</option><option>São Luiz São Caetano</option><option>São Luiz São Bernardo</option><option>Outro</option><option value="Casos PS Aline">📁 Casos PS Aline</option>
     </select>
-    <input type="date" id="s-data" onchange="saveMeta()">
+    <span class="shift-only" style="display:contents"><input type="date" id="s-data" onchange="saveMeta()">
     <button class="btn" onclick="openSend()" id="sendBtn">📲 Enviar pro grupo</button>
     <button class="btn ghost" onclick="exportNow()">📊 Planilha</button>
     <button class="btn ghost" onclick="openHist()">📁 Histórico</button>
-    <button class="btn ghost" onclick="closeShift()">Encerrar plantão</button>
+    <button class="btn ghost" onclick="closeShift()">Encerrar plantão</button></span>
+    <span class="casos-only" style="display:contents"><button class="btn ghost" onclick="casosXlsx()">📊 Planilha dos casos</button><button class="btn ghost" onclick="exportAll()">⬇ Backup</button></span>
   </div>
 </header>
-<div class="banner" id="viewBanner"><span id="viewTxt"></span><button class="btn small" onclick="exitView()">Voltar ao plantão atual</button></div>
+<div class="banner shift-only" id="viewBanner"><span id="viewTxt"></span><button class="btn small" onclick="exitView()">Voltar ao plantão atual</button></div>
 
-<main>
+<main class="shift-only">
   <section class="panel">
     <h2 id="formTitle">Novo paciente</h2>
     <div class="row">
@@ -157,6 +173,51 @@ dialog::backdrop{background:rgba(40,30,20,.45)}
   </section>
 
   <section class="board" id="board"></section>
+</main>
+
+<main class="casos-only">
+  <section class="panel">
+    <h2 id="cTitle">Novo caso</h2>
+    <div class="row">
+      <div><label>Data</label><input type="date" id="c-data"></div>
+      <div><label>Onde</label><select id="c-onde"><option>Volks</option><option>São Luiz São Caetano</option><option>São Luiz São Bernardo</option><option>Outro</option></select></div>
+    </div>
+    <div class="row">
+      <div><label>Iniciais</label><input type="text" id="c-nome" placeholder="J.S.M."></div>
+      <div style="flex:.6"><label>Idade</label><input type="text" id="c-idade" placeholder="67"></div>
+      <div style="flex:.6"><label>Sexo</label><select id="c-sexo"><option value=""></option><option>F</option><option>M</option></select></div>
+    </div>
+    <label>Atendimento (Tasy) · opcional</label><input type="text" id="c-atend" placeholder="p/ achar depois">
+    <label>Área / tags</label>
+    <div class="chips" id="c-tags"></div>
+    <input type="text" id="c-tagOutro" placeholder="Outra tag (Enter adiciona)" style="margin-top:6px">
+    <label>Anamnese · QP + HDA</label><textarea id="c-anam" placeholder="QP: dor torácica há 2h&#10;HDA: opressiva, irradia p/ MSE, sudorese…"></textarea>
+    <label>Antecedentes · medicações · alergias</label><textarea id="c-ant" placeholder="HAS, DM2 · losartana, metformina · NKDA"></textarea>
+    <label>Exame físico · sinais vitais</label><textarea id="c-ef" placeholder="PA 160x95 · FC 102 · SpO2 94% · Tax 36,8 · Glasgow 15&#10;…"></textarea>
+    <label>Exames complementares</label><textarea id="c-ex" placeholder="ECG: supra V1–V4 · Trop 2,3 · Hb 13 · Cr 1,1 · RX: …"></textarea>
+    <label>HD principal</label><input type="text" id="c-hd" placeholder="IAMCSST anterior">
+    <label>Diferenciais</label><input type="text" id="c-dd" placeholder="Dissecção de aorta · TEP · pericardite">
+    <label>Conduta</label><textarea id="c-cond" placeholder="AAS 300 + clopidogrel 600 · heparina · acionada hemodinâmica…"></textarea>
+    <div class="row">
+      <div><label>Desfecho</label><select id="c-desf"><option value=""></option><option>Alta</option><option>Observação</option><option>Internação</option><option>UTI</option><option>Centro cirúrgico</option><option>Transferência</option><option>Óbito</option><option>Evasão</option></select></div>
+      <div><label>Especialidade / destino</label><input type="text" id="c-esp" placeholder="Cardiologia"></div>
+    </div>
+    <label>💡 Pérolas / o que aprendi</label><textarea id="c-perola" placeholder="Supra em aVR + infra difuso = pensar em TCE/multiarterial"></textarea>
+    <label>📚 Pra estudar depois</label><textarea id="c-estudar" placeholder="Rever critérios de Sgarbossa · dose de tenecteplase por peso"></textarea>
+    <label style="display:flex;gap:6px;align-items:center;text-transform:none;font-size:14px;color:var(--ink)"><input type="checkbox" id="c-star"> ⭐ Caso marcante</label>
+    <button class="btn full" id="cSave" onclick="saveCase()">Salvar caso</button>
+    <button class="btn ghost full" id="cCancel" onclick="resetCase()" style="display:none;margin-top:6px">Cancelar edição</button>
+    <p class="hint">Pasta permanente: não é apagada pela limpeza automática do histórico. Com o PIN conectado, sincroniza entre computador e celular. Use só iniciais — nada de nome completo.</p>
+  </section>
+  <section>
+    <div class="casebar">
+      <button class="btn newcase" onclick="resetCase();$('cTitle').scrollIntoView({behavior:'smooth'})">＋ Novo caso</button>
+      <input type="text" id="c-busca" placeholder="🔎 Buscar (HD, conduta, exame…)" oninput="renderCases()">
+      <select id="c-ftag" onchange="renderCases()" style="width:auto"></select>
+      <label style="display:flex;gap:4px;align-items:center;margin:0;text-transform:none;font-size:13px"><input type="checkbox" id="c-fstar" onchange="renderCases()">⭐</label>
+    </div>
+    <div id="caseList"></div>
+  </section>
 </main>
 
 <dialog id="dlg">
@@ -2633,7 +2694,7 @@ function restoreShift(id){
   if(pts.length&&!confirm('Há pacientes no plantão atual. Eles serão salvos numa pasta antes de reabrir este. Continuar?'))return;
   if(pts.length){const o={id:meta.id,data:meta.data,local:meta.local,fechado:Date.now(),pts};hist.unshift(o);pushRow(o,true)}
   const i=hist.findIndex(x=>x.id===id),h=hist.splice(i,1)[0];
-  pts=h.pts;meta.id=h.id;meta.local=h.local;meta.data=h.data;$('s-local').value=meta.local;$('s-data').value=meta.data;
+  pts=h.pts;meta.id=h.id;meta.local=h.local;meta.data=h.data;syncSel();$('s-data').value=meta.data;
   setJ(HK,hist);persist();$('hist').close();render();toast('Plantão reaberto');
 }
 function delShift(id){if(confirm('Excluir esta pasta definitivamente?')){hist=hist.filter(x=>x.id!==id);setJ(HK,hist);cloud('psa_excluir',{p_id:id}).catch(()=>{});renderHist()}}
@@ -2645,11 +2706,12 @@ function dlTxt(id){
     `\n== ${CATS[c].t.toUpperCase()} ==\n`+h.pts.filter(p=>p.cat===c).map(p=>`- ${[p.leito,p.nome].filter(Boolean).join(' – ')}${p.idade?', '+p.idade+'a':''}${p.hd?' | '+p.hd:''}${p.exames.length?'\n  Exames: '+p.exames.map(e=>e.n+(e.s==='pend'?' (pendente)':e.s==='alt'?' (alterado)':'')).join(', '):''}${p.obs?'\n  '+p.obs:''}${p.esp?'\n  → '+p.esp:''}`).join('\n')).join('\n');
   download(`plantao_${h.data}_${slug(h.local)}.txt`,txt,'text/plain;charset=utf-8');
 }
-function exportAll(){download(`backup_plantoes_${today()}.json`,JSON.stringify({v:1,hist,atual:{meta,pts:viewing?viewing.backup:pts}},null,1),'application/json')}
+function exportAll(){download(`backup_plantoes_${today()}.json`,JSON.stringify({v:1,hist,casos,atual:{meta,pts:viewing?viewing.backup:pts}},null,1),'application/json')}
 function importAll(inp){
   const f=inp.files[0];if(!f)return;const rd=new FileReader();
   rd.onload=()=>{try{const d=JSON.parse(rd.result);const ids=new Set(hist.map(h=>h.id));let n=0;
-    (d.hist||[]).forEach(h=>{if(!ids.has(h.id)){hist.push(h);pushRow(h,true);n++}});setJ(HK,hist);renderHist();toast(`${n} pasta(s) importada(s)`)}
+    (d.hist||[]).forEach(h=>{if(!ids.has(h.id)&&h.id!==CASE_ID){hist.push(h);pushRow(h,true);n++}});setJ(HK,hist);renderHist();
+    const nc=d.casos?mergeCases(d.casos):0;if(nc){saveCases(true)}toast(`${n} pasta(s)`+(d.casos?` · ${nc} caso(s)`:'')+' importado(s)')}
     catch(e){toast('Arquivo inválido')}inp.value=''};
   rd.readAsText(f);
 }
@@ -2676,13 +2738,14 @@ async function pull(){
   let rows;try{rows=await cloud('psa_listar',{})}catch(e){if(e.pin){PIN='';setJ(KEY+'_pin','');setSync('off','💾 só neste aparelho');openLock('PIN incorreto')}else setSync('err','⚠ sem conexão – salvo local');return}
   if(dirty||viewing)return;
   cloudOK=true;
-  hist=rows.filter(r=>r.fechado).map(r=>({id:r.id,data:r.data,local:r.local,fechado:+r.atualizado,pts:r.pts||[]}));setJ(HK,hist);
-  const open=rows.filter(r=>!r.fechado).sort((a,b)=>b.atualizado-a.atualizado)[0];
-  const mineClosed=rows.some(r=>r.fechado&&r.id===meta.id);
+  mergeCaseRow(rows.find(r=>r.id===CASE_ID));
+  hist=rows.filter(r=>r.fechado&&r.id!==CASE_ID).map(r=>({id:r.id,data:r.data,local:r.local,fechado:+r.atualizado,pts:r.pts||[]}));setJ(HK,hist);
+  const open=rows.filter(r=>!r.fechado&&r.id!==CASE_ID).sort((a,b)=>b.atualizado-a.atualizado)[0];
+  const mineClosed=rows.some(r=>r.fechado&&r.id===meta.id&&r.id!==CASE_ID);
   if(open&&(+open.atualizado>meta.upd||mineClosed)){
     pts=open.pts||[];meta.id=open.id;meta.data=open.data;meta.local=open.local;meta.upd=+open.atualizado;
     try{localStorage.setItem(KEY,JSON.stringify(pts))}catch(e){}setJ(MK,meta);
-    $('s-local').value=meta.local;$('s-data').value=meta.data;render();
+    syncSel();$('s-data').value=meta.data;render();
   }else if(mineClosed){pts=[];meta.id=newId();persist();render()}
   else if(!open||open.id!==meta.id){if(pts.length||!open)persist()}
   purge();if($('hist').open)renderHist();
@@ -2701,6 +2764,89 @@ function useLocal(){$('lock').close();setSync('off','💾 só neste aparelho')}
 function logout(){PIN='';setJ(KEY+'_pin','');$('lock').close();setSync('off','💾 só neste aparelho');toast('Saiu da nuvem')}
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)pull()});
 setInterval(()=>{if(!document.hidden)pull()},15000);
+
+// ---------- pasta Casos PS Aline ----------
+const CASE_ID='casos-ps-aline', CASE_LOCAL='Casos PS Aline', CK=KEY+'_casos';
+const TAGS=['Cardio','Pneumo','Neuro','Gastro','Nefro/Uro','Infecto','Endócrino','Trauma/Orto','Cirurgia','GO','Psiq','Dor','Tóxico','Pediatria'];
+let casos=getJ(CK,[]), casosUpd=getJ(CK+'_upd',0), casosMode=false, cEditing=null, casePushT=null, casosDirty=false;
+function syncSel(){$('s-local').value=casosMode?CASE_LOCAL:meta.local}
+function onLocal(){const v=$('s-local').value;
+  if(v===CASE_LOCAL){if(viewing)exitView();casosMode=true;document.body.classList.add('casos');renderCases();window.scrollTo({top:0})}
+  else{casosMode=false;document.body.classList.remove('casos');saveMeta();render()}}
+function tagChips(sel){const all=[...new Set([...TAGS,...casos.filter(c=>!c.del).flatMap(c=>c.tags||[])])];
+  $('c-tags').innerHTML=all.map(t=>`<button class="chip ${sel.includes(t)?'on':''}" data-tg="${esc(t)}">${esc(t)}</button>`).join('')}
+$('c-tags').onclick=e=>{const b=e.target.closest('.chip');if(b)b.classList.toggle('on')};
+$('c-tagOutro').onkeydown=e=>{if(e.key==='Enter'&&e.target.value.trim()){const t=e.target.value.trim();
+  let b=$('c-tags').querySelector(`[data-tg="${CSS.escape(t)}"]`);if(!b){b=document.createElement('button');b.className='chip';b.dataset.tg=t;b.textContent=t;$('c-tags').appendChild(b)}b.classList.add('on');e.target.value=''}};
+const CF=['data','onde','nome','idade','sexo','atend','anam','ant','ef','ex','hd','dd','cond','desf','esp','perola','estudar'];
+function resetCase(){cEditing=null;CF.forEach(f=>$('c-'+f).value='');$('c-data').value=today();$('c-onde').value=meta.local==='Outro'?'Outro':meta.local;
+  $('c-star').checked=false;tagChips([]);$('cTitle').textContent='Novo caso';$('cSave').textContent='Salvar caso';$('cCancel').style.display='none'}
+function fillCase(c){CF.forEach(f=>$('c-'+f).value=c[f]||'');$('c-star').checked=!!c.star;tagChips(c.tags||[])}
+function saveCase(){
+  const d={};CF.forEach(f=>d[f]=$('c-'+f).value.trim());d.data=d.data||today();
+  d.tags=[...$('c-tags').querySelectorAll('.chip.on')].map(b=>b.dataset.tg);d.star=$('c-star').checked;
+  if(!d.hd&&!d.anam&&!d.cond){toast('Preencha ao menos HD, anamnese ou conduta');return}
+  const prev=cEditing&&casos.find(c=>c.id===cEditing);
+  if(prev)Object.assign(prev,d,{u:Date.now()});else casos.push({id:newId(),t:Date.now(),u:Date.now(),...d});
+  saveCases();resetCase();renderCases();toast(prev?'Caso atualizado':'Caso salvo 📁');
+}
+function editCase(id){const c=casos.find(x=>x.id===id);if(!c)return;cEditing=id;fillCase(c);
+  $('cTitle').textContent='Editando caso';$('cSave').textContent='Salvar';$('cCancel').style.display='block';$('cTitle').scrollIntoView({behavior:'smooth'})}
+function delCase(id){if(!confirm('Excluir este caso de vez?'))return;const c=casos.find(x=>x.id===id);
+  Object.keys(c).forEach(k=>{if(k!=='id')delete c[k]});c.del=true;c.u=Date.now();saveCases();renderCases()}
+function starCase(id){const c=casos.find(x=>x.id===id);c.star=!c.star;c.u=Date.now();saveCases();renderCases()}
+function toCase(id){const p=pts.find(x=>x.id===id);if(!p)return;
+  casosMode=true;document.body.classList.add('casos');syncSel();resetCase();
+  const exs=(p.exames||[]).map(e=>e.n+(e.s==='alt'?' (alterado)':e.s==='pend'?' (pendente)':'')).join(', ');
+  fillCase({data:meta.data,onde:meta.local,nome:p.nome,idade:p.idade,atend:p.atend,hd:p.hd,ex:[exs,p.obs].filter(Boolean).join('\n'),
+    desf:p.alta?'Alta':p.cat==='internar'?'Internação':'',esp:p.esp,tags:[]});
+  renderCases();$('cTitle').scrollIntoView();toast('Complete o caso e salve');setTimeout(()=>$('c-anam').focus(),100)}
+function saveCases(skipStamp){if(!skipStamp)casosUpd=Date.now();setJ(CK,casos);setJ(CK+'_upd',casosUpd);casosDirty=true;
+  if(!PIN)return;clearTimeout(casePushT);casePushT=setTimeout(pushCases,700)}
+async function pushCases(){if(!PIN)return;
+  try{await cloud('psa_salvar',{p_id:CASE_ID,p_data:today(),p_local:CASE_LOCAL,p_pts:casos,p_fechado:true,p_atualizado:casosUpd});casosDirty=false}
+  catch(e){setTimeout(()=>{if(casosDirty)pushCases()},20000)}}
+function mergeCases(list){let n=0;const m=new Map(casos.map(c=>[c.id,c]));
+  (list||[]).forEach(c=>{const o=m.get(c.id);if(!o||(c.u||0)>(o.u||0)){m.set(c.id,c);if(!c.del)n++}});
+  casos=[...m.values()];return n}
+const sig=l=>(l||[]).map(c=>c.id+':'+(c.u||0)).sort().join('|');
+function mergeCaseRow(r){
+  if(!r){if(casos.length)pushCases();return}
+  const before=sig(casos);mergeCases(r.pts);
+  if(sig(casos)!==before){setJ(CK,casos);if(casosMode&&!cEditing)renderCases()}
+  if(sig(casos)!==sig(r.pts)){casosUpd=Date.now();setJ(CK+'_upd',casosUpd);pushCases()}
+}
+const caseTxt=c=>[`CASO ${fmtData(c.data)} · ${c.onde||''}`,
+  [c.nome,c.idade&&c.idade+'a',c.sexo].filter(Boolean).join(', ')+(c.atend?` (at. ${c.atend})`:''),
+  (c.tags||[]).length?'Tags: '+c.tags.join(', '):'',
+  ...[['Anamnese','anam'],['Antecedentes','ant'],['Exame físico','ef'],['Exames','ex'],['HD','hd'],['Diferenciais','dd'],['Conduta','cond'],['Desfecho','desf'],['Especialidade','esp'],['Pérolas','perola'],['Pra estudar','estudar']]
+    .filter(([,k])=>c[k]).map(([t,k])=>`\n${t}: ${c[k]}`)].filter(Boolean).join('\n');
+function copyCase(id){const t=caseTxt(casos.find(c=>c.id===id));navigator.clipboard.writeText(t).then(()=>toast('Caso copiado'),()=>download('caso.txt',t,'text/plain;charset=utf-8'))}
+function renderCases(){
+  const live=casos.filter(c=>!c.del);
+  const tags=[...new Set(live.flatMap(c=>c.tags||[]))].sort();
+  const cur=$('c-ftag').value;$('c-ftag').innerHTML=`<option value="">Todas as áreas</option>`+tags.map(t=>`<option ${t===cur?'selected':''}>${esc(t)}</option>`).join('');
+  if(!cEditing&&!$('c-tags').children.length)resetCase();
+  const q=$('c-busca').value.trim().toLowerCase(), ft=$('c-ftag').value, fs=$('c-fstar').checked;
+  const L=live.filter(c=>(!ft||(c.tags||[]).includes(ft))&&(!fs||c.star)&&(!q||caseTxt(c).toLowerCase().includes(q)))
+    .sort((a,b)=>(b.data||'').localeCompare(a.data||'')||b.t-a.t);
+  const sec=(t,v)=>v?`<div class="sec"><b>${t}</b><div>${esc(v)}</div></div>`:'';
+  $('caseList').innerHTML=(L.length?L.map(c=>`<div class="case ${c.star?'star':''}">
+    <div class="pt-top"><span class="pt-name">${esc(c.hd||'(sem HD)')}</span><span class="flag ${c.star?'on':''}" onclick="starCase('${c.id}')" title="Marcante">⭐</span></div>
+    <div class="pt-meta">${fmtData(c.data)} · ${esc(shortLocal(c.onde||''))}${c.nome||c.idade?' · '+esc([c.nome,c.idade&&c.idade+'a',c.sexo].filter(Boolean).join(', ')):''}${c.desf?' · '+esc(c.desf):''}</div>
+    ${(c.tags||[]).length?`<div class="tags">${c.tags.map(t=>`<span class="tag t">${esc(t)}</span>`).join('')}</div>`:''}
+    <details><summary>Ver caso completo</summary>
+      ${sec('Anamnese',c.anam)}${sec('Antecedentes · medicações · alergias',c.ant)}${sec('Exame físico',c.ef)}${sec('Exames complementares',c.ex)}
+      ${sec('Diferenciais',c.dd)}${sec('Conduta',c.cond)}${sec('Destino',c.esp)}${sec('💡 Pérolas',c.perola)}${sec('📚 Pra estudar',c.estudar)}${c.atend?sec('Atendimento',c.atend):''}
+    </details>
+    <div class="pt-actions"><button class="btn small ghost" onclick="editCase('${c.id}')">Editar</button><button class="btn small ghost" onclick="copyCase('${c.id}')">Copiar</button><button class="btn small ghost" onclick="delCase('${c.id}')">Excluir</button></div>
+  </div>`).join(''):`<div class="empty">${live.length?'Nada com esse filtro.':'Nenhum caso ainda. Preencha ao lado, ou use 📌 Caso num paciente do plantão.'}</div>`)
+  +(live.length?`<p class="hint">${L.length} de ${live.length} caso(s)</p>`:'');
+}
+function casosXlsx(){const L=casos.filter(c=>!c.del);if(!L.length){toast('Nenhum caso');return}
+  const head=['Data','Onde','Iniciais','Idade','Sexo','Atendimento','Tags','Anamnese','Antecedentes','Exame físico','Exames','HD','Diferenciais','Conduta','Desfecho','Especialidade','Pérolas','Pra estudar','Marcante'];
+  const rows=L.sort((a,b)=>(a.data||'').localeCompare(b.data||'')).map(c=>[fmtData(c.data),c.onde,c.nome,c.idade,c.sexo,c.atend,(c.tags||[]).join(', '),c.anam,c.ant,c.ef,c.ex,c.hd,c.dd,c.cond,c.desf,c.esp,c.perola,c.estudar,c.star?'⭐':'']);
+  download(`casos_ps_aline_${today()}.xlsx`,xlsx([['Casos',[head,...rows]]]))}
 
 function isLate(p){if(!p.reav)return false;const[h,m]=p.reav.split(':').map(Number);const n=new Date();return n.getHours()*60+n.getMinutes()>=h*60+m}
 
@@ -2779,6 +2925,7 @@ function card(p){
       ${p.cat!=='internar'?`<button class="btn small" onclick="setCat('${p.id}','internar')">→ Internar</button>`:''}
       <button class="btn small ghost" onclick="edit('${p.id}')">Editar</button>
       <button class="btn small ghost" onclick="alta('${p.id}')">🏠 Alta</button>
+      <button class="btn small ghost" title="Copiar para a pasta Casos PS Aline" onclick="toCase('${p.id}')">📌 Caso</button>
       <button class="btn small ghost" onclick="del('${p.id}')">Excluir</button></div>
   </div>`;
 }
