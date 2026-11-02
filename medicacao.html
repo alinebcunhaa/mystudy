@@ -19,7 +19,7 @@ header h1{font-size:20px}
 .stats{display:flex;gap:6px;flex-wrap:wrap}
 .stat{font-size:13px;padding:3px 10px;border-radius:99px;font-weight:600}
 main{display:grid;grid-template-columns:340px 1fr;gap:18px;padding:18px;max-width:1500px;margin:0 auto}
-@media(max-width:900px){main{grid-template-columns:1fr;padding:12px}header{position:static}.board{order:-1}}
+@media(max-width:900px){main{grid-template-columns:1fr;padding:12px}header{position:static}.boardwrap{order:-1}}
 .panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px}
 .panel h2{font-size:17px;margin-bottom:12px}
 label{display:block;font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin:10px 0 4px}
@@ -129,6 +129,9 @@ input[type=date]{padding:8px 10px;border:1px solid var(--line);border-radius:8px
 .fitem .fbar a,.fitem .fbar button{font-size:12px;border:0;background:none;cursor:pointer;color:var(--on);text-decoration:none}
 .chip[data-cat=reaval].on{background:var(--lilac);color:var(--on)}
 .pt.reaval{border-left-color:var(--lilac)}
+.searchbar{display:flex;gap:6px;margin-bottom:12px}
+.searchbar input{flex:1;font-size:15px;padding:9px 12px;border-radius:99px}
+mark{background:#ffe7a8;color:inherit;border-radius:3px;padding:0 1px}
 .toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--on);color:#fff;padding:9px 16px;border-radius:99px;font-size:14px;opacity:0;transition:.25s;pointer-events:none;z-index:99}
 .toast.show{opacity:1}
 </style>
@@ -198,7 +201,10 @@ input[type=date]{padding:8px 10px;border:1px solid var(--line);border-radius:8px
     <p class="hint">Use leito + iniciais. Com a nuvem ligada, sincroniza com o celular a cada 15 s. Clique num exame no card para marcar como <b>saiu</b>; clique de novo para <b>alterado</b>.</p>
   </section>
 
-  <section class="board" id="board"></section>
+  <div class="boardwrap">
+    <div class="searchbar"><input type="search" id="busca" placeholder="🔎 Buscar por iniciais, leito, atendimento ou queixa" oninput="render()"><button class="btn small ghost" id="buscaX" onclick="$('busca').value='';render()" style="display:none">Limpar</button></div>
+    <section class="board" id="board"></section>
+  </div>
 </main>
 
 <main class="casos-only">
@@ -2965,11 +2971,18 @@ function isLate(p){if(!p.reav)return false;const[h,m]=p.reav.split(':').map(Numb
 
 function render(){
   const order=['priorizado','internar','alerta','remedicar','reaval','exames','obs'];
-  const L=pts.filter(p=>!p.done), D=pts.filter(p=>p.done&&!p.alta).sort((a,b)=>b.done-a.done), A=pts.filter(p=>p.alta).sort((a,b)=>b.done-a.done);
+  const q=($('busca')?.value||'').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  const norm=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  const hit=p=>!q||[p.nome,p.leito,p.atend,p.hd,p.idade,p.obs,p.esp].some(v=>norm(v).includes(q))||norm(String(p.nome).replace(/[^a-z]/gi,'')).includes(q.replace(/[^a-z]/g,''))&&q.replace(/[^a-z]/g,'');
+  if($('buscaX'))$('buscaX').style.display=q?'':'none';
+  const PV=pts.filter(hit);
+  const L=PV.filter(p=>!p.done), D=PV.filter(p=>p.done&&!p.alta).sort((a,b)=>b.done-a.done), A=PV.filter(p=>p.alta).sort((a,b)=>b.done-a.done);
+  if(q){boxOpen.done=boxOpen.alta=true}
   $('stats').innerHTML=order.map(c=>{const n=L.filter(p=>p.cat===c).length;
     return `<span class="stat" style="background:${CATS[c].c};color:var(--on)">${CATS[c].t.split(' ')[0]} ${n}</span>`}).join('');
   $('board').innerHTML=order.map(c=>{
     const list=L.filter(p=>p.cat===c).sort((a,b)=>(b.ord||b.t||0)-(a.ord||a.t||0));
+    if(q&&!list.length)return '';
     return `<div class="col"><h3><span class="dot" style="background:${CATS[c].c}"></span>${CATS[c].t} (${list.length})</h3>
       ${list.length?list.map(card).join(''):'<div class="empty">Nenhum</div>'}</div>`}).join('')
     +box('done','✓ Salvos / feitos',D)+box('alta','🏠 Altas',A);
