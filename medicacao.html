@@ -2810,14 +2810,31 @@ async function delFoto(id){if(!confirm('Apagar este print?'))return;try{await cl
 function importPts(){
   const s=$('impTxt').value, a=s.indexOf('['), b=s.lastIndexOf(']');
   let arr;try{arr=JSON.parse(s.slice(a,b+1));if(!Array.isArray(arr)||a<0)throw 0}catch(e){$('impErr').textContent='Não reconheci o texto. Cole o bloco inteiro que o Claude mandou.';return}
-  const cats=Object.keys(CATS);let n=0,now=Date.now();
-  arr.forEach((o,i)=>{if(!o||typeof o!=='object')return;const leito=String(o.leito||'').trim(),nome=String(o.iniciais||o.nome||'').trim();if(!leito&&!nome)return;
-    const ex=(Array.isArray(o.exames)?o.exames:String(o.exames||'').split(',')).map(x=>String(x).trim()).filter(Boolean).map(x=>({n:x,s:'pend'}));
-    let cat0=String(o.categoria||o.cat||'').toLowerCase();if(/reav/.test(cat0))cat0='reaval';
-    const cat=cats.includes(cat0)?cat0:'exames';
-    pts.push({id:newId(),t:now+i,ord:now+i,wa:false,alerta:false,leito,nome,idade:String(o.idade||''),atend:String(o.atendimento||o.atend||''),cat,hd:String(o.queixa||o.hd||''),exames:ex,reav:'',esp:String(o.especialidade||o.esp||''),obs:String(o.conduta||o.obs||'')});n++});
-  if(!n){$('impErr').textContent='Nenhum paciente encontrado no texto.';return}
-  persist();render();$('impTxt').value='';$('impErr').textContent='';$('fotos').close();toast(`${n} paciente(s) criado(s) ✓`);
+  const cats=Object.keys(CATS), now=Date.now(), ini=x=>String(x||'').normalize('NFD').replace(/[^a-z]/gi,'').toUpperCase(), dig=x=>String(x||'').replace(/\D/g,'');
+  const list=v=>(Array.isArray(v)?v:String(v||'').split(',')).map(x=>String(x).trim()).filter(Boolean);
+  let novos=0,atual=0;
+  arr.forEach((o,i)=>{if(!o||typeof o!=='object')return;
+    const leito=String(o.leito||'').trim(),nome=String(o.iniciais||o.nome||'').trim(),atend=dig(o.atendimento||o.atend),idade=String(o.idade||'').trim();
+    if(!leito&&!nome&&!atend)return;
+    const exs=[...list(o.exames||o.pendentes).map(n=>({n,s:'pend'})),...list(o.realizados).map(n=>({n,s:'ok'}))];
+    let cat0=String(o.categoria||o.cat||'').toLowerCase();if(/reav/.test(cat0))cat0='reaval';if(/aguard|exame/.test(cat0))cat0='exames';if(/observ/.test(cat0))cat0='obs';
+    // procura paciente já existente
+    let p=atend&&pts.find(x=>dig(x.atend)===atend);
+    if(!p&&nome){const c=pts.filter(x=>ini(x.nome)===ini(nome));p=c.length===1?c[0]:c.find(x=>String(x.idade).trim()===idade)}
+    if(p){
+      if(atend&&!dig(p.atend))p.atend=atend;
+      if(idade)p.idade=idade;
+      if(!p.leito&&leito)p.leito=leito;
+      if(!p.hd&&(o.queixa||o.hd))p.hd=String(o.queixa||o.hd);
+      if(o.conduta&&!String(p.obs||'').includes(o.conduta))p.obs=[p.obs,o.conduta].filter(Boolean).join('\n');
+      p.exames=p.exames||[];
+      exs.forEach(x=>{const m=p.exames.find(y=>y.n.toLowerCase()===x.n.toLowerCase());if(m){if(x.s==='ok'&&m.s==='pend')m.s='ok'}else p.exames.push(x)});
+      atual++;
+    }else{
+      pts.push({id:newId(),t:now+i,ord:now+i,wa:false,alerta:false,leito,nome,idade,atend,cat:cats.includes(cat0)?cat0:'exames',hd:String(o.queixa||o.hd||''),exames:exs,reav:'',esp:String(o.especialidade||o.esp||''),obs:String(o.conduta||o.obs||'')});novos++;
+    }});
+  if(!novos&&!atual){$('impErr').textContent='Nenhum paciente encontrado no texto.';return}
+  persist();render();$('impTxt').value='';$('impErr').textContent='';$('fotos').close();toast(`${novos} novo(s) · ${atual} atualizado(s) ✓`);
 }
 function setSync(cls,txt){const s=$('sync');s.className='sync '+cls;s.textContent=txt}
 const hhmm=()=>new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
