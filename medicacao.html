@@ -119,6 +119,9 @@ input[type=date]{padding:8px 10px;border:1px solid var(--line);border-radius:8px
   .pr tr.grp td{background:#fde6ef !important;font-weight:700;font-size:10pt;-webkit-print-color-adjust:exact;print-color-adjust:exact}
   .pr tr{page-break-inside:avoid}.pr tr.grp{page-break-after:avoid;break-after:avoid}.pr thead{display:table-header-group}
 }
+#editDlg{max-width:min(460px,96vw);max-height:92vh;overflow:auto;padding:0;border:0;border-radius:14px;background:var(--card)}
+#editDlg::backdrop{background:rgba(74,54,64,.45)}
+#editDlg .panel{border:0;margin:0}
 .toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--on);color:#fff;padding:9px 16px;border-radius:99px;font-size:14px;opacity:0;transition:.25s;pointer-events:none;z-index:99}
 .toast.show{opacity:1}
 </style>
@@ -143,8 +146,8 @@ input[type=date]{padding:8px 10px;border:1px solid var(--line);border-radius:8px
 </header>
 <div class="banner shift-only" id="viewBanner"><span id="viewTxt"></span><button class="btn small" onclick="exitView()">Voltar ao plantão atual</button></div>
 
-<main class="shift-only">
-  <section class="panel">
+<main class="shift-only" id="shiftMain">
+  <section class="panel" id="formPanel">
     <h2 id="formTitle">Novo paciente</h2>
     <div class="row">
       <div><label>Leito / Box</label><input type="text" id="f-leito" placeholder="Med 04"></div>
@@ -2648,6 +2651,7 @@ function resetForm(){
   [...$('f-cat').children].forEach(x=>x.classList.toggle('on',x.dataset.cat==='exames'));
   [...$('f-ex').querySelectorAll('.chip')].forEach(b=>{if(!['Lab','Troponina','RX','TC','USG','ECG','Urina'].includes(b.dataset.ex))b.remove();else b.classList.remove('on')});
   $('formTitle').textContent='Novo paciente';$('saveBtn').textContent='Adicionar';$('cancelBtn').style.display='none';
+  const d=$('editDlg');if(d.contains($('formPanel'))){$('shiftMain').prepend($('formPanel'));if(d.open)d.close()}
 }
 function edit(id){
   const p=pts.find(x=>x.id===id);if(!p)return;editing=id;
@@ -2658,7 +2662,7 @@ function edit(id){
   p.exames.forEach(e=>{let b=$('f-ex').querySelector(`[data-ex="${CSS.escape(e.n)}"]`);
     if(!b){b=document.createElement('button');b.className='chip';b.dataset.ex=e.n;b.textContent=e.n;$('f-ex').appendChild(b)}b.classList.add('on')});
   $('formTitle').textContent='Editando '+(p.leito||p.nome);$('saveBtn').textContent='Salvar';$('cancelBtn').style.display='block';
-  window.scrollTo({top:0,behavior:'smooth'});
+  const d=$('editDlg');if(!d.open){d.appendChild($('formPanel'));d.showModal()}
 }
 function setCat(id,cat){const p=pts.find(x=>x.id===id);if(p.cat!==cat)p.ord=Date.now();p.cat=cat;p.alerta=false;if(cat!=='internar')p.wa=false;persist();render()}
 function cycleEx(id,i){const e=pts.find(x=>x.id===id).exames[i];e.s=e.s==='pend'?'ok':e.s==='ok'?'alt':'pend';persist();render()}
@@ -3059,6 +3063,7 @@ render();
 if(PIN){setSync('off','☁️ conectando…');pull()}else if(SB_URL)openLock();
 setInterval(render,60000); // atualiza alertas de reavaliação
 </script>
+<dialog id="editDlg" onclose="if(editing)resetForm()"></dialog>
 <div id="printArea"></div>
 </body>
 </html>
