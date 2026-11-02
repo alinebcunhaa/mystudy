@@ -132,6 +132,8 @@ input[type=date]{padding:8px 10px;border:1px solid var(--line);border-radius:8px
 .searchbar{display:flex;gap:6px;margin-bottom:12px}
 .searchbar input{flex:1;font-size:15px;padding:9px 12px;border-radius:99px}
 mark{background:#ffe7a8;color:inherit;border-radius:3px;padding:0 1px}
+.toast.show{pointer-events:auto}
+.toast-undo{margin-left:12px;background:#fff;color:var(--on);border:0;border-radius:99px;padding:4px 12px;font:inherit;font-weight:700;cursor:pointer}
 .toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--on);color:#fff;padding:9px 16px;border-radius:99px;font-size:14px;opacity:0;transition:.25s;pointer-events:none;z-index:99}
 .toast.show{opacity:1}
 </style>
@@ -2820,7 +2822,8 @@ function importPts(){
     let cat0=String(o.categoria||o.cat||'').toLowerCase();if(/reav/.test(cat0))cat0='reaval';if(/aguard|exame/.test(cat0))cat0='exames';if(/observ/.test(cat0))cat0='obs';
     // procura paciente já existente
     let p=atend&&pts.find(x=>dig(x.atend)===atend);
-    if(!p&&nome){const c=pts.filter(x=>ini(x.nome)===ini(nome));p=c.length===1?c[0]:c.find(x=>String(x.idade).trim()===idade)}
+    if(!p&&nome&&ini(nome)){const c=pts.filter(x=>ini(x.nome)===ini(nome)&&!(atend&&dig(x.atend)&&dig(x.atend)!==atend));
+      const same=c.filter(x=>idade&&String(x.idade).trim()===idade);p=same.length===1?same[0]:(c.length===1&&(!idade||!String(c[0].idade).trim())?c[0]:null)}
     if(p){
       if(atend&&!dig(p.atend))p.atend=atend;
       if(idade)p.idade=idade;
@@ -3003,15 +3006,17 @@ function render(){
     return `<div class="col"><h3><span class="dot" style="background:${CATS[c].c}"></span>${CATS[c].t} (${list.length})</h3>
       ${list.length?list.map(card).join(''):'<div class="empty">Nenhum</div>'}</div>`}).join('')
     +box('done','✓ Salvos / feitos',D)+box('alta','🏠 Altas',A);
+  $('stats').innerHTML+=`<span class="stat" style="background:#e8f5ed;color:#2f5a3e;cursor:pointer" onclick="goBox('done')">✓ Salvos ${D.length}</span><span class="stat" style="background:#eee6f7;color:var(--on);cursor:pointer" onclick="goBox('alta')">🏠 Altas ${A.length}</span>`;
   {const n=toSend().length;$('sendBtn').textContent='📲 Enviar pro grupo'+(n?` (${n})`:'')}
 }
 let boxOpen={};
 function box(k,title,list){
   if(!list.length)return '';
-  return `<details class="done-box" ${boxOpen[k]?'open':''} ontoggle="boxOpen['${k}']=this.open"><summary>${title} (${list.length})</summary>${list.map(p=>`<div class="done-row"><span><b>${esc([p.leito,p.nome].filter(Boolean).join(' · '))}</b>${p.hd?' — '+esc(p.hd):''} <span class="pt-meta">· ${esc(CATS[p.cat]?.t||'')} · ${new Date(p.done).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</span></span><span class="pt-actions" style="margin:0;flex-wrap:nowrap">${p.cat!=='internar'?`<button class="btn small" onclick="backTo('${p.id}','internar')">↩ Internar</button>`:''}<button class="btn small ghost" onclick="backTo('${p.id}')">↩ Voltar p/ lista</button><button class="btn small ghost" onclick="if(confirm('Excluir de vez?')){pts=pts.filter(x=>x.id!=='${p.id}');persist();render()}">Excluir</button></span></div>`).join('')}</details>`;
+  return `<details class="done-box" id="box-${k}" ${boxOpen[k]?'open':''} ontoggle="boxOpen['${k}']=this.open"><summary>${title} (${list.length})</summary>${list.map(p=>`<div class="done-row"><span><b>${esc([p.leito,p.nome].filter(Boolean).join(' · '))}</b>${p.hd?' — '+esc(p.hd):''} <span class="pt-meta">· ${esc(CATS[p.cat]?.t||'')} · ${new Date(p.done).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</span></span><span class="pt-actions" style="margin:0;flex-wrap:nowrap">${p.cat!=='internar'?`<button class="btn small" onclick="backTo('${p.id}','internar')">↩ Internar</button>`:''}<button class="btn small ghost" onclick="backTo('${p.id}')">↩ Voltar p/ lista</button><button class="btn small ghost" onclick="if(confirm('Excluir de vez?')){pts=pts.filter(x=>x.id!=='${p.id}');persist();render()}">Excluir</button></span></div>`).join('')}</details>`;
 }
-function done(id){const p=pts.find(x=>x.id===id);p.done=Date.now();delete p.alta;persist();render();toast('✓ Salvo')}
-function alta(id){const p=pts.find(x=>x.id===id);p.done=Date.now();p.alta=true;persist();render();toast('🏠 Alta')}
+function goBox(k){boxOpen[k]=true;render();const el=$('box-'+k);if(el)el.scrollIntoView({behavior:'smooth',block:'start'});else toast('Nenhum paciente aí ainda')}
+function done(id){const p=pts.find(x=>x.id===id);p.done=Date.now();delete p.alta;persist();render();toast('✓ Salvo — está em “✓ Salvos” no topo',()=>backTo(id))}
+function alta(id){const p=pts.find(x=>x.id===id);p.done=Date.now();p.alta=true;persist();render();toast('🏠 Alta — está em “🏠 Altas” no topo',()=>backTo(id))}
 function undone(id){backTo(id)}
 function backTo(id,cat){const p=pts.find(x=>x.id===id);p.ord=Date.now();delete p.done;delete p.alta;if(cat){p.cat=cat;p.alerta=false}persist();render();toast(cat==='internar'?'Voltou para Internar':'Voltou para a lista')}
 
@@ -3157,7 +3162,7 @@ function copyMsg(){const m=buildMsg();if(!m)return;
 }
 function openWA(){const m=buildMsg();if(!m)return;window.open('https://web.whatsapp.com/send?text='+encodeURIComponent(m),'_blank');markSent()}
 function markSent(){if(sendMode==='int'){toSend().forEach(p=>p.wa=true);persist();render()}}
-function toast(t){$('toast').textContent=t;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),1600)}
+let toastT;function toast(t,undo){const el=$('toast');el.textContent=t;if(undo){const b=document.createElement('button');b.textContent='Desfazer';b.className='toast-undo';b.onclick=()=>{undo();el.classList.remove('show')};el.appendChild(b)}el.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('show'),undo?5000:1600)}
 
 render();
 if(PIN){setSync('off','☁️ conectando…');pull()}else if(SB_URL)openLock();
