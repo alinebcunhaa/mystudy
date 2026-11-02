@@ -106,6 +106,19 @@ input[type=date]{padding:8px 10px;border:1px solid var(--line);border-radius:8px
 .done-box{grid-column:1/-1;background:var(--card);border:1px dashed var(--line);border-radius:10px;padding:8px 12px}
 .done-box summary{cursor:pointer;font-weight:700;color:var(--muted)}
 .done-row{flex-wrap:wrap;display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 0;border-top:1px solid var(--line);font-size:14px;opacity:.75}
+#printArea{display:none}
+@media print{
+  @page{size:A4 landscape;margin:8mm}
+  body{background:#fff !important}
+  body>*:not(#printArea){display:none !important}
+  #printArea{display:block !important;font-family:Arial,sans-serif;color:#000;font-size:11.5pt}
+  .pr-head{display:flex;justify-content:space-between;font-size:14pt;margin-bottom:6px}
+  .pr{width:100%;border-collapse:collapse;table-layout:fixed}
+  .pr th{background:#f2b5cb !important;color:#000;text-align:left;font-size:10.5pt;padding:5px;border:1px solid #555;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .pr td{padding:5px;border:1px solid #555;vertical-align:top;word-wrap:break-word;white-space:pre-wrap;line-height:1.25}
+  .pr tr.grp td{background:#fde6ef !important;font-weight:700;font-size:11.5pt;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .pr tr{page-break-inside:avoid}.pr tr.grp{page-break-after:avoid;break-after:avoid}.pr thead{display:table-header-group}
+}
 .toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--on);color:#fff;padding:9px 16px;border-radius:99px;font-size:14px;opacity:0;transition:.25s;pointer-events:none;z-index:99}
 .toast.show{opacity:1}
 </style>
@@ -2928,24 +2941,15 @@ function imprimir(list,data,local){
   const hm=ts=>ts?new Date(ts).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}):'';
   const order=['priorizado','internar','alerta','remedicar','exames','obs'];
   const groups=[...order.map(c=>[CATS[c].t,list.filter(p=>!p.done&&p.cat===c)]),['✓ Salvos / feitos',list.filter(p=>p.done&&!p.alta)],['🏠 Altas',list.filter(p=>p.alta)]].filter(g=>g[1].length);
-  const tb=g=>`<h2>${esc(g[0])} <small>(${g[1].length})</small></h2><table><colgroup><col style="width:9%"><col style="width:8%"><col style="width:5%"><col style="width:22%"><col style="width:16%"><col style="width:26%"><col style="width:9%"><col style="width:5%"></colgroup><thead><tr><th>Leito</th><th>Iniciais</th><th>Idade</th><th>Queixa / HD</th><th>Exames</th><th>Resultados / conduta</th><th>Especialidade</th><th>Entrada</th></tr></thead><tbody>${g[1].map(p=>`<tr><td><b>${esc(p.leito)}</b></td><td>${esc(p.nome)}</td><td>${esc(p.idade)}</td><td>${esc(p.hd)}</td><td>${esc(exTxt(p))}</td><td>${esc(p.obs)}</td><td>${esc(p.esp)}</td><td>${hm(p.t)}</td></tr>`).join('')}</tbody></table>`;
-  const html=`<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Plantão ${fmtData(data)} · ${esc(local)}</title><style>
-@page{size:A4 landscape;margin:10mm}
-body{font-family:Arial,sans-serif;font-size:10.5pt;color:#222;margin:0}
-h1{font-size:15pt;margin:0 0 2px}.sub{color:#666;margin-bottom:8px;font-size:9.5pt}
-h2{font-size:11.5pt;margin:12px 0 4px;color:#5a2840;border-bottom:2px solid #f2b5cb;padding-bottom:2px}h2 small{color:#888;font-weight:400}
-table{width:100%;border-collapse:collapse;table-layout:fixed;page-break-inside:auto}
-th{background:#fde6ef;text-align:left;font-size:9pt;padding:4px 5px;border:1px solid #e8c9d6}
-td{padding:4px 5px;border:1px solid #e8c9d6;vertical-align:top;word-wrap:break-word;white-space:pre-wrap}
-tr{page-break-inside:avoid}thead{display:table-header-group}
-.bar{position:sticky;top:0;background:#fff;padding:8px 0;margin-bottom:6px}.bar button{font-size:14px;padding:8px 16px;border-radius:8px;border:0;background:#f2b5cb;color:#5a2840;font-weight:700;cursor:pointer}
-@media print{.bar{display:none}}
-</style></head><body><div class="bar"><button onclick="print()">🖨️ Imprimir</button></div>
-<h1>Plantão ${fmtData(data)} · ${esc(local)}</h1><div class="sub">${list.length} pacientes · ${esc(summary(list.filter(p=>!p.done)))}</div>${groups.map(tb).join('')}</body></html>`;
-  const w=window.open('','_blank');
-  if(!w){toast('Permita pop-ups para imprimir');return}
-  w.document.open();w.document.write(html);w.document.close();setTimeout(()=>{try{w.focus();w.print()}catch(e){}},400);
+  const rows=groups.map(g=>`<tr class="grp"><td colspan="8">${esc(g[0])} (${g[1].length})</td></tr>`+g[1].map(p=>`<tr><td><b>${esc(p.leito)}</b><br>${esc(p.nome)}</td><td>${esc(p.idade)}</td><td>${esc(p.hd)}</td><td>${esc(exTxt(p))}</td><td>${esc(p.obs)}</td><td>${esc(p.esp)}</td><td>${hm(p.t)}</td><td>${hm(p.done)}</td></tr>`).join('')).join('');
+  $('printArea').innerHTML=`<div class="pr-head"><b>Plantão ${fmtData(data)} · ${esc(local)}</b><span>${list.length} pacientes</span></div>
+  <table class="pr"><colgroup><col style="width:11%"><col style="width:5%"><col style="width:20%"><col style="width:16%"><col style="width:26%"><col style="width:10%"><col style="width:6%"><col style="width:6%"></colgroup>
+  <thead><tr><th>Leito / Iniciais</th><th>Idade</th><th>Queixa / HD</th><th>Exames</th><th>Resultados / conduta</th><th>Especialidade</th><th>Entrada</th><th>Saída</th></tr></thead><tbody>${rows}</tbody></table>`;
+  setTimeout(()=>window.print(),100);
 }
+window.addEventListener('beforeprint',()=>{if(!$('printArea').innerHTML.trim()&&pts.length){const l=viewing?pts:pts;  /* Ctrl+P */
+  const keep=window.print;window.print=()=>{};imprimir(l,meta.data,meta.local);window.print=keep}});
+window.addEventListener('afterprint',()=>{$('printArea').innerHTML=''});
 function planilha(list,data,local){
   const hm=ts=>ts?new Date(ts).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}):'';
   const st=p=>p.alta?'Alta':p.done?'Salvo/feito':'Na lista';
@@ -3054,5 +3058,6 @@ render();
 if(PIN){setSync('off','☁️ conectando…');pull()}else if(SB_URL)openLock();
 setInterval(render,60000); // atualiza alertas de reavaliação
 </script>
+<div id="printArea"></div>
 </body>
 </html>
