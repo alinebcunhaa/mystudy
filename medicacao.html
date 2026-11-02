@@ -121,6 +121,7 @@ input[type=date]{padding:8px 10px;border:1px solid var(--line);border-radius:8px
     </select>
     <span class="shift-only" style="display:contents"><input type="date" id="s-data" onchange="saveMeta()">
     <button class="btn" onclick="openSend()" id="sendBtn">📲 Enviar pro grupo</button>
+    <button class="btn ghost" onclick="imprimir(pts,meta.data,meta.local)">🖨️ Imprimir</button>
     <button class="btn ghost" onclick="exportNow()">📊 Planilha</button>
     <button class="btn ghost" onclick="openHist()">📁 Histórico</button>
     <button class="btn ghost" onclick="closeShift()">Encerrar plantão</button></span>
@@ -2678,6 +2679,7 @@ function renderHist(){
       ${ints.length?`<details><summary>Internações (${ints.length})</summary><pre>${esc(ints.map(p=>`${[p.leito,p.nome].filter(Boolean).join(' – ')}: ${p.hd||''}${p.esp?' → '+p.esp:''}`).join('\n'))}</pre></details>`:''}
       <div class="pt-actions">
         <button class="btn small" onclick="viewShift('${h.id}')">Abrir</button>
+        <button class="btn small ghost" onclick="(h=>imprimir(h.pts,h.data,h.local))(hist.find(x=>x.id==='${h.id}'))">🖨️ Imprimir</button>
         <button class="btn small ghost" onclick="(h=>planilha(h.pts,h.data,h.local))(hist.find(x=>x.id==='${h.id}'))">📊 Planilha</button>
         <button class="btn small ghost" onclick="restoreShift('${h.id}')">Continuar este plantão</button>
         <button class="btn small ghost" onclick="delShift('${h.id}')">Excluir</button></div></div>`}).join('');
@@ -2909,22 +2911,46 @@ function zip(files){const enc=new TextEncoder(),parts=[],cd=[];let off=0;
 function xlsx(sheets){
   const x=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])).replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g,'');
   const col=i=>{let s='';i++;while(i){const m=(i-1)%26;s=String.fromCharCode(65+m)+s;i=Math.floor((i-1)/26)}return s};
-  const sheetXml=rows=>`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews><cols>${rows[0].map((h,i)=>`<col min="${i+1}" max="${i+1}" width="${Math.min(50,Math.max(10,...rows.map(r=>String(r[i]??'').length+2)))}" customWidth="1"/>`).join('')}</cols><sheetData>${rows.map((r,ri)=>`<row r="${ri+1}">${r.map((v,ci)=>`<c r="${col(ci)}${ri+1}" t="inlineStr"${ri===0?' s="1"':''}><is><t xml:space="preserve">${x(v)}</t></is></c>`).join('')}</row>`).join('')}</sheetData><autoFilter ref="A1:${col(rows[0].length-1)}${rows.length}"/></worksheet>`;
+  const sheetXml=rows=>`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheetPr><pageSetUpPr fitToPage="1"/></sheetPr><sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews><cols>${rows[0].map((h,i)=>`<col min="${i+1}" max="${i+1}" width="${Math.min(32,Math.max(8,...rows.map(r=>String(r[i]??'').length+2)))}" customWidth="1"/>`).join('')}</cols><sheetData>${rows.map((r,ri)=>`<row r="${ri+1}">${r.map((v,ci)=>`<c r="${col(ci)}${ri+1}" t="inlineStr" s="${ri===0?1:2}"><is><t xml:space="preserve">${x(v)}</t></is></c>`).join('')}</row>`).join('')}</sheetData><autoFilter ref="A1:${col(rows[0].length-1)}${rows.length}"/><printOptions gridLines="0"/><pageMargins left="0.3" right="0.3" top="0.5" bottom="0.5" header="0.2" footer="0.2"/><pageSetup paperSize="9" orientation="landscape" fitToWidth="1" fitToHeight="0"/><headerFooter><oddFooter>&amp;C&amp;8Página &amp;P de &amp;N</oddFooter></headerFooter></worksheet>`;
   const names=sheets.map(s=>s[0]);
   return zip([
     ['[Content_Types].xml',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>${names.map((n,i)=>`<Override PartName="/xl/worksheets/sheet${i+1}.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>`).join('')}</Types>`],
     ['_rels/.rels',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>`],
-    ['xl/workbook.xml',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets>${names.map((n,i)=>`<sheet name="${x(n)}" sheetId="${i+1}" r:id="rId${i+1}"/>`).join('')}</sheets></workbook>`],
+    ['xl/workbook.xml',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets>${names.map((n,i)=>`<sheet name="${x(n)}" sheetId="${i+1}" r:id="rId${i+1}"/>`).join('')}</sheets><definedNames>${names.map((n,i)=>`<definedName name="_xlnm.Print_Titles" localSheetId="${i}">'${x(n)}'!$1:$1</definedName>`).join('')}</definedNames></workbook>`],
     ['xl/_rels/workbook.xml.rels',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${names.map((n,i)=>`<Relationship Id="rId${i+1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet${i+1}.xml"/>`).join('')}<Relationship Id="rId${names.length+1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>`],
-    ['xl/styles.xml',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><fonts count="2"><font><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="11"/><color rgb="FF5A2840"/><name val="Calibri"/></font></fonts><fills count="3"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FFF9D3E1"/></patternFill></fill></fills><borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="2"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1"/></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>`],
+    ['xl/styles.xml',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><fonts count="2"><font><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="11"/><color rgb="FF5A2840"/><name val="Calibri"/></font></fonts><fills count="3"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FFF9D3E1"/></patternFill></fill></fills><borders count="2"><border><left/><right/><top/><bottom/><diagonal/></border><border><left style="thin"><color rgb="FFE8C9D6"/></left><right style="thin"><color rgb="FFE8C9D6"/></right><top style="thin"><color rgb="FFE8C9D6"/></top><bottom style="thin"><color rgb="FFE8C9D6"/></bottom><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="3"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment vertical="center" wrapText="1"/></xf><xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyBorder="1" applyAlignment="1"><alignment vertical="top" wrapText="1"/></xf></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>`],
     ...sheets.map((s,i)=>[`xl/worksheets/sheet${i+1}.xml`,sheetXml(s[1])])
   ]);
+}
+const exTxt=p=>(p.exames||[]).map(e=>e.n+(e.s==='pend'?' (pend.)':e.s==='alt'?' (alterado)':' ✓')).join(', ');
+function imprimir(list,data,local){
+  if(!list.length){toast('Nenhum paciente');return}
+  const hm=ts=>ts?new Date(ts).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}):'';
+  const order=['priorizado','internar','alerta','remedicar','exames','obs'];
+  const groups=[...order.map(c=>[CATS[c].t,list.filter(p=>!p.done&&p.cat===c)]),['✓ Salvos / feitos',list.filter(p=>p.done&&!p.alta)],['🏠 Altas',list.filter(p=>p.alta)]].filter(g=>g[1].length);
+  const tb=g=>`<h2>${esc(g[0])} <small>(${g[1].length})</small></h2><table><colgroup><col style="width:9%"><col style="width:8%"><col style="width:5%"><col style="width:22%"><col style="width:16%"><col style="width:26%"><col style="width:9%"><col style="width:5%"></colgroup><thead><tr><th>Leito</th><th>Iniciais</th><th>Idade</th><th>Queixa / HD</th><th>Exames</th><th>Resultados / conduta</th><th>Especialidade</th><th>Entrada</th></tr></thead><tbody>${g[1].map(p=>`<tr><td><b>${esc(p.leito)}</b></td><td>${esc(p.nome)}</td><td>${esc(p.idade)}</td><td>${esc(p.hd)}</td><td>${esc(exTxt(p))}</td><td>${esc(p.obs)}</td><td>${esc(p.esp)}</td><td>${hm(p.t)}</td></tr>`).join('')}</tbody></table>`;
+  const html=`<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Plantão ${fmtData(data)} · ${esc(local)}</title><style>
+@page{size:A4 landscape;margin:10mm}
+body{font-family:Arial,sans-serif;font-size:10.5pt;color:#222;margin:0}
+h1{font-size:15pt;margin:0 0 2px}.sub{color:#666;margin-bottom:8px;font-size:9.5pt}
+h2{font-size:11.5pt;margin:12px 0 4px;color:#5a2840;border-bottom:2px solid #f2b5cb;padding-bottom:2px}h2 small{color:#888;font-weight:400}
+table{width:100%;border-collapse:collapse;table-layout:fixed;page-break-inside:auto}
+th{background:#fde6ef;text-align:left;font-size:9pt;padding:4px 5px;border:1px solid #e8c9d6}
+td{padding:4px 5px;border:1px solid #e8c9d6;vertical-align:top;word-wrap:break-word;white-space:pre-wrap}
+tr{page-break-inside:avoid}thead{display:table-header-group}
+.bar{position:sticky;top:0;background:#fff;padding:8px 0;margin-bottom:6px}.bar button{font-size:14px;padding:8px 16px;border-radius:8px;border:0;background:#f2b5cb;color:#5a2840;font-weight:700;cursor:pointer}
+@media print{.bar{display:none}}
+</style></head><body><div class="bar"><button onclick="print()">🖨️ Imprimir</button></div>
+<h1>Plantão ${fmtData(data)} · ${esc(local)}</h1><div class="sub">${list.length} pacientes · ${esc(summary(list.filter(p=>!p.done)))}</div>${groups.map(tb).join('')}</body></html>`;
+  const w=window.open('','_blank');
+  if(!w){toast('Permita pop-ups para imprimir');return}
+  w.document.open();w.document.write(html);w.document.close();setTimeout(()=>{try{w.focus();w.print()}catch(e){}},400);
 }
 function planilha(list,data,local){
   const hm=ts=>ts?new Date(ts).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}):'';
   const st=p=>p.alta?'Alta':p.done?'Salvo/feito':'Na lista';
-  const head=['Situação','Categoria','Leito','Iniciais','Idade','Atendimento','Queixa / HD','Exames','Resultados / conduta','Especialidade','Reavaliar às','Enviado no grupo','Entrada','Saída da lista'];
-  const row=p=>[st(p),CATS[p.cat]?.t.replace('⚠️ ','')||p.cat,p.leito,p.nome,p.idade,p.atend,p.hd,(p.exames||[]).map(e=>e.n+(e.s==='pend'?' (pendente)':e.s==='alt'?' (alterado)':' (ok)')).join(', '),p.obs,p.esp,p.reav,(p.cat==='internar'||isAl(p))?(p.wa?'Sim':'Não'):'',hm(p.t),hm(p.done)];
+  const head=['Leito','Iniciais','Idade','Categoria','Situação','Queixa / HD','Exames','Resultados / conduta','Especialidade','Entrada','Saída'];
+  const row=p=>[p.leito,p.nome,p.idade,CATS[p.cat]?.t.replace('⚠️ ','')||p.cat,st(p),p.hd,exTxt(p),p.obs,p.esp,hm(p.t),hm(p.done)];
   const order=['priorizado','internar','alerta','remedicar','exames','obs'];
   const all=list.slice().sort((a,b)=>order.indexOf(a.cat)-order.indexOf(b.cat));
   const sheets=[['Plantão',[head,...all.map(row)]],
