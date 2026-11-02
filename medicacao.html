@@ -122,6 +122,11 @@ input[type=date]{padding:8px 10px;border:1px solid var(--line);border-radius:8px
 #editDlg{max-width:min(460px,96vw);max-height:92vh;overflow:auto;padding:0;border:0;border-radius:14px;background:var(--card)}
 #editDlg::backdrop{background:rgba(74,54,64,.45)}
 #editDlg .panel{border:0;margin:0}
+.fgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;max-height:50vh;overflow:auto}
+.fitem{position:relative;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:#fff}
+.fitem img{width:100%;height:110px;object-fit:cover;object-position:top left;display:block;cursor:zoom-in}
+.fitem .fbar{display:flex;justify-content:space-between;align-items:center;font-size:11px;padding:3px 6px;color:var(--muted)}
+.fitem .fbar a,.fitem .fbar button{font-size:12px;border:0;background:none;cursor:pointer;color:var(--on);text-decoration:none}
 .toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--on);color:#fff;padding:9px 16px;border-radius:99px;font-size:14px;opacity:0;transition:.25s;pointer-events:none;z-index:99}
 .toast.show{opacity:1}
 </style>
@@ -137,6 +142,7 @@ input[type=date]{padding:8px 10px;border:1px solid var(--line);border-radius:8px
     </select>
     <span class="shift-only" style="display:contents"><input type="date" id="s-data" onchange="saveMeta()">
     <button class="btn" onclick="openSend()" id="sendBtn">📲 Enviar pro grupo</button>
+    <button class="btn ghost" onclick="openFotos()" id="fotoBtn">📷 Prints Tasy</button>
     <button class="btn ghost" onclick="imprimir(pts,meta.data,meta.local)">🖨️ Imprimir</button>
     <button class="btn ghost" onclick="exportNow()">📊 Planilha</button>
     <button class="btn ghost" onclick="openHist()">📁 Histórico</button>
@@ -290,6 +296,27 @@ input[type=date]{padding:8px 10px;border:1px solid var(--line);border-radius:8px
 </dialog>
 <div class="toast" id="toast"></div>
 
+<dialog id="fotos">
+  <div class="dlg">
+    <div class="pt-top"><h2 style="font-size:18px">📷 Prints do Tasy</h2><button class="btn small ghost" onclick="$('fotos').close()">Fechar</button></div>
+    <div class="seg" id="fotoTabs"><button data-t="f" class="on">Prints</button><button data-t="i">📥 Importar do Claude</button></div>
+    <div id="tabF">
+      <div class="row" style="margin:8px 0">
+        <label class="btn" style="text-align:center;margin:0;text-transform:none;letter-spacing:0;font-size:15px;color:var(--on)">📷 Foto / arquivo<input type="file" accept="image/*" multiple id="fotoIn" style="display:none" onchange="addFotos(this.files);this.value=''"></label>
+        <button class="btn ghost" onclick="pasteFoto()">📋 Colar print</button>
+      </div>
+      <p class="hint">No computador: tire o print do Tasy (<b>Win + Shift + S</b>) e aperte <b>Ctrl + V</b> aqui. No celular: abra esta tela, toque num print e compartilhe com o Claude.</p>
+      <div class="fgrid" id="fgrid"></div>
+    </div>
+    <div id="tabI" style="display:none">
+      <p class="hint" style="font-size:14px">Cole aqui o texto que o Claude te devolveu (o bloco que começa com <b>PSA</b>).</p>
+      <textarea id="impTxt" rows="8" placeholder='PSA [ {"leito":"Med 04", ...} ]'></textarea>
+      <div class="err-txt" id="impErr"></div>
+      <button class="btn full" onclick="importPts()">Criar pacientes</button>
+    </div>
+  </div>
+</dialog>
+<dialog id="fview" onclick="this.close()" style="max-width:96vw;max-height:96vh;padding:0;background:#000"><img id="fviewImg" style="max-width:96vw;max-height:96vh;display:block"></dialog>
 <script>
 //---------------------------------------------------------------------
 //
@@ -2679,6 +2706,7 @@ function closeShift(){
   planilha(pts,meta.data,meta.local);
   const h={id:meta.id,data:meta.data,local:meta.local,fechado:Date.now(),pts:JSON.parse(JSON.stringify(pts))};
   hist.unshift(h);setJ(HK,hist);pushRow(h,true);
+  if(PIN)cloud('psa_foto_limpar',{p_plantao:h.id}).catch(()=>{});fotos=[];renderFotos();
   pts=[];meta.id=newId();meta.data=today();$('s-data').value=meta.data;persist();render();toast('Plantão salvo no histórico 📁');
 }
 function openHist(){$('h-ret').value=String(ret);renderHist();$('hist').showModal()}
@@ -2742,6 +2770,43 @@ async function cloud(fn,args){
   const r=await fetch(SB_URL+'/rest/v1/rpc/'+fn,{method:'POST',headers:{apikey:SB_KEY,'Content-Type':'application/json'},body:JSON.stringify({p_pin:PIN,...args})});
   if(!r.ok){const tx=await r.text();const e=new Error(tx);e.pin=/PIN invalido/i.test(tx);e.setup=r.status===404||/PGRST202|could not find/i.test(tx);throw e}
   const tx=await r.text();return tx?JSON.parse(tx):null;
+}
+// ---------- prints do Tasy ----------
+let fotos=[];
+$('fotoTabs').onclick=e=>{const b=e.target.closest('button');if(!b)return;[...$('fotoTabs').children].forEach(x=>x.classList.toggle('on',x===b));$('tabF').style.display=b.dataset.t==='f'?'':'none';$('tabI').style.display=b.dataset.t==='i'?'':'none'};
+async function openFotos(){$('fotos').showModal();if(!PIN){$('fgrid').innerHTML='<div class="empty">Conecte a nuvem (PIN) para guardar os prints e abrir no celular.</div>';return}
+  $('fgrid').innerHTML='<div class="empty">Carregando…</div>';await loadFotos()}
+async function loadFotos(){
+  try{fotos=(await cloud('psa_foto_listar',{p_plantao:meta.id}))||[]}
+  catch(e){$('fgrid').innerHTML=`<div class="empty">${e.setup?'Falta rodar o SQL dos prints no Supabase (te mandei no chat).':'Sem conexão com a nuvem.'}</div>`;return}
+  renderFotos();
+}
+function renderFotos(){
+  $('fotoBtn').textContent='📷 Prints Tasy'+(fotos.length?` (${fotos.length})`:'');
+  if(!$('fotos').open)return;
+  $('fgrid').innerHTML=fotos.length?fotos.map((f,i)=>`<div class="fitem"><img src="${f.img}" onclick="fviewImg.src=this.src;fview.showModal()"><div class="fbar"><span>${new Date(+f.criado).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</span><span><a href="${f.img}" download="tasy_${i+1}.jpg">⬇</a> <button onclick="delFoto('${f.id}')">🗑</button></span></div></div>`).join(''):'<div class="empty">Nenhum print neste plantão.</div>';
+}
+function shrink(file){return new Promise((ok,no)=>{const im=new Image();im.onload=()=>{const s=Math.min(1,1800/im.width),c=document.createElement('canvas');c.width=Math.round(im.width*s);c.height=Math.round(im.height*s);const g=c.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,c.width,c.height);g.drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(im.src);ok(c.toDataURL('image/jpeg',0.8))};im.onerror=no;im.src=URL.createObjectURL(file)})}
+async function addFotos(files){
+  if(!PIN){toast('Conecte a nuvem primeiro');return}
+  for(const f of files){if(!f.type.startsWith('image/'))continue;
+    try{const img=await shrink(f);const id=newId();await cloud('psa_foto_salvar',{p_id:id,p_plantao:meta.id,p_img:img,p_criado:Date.now()});fotos.unshift({id,img,criado:Date.now()})}
+    catch(e){toast(e.setup?'Falta rodar o SQL dos prints':'Não salvou o print');return}}
+  renderFotos();toast('Print salvo ☁️');
+}
+async function pasteFoto(){try{const items=await navigator.clipboard.read();const fs=[];for(const it of items)for(const ty of it.types)if(ty.startsWith('image/'))fs.push(new File([await it.getType(ty)],'print',{type:ty}));if(fs.length)addFotos(fs);else toast('Nenhuma imagem copiada')}catch(e){toast('Use Ctrl + V nesta tela')}}
+document.addEventListener('paste',e=>{if(!$('fotos').open)return;const fs=[...(e.clipboardData?.files||[])].filter(f=>f.type.startsWith('image/'));if(fs.length){e.preventDefault();addFotos(fs)}});
+async function delFoto(id){if(!confirm('Apagar este print?'))return;try{await cloud('psa_foto_excluir',{p_id:id})}catch(e){}fotos=fotos.filter(f=>f.id!==id);renderFotos()}
+function importPts(){
+  const s=$('impTxt').value, a=s.indexOf('['), b=s.lastIndexOf(']');
+  let arr;try{arr=JSON.parse(s.slice(a,b+1));if(!Array.isArray(arr)||a<0)throw 0}catch(e){$('impErr').textContent='Não reconheci o texto. Cole o bloco inteiro que o Claude mandou.';return}
+  const cats=Object.keys(CATS);let n=0,now=Date.now();
+  arr.forEach((o,i)=>{if(!o||typeof o!=='object')return;const leito=String(o.leito||'').trim(),nome=String(o.iniciais||o.nome||'').trim();if(!leito&&!nome)return;
+    const ex=(Array.isArray(o.exames)?o.exames:String(o.exames||'').split(',')).map(x=>String(x).trim()).filter(Boolean).map(x=>({n:x,s:'pend'}));
+    const cat=cats.includes(o.categoria||o.cat)?(o.categoria||o.cat):'exames';
+    pts.push({id:newId(),t:now+i,ord:now+i,wa:false,alerta:false,leito,nome,idade:String(o.idade||''),atend:String(o.atendimento||o.atend||''),cat,hd:String(o.queixa||o.hd||''),exames:ex,reav:'',esp:String(o.especialidade||o.esp||''),obs:String(o.conduta||o.obs||'')});n++});
+  if(!n){$('impErr').textContent='Nenhum paciente encontrado no texto.';return}
+  persist();render();$('impTxt').value='';$('impErr').textContent='';$('fotos').close();toast(`${n} paciente(s) criado(s) ✓`);
 }
 function setSync(cls,txt){const s=$('sync');s.className='sync '+cls;s.textContent=txt}
 const hhmm=()=>new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
