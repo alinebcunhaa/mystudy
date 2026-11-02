@@ -150,7 +150,7 @@ mark{background:#ffe7a8;color:inherit;border-radius:3px;padding:0 1px}
     <span class="shift-only" style="display:contents"><input type="date" id="s-data" onchange="saveMeta()">
     <button class="btn" onclick="openSend()" id="sendBtn">📲 Enviar pro grupo</button>
     <button class="btn ghost" onclick="openFotos()" id="fotoBtn">📷 Prints Tasy</button>
-    <button class="btn ghost" onclick="imprimir(pts,meta.data,meta.local)">🖨️ Imprimir</button>
+    <button class="btn ghost" onclick="$('prMenu').showModal()">🖨️ Imprimir</button>
     <button class="btn ghost" onclick="exportNow()">📊 Planilha</button>
     <button class="btn ghost" onclick="openHist()">📁 Histórico</button>
     <button class="btn ghost" onclick="closeShift()">Encerrar plantão</button></span>
@@ -2701,6 +2701,7 @@ function save(){
   const data={alerta:false,leito,nome,idade:$('f-idade').value.trim(),atend:$('f-atend').value.trim(),cat,
     hd:$('f-hd').value.trim(),exames,reav:$('f-reav').value,esp:$('f-esp').value.trim(),obs:$('f-obs').value.trim()};
   if(prev&&prev.cat!==data.cat)data.ord=Date.now();
+  if(data.cat==='alerta'||prev?.cat==='alerta'||prev?.wasAl)data.wasAl=true;
   if(prev)Object.assign(prev,data);
   else pts.push({id:Date.now().toString(36),t:Date.now(),wa:false,...data});
   persist();resetForm();render();toast(prev?'Atualizado':'Paciente adicionado');
@@ -2723,7 +2724,7 @@ function edit(id){
   $('formTitle').textContent='Editando '+(p.leito||p.nome);$('saveBtn').textContent='Salvar';$('cancelBtn').style.display='block';
   const d=$('editDlg');if(!d.open){d.appendChild($('formPanel'));d.showModal()}
 }
-function setCat(id,cat){const p=pts.find(x=>x.id===id);if(p.cat!==cat)p.ord=Date.now();p.cat=cat;p.alerta=false;if(cat!=='internar')p.wa=false;persist();render()}
+function setCat(id,cat){const p=pts.find(x=>x.id===id);if(p.cat==='alerta'||cat==='alerta')p.wasAl=true;if(p.cat!==cat)p.ord=Date.now();p.cat=cat;p.alerta=false;if(cat!=='internar')p.wa=false;persist();render()}
 function cycleEx(id,i){const e=pts.find(x=>x.id===id).exames[i];e.s=e.s==='pend'?'ok':e.s==='ok'?'alt':'pend';persist();render()}
 function del(id){if(confirm('Excluir este paciente de vez?')){pts=pts.filter(x=>x.id!==id);persist();render()}}
 function toggleAlert(id){const p=pts.find(x=>x.id===id);p.alerta=!p.alerta;if(!p.alerta&&p.cat!=='internar')p.wa=false;persist();render()}
@@ -3087,13 +3088,14 @@ function xlsx(sheets){
   ]);
 }
 const exTxt=p=>(p.exames||[]).map(e=>e.n+(e.s==='pend'?' (pend.)':e.s==='alt'?' (alterado)':' ✓')).join(', ');
-function imprimir(list,data,local){
-  if(!list.length){toast('Nenhum paciente');return}
+const everAl=p=>p.cat==='alerta'||!!p.alerta||!!p.wasAl||!!p.wa;
+function imprimir(list,data,local,titulo){
+  if(!list.length){toast(titulo?'Nenhum alerta neste plantão':'Nenhum paciente');return}
   const hm=ts=>ts?new Date(ts).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}):'';
   const order=['priorizado','internar','alerta','remedicar','reaval','exames','obs'];
   const groups=[...order.map(c=>[CATS[c].t,list.filter(p=>!p.done&&p.cat===c).sort((a,b)=>(b.ord||b.t||0)-(a.ord||a.t||0))]),['✓ Salvos / feitos',list.filter(p=>p.done&&!p.alta)],['🏠 Altas',list.filter(p=>p.alta)]].filter(g=>g[1].length);
   const rows=groups.map(g=>`<tr class="grp"><td colspan="8">${esc(g[0])} (${g[1].length})</td></tr>`+g[1].map(p=>`<tr><td><b>${esc(p.leito)}</b><br>${esc(p.nome)}</td><td>${esc(p.idade)}</td><td>${esc(p.hd)}</td><td>${esc(exTxt(p))}</td><td>${esc(p.obs)}</td><td>${esc(p.esp)}</td><td>${hm(p.t)}</td><td>${hm(p.done)}</td></tr>`).join('')).join('');
-  $('printArea').innerHTML=`<div class="pr-head"><b>Plantão ${fmtData(data)} · ${esc(local)}</b><span>${list.length} pacientes</span></div>
+  $('printArea').innerHTML=`<div class="pr-head"><b>${titulo?esc(titulo)+' · ':''}Plantão ${fmtData(data)} · ${esc(local)}</b><span>${list.length} pacientes</span></div>
   <table class="pr"><colgroup><col style="width:11%"><col style="width:5%"><col style="width:20%"><col style="width:16%"><col style="width:26%"><col style="width:10%"><col style="width:6%"><col style="width:6%"></colgroup>
   <thead><tr><th>Leito / Iniciais</th><th>Idade</th><th>Queixa / HD</th><th>Exames</th><th>Resultados / conduta</th><th>Especialidade</th><th>Entrada</th><th>Saída</th></tr></thead><tbody>${rows}</tbody></table>`;
   setTimeout(()=>window.print(),100);
@@ -3217,6 +3219,12 @@ setInterval(render,60000); // atualiza alertas de reavaliação
     <div id="recList" class="folders"></div>
   </div>
 </dialog>
+<dialog id="prMenu"><div class="dlg" style="min-width:280px">
+  <h2 style="font-size:18px;margin-bottom:10px">🖨️ Imprimir</h2>
+  <button class="btn full" onclick="$('prMenu').close();imprimir(pts,meta.data,meta.local)">Todos os pacientes</button>
+  <button class="btn full" style="background:#ffe7a8;color:#7a4b00" onclick="$('prMenu').close();imprimir(pts.filter(everAl),meta.data,meta.local,'⚠️ Alertas')">⚠️ Só os alertas</button>
+  <button class="btn ghost full" onclick="$('prMenu').close()">Cancelar</button>
+</div></dialog>
 <dialog id="editDlg" onclose="if(editing)resetForm()"></dialog>
 <div id="printArea"></div>
 </body>
