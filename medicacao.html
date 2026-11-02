@@ -286,6 +286,7 @@ mark{background:#ffe7a8;color:inherit;border-radius:3px;padding:0 1px}
       </select></div>
     <div class="folders" id="folders"></div>
     <div class="row">
+      <button class="btn" onclick="openRec()">🛟 Recuperar pacientes</button>
       <button class="btn sage" onclick="exportAll()">⬇ Baixar backup (.json)</button>
       <button class="btn ghost" onclick="$('imp').click()">⬆ Importar backup</button>
       <input type="file" id="imp" accept=".json" style="display:none" onchange="importAll(this)">
@@ -2677,7 +2678,10 @@ function mergePts(remote){
   [...pts.map(p=>p.id),...rl.map(p=>p.id)].forEach(id=>{if(seen.has(id))return;seen.add(id);
     const p=pick(pts.find(x=>x.id===id),R.get(id));if(tb.m[id]&&tb.m[id]>=(p.u||0))return;out.push(p)});
   setJ(KEY+'_tomb',tb);return out}
-function persist(){if(viewing)return;stamp();ver++;try{localStorage.setItem(KEY,JSON.stringify(pts))}catch(e){}meta.upd=Date.now();setJ(MK,meta);dirty=true;schedulePush()}
+function snap(why){try{const S=getJ(KEY+'_snap',[]);if(!pts.length)return;const last=S[0];
+  if(last&&why==='auto'&&Date.now()-last.t<3*60e3&&last.n>=pts.length)return;
+  S.unshift({t:Date.now(),n:pts.length,why,local:meta.local,data:meta.data,pts:JSON.parse(JSON.stringify(pts))});localStorage.setItem(KEY+'_snap',JSON.stringify(S.slice(0,25)))}catch(e){}}
+function persist(){if(viewing)return;snap('auto');stamp();ver++;try{localStorage.setItem(KEY,JSON.stringify(pts))}catch(e){}meta.upd=Date.now();setJ(MK,meta);dirty=true;schedulePush()}
 function $(id){return document.getElementById(id)}
 const esc=s=>String(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
@@ -2879,7 +2883,7 @@ async function pull(){
   const open=rows.filter(r=>!r.fechado&&r.id!==CASE_ID).sort((a,b)=>b.atualizado-a.atualizado)[0];
   const mineClosed=rows.some(r=>r.fechado&&r.id===meta.id&&r.id!==CASE_ID);
   if(open&&(+open.atualizado>meta.upd||mineClosed)){
-    if(open.id===meta.id)pts=mergePts(open.pts);else{meta.id=open.id;const rt=(open.pts||[]).find(x=>x&&x.id===TOMB);setJ(KEY+'_tomb',{sid:open.id,m:rt?.m||{}});pts=(open.pts||[]).filter(x=>x&&x.id!==TOMB)}
+    if(open.id===meta.id)pts=mergePts(open.pts);else{snap('troca de plantão');const mine=pts;meta.id=open.id;const rt=(open.pts||[]).find(x=>x&&x.id===TOMB);setJ(KEY+'_tomb',{sid:open.id,m:rt?.m||{}});pts=(open.pts||[]).filter(x=>x&&x.id!==TOMB);const have=new Set(pts.map(p=>p.id));const extra=mine.filter(p=>!have.has(p.id));if(extra.length){pts.push(...extra);setTimeout(()=>persist(),50)}}
     meta.data=open.data;meta.local=open.local;meta.upd=+open.atualizado;setBase();
     try{localStorage.setItem(KEY,JSON.stringify(pts))}catch(e){}setJ(MK,meta);
     syncSel();$('s-data').value=meta.data;render();
@@ -2888,6 +2892,22 @@ async function pull(){
   purge();if($('hist').open)renderHist();
   setSync('','☁️ sincronizado '+hhmm());
 }
+let recSrc=[];
+async function openRec(){$('hist').close();$('rec').showModal();$('recList').innerHTML='<div class="empty">Carregando…</div>';
+  recSrc=[];
+  if(PIN){try{(await cloud('psa_listar',{})||[]).filter(r=>r.id!==CASE_ID).forEach(r=>{const l=(r.pts||[]).filter(x=>x&&x.id!==TOMB);recSrc.push({k:'☁️ Nuvem',tit:`${fmtData(r.data)} · ${shortLocal(r.local)}`,st:r.id===meta.id?'plantão atual':r.fechado?'encerrado':'aberto em outro aparelho',t:+r.atualizado,pts:l})})}catch(e){}}
+  getJ(KEY+'_snap',[]).forEach(s=>recSrc.push({k:'💾 Este aparelho',tit:`${fmtData(s.data||meta.data)} · ${shortLocal(s.local||'')}`,st:'cópia automática',t:s.t,pts:s.pts}));
+  recSrc.sort((a,b)=>b.t-a.t);
+  const curIds=new Set(pts.map(p=>p.id)),curAt=new Set(pts.map(p=>String(p.atend||'').replace(/\D/g,'')).filter(Boolean));
+  const miss=s=>s.pts.filter(p=>!curIds.has(p.id)&&!(p.atend&&curAt.has(String(p.atend).replace(/\D/g,''))));
+  $('recList').innerHTML=recSrc.length?recSrc.map((s,i)=>{const m=miss(s);return `<div class="folder"><div class="folder-top"><b>${s.k} · ${esc(s.tit)}</b><span class="pt-meta">${new Date(s.t).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</span></div>
+    <div class="pt-meta">${esc(s.st)} · ${s.pts.length} pacientes · <b>${m.length} faltando no plantão atual</b></div>
+    ${m.length?`<details><summary>Ver quem falta</summary><pre>${esc(m.map(p=>[p.leito,p.nome,p.idade&&p.idade+'a',p.hd,p.wa?'✓ enviado no grupo':''].filter(Boolean).join(' · ')).join('\n'))}</pre></details><div class="pt-actions"><button class="btn small" onclick="recBring(${i})">Trazer ${m.length} paciente(s)</button></div>`:''}</div>`}).join(''):'<div class="empty">Nada encontrado.</div>';
+}
+function recBring(i){const s=recSrc[i];const ids=new Set(pts.map(p=>p.id)),at=new Set(pts.map(p=>String(p.atend||'').replace(/\D/g,'')).filter(Boolean));
+  const add=s.pts.filter(p=>!ids.has(p.id)&&!(p.atend&&at.has(String(p.atend).replace(/\D/g,'')))).map(p=>({...p,u:Date.now()}));
+  const tb=tombs();add.forEach(p=>delete tb.m[p.id]);setJ(KEY+'_tomb',tb);
+  pts.push(...add);persist();render();toast(`${add.length} paciente(s) recuperado(s) ✓`);openRec()}
 function openLock(msg){$('pinErr').textContent=msg||'';$('pin').value='';$('logoutBtn').style.display=PIN?'block':'none';if(!$('lock').open)$('lock').showModal();setTimeout(()=>$('pin').focus(),50)}
 async function tryPin(){
   const p=$('pin').value.trim();if(!p){$('pinErr').textContent='Digite o PIN';return}
@@ -3190,6 +3210,13 @@ render();
 if(PIN){setSync('off','☁️ conectando…');pull()}else if(SB_URL)openLock();
 setInterval(render,60000); // atualiza alertas de reavaliação
 </script>
+<dialog id="rec">
+  <div class="dlg">
+    <div class="pt-top"><h2 style="font-size:18px">🛟 Recuperar pacientes</h2><button class="btn small ghost" onclick="$('rec').close()">Fechar</button></div>
+    <p class="hint" style="font-size:14px">Tudo o que está guardado na nuvem e neste aparelho. Clique em <b>Trazer</b> para copiar para o plantão atual só os pacientes que estão faltando (nada é apagado).</p>
+    <div id="recList" class="folders"></div>
+  </div>
+</dialog>
 <dialog id="editDlg" onclose="if(editing)resetForm()"></dialog>
 <div id="printArea"></div>
 </body>
