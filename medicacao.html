@@ -127,6 +127,8 @@ input[type=date]{padding:8px 10px;border:1px solid var(--line);border-radius:8px
 .fitem img{width:100%;height:110px;object-fit:cover;object-position:top left;display:block;cursor:zoom-in}
 .fitem .fbar{display:flex;justify-content:space-between;align-items:center;font-size:11px;padding:3px 6px;color:var(--muted)}
 .fitem .fbar a,.fitem .fbar button{font-size:12px;border:0;background:none;cursor:pointer;color:var(--on);text-decoration:none}
+.chip[data-cat=reaval].on{background:var(--lilac);color:var(--on)}
+.pt.reaval{border-left-color:var(--lilac)}
 .toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--on);color:#fff;padding:9px 16px;border-radius:99px;font-size:14px;opacity:0;transition:.25s;pointer-events:none;z-index:99}
 .toast.show{opacity:1}
 </style>
@@ -167,6 +169,7 @@ input[type=date]{padding:8px 10px;border:1px solid var(--line);border-radius:8px
       <button class="chip" data-cat="internar">Internar</button>
       <button class="chip" data-cat="alerta">⚠️ Alerta</button>
       <button class="chip" data-cat="remedicar">Remedicar</button>
+      <button class="chip" data-cat="reaval">Reavaliação</button>
       <button class="chip" data-cat="priorizado">Priorizado</button>
       <button class="chip on" data-cat="exames">Aguarda exames</button>
       <button class="chip" data-cat="obs">Observação</button>
@@ -2627,6 +2630,7 @@ const CATS={
   internar:{t:'Internar',c:'var(--terra)'},
   alerta:{t:'⚠️ Alerta',c:'#ffe7a8'},
   remedicar:{t:'Remedicação',c:'var(--amber)'},
+  reaval:{t:'Reavaliação',c:'var(--lilac)'},
   exames:{t:'Aguardando exames',c:'var(--blue)'},
   obs:{t:'Observação',c:'var(--sage)'}
 };
@@ -2711,7 +2715,7 @@ function closeShift(){
 }
 function openHist(){$('h-ret').value=String(ret);renderHist();$('hist').showModal()}
 function setRet(v){ret=+v;setJ(RK,ret);purge();renderHist()}
-function summary(list){return ['priorizado','internar','alerta','remedicar','exames','obs'].map(c=>{const n=list.filter(p=>p.cat===c).length;return n?`${CATS[c].t.split(' ')[0]} ${n}`:''}).filter(Boolean).join(' · ')}
+function summary(list){return ['priorizado','internar','alerta','remedicar','reaval','exames','obs'].map(c=>{const n=list.filter(p=>p.cat===c).length;return n?`${CATS[c].t.split(' ')[0]} ${n}`:''}).filter(Boolean).join(' · ')}
 function renderHist(){
   if(!hist.length){$('folders').innerHTML='<div class="empty">Nenhum plantão salvo ainda. Use “Encerrar plantão” no fim do turno.</div>';return}
   let lastM='';
@@ -2750,7 +2754,7 @@ function download(name,content,type){const a=document.createElement('a');a.href=
 const slug=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,'-');
 function dlTxt(id){
   const h=hist.find(x=>x.id===id);
-  const txt=`PLANTÃO ${fmtData(h.data)} · ${h.local}\n${summary(h.pts)}\n`+['priorizado','internar','alerta','remedicar','exames','obs'].filter(c=>h.pts.some(p=>p.cat===c)).map(c=>
+  const txt=`PLANTÃO ${fmtData(h.data)} · ${h.local}\n${summary(h.pts)}\n`+['priorizado','internar','alerta','remedicar','reaval','exames','obs'].filter(c=>h.pts.some(p=>p.cat===c)).map(c=>
     `\n== ${CATS[c].t.toUpperCase()} ==\n`+h.pts.filter(p=>p.cat===c).map(p=>`- ${[p.leito,p.nome].filter(Boolean).join(' – ')}${p.idade?', '+p.idade+'a':''}${p.hd?' | '+p.hd:''}${p.exames.length?'\n  Exames: '+p.exames.map(e=>e.n+(e.s==='pend'?' (pendente)':e.s==='alt'?' (alterado)':'')).join(', '):''}${p.obs?'\n  '+p.obs:''}${p.esp?'\n  → '+p.esp:''}`).join('\n')).join('\n');
   download(`plantao_${h.data}_${slug(h.local)}.txt`,txt,'text/plain;charset=utf-8');
 }
@@ -2803,7 +2807,8 @@ function importPts(){
   const cats=Object.keys(CATS);let n=0,now=Date.now();
   arr.forEach((o,i)=>{if(!o||typeof o!=='object')return;const leito=String(o.leito||'').trim(),nome=String(o.iniciais||o.nome||'').trim();if(!leito&&!nome)return;
     const ex=(Array.isArray(o.exames)?o.exames:String(o.exames||'').split(',')).map(x=>String(x).trim()).filter(Boolean).map(x=>({n:x,s:'pend'}));
-    const cat=cats.includes(o.categoria||o.cat)?(o.categoria||o.cat):'exames';
+    let cat0=String(o.categoria||o.cat||'').toLowerCase();if(/reav/.test(cat0))cat0='reaval';
+    const cat=cats.includes(cat0)?cat0:'exames';
     pts.push({id:newId(),t:now+i,ord:now+i,wa:false,alerta:false,leito,nome,idade:String(o.idade||''),atend:String(o.atendimento||o.atend||''),cat,hd:String(o.queixa||o.hd||''),exames:ex,reav:'',esp:String(o.especialidade||o.esp||''),obs:String(o.conduta||o.obs||'')});n++});
   if(!n){$('impErr').textContent='Nenhum paciente encontrado no texto.';return}
   persist();render();$('impTxt').value='';$('impErr').textContent='';$('fotos').close();toast(`${n} paciente(s) criado(s) ✓`);
@@ -2959,7 +2964,7 @@ function casosXlsx(){const L=casos.filter(c=>!c.del);if(!L.length){toast('Nenhum
 function isLate(p){if(!p.reav)return false;const[h,m]=p.reav.split(':').map(Number);const n=new Date();return n.getHours()*60+n.getMinutes()>=h*60+m}
 
 function render(){
-  const order=['priorizado','internar','alerta','remedicar','exames','obs'];
+  const order=['priorizado','internar','alerta','remedicar','reaval','exames','obs'];
   const L=pts.filter(p=>!p.done), D=pts.filter(p=>p.done&&!p.alta).sort((a,b)=>b.done-a.done), A=pts.filter(p=>p.alta).sort((a,b)=>b.done-a.done);
   $('stats').innerHTML=order.map(c=>{const n=L.filter(p=>p.cat===c).length;
     return `<span class="stat" style="background:${CATS[c].c};color:var(--on)">${CATS[c].t.split(' ')[0]} ${n}</span>`}).join('');
@@ -3009,7 +3014,7 @@ const exTxt=p=>(p.exames||[]).map(e=>e.n+(e.s==='pend'?' (pend.)':e.s==='alt'?' 
 function imprimir(list,data,local){
   if(!list.length){toast('Nenhum paciente');return}
   const hm=ts=>ts?new Date(ts).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}):'';
-  const order=['priorizado','internar','alerta','remedicar','exames','obs'];
+  const order=['priorizado','internar','alerta','remedicar','reaval','exames','obs'];
   const groups=[...order.map(c=>[CATS[c].t,list.filter(p=>!p.done&&p.cat===c).sort((a,b)=>(b.ord||b.t||0)-(a.ord||a.t||0))]),['✓ Salvos / feitos',list.filter(p=>p.done&&!p.alta)],['🏠 Altas',list.filter(p=>p.alta)]].filter(g=>g[1].length);
   const rows=groups.map(g=>`<tr class="grp"><td colspan="8">${esc(g[0])} (${g[1].length})</td></tr>`+g[1].map(p=>`<tr><td><b>${esc(p.leito)}</b><br>${esc(p.nome)}</td><td>${esc(p.idade)}</td><td>${esc(p.hd)}</td><td>${esc(exTxt(p))}</td><td>${esc(p.obs)}</td><td>${esc(p.esp)}</td><td>${hm(p.t)}</td><td>${hm(p.done)}</td></tr>`).join('')).join('');
   $('printArea').innerHTML=`<div class="pr-head"><b>Plantão ${fmtData(data)} · ${esc(local)}</b><span>${list.length} pacientes</span></div>
@@ -3025,7 +3030,7 @@ function planilha(list,data,local){
   const st=p=>p.alta?'Alta':p.done?'Salvo/feito':'Na lista';
   const head=['Leito','Iniciais','Idade','Categoria','Situação','Queixa / HD','Exames','Resultados / conduta','Especialidade','Entrada','Saída'];
   const row=p=>[p.leito,p.nome,p.idade,CATS[p.cat]?.t.replace('⚠️ ','')||p.cat,st(p),p.hd,exTxt(p),p.obs,p.esp,hm(p.t),hm(p.done)];
-  const order=['priorizado','internar','alerta','remedicar','exames','obs'];
+  const order=['priorizado','internar','alerta','remedicar','reaval','exames','obs'];
   const all=list.slice().sort((a,b)=>order.indexOf(a.cat)-order.indexOf(b.cat));
   const sheets=[['Plantão',[head,...all.map(row)]],
     ['Internações',[head,...all.filter(p=>p.cat==='internar'||isAl(p)).map(row)]],
@@ -3075,7 +3080,7 @@ function buildMsg(){
     if(A.length)parts.push(`⚠️ *REAVALIAÇÃO*\n\n`+A.map(lines).join('\n\n'));
     return parts.join('\n\n');
   }
-  const order=['priorizado','internar','alerta','remedicar','exames','obs'];
+  const order=['priorizado','internar','alerta','remedicar','reaval','exames','obs'];
   return order.filter(c=>pts.some(p=>!p.done&&p.cat===c)).map(c=>
     `\n*${CATS[c].t.toUpperCase()}*\n`+pts.filter(p=>!p.done&&p.cat===c).map(lines).join('\n')).join('\n');
 }
