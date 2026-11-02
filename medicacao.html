@@ -2661,7 +2661,23 @@ function purge(){if(!+ret)return;const lim=Date.now()-ret*864e5;
 purge();
 
 function load(){try{return JSON.parse(localStorage.getItem(KEY))||[]}catch(e){return[]}}
-function persist(){if(viewing)return;try{localStorage.setItem(KEY,JSON.stringify(pts))}catch(e){}meta.upd=Date.now();setJ(MK,meta);dirty=true;schedulePush()}
+// ---- sincronização por paciente (junta mudanças de 2 aparelhos) ----
+const TOMB='__tomb';let base={},ver=0;
+const pSig=p=>{const {u,...o}=p;return JSON.stringify(o)};
+function setBase(){base={};pts.forEach(p=>base[p.id]=pSig(p))}
+function tombs(){let tb=getJ(KEY+'_tomb',null);if(!tb||tb.sid!==meta.id)tb={sid:meta.id,m:{}};return tb}
+function stamp(){const now=Date.now(),ids=new Set(),tb=tombs();
+  pts.forEach(p=>{ids.add(p.id);if(base[p.id]!==pSig(p))p.u=now});
+  Object.keys(base).forEach(id=>{if(!ids.has(id))tb.m[id]=now});setJ(KEY+'_tomb',tb)}
+function mergePts(remote){
+  const tb=tombs(),rt=(remote||[]).find(x=>x&&x.id===TOMB),rl=(remote||[]).filter(x=>x&&x.id!==TOMB);
+  if(rt&&rt.m)for(const [k,v] of Object.entries(rt.m))tb.m[k]=Math.max(tb.m[k]||0,v);
+  const R=new Map(rl.map(p=>[p.id,p])),out=[],seen=new Set();
+  const pick=(l,r)=>!r?l:!l?r:((l.u||0)>=(r.u||0)?l:r);
+  [...pts.map(p=>p.id),...rl.map(p=>p.id)].forEach(id=>{if(seen.has(id))return;seen.add(id);
+    const p=pick(pts.find(x=>x.id===id),R.get(id));if(tb.m[id]&&tb.m[id]>=(p.u||0))return;out.push(p)});
+  setJ(KEY+'_tomb',tb);return out}
+function persist(){if(viewing)return;stamp();ver++;try{localStorage.setItem(KEY,JSON.stringify(pts))}catch(e){}meta.upd=Date.now();setJ(MK,meta);dirty=true;schedulePush()}
 function $(id){return document.getElementById(id)}
 const esc=s=>String(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
@@ -2845,8 +2861,12 @@ function pushRow(h,closed){if(!PIN)return Promise.resolve();
   return cloud('psa_salvar',{p_id:h.id,p_data:h.data,p_local:h.local,p_pts:h.pts,p_fechado:closed,p_atualizado:closed?h.fechado:meta.upd}).catch(()=>{setSync('err','⚠ sem conexão – salvo local')})}
 function schedulePush(){if(!PIN)return;clearTimeout(pushT);setSync('off','☁️ salvando…');pushT=setTimeout(pushNow,700)}
 async function pushNow(){
-  try{await cloud('psa_salvar',{p_id:meta.id,p_data:meta.data,p_local:meta.local,p_pts:pts,p_fechado:false,p_atualizado:meta.upd});
-    dirty=false;cloudOK=true;setSync('','☁️ sincronizado '+hhmm())}
+  try{const v=ver;
+    const rows=await cloud('psa_listar',{}),row=(rows||[]).find(r=>r.id===meta.id&&!r.fechado);
+    if(row){const before=JSON.stringify(pts);pts=mergePts(row.pts);if(JSON.stringify(pts)!==before){try{localStorage.setItem(KEY,JSON.stringify(pts))}catch(e){}render()}}
+    meta.upd=Math.max(Date.now(),meta.upd);setJ(MK,meta);
+    await cloud('psa_salvar',{p_id:meta.id,p_data:meta.data,p_local:meta.local,p_pts:[...pts,{id:TOMB,m:tombs().m}],p_fechado:false,p_atualizado:meta.upd});
+    setBase();if(v===ver)dirty=false;else schedulePush();cloudOK=true;setSync('','☁️ sincronizado '+hhmm())}
   catch(e){setSync('err','⚠ sem conexão – salvo local');setTimeout(()=>{if(dirty)pushNow()},20000)}
 }
 async function pull(){
@@ -2855,11 +2875,12 @@ async function pull(){
   if(dirty||viewing)return;
   cloudOK=true;
   mergeCaseRow(rows.find(r=>r.id===CASE_ID));
-  hist=rows.filter(r=>r.fechado&&r.id!==CASE_ID).map(r=>({id:r.id,data:r.data,local:r.local,fechado:+r.atualizado,pts:r.pts||[]}));setJ(HK,hist);
+  hist=rows.filter(r=>r.fechado&&r.id!==CASE_ID).map(r=>({id:r.id,data:r.data,local:r.local,fechado:+r.atualizado,pts:(r.pts||[]).filter(x=>x&&x.id!==TOMB)}));setJ(HK,hist);
   const open=rows.filter(r=>!r.fechado&&r.id!==CASE_ID).sort((a,b)=>b.atualizado-a.atualizado)[0];
   const mineClosed=rows.some(r=>r.fechado&&r.id===meta.id&&r.id!==CASE_ID);
   if(open&&(+open.atualizado>meta.upd||mineClosed)){
-    pts=open.pts||[];meta.id=open.id;meta.data=open.data;meta.local=open.local;meta.upd=+open.atualizado;
+    if(open.id===meta.id)pts=mergePts(open.pts);else{meta.id=open.id;const rt=(open.pts||[]).find(x=>x&&x.id===TOMB);setJ(KEY+'_tomb',{sid:open.id,m:rt?.m||{}});pts=(open.pts||[]).filter(x=>x&&x.id!==TOMB)}
+    meta.data=open.data;meta.local=open.local;meta.upd=+open.atualizado;setBase();
     try{localStorage.setItem(KEY,JSON.stringify(pts))}catch(e){}setJ(MK,meta);
     syncSel();$('s-data').value=meta.data;render();
   }else if(mineClosed){pts=[];meta.id=newId();persist();render()}
@@ -3164,6 +3185,7 @@ function openWA(){const m=buildMsg();if(!m)return;window.open('https://web.whats
 function markSent(){if(sendMode==='int'){toSend().forEach(p=>p.wa=true);persist();render()}}
 let toastT;function toast(t,undo){const el=$('toast');el.textContent=t;if(undo){const b=document.createElement('button');b.textContent='Desfazer';b.className='toast-undo';b.onclick=()=>{undo();el.classList.remove('show')};el.appendChild(b)}el.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('show'),undo?5000:1600)}
 
+setBase();
 render();
 if(PIN){setSync('off','☁️ conectando…');pull()}else if(SB_URL)openLock();
 setInterval(render,60000); // atualiza alertas de reavaliação
