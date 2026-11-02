@@ -2638,6 +2638,7 @@ function save(){
   const exames=chosen.map(n=>(prev&&prev.exames.find(x=>x.n===n))||{n,s:'pend'});
   const data={alerta:false,leito,nome,idade:$('f-idade').value.trim(),atend:$('f-atend').value.trim(),cat,
     hd:$('f-hd').value.trim(),exames,reav:$('f-reav').value,esp:$('f-esp').value.trim(),obs:$('f-obs').value.trim()};
+  if(prev&&prev.cat!==data.cat)data.ord=Date.now();
   if(prev)Object.assign(prev,data);
   else pts.push({id:Date.now().toString(36),t:Date.now(),wa:false,...data});
   persist();resetForm();render();toast(prev?'Atualizado':'Paciente adicionado');
@@ -2659,7 +2660,7 @@ function edit(id){
   $('formTitle').textContent='Editando '+(p.leito||p.nome);$('saveBtn').textContent='Salvar';$('cancelBtn').style.display='block';
   window.scrollTo({top:0,behavior:'smooth'});
 }
-function setCat(id,cat){const p=pts.find(x=>x.id===id);p.cat=cat;p.alerta=false;if(cat!=='internar')p.wa=false;persist();render()}
+function setCat(id,cat){const p=pts.find(x=>x.id===id);if(p.cat!==cat)p.ord=Date.now();p.cat=cat;p.alerta=false;if(cat!=='internar')p.wa=false;persist();render()}
 function cycleEx(id,i){const e=pts.find(x=>x.id===id).exames[i];e.s=e.s==='pend'?'ok':e.s==='ok'?'alt':'pend';persist();render()}
 function del(id){if(confirm('Excluir este paciente de vez?')){pts=pts.filter(x=>x.id!==id);persist();render()}}
 function toggleAlert(id){const p=pts.find(x=>x.id===id);p.alerta=!p.alerta;if(!p.alerta&&p.cat!=='internar')p.wa=false;persist();render()}
@@ -2894,7 +2895,7 @@ function render(){
   $('stats').innerHTML=order.map(c=>{const n=L.filter(p=>p.cat===c).length;
     return `<span class="stat" style="background:${CATS[c].c};color:var(--on)">${CATS[c].t.split(' ')[0]} ${n}</span>`}).join('');
   $('board').innerHTML=order.map(c=>{
-    const list=L.filter(p=>p.cat===c).sort((a,b)=>(b.t||0)-(a.t||0));
+    const list=L.filter(p=>p.cat===c).sort((a,b)=>(b.ord||b.t||0)-(a.ord||a.t||0));
     return `<div class="col"><h3><span class="dot" style="background:${CATS[c].c}"></span>${CATS[c].t} (${list.length})</h3>
       ${list.length?list.map(card).join(''):'<div class="empty">Nenhum</div>'}</div>`}).join('')
     +box('done','✓ Salvos / feitos',D)+box('alta','🏠 Altas',A);
@@ -2908,7 +2909,7 @@ function box(k,title,list){
 function done(id){const p=pts.find(x=>x.id===id);p.done=Date.now();delete p.alta;persist();render();toast('✓ Salvo')}
 function alta(id){const p=pts.find(x=>x.id===id);p.done=Date.now();p.alta=true;persist();render();toast('🏠 Alta')}
 function undone(id){backTo(id)}
-function backTo(id,cat){const p=pts.find(x=>x.id===id);delete p.done;delete p.alta;if(cat){p.cat=cat;p.alerta=false}persist();render();toast(cat==='internar'?'Voltou para Internar':'Voltou para a lista')}
+function backTo(id,cat){const p=pts.find(x=>x.id===id);p.ord=Date.now();delete p.done;delete p.alta;if(cat){p.cat=cat;p.alerta=false}persist();render();toast(cat==='internar'?'Voltou para Internar':'Voltou para a lista')}
 
 // ---------- planilha .xlsx (sem biblioteca) ----------
 const CRC=(()=>{const T=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;T[n]=c>>>0}return b=>{let c=~0;for(let i=0;i<b.length;i++)c=T[(c^b[i])&255]^(c>>>8);return (~c)>>>0}})();
@@ -2940,7 +2941,7 @@ function imprimir(list,data,local){
   if(!list.length){toast('Nenhum paciente');return}
   const hm=ts=>ts?new Date(ts).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}):'';
   const order=['priorizado','internar','alerta','remedicar','exames','obs'];
-  const groups=[...order.map(c=>[CATS[c].t,list.filter(p=>!p.done&&p.cat===c).sort((a,b)=>(b.t||0)-(a.t||0))]),['✓ Salvos / feitos',list.filter(p=>p.done&&!p.alta)],['🏠 Altas',list.filter(p=>p.alta)]].filter(g=>g[1].length);
+  const groups=[...order.map(c=>[CATS[c].t,list.filter(p=>!p.done&&p.cat===c).sort((a,b)=>(b.ord||b.t||0)-(a.ord||a.t||0))]),['✓ Salvos / feitos',list.filter(p=>p.done&&!p.alta)],['🏠 Altas',list.filter(p=>p.alta)]].filter(g=>g[1].length);
   const rows=groups.map(g=>`<tr class="grp"><td colspan="8">${esc(g[0])} (${g[1].length})</td></tr>`+g[1].map(p=>`<tr><td><b>${esc(p.leito)}</b><br>${esc(p.nome)}</td><td>${esc(p.idade)}</td><td>${esc(p.hd)}</td><td>${esc(exTxt(p))}</td><td>${esc(p.obs)}</td><td>${esc(p.esp)}</td><td>${hm(p.t)}</td><td>${hm(p.done)}</td></tr>`).join('')).join('');
   $('printArea').innerHTML=`<div class="pr-head"><b>Plantão ${fmtData(data)} · ${esc(local)}</b><span>${list.length} pacientes</span></div>
   <table class="pr"><colgroup><col style="width:11%"><col style="width:5%"><col style="width:20%"><col style="width:16%"><col style="width:26%"><col style="width:10%"><col style="width:6%"><col style="width:6%"></colgroup>
