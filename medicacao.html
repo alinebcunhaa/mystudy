@@ -138,6 +138,7 @@ mark{background:#ffe7a8;color:inherit;border-radius:3px;padding:0 1px}
 .pt.medic{border-left-color:#f2b5cb}
 .sala{display:inline-flex;gap:4px;margin:4px 0}.sala button{border:1px solid var(--line);background:#fff;border-radius:6px;padding:2px 10px;font:inherit;font-size:13px;font-weight:700;cursor:pointer;color:var(--on)}
 .sala button.on{background:var(--sage);border-color:var(--sage);color:#1f4a2c}
+.medin{width:100%;margin:6px 0 2px;padding:7px 10px;border:1.5px solid var(--amber);border-radius:8px;background:#fffbef;font:inherit;font-size:14px}
 .toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--on);color:#fff;padding:9px 16px;border-radius:99px;font-size:14px;opacity:0;transition:.25s;pointer-events:none;z-index:99}
 .toast.show{opacity:1}
 </style>
@@ -2731,7 +2732,7 @@ function edit(id){
   const d=$('editDlg');if(!d.open){d.appendChild($('formPanel'));d.showModal()}
 }
 function setSala(id,s){const p=pts.find(x=>x.id===id);p.sala=p.sala===s?'':s;persist();render()}
-function setCat(id,cat){const p=pts.find(x=>x.id===id);if(p.cat==='alerta'||cat==='alerta')p.wasAl=true;if(p.cat!==cat)p.ord=Date.now();p.cat=cat;p.alerta=false;if(cat!=='internar')p.wa=false;persist();render()}
+function setCat(id,cat){setTimeout(()=>{if(cat==='remedicar'){const el=document.querySelector(`.medin[data-id="${id}"]`);if(el&&!el.value)el.focus()}},50);const p=pts.find(x=>x.id===id);if(p.cat==='alerta'||cat==='alerta')p.wasAl=true;if(p.cat!==cat)p.ord=Date.now();p.cat=cat;p.alerta=false;if(cat!=='internar')p.wa=false;persist();render()}
 function cycleEx(id,i){const e=pts.find(x=>x.id===id).exames[i];e.s=e.s==='pend'?'ok':e.s==='ok'?'alt':'pend';persist();render()}
 function del(id){if(confirm('Excluir este paciente de vez?')){pts=pts.filter(x=>x.id!==id);persist();render()}}
 function toggleAlert(id){const p=pts.find(x=>x.id===id);p.alerta=!p.alerta;if(!p.alerta&&p.cat!=='internar')p.wa=false;persist();render()}
@@ -3038,7 +3039,12 @@ function casosXlsx(){const L=casos.filter(c=>!c.del);if(!L.length){toast('Nenhum
 
 function isLate(p){if(!p.reav)return false;const[h,m]=p.reav.split(':').map(Number);const n=new Date();return n.getHours()*60+n.getMinutes()>=h*60+m}
 
-function render(){
+const condTxt=p=>[p.med?'💊 Remedicar: '+p.med:'',p.obs].filter(Boolean).join('\n');
+function setMed(id,v){const p=pts.find(x=>x.id===id);if(!p||(p.med||'')===v.trim())return;p.med=v.trim();persist();toast('💊 Medicação salva')}
+function render(){const ae=document.activeElement,keep=ae&&ae.classList&&ae.classList.contains('medin')?{id:ae.dataset.id,v:ae.value,s:ae.selectionStart}:null;
+  _render();
+  if(keep){const el=document.querySelector(`.medin[data-id="${keep.id}"]`);if(el){el.value=keep.v;el.focus();try{el.setSelectionRange(keep.s,keep.s)}catch(e){}}}}
+function _render(){
   const order=['priorizado','internar','alerta','remedicar','reaval','exames','medic','obs'];
   const q=($('busca')?.value||'').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
   const norm=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
@@ -3101,7 +3107,7 @@ function imprimir(list,data,local,titulo){
   const hm=ts=>ts?new Date(ts).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}):'';
   const order=['priorizado','internar','alerta','remedicar','reaval','exames','medic','obs'];
   const groups=[...order.map(c=>[CATS[c].t,list.filter(p=>!p.done&&p.cat===c).sort((a,b)=>(b.ord||b.t||0)-(a.ord||a.t||0))]),['✓ Salvos / feitos',list.filter(p=>p.done&&!p.alta)],['🏠 Altas',list.filter(p=>p.alta)]].filter(g=>g[1].length);
-  const rows=groups.map(g=>`<tr class="grp"><td colspan="8">${esc(g[0])} (${g[1].length})</td></tr>`+g[1].map(p=>`<tr><td><b>${esc(p.leito)}</b><br>${esc(p.nome)}${p.cat==='obs'&&p.sala?' · '+p.sala:''}</td><td>${esc(p.idade)}</td><td>${esc(p.hd)}</td><td>${esc(exTxt(p))}</td><td>${esc(p.obs)}</td><td>${esc(p.esp)}</td><td>${hm(p.t)}</td><td>${hm(p.done)}</td></tr>`).join('')).join('');
+  const rows=groups.map(g=>`<tr class="grp"><td colspan="8">${esc(g[0])} (${g[1].length})</td></tr>`+g[1].map(p=>`<tr><td><b>${esc(p.leito)}</b><br>${esc(p.nome)}${p.cat==='obs'&&p.sala?' · '+p.sala:''}</td><td>${esc(p.idade)}</td><td>${esc(p.hd)}</td><td>${esc(exTxt(p))}</td><td>${esc(condTxt(p))}</td><td>${esc(p.esp)}</td><td>${hm(p.t)}</td><td>${hm(p.done)}</td></tr>`).join('')).join('');
   $('printArea').innerHTML=`<div class="pr-head"><b>${titulo?esc(titulo)+' · ':''}Plantão ${fmtData(data)} · ${esc(local)}</b><span>${list.length} pacientes</span></div>
   <table class="pr"><colgroup><col style="width:11%"><col style="width:5%"><col style="width:20%"><col style="width:16%"><col style="width:26%"><col style="width:10%"><col style="width:6%"><col style="width:6%"></colgroup>
   <thead><tr><th>Leito / Iniciais</th><th>Idade</th><th>Queixa / HD</th><th>Exames</th><th>Resultados / conduta</th><th>Especialidade</th><th>Entrada</th><th>Saída</th></tr></thead><tbody>${rows}</tbody></table>`;
@@ -3114,7 +3120,7 @@ function planilha(list,data,local){
   const hm=ts=>ts?new Date(ts).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}):'';
   const st=p=>p.alta?'Alta':p.done?'Salvo/feito':'Na lista';
   const head=['Leito','Iniciais','Idade','Categoria','Situação','Queixa / HD','Exames','Resultados / conduta','Especialidade','Entrada','Saída'];
-  const row=p=>[p.leito,p.nome,p.idade,CATS[p.cat]?.t.replace('⚠️ ','')||p.cat,st(p),p.hd,exTxt(p),p.obs,p.esp,hm(p.t),hm(p.done)];
+  const row=p=>[p.leito,p.nome,p.idade,CATS[p.cat]?.t.replace('⚠️ ','')||p.cat,st(p),p.hd,exTxt(p),condTxt(p),p.esp,hm(p.t),hm(p.done)];
   const order=['priorizado','internar','alerta','remedicar','reaval','exames','medic','obs'];
   const all=list.slice().sort((a,b)=>order.indexOf(a.cat)-order.indexOf(b.cat));
   const sheets=[['Plantão',[head,...all.map(row)]],
@@ -3132,6 +3138,7 @@ function card(p){
     <span class="pt-meta" style="display:flex;gap:8px;align-items:center">${p.reav?`<span class="${late?'late-txt':''}">⏰ ${p.reav}</span>`:''}<button class="btn small sage" style="font-size:16px;padding:3px 12px" title="Feito – vai para os salvos" onclick="done('${p.id}')">✓</button></span></div>
     ${p.cat==='obs'?`<div class="sala">${['Obs 1','Obs 2'].map(s=>`<button class="${p.sala===s?'on':''}" onclick="setSala('${p.id}','${s}')">${s}</button>`).join('')}</div>`:''}
     ${p.hd?`<div class="pt-body"><b>${esc(p.hd)}</b></div>`:''}
+    ${p.cat==='remedicar'?`<input class="medin" data-id="${p.id}" value="${esc(p.med||'')}" placeholder="💊 Qual medicação? (Enter salva)" onchange="setMed('${p.id}',this.value)" onkeydown="if(event.key==='Enter')this.blur()">`:(p.med?`<div class="pt-body">💊 ${esc(p.med)}</div>`:'')}
     ${exs?`<div class="tags">${exs}</div>`:''}
     ${p.obs?`<div class="pt-body">${esc(p.obs)}</div>`:''}
     ${sendable(p)?`<div class="tags"><span class="tag ${p.wa?'wa':'pend'}" onclick="toggleWA('${p.id}')">${p.wa?'✓ enviado no grupo':'não enviado ainda'}</span>${p.esp?`<span class="tag alt" style="cursor:default">${esc(p.esp)}</span>`:''}</div>`:''}
@@ -3153,6 +3160,7 @@ function buildMsg(){
     const exs=p.exames.filter(e=>e.s!=='pend').map(e=>e.n+(e.s==='alt'?' (alterado)':''));
     const pend=p.exames.filter(e=>e.s==='pend').map(e=>e.n);
     if(exs.length)s+=`\n   Exames: ${exs.join(', ')}`;
+    if(p.med)s+=`\n   💊 ${p.med}`;
     if(p.obs)s+=`\n   ${p.obs.replace(/\n/g,'\n   ')}`;
     if(pend.length)s+=`\n   Pendente: ${pend.join(', ')}`;
     if(p.cat==='internar')s+=`\n   ➡️ Indicação de internação${p.esp?` – ${p.esp}`:''}`;
