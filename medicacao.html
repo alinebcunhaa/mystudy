@@ -264,13 +264,15 @@ mark{background:#ffe7a8;color:inherit;border-radius:3px;padding:0 1px}
   <div class="dlg">
     <h2 style="font-size:18px">Enviar para o grupo</h2>
     <div class="seg" id="seg">
-      <button data-m="int" class="on">⚠️ Alertas a enviar</button>
-      <button data-m="all">Todos os pacientes</button>
+      <button data-m="int" class="on">📲 Resumido p/ grupo</button>
+      <button data-m="full">🗂️ Completo p/ guardar</button>
+      <button data-m="all">Todos</button>
     </div>
     <pre id="msg"></pre>
     <div class="row" style="margin-top:8px">
       <button class="btn sage" onclick="copyMsg()">Copiar texto</button>
-      <button class="btn ghost" onclick="openWA()">Abrir WhatsApp Web</button>
+      <button class="btn ghost" onclick="openWA()" id="waBtn">Abrir WhatsApp Web</button>
+      <button class="btn ghost" onclick="dlMsg()" id="dlMsgBtn" style="display:none">⬇ Baixar .txt</button>
     </div>
     <div>
       <button class="btn full" id="sentBtn" onclick="markSent();refreshDlg();toast('Marcados como enviados ✓')">✓ Já enviei – marcar como enviados</button>
@@ -3154,6 +3156,7 @@ function card(p){
 // ---------- mensagem WhatsApp ----------
 function buildMsg(){
   const d=new Date(), hora=d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  const short=p=>`⚠️ *${[p.leito,p.nome].filter(Boolean).join(' – ')}*${p.idade?`, ${p.idade}a`:''}${p.atend?` · at. ${p.atend}`:''}${p.hd?` · ${p.hd}`:''}`;
   const lines=p=>{
     let s=`${isAl(p)&&p.cat!=='internar'?'⚠️':'▪️'} *${[p.leito,p.nome].filter(Boolean).join(' – ')}*${p.idade?`, ${p.idade}a`:''}${p.atend?` (at. ${p.atend})`:''}`;
     if(p.hd)s+=`\n   HD: ${p.hd}`;
@@ -3169,10 +3172,13 @@ function buildMsg(){
   if(sendMode==='int'){
     const L=[], A=toSend();
     if(!L.length&&!A.length)return '';
-    const parts=[];
-    if(L.length)parts.push(L.map(lines).join('\n\n'));
-    if(A.length)parts.push(`⚠️ *REAVALIAÇÃO*\n\n`+A.map(lines).join('\n\n'));
-    return parts.join('\n\n');
+    return `⚠️ *REAVALIAÇÃO*\n`+A.map(short).join('\n');
+  }
+  if(sendMode==='full'){
+    const A=pts.filter(everAl).sort((a,b)=>(a.t||0)-(b.t||0));
+    if(!A.length)return '';
+    const hm=ts=>ts?new Date(ts).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}):'';
+    return `⚠️ ALERTAS · Plantão ${fmtData(meta.data)} · ${meta.local}\n${A.length} paciente(s)\n\n`+A.map(p=>lines(p)+`\n   Situação: ${p.alta?'Alta':p.done?'Salvo/feito':CATS[p.cat]?.t||p.cat}${p.wa?' · enviado no grupo':''}${p.t?' · entrada '+hm(p.t):''}`).join('\n\n');
   }
   const order=['priorizado','internar','alerta','remedicar','reaval','exames','medic','obs'];
   return order.filter(c=>pts.some(p=>!p.done&&p.cat===c)).map(c=>
@@ -3186,6 +3192,8 @@ function refreshDlg(){
   const m=buildMsg();
   $('msg').textContent=m||'Nenhum ⚠️ alerta pendente de envio. ✓';
   $('sentBtn').style.display=(sendMode==='int'&&m)?'block':'none';
+  $('dlMsgBtn').style.display=sendMode==='full'&&m?'':'none';$('waBtn').style.display=sendMode==='full'?'none':'';
+  if(!m&&sendMode==='full')$('msg').textContent='Nenhum ⚠️ alerta neste plantão.';
   $('qrs').innerHTML='';
   if(!m){$('qrHint').textContent='';return}
   const parts=splitForQR(m);
@@ -3220,6 +3228,7 @@ function copyMsg(){const m=buildMsg();if(!m)return;
   markSent();
 }
 function openWA(){const m=buildMsg();if(!m)return;window.open('https://web.whatsapp.com/send?text='+encodeURIComponent(m),'_blank');markSent()}
+function dlMsg(){const m=buildMsg();if(m)download(`alertas_${meta.data}_${slug(meta.local)}.txt`,m,'text/plain;charset=utf-8')}
 function markSent(){if(sendMode==='int'){toSend().forEach(p=>p.wa=true);persist();render()}}
 let toastT;function toast(t,undo){const el=$('toast');el.textContent=t;if(undo){const b=document.createElement('button');b.textContent='Desfazer';b.className='toast-undo';b.onclick=()=>{undo();el.classList.remove('show')};el.appendChild(b)}el.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('show'),undo?5000:1600)}
 
