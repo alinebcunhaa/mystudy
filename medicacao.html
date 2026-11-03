@@ -3107,10 +3107,10 @@ function imprimir(list,data,local,titulo){
   const hm=ts=>ts?new Date(ts).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}):'';
   const order=['priorizado','internar','alerta','remedicar','reaval','exames','medic','obs'];
   const groups=[...order.map(c=>[CATS[c].t,list.filter(p=>!p.done&&p.cat===c).sort((a,b)=>(b.ord||b.t||0)-(a.ord||a.t||0))]),['✓ Salvos / feitos',list.filter(p=>p.done&&!p.alta)],['🏠 Altas',list.filter(p=>p.alta)]].filter(g=>g[1].length);
-  const rows=groups.map(g=>`<tr class="grp"><td colspan="8">${esc(g[0])} (${g[1].length})</td></tr>`+g[1].map(p=>`<tr><td><b>${esc(p.leito)}</b><br>${esc(p.nome)}${p.cat==='obs'&&p.sala?' · '+p.sala:''}</td><td>${esc(p.idade)}</td><td>${esc(p.hd)}</td><td>${esc(exTxt(p))}</td><td>${esc(condTxt(p))}</td><td>${esc(p.esp)}</td><td>${hm(p.t)}</td><td>${hm(p.done)}</td></tr>`).join('')).join('');
+  const rows=groups.map(g=>`<tr class="grp"><td colspan="6">${esc(g[0])} (${g[1].length})</td></tr>`+g[1].map(p=>`<tr><td><b>${esc(p.leito)}</b><br>${esc(p.nome)}${p.cat==='obs'&&p.sala?' · '+p.sala:''}</td><td>${esc(p.atend)}</td><td>${esc(p.idade)}</td><td>${esc(p.hd)}</td><td>${esc(exTxt(p))}</td><td>${esc(condTxt(p))}</td></tr>`).join('')).join('');
   $('printArea').innerHTML=`<div class="pr-head"><b>${titulo?esc(titulo)+' · ':''}Plantão ${fmtData(data)} · ${esc(local)}</b><span>${list.length} pacientes</span></div>
-  <table class="pr"><colgroup><col style="width:11%"><col style="width:5%"><col style="width:20%"><col style="width:16%"><col style="width:26%"><col style="width:10%"><col style="width:6%"><col style="width:6%"></colgroup>
-  <thead><tr><th>Leito / Iniciais</th><th>Idade</th><th>Queixa / HD</th><th>Exames</th><th>Resultados / conduta</th><th>Especialidade</th><th>Entrada</th><th>Saída</th></tr></thead><tbody>${rows}</tbody></table>`;
+  <table class="pr"><colgroup><col style="width:12%"><col style="width:10%"><col style="width:5%"><col style="width:24%"><col style="width:19%"><col style="width:30%"></colgroup>
+  <thead><tr><th>Leito / Iniciais</th><th>Atendimento</th><th>Idade</th><th>Queixa / HD</th><th>Exames</th><th>Resultados / conduta</th></tr></thead><tbody>${rows}</tbody></table>`;
   setTimeout(()=>window.print(),100);
 }
 window.addEventListener('beforeprint',()=>{if(!$('printArea').innerHTML.trim()&&pts.length){const l=viewing?pts:pts;  /* Ctrl+P */
