@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sala de Parto — Reanimação Neonatal SBP 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;0,700;1,500&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#faf6ef;--card:#fffdf9;--ink:#33302b;--soft:#6e675e;--line:#e8dfd2;
+  --terra:#c0704e;--terra-bg:#f8e6dc;--sage:#7f9a7a;--sage-bg:#e6efe2;
+  --ped:#7a5fa0;--ped-bg:#f0eaf8;--old:#9a8f84;--old-bg:#f1ede7;--warn:#b5523b;--warn-bg:#fbe4dd;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:'Source Sans 3',sans-serif;line-height:1.55;font-size:16px}
+header{max-width:1000px;margin:0 auto;padding:36px 20px 14px}
+.back{font-size:.85rem;color:var(--soft);text-decoration:none}
+.back:hover{color:var(--terra)}
+.eyebrow{display:inline-block;margin-top:14px;font-weight:700;font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--ped);background:var(--ped-bg);padding:5px 12px;border-radius:999px}
+h1{font-family:'Lora',serif;font-size:clamp(1.8rem,4.5vw,2.6rem);line-height:1.1;margin:10px 0 6px}
+h1 em{color:var(--terra)}
+.sub{color:var(--soft);max-width:720px}
+nav{position:sticky;top:0;z-index:10;background:rgba(250,246,239,.95);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+.tabs{max-width:1000px;margin:0 auto;display:flex;gap:6px;overflow-x:auto;padding:10px 20px}
+.tab{flex:0 0 auto;border:1.5px solid var(--line);background:var(--card);color:var(--ink);font:600 .88rem 'Source Sans 3',sans-serif;padding:7px 13px;border-radius:999px;cursor:pointer}
+.tab.on{background:var(--terra);border-color:var(--terra);color:#fff}
+main{max-width:1000px;margin:0 auto;padding:22px 20px 60px}
+.panel{display:none}.panel.on{display:block}
+h2{font-family:'Lora',serif;font-size:1.45rem;margin:4px 0 12px}
+h3{font-family:'Lora',serif;font-size:1.1rem;margin:18px 0 8px;color:var(--terra)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px;margin:12px 0}
+ul{padding-left:20px}li{margin:3px 0}
+table{width:100%;border-collapse:collapse;font-size:.94rem;background:var(--card);border-radius:12px;overflow:hidden}
+th,td{padding:9px 11px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{background:var(--ped-bg);color:#4d3a6e;font-weight:700}
+td.old{color:var(--old);background:var(--old-bg)}
+td.new{background:var(--sage-bg);font-weight:600}
+.tag{display:inline-block;font-size:.7rem;font-weight:700;letter-spacing:.05em;padding:2px 8px;border-radius:999px;text-transform:uppercase;vertical-align:middle}
+.tag.new{background:var(--sage);color:#fff}.tag.same{background:var(--line);color:var(--soft)}.tag.hot{background:var(--terra);color:#fff}
+.callout{border-left:4px solid var(--terra);background:var(--terra-bg);padding:12px 14px;border-radius:10px;margin:12px 0}
+.callout.warn{border-color:var(--warn);background:var(--warn-bg)}
+.callout.ok{border-color:var(--sage);background:var(--sage-bg)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:720px){.grid2{grid-template-columns:1fr}}
+.flow{display:flex;flex-direction:column;align-items:center;gap:6px;margin:10px 0}
+.box{width:100%;max-width:560px;text-align:center;border:1.5px solid var(--line);background:var(--card);border-radius:12px;padding:9px 12px}
+.box.q{border-color:var(--ped);background:var(--ped-bg)}
+.box.act{border-color:var(--terra)}
+.box.ok{border-color:var(--sage);background:var(--sage-bg)}
+.arrow{color:var(--soft);font-size:.85rem}
+.side{font-size:.86rem;color:var(--soft)}
+.chk{display:flex;gap:8px;align-items:flex-start;margin:4px 0}
+.chk input{margin-top:5px}
+footer{max-width:1000px;margin:0 auto;padding:0 20px 40px;color:var(--soft);font-size:.82rem}
+</style>
+</head>
+<body>
+<header>
+  <a class="back" href="index.html">← Hub de estudos</a><br>
+  <span class="eyebrow">Pediatria · Neonatologia</span>
+  <h1>Sala de parto — <em>Diretrizes SBP 2026</em></h1>
+  <p class="sub">Reanimação neonatal ≥34 e &lt;34 semanas. Aba “O que mudou” compara com a versão anterior (SBP 2022) que estava na apostila.</p>
+</header>
+
+<nav><div class="tabs" id="tabs"></div></nav>
+
+<main>
+
+<!-- ============ O QUE MUDOU ============ -->
+<section class="panel" data-t="O que mudou">
+  <h2>2022 → 2026: o que mudou</h2>
+  <table>
+    <tr><th style="width:24%">Tema</th><th>Antes (SBP 2022)</th><th>Agora (SBP 2026)</th></tr>
+    <tr><td><b>RN sem boa vitalidade: estímulo e clampeamento</b> <span class="tag hot">cai</span></td>
+      <td class="old">Estímulo tátil no dorso + <b>clampeamento imediato</b> → mesa de reanimação</td>
+      <td class="new">Estímulo tátil no dorso <b>~15 s ANTES de clampear</b>.<br>• Respirou e tônus em flexão → clampear ≥60 s<br>• Não respirou e/ou hipotônico → <b>ordenha de cordão</b> + clampear <b>&lt;30 s</b></td></tr>
+    <tr><td><b>Clampeamento em &lt;34 sem com boa vitalidade</b> <span class="tag hot">cai</span></td>
+      <td class="old">≥30 s</td>
+      <td class="new"><b>≥60 s</b> — igual ao ≥34 sem (60 s em qualquer IG)</td></tr>
+    <tr><td><b>Ordenha de cordão</b> <span class="tag new">novo</span></td>
+      <td class="old">—</td>
+      <td class="new">RN sem resposta ao estímulo. Em &lt;34 sem: <b>só se ≥28 sem</b>.<br>Técnica: ~20 cm do cordão, da placenta → RN, em 2 s, 3×</td></tr>
+    <tr><td><b>Clampeamento imediato</b></td>
+      <td class="old">Qualquer RN sem boa vitalidade</td>
+      <td class="new">Só se <b>interrupção da circulação placentária</b>: DPP, placenta prévia sangrando, nó verdadeiro de cordão</td></tr>
+    <tr><td><b>&lt;34 sem vai pra mesa?</b> <span class="tag hot">cai</span></td>
+      <td class="old">Sempre</td>
+      <td class="new"><b>&lt;32 sem:</b> sempre (passos iniciais na mesa)<br><b>32–33⁺⁶ sem:</b> pele a pele com os pais se boa vitalidade</td></tr>
+    <tr><td><b>FiO₂ inicial da VPP &lt;34 sem</b> <span class="tag hot">cai</span></td>
+      <td class="old">30%</td>
+      <td class="new"><b>60%</b>, titulando pela SpO₂ pré-ductal (≥34 sem segue 21%)</td></tr>
+    <tr><td><b>Frequência da VPP</b></td>
+      <td class="old">40–60 mpm</td>
+      <td class="new"><b>30–60 mpm</b></td></tr>
+    <tr><td><b>SpO₂-alvo pré-ductal</b> <span class="tag hot">cai</span></td>
+      <td class="old">Em faixas: até 5 min 70–80% · 5–10 min 80–90% · &gt;10 min 85–95%</td>
+      <td class="new"><b>Minuto a minuto:</b> 2 min 65–70 · 3 min 70–75 · 4 min 75–80 · 5 min 80–85 · 10 min 85–95%</td></tr>
+    <tr><td><b>Dispositivo de VPP</b></td>
+      <td class="old">Balão autoinflável ou ventilador em T</td>
+      <td class="new"><b>Ventilador manual em T preferencial</b> (pressões conhecidas e consistentes + PEEP)</td></tr>
+    <tr><td><b>Máscara laríngea</b></td>
+      <td class="old">“Considerar” se VPP falha</td>
+      <td class="new">Indicações explícitas, só <b>≥34 sem</b>: máscara facial ineficaz · IOT não factível/falhou · <b>1ª opção</b> em malformação de VA (Pierre Robin, Treacher Collins…)</td></tr>
+    <tr><td><b>Adrenalina</b></td>
+      <td class="old">IV 0,01–0,03 mg/kg · ET 0,1 mg/kg</td>
+      <td class="new">Mesma faixa, prescrita em mL/kg da 1:10.000: <b>IV/IO 0,2 mL/kg</b> (=0,02 mg/kg) · <b>ET 1 mL/kg, dose única</b> (=0,1 mg/kg). Via IO incluída</td></tr>
+    <tr><td><b>Expansor de volume</b></td>
+      <td class="old">SF 10 mL/kg EV</td>
+      <td class="new">SF 10 mL/kg EV <b>em 5–10 min</b></td></tr>
+    <tr><td><b>Boa vitalidade ≥34 sem</b></td>
+      <td class="old">Cuidados de rotina junto à mãe</td>
+      <td class="new">Pele a pele + normotermia + VA pérvias + avaliar vitalidade + <b>iniciar aleitamento</b></td></tr>
+    <tr><td><b>Fluxograma</b></td>
+      <td class="old">Começa no nascimento</td>
+      <td class="new">Começa com <b>anamnese materna, checagem de material e briefing</b>; termina com <b>cuidados pós-reanimação, conversa com a família e debriefing</b></td></tr>
+  </table>
+
+  <h3>O que NÃO mudou <span class="tag same">igual</span></h3>
+  <ul>
+    <li>2 perguntas de vitalidade: respirando/chorando? tônus em flexão?</li>
+    <li>Passos iniciais “PóS-PArto”/ASPA: aquecer → secar → posicionar → aspirar (só se obstruída)</li>
+    <li>Minuto de ouro: VPP nos primeiros 60 s · FiO₂ 21% no ≥34 sem</li>
+    <li>FC é o principal determinante das manobras · cortes FC &lt;100 (VPP) e &lt;60 (MCE)</li>
+    <li>MCE: exige IOT + O₂ 100%, 3:1, dois polegares, terço inferior do esterno, 60 s antes de reavaliar</li>
+    <li>Mecônio: nada muda no fluxograma · Apgar igual (1º e 5º min)</li>
+  </ul>
+
+  <div class="callout warn"><b>⚠ Erro na apostila nova (pág. 7):</b> o fluxograma &lt;34 sem diz “VPP em ar ambiente”. A diretriz SBP 2026 &lt;34 sem manda iniciar a VPP com <b>O₂ a 60%</b> (a própria tabela da pág. 8 traz 60%). Na prova, vá de 60%.</div>
+</section>
+
+<!-- ============ PREPARO ============ -->
+<section class="panel" data-t="Preparo">
+  <h2>Antes do nascimento</h2>
+  <div class="card">
+    <ul>
+      <li><b>Anamnese materna</b> → antecipar a necessidade de reanimação</li>
+      <li><b>Equipe:</b> todo nascimento deve ter um pediatra</li>
+      <li>Checagem sistemática de <b>material</b> e equipamentos</li>
+      <li><b>Briefing:</b> planejamento, comunicação, preparo do ambiente/material, divisão de tarefas</li>
+      <li>Temperatura da sala de parto <b>23–25 °C</b></li>
+      <li>Prevenção de infecções</li>
+    </ul>
+  </div>
+  <div class="grid2">
+    <div class="card"><h3>Fatores antenatais</h3><ul>
+      <li>Idade materna &lt;16 ou &gt;35 anos</li><li>Obesidade, diabetes, síndromes hipertensivas, doenças/infecção materna</li>
+      <li>Drogas ilícitas</li><li>Óbito fetal/neonatal anterior</li><li>IG &lt;39 ou ≥41 sem</li><li>Sem pré-natal</li>
+      <li>Gestação múltipla</li><li>Discrepância IG × peso</li><li>Poli/oligoâmnio · RPM</li><li>Aloimunização/anemia fetal</li>
+      <li>Sangramento 2º/3º tri</li><li>↓ atividade fetal</li><li>Malformação · hidropsia fetal</li></ul></div>
+    <div class="card"><h3>Fatores do parto</h3><ul>
+      <li>Cesárea · fórcipe/vácuo · apresentação não cefálica</li><li>TPP · parto taquitócico</li>
+      <li>Corioamnionite · RPM &gt;18 h</li><li>TP &gt;24 h · 2º estágio &gt;2 h</li><li>FCF anormal · hipertonia uterina</li>
+      <li>Anestesia geral · opioide nas 4 h prévias · sulfato de Mg</li><li>Líquido meconial</li>
+      <li>Prolapso/rotura/nó verdadeiro de cordão</li><li>DPP · placenta prévia · sangramento intraparto</li></ul></div>
+  </div>
+</section>
+
+<!-- ============ CLAMPEAMENTO ============ -->
+<section class="panel" data-t="Clampeamento">
+  <h2>Clampeamento do cordão</h2>
+  <div class="flow">
+    <div class="box q">Respirando ou chorando? Tônus em flexão?</div>
+    <div class="grid2" style="width:100%;max-width:760px">
+      <div class="flow">
+        <div class="arrow">SIM</div>
+        <div class="box ok"><b>Clampear ≥60 s</b><br><span class="side">qualquer IG</span></div>
+      </div>
+      <div class="flow">
+        <div class="arrow">NÃO</div>
+        <div class="box act"><b>Estímulo tátil no dorso ~15 s</b><br><span class="side">antes de clampear</span></div>
+        <div class="grid2" style="width:100%">
+          <div class="flow"><div class="arrow">respirou + tônus</div><div class="box ok">Clampear ≥60 s</div></div>
+          <div class="flow"><div class="arrow">não respirou / hipotônico</div><div class="box act">Ordenha de cordão<br><span class="side">(&lt;34 sem: só se ≥28 sem)</span><br><b>Clampear &lt;30 s</b></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="callout"><b>Clampeamento imediato</b> só se interrupção da circulação placentária: <b>DPP, placenta prévia com sangramento, nó verdadeiro de cordão</b>.</div>
+  <div class="card"><b>Ordenha:</b> comprimir ~20 cm do cordão, da placenta em direção ao RN, ao longo de 2 s, 3 vezes.</div>
+</section>
+
+<!-- ============ ≥34 ============ -->
+<section class="panel" data-t="Fluxo ≥34 sem">
+  <h2>Fluxograma RN ≥34 semanas</h2>
+  <div class="flow">
+    <div class="box">Anamnese materna · verificar material · briefing</div><div class="arrow">↓ nascimento</div>
+    <div class="box q">≥34 sem? Respirando/chorando? Tônus em flexão?</div>
+    <div class="side">SIM → clampear ≥60 s · pele a pele · normotermia · VA pérvias · avaliar vitalidade · aleitamento</div>
+    <div class="arrow">↓ NÃO → estímulo tátil → reavalia → ainda NÃO</div>
+    <div class="box act"><b>Passos iniciais</b> — calor radiante · secar cabeça e corpo · pescoço em leve extensão · aspirar só se obstruída</div>
+    <div class="arrow">↓</div>
+    <div class="box q">Apneia/respiração irregular e/ou FC &lt;100?</div>
+    <div class="side">NÃO → desconforto ou SpO₂ &lt; alvo? → monitorar SpO₂ pré-ductal · considerar CPAP</div>
+    <div class="arrow">↓ SIM — <b>minuto de ouro (60 s)</b></div>
+    <div class="box act"><b>VPP em ar ambiente (21%)</b>, 30–60 mpm<br>Eletrodos do monitor cardíaco + oxímetro</div>
+    <div class="arrow">↓</div>
+    <div class="box q">FC &lt;100?</div>
+    <div class="box act">Rever técnica · assegurar ventilação · considerar <b>máscara laríngea</b> ou IOT</div>
+    <div class="arrow">↓</div>
+    <div class="box q">FC &lt;60?</div>
+    <div class="box act">Cânula traqueal + <b>MCE 3:1</b> + O₂ 100% · considerar cateterismo venoso</div>
+    <div class="arrow">↓</div>
+    <div class="box q">FC &lt;60?</div>
+    <div class="box act"><b>Adrenalina intravascular</b> · considerar hipovolemia</div>
+    <div class="arrow">↓</div>
+    <div class="box ok">Cuidados pós-reanimação · conversa com a família · debriefing</div>
+  </div>
+  <div class="callout ok">Manter normotermia durante todo o processo.</div>
+</section>
+
+<!-- ============ <34 ============ -->
+<section class="panel" data-t="Fluxo <34 sem">
+  <h2>Fluxograma RN &lt;34 semanas</h2>
+  <div class="flow">
+    <div class="box">Anamnese materna · verificar material · briefing</div><div class="arrow">↓ nascimento</div>
+    <div class="box q">&lt;34 sem? Respirando/chorando? Tônus em flexão?</div>
+    <div class="side">SIM → clampear ≥60 s → <b>32–33 sem:</b> pele a pele com os pais · <b>&lt;32 sem:</b> passos iniciais na mesa</div>
+    <div class="arrow">↓ NÃO → estímulo tátil → reavalia → ainda NÃO</div>
+    <div class="box act"><b>Passos iniciais</b> — calor radiante · <b>saco plástico + touca dupla</b> (não secar) · pescoço em leve extensão · aspirar só se obstruída · <b>monitor cardíaco + oxímetro já aqui</b></div>
+    <div class="arrow">↓</div>
+    <div class="box q">Apneia/respiração irregular e/ou FC &lt;100?</div>
+    <div class="side">NÃO → desconforto ou SpO₂ &lt; alvo? → monitorar SpO₂ pré-ductal · considerar CPAP</div>
+    <div class="arrow">↓ SIM — <b>minuto de ouro (60 s)</b></div>
+    <div class="box act"><b>VPP com O₂ a 60%</b>, 30–60 mpm, titular pela SpO₂</div>
+    <div class="arrow">↓ resto igual ao ≥34 sem (FC &lt;100 → corrigir/IOT · FC &lt;60 → MCE 3:1 + O₂ 100% → adrenalina)</div>
+  </div>
+
+  <h3>&lt;34 × ≥34 semanas</h3>
+  <table>
+    <tr><th></th><th>&lt;34 semanas</th><th>≥34 semanas</th></tr>
+    <tr><td><b>Clampeamento (boa vitalidade)</b></td><td>≥60 s</td><td>≥60 s</td></tr>
+    <tr><td><b>Ordenha</b></td><td>Só se ≥28 sem</td><td>Sim, se não responde ao estímulo</td></tr>
+    <tr><td><b>Vai pra mesa?</b></td><td>&lt;32: sempre · 32–33⁺⁶: só se vitalidade ruim</td><td>Só se vitalidade ruim</td></tr>
+    <tr><td><b>Monitorização</b></td><td>Junto aos passos iniciais</td><td>Quando inicia a VPP</td></tr>
+    <tr><td><b>FiO₂ inicial VPP</b></td><td><b>60%</b></td><td>21%</td></tr>
+    <tr><td><b>Secar?</b></td><td>Não</td><td>Sim</td></tr>
+    <tr><td><b>Normotermia extra</b></td><td>Saco plástico + touca dupla</td><td>Touca de algodão</td></tr>
+    <tr><td><b>Máscara laríngea</b></td><td>Não</td><td>Sim</td></tr>
+  </table>
+</section>
+
+<!-- ============ VPP ============ -->
+<section class="panel" data-t="VPP & SpO₂">
+  <h2>Ventilação com pressão positiva</h2>
+  <div class="grid2">
+    <div class="card"><h3>Como fazer</h3><ul>
+      <li>RN em leve extensão · técnica do C-E</li>
+      <li><b>30–60 mpm</b></li>
+      <li>Balão: “aperta/solta/solta”</li>
+      <li>Ventilador em T (<b>preferencial</b>): “ocluuui/solta/solta”</li>
+      <li>FiO₂ inicial: <b>21%</b> (≥34) · <b>60%</b> (&lt;34) · ajustar pela SpO₂</li></ul></div>
+    <div class="card"><h3>SpO₂-alvo pré-ductal</h3>
+      <table><tr><th>Min de vida</th><th>SpO₂</th></tr>
+      <tr><td>2</td><td>65–70%</td></tr><tr><td>3</td><td>70–75%</td></tr>
+      <tr><td>4</td><td>75–80%</td></tr><tr><td>5</td><td>80–85%</td></tr><tr><td>10</td><td>85–95%</td></tr></table></div>
+  </div>
+  <h3>E se a VPP não funcionar?</h3>
+  <table>
+    <tr><th>Problema</th><th>Correção</th></tr>
+    <tr><td>Ajuste inadequado face-máscara</td><td>Readaptar a máscara à face</td></tr>
+    <tr><td>Obstrução de VA</td><td>Reposicionar, aspirar boca e nariz, ventilar com a boca levemente aberta</td></tr>
+    <tr><td>Pressão insuficiente</td><td>Aumentar ~5 cmH₂O (máx. 40 cmH₂O)</td></tr>
+  </table>
+  <h3>Máscara laríngea</h3>
+  <div class="card"><ul>
+    <li>Dispositivo supraglótico — alternativa à máscara facial · <b>só RN ≥34 sem</b></li>
+    <li>Indicações: (1) VPP com máscara facial não efetiva · (2) IOT não factível ou sem sucesso · (3) <b>1ª opção</b> em malformações de VA (Pierre Robin, Smith-Lemli-Opitz, Treacher Collins, Cornelia de Lange)</li></ul></div>
+</section>
+
+<!-- ============ MCE ============ -->
+<section class="panel" data-t="MCE & drogas">
+  <h2>Massagem cardíaca e medicações</h2>
+  <div class="card"><h3>Massagem cardíaca (FC &lt;60 após VPP efetiva)</h3><ul>
+    <li>Exige <b>intubação e O₂ 100%</b></li>
+    <li>Terço inferior do esterno · <b>dois polegares</b> (mais eficiente e menos cansativa)</li>
+    <li>Comprimir ⅓ do diâmetro AP e permitir reexpansão</li>
+    <li><b>3:1</b> sincronizada → 120 eventos/min (90 compressões + 30 ventilações)</li>
+    <li>60 s antes de reavaliar</li></ul></div>
+  <table>
+    <tr><th></th><th>Adrenalina IV/IO</th><th>Adrenalina ET</th><th>Expansor de volume</th></tr>
+    <tr><td><b>Diluição</b></td><td>1:10.000 (1 mL + 9 mL SF)</td><td>1:10.000 (1 mL + 9 mL SF)</td><td>SF 0,9%</td></tr>
+    <tr><td><b>Dose</b></td><td><b>0,2 mL/kg</b><br><span class="side">= 0,02 mg/kg (faixa 0,01–0,03)</span></td><td><b>1 mL/kg — dose única</b><br><span class="side">= 0,1 mg/kg</span></td><td><b>10 mL/kg EV em 5–10 min</b></td></tr>
+  </table>
+</section>
+
+<!-- ============ MECÔNIO & APGAR ============ -->
+<section class="panel" data-t="Mecônio & Apgar">
+  <h2>Mecônio</h2>
+  <div class="callout"><b>Nada muda no fluxograma.</b> Boa vitalidade ≥34 sem → pele a pele. Vitalidade ruim → passos iniciais (aspirar só se obstrução de VAS). FC &lt;100 → VPP.</div>
+  <div class="card"><b>Aspiração traqueal:</b> só se suspeita de obstrução de traqueia · cânula traqueal + dispositivo para mecônio + vácuo · <b>máximo 1 vez</b> · VPP logo em seguida, sem perder o minuto de ouro.</div>
+  <h2 style="margin-top:22px">Apgar (1º e 5º min)</h2>
+  <table>
+    <tr><th>Sinal</th><th>0</th><th>1</th><th>2</th></tr>
+    <tr><td><b>FC</b></td><td>Ausente</td><td>&lt;100</td><td>&gt;100</td></tr>
+    <tr><td><b>Respiração</b></td><td>Ausente</td><td>Irregular</td><td>Regular ou choro forte</td></tr>
+    <tr><td><b>Irritabilidade reflexa</b></td><td>Ausente</td><td>Careta</td><td>Choro ou retirada</td></tr>
+    <tr><td><b>Cor</b></td><td>Cianose/palidez</td><td>Corpo róseo, extremidades cianóticas</td><td>Todo róseo</td></tr>
+    <tr><td><b>Tônus</b></td><td>Flacidez</td><td>Alguma flexão</td><td>Movimentos ativos</td></tr>
+  </table>
+</section>
+
+</main>
+<footer>Fontes: Diretrizes 2026 da SBP — Reanimação do RN ≥34 sem e &lt;34 sem em sala de parto (PRN-SBP, jun/2026); apostila Medway Ext26 Sala de Parto. Atualizado em nov/2026.</footer>
+
+<script>
+const panels=[...document.querySelectorAll('.panel')],tabs=document.getElementById('tabs');
+function show(i){panels.forEach((p,j)=>p.classList.toggle('on',i===j));[...tabs.children].forEach((b,j)=>b.classList.toggle('on',i===j));try{localStorage.setItem('sdp-tab',i)}catch(e){}window.scrollTo({top:0})}
+panels.forEach((p,i)=>{const b=document.createElement('button');b.className='tab';b.textContent=p.dataset.t;b.onclick=()=>show(i);tabs.appendChild(b)});
+let s=0;try{s=+localStorage.getItem('sdp-tab')||0}catch(e){}show(Math.min(s,panels.length-1));
+</script>
+</body>
+</html>
