@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SUS · Referência Clínica</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
   --bg: #f7f2ea;
@@ -1327,189 +1328,617 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
 
 <!-- ══════════════════════ RASTREAMENTO ══════════════════════ -->
 <div class="panel" id="panel-rastreamento">
+<style>
+.rx{--ink:#33302b;font-family:'Source Sans 3','Lora',sans-serif;color:var(--ink);line-height:1.45}
+.rx *{box-sizing:border-box}
+.rx h2,.rx h3,.rx .big{font-family:'Lora',Georgia,serif}
+.rx a{color:inherit}
+.rx .rxnav{position:sticky;top:0;z-index:5;background:rgba(247,242,234,.96);backdrop-filter:blur(6px);display:flex;gap:7px;overflow-x:auto;padding:10px 0;margin:6px 0 4px;border-bottom:1px solid #e3d6c3}
+.rx .rxnav a{flex:0 0 auto;text-decoration:none;border:1.5px solid var(--c);color:var(--c);background:#fffdf9;font-weight:700;font-size:.85rem;padding:5px 12px;border-radius:999px}
+.rx .rxnav a:hover{background:var(--c);color:#fff}
+.rx .grp{font-family:'Lora',serif;font-size:1.05rem;letter-spacing:.12em;text-transform:uppercase;color:#8a7260;margin:30px 0 -10px;font-weight:600}
+.rx section.card{margin:22px 0 6px;padding:24px 24px 20px;background:#fffaf3;border:1px solid #ecdfcf;border-radius:22px;scroll-margin-top:64px}
+.rx .top{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.rx .top h2{font-size:clamp(1.5rem,3.4vw,2.1rem);color:var(--m);font-weight:700}
+.rx .src{color:#6e675e;font-size:.9rem}
+.rx .status{display:inline-block;font-weight:700;font-size:11px;letter-spacing:.06em;text-transform:uppercase;padding:3px 10px;border-radius:999px;background:var(--m);color:#fff}
+.rx .status.no{background:#8a7f73}
+.rx .hero{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px}
+.rx .hb{border-radius:16px;padding:14px;text-align:center;background:#fffdf9;border:2.5px solid var(--m)}
+.rx .hb .big{font-weight:700;font-size:clamp(1.4rem,3vw,2.2rem);color:var(--m);line-height:1.05}
+.rx .hb .lb{font-size:.95rem;color:#4a443d;margin-top:6px;font-weight:600}
+.rx .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.rx .c{background:#fffdf9;border:2px solid var(--c);border-radius:16px;padding:14px 17px}
+.rx .c.full{grid-column:1/-1}
+.rx .grid>*,.rx .hero>*,.rx .row>*,.rx .c,.rx section.card{min-width:0}
+.rx{max-width:100%;overflow-wrap:anywhere}
+.rx .c h3{font-size:1.15rem;color:var(--c);margin-bottom:7px;font-weight:700}
+.rx .c ul{padding-left:18px;font-size:.98rem}.rx .c li{margin:2px 0}
+.rx b{font-weight:700}
+.rx .flow{display:flex;flex-direction:column;align-items:center}
+.rx .n{border-radius:11px;padding:7px 11px;text-align:center;font-size:.95rem;border:2px solid #cfc4b6;background:#fffdf9;width:100%}
+.rx .n.t{border-color:var(--m);background:var(--mb);font-weight:700;color:var(--md)}
+.rx .n.ok{border-color:#7f9a7a;background:#e6efe2;color:#2f4a2c}
+.rx .n.bad{border-color:#c0704e;background:#f8e6dc;color:#7a3a20}
+.rx .n small{display:block;font-size:.84rem;font-weight:400}
+.rx .ar{color:#6e675e;font-size:.82rem;font-weight:700;padding:4px 0}
+.rx .row{display:grid;grid-template-columns:repeat(var(--k,2),1fr);gap:9px;width:100%}
+.rx .row .col{display:flex;flex-direction:column;align-items:center}
+.rx .tw{overflow-x:auto}
+.rx table{width:100%;min-width:0;border-collapse:collapse;font-size:.93rem}
+.rx th,.rx td{padding:6px 8px;border-bottom:1px solid #e3d9cc;text-align:left;vertical-align:top;font-family:inherit;font-size:.93rem;letter-spacing:0;text-transform:none;color:var(--ink)}
+.rx th{color:#5a3f80;background:#f0eaf8;font-weight:700}
+.rx tr:hover{background:transparent}
+.rx .trap{background:#fbe4dd;border:2px solid #b5523b;border-radius:16px;padding:12px 17px;margin-top:14px}
+.rx .trap h3{color:#9c3f2a;font-size:1.15rem;margin-bottom:5px;font-weight:700}
+.rx .trap ul{display:grid;grid-template-columns:1fr 1fr;gap:3px 24px;padding-left:18px}
+.rx .note{font-size:.82rem;color:#6e675e;margin-top:6px}
+.rx .new{display:inline-block;background:#c0704e;color:#fff;font-family:'Source Sans 3',sans-serif;font-size:10.5px;font-weight:700;letter-spacing:.05em;padding:1px 7px;border-radius:999px;vertical-align:2px;margin-left:3px}
+.rx .ov th{background:#e6f0fb;color:#1a5ea8}
+.rx .ov td:first-child{font-weight:700}
+.rx .fontes{color:#6e675e;font-size:.84rem;margin:24px 0 0}
+.rx .fontes li{margin:2px 0 2px 18px}
+@media(max-width:820px){.rx .hero,.rx .grid,.rx .trap ul{grid-template-columns:1fr}.rx .row{--k:1!important}.rx section.card{padding:16px 13px}}
+</style>
+
   <div class="section-intro">
-    <h2>Rastreamento <span>Oncológico e Metabólico</span></h2>
-    <p class="section-meta">INCA · Ministério da Saúde · Diretrizes Nacionais 2024</p>
+    <h2>Rastreamento <span>Oncológico, Metabólico, IST e Neonatal</span></h2>
+    <p class="section-meta">MS · INCA · PCDTs · SBD · SBC · USPSTF · atualizado em nov/2026</p>
   </div>
-  <a href="rastreamento.html" style="display:block;text-decoration:none;margin:0 0 16px;padding:14px 18px;border-radius:14px;background:#f8e6dc;border:2px solid #c0704e;color:#7a3a20;font-weight:600">
-    🆕 <b>Cards visuais atualizados (2025–2026):</b> colo do útero (DNA-HPV), mama (50–74 + 40–49 sob demanda), colorretal (FIT), próstata e pulmão → <u>abrir página de rastreamento</u>
-    <span style="display:block;font-weight:400;font-size:.9em;margin-top:4px">Atenção: os cards de colo do útero, mama e colorretal abaixo estão desatualizados.</span>
-  </a>
   <div class="info-box">
-    <strong>Rastreamento ≠ Diagnóstico:</strong> Testes aplicados em indivíduos <em>assintomáticos</em> de risco moderado ou alto. O SUS disponibiliza os exames nas UBS e unidades de saúde da mulher. Encaminhamentos para confirmação seguem fluxo regulado pelo SISREG.
+    <strong>Rastreamento ≠ Diagnóstico:</strong> testes aplicados em pessoas <em>assintomáticas</em>. Quem tem sintoma vai para investigação diagnóstica, não para rastreamento. <span style="background:#c0704e;color:#fff;font-size:.7rem;font-weight:700;padding:1px 7px;border-radius:999px">NOVO</span> marca o que mudou em 2025–2026.
   </div>
 
-  <!-- TOOLBAR -->
-  <div class="rast-toolbar">
-    <button class="btn-edit-toggle" id="editToggle" onclick="toggleEditMode()">
-      ✏️ Editar cards
-    </button>
-    <span class="edit-hint" id="editHint">Clique em qualquer texto para editar · Alterações salvas automaticamente</span>
-    <button class="btn-add-card" id="btnAddCard" onclick="addCard()">+ Novo card</button>
+<div class="rx">
+  <nav class="rxnav">
+    <a href="#rx-visao" style="--c:#1a5ea8">Visão geral</a>
+    <a href="#rx-colo" style="--c:#b83068">Colo do útero</a>
+    <a href="#rx-mama" style="--c:#c0567a">Mama</a>
+    <a href="#rx-ccr" style="--c:#3f6a3a">Colorretal</a>
+    <a href="#rx-prostata" style="--c:#2f5f8a">Próstata</a>
+    <a href="#rx-pulmao" style="--c:#6b5a4a">Pulmão</a>
+    <a href="#rx-has" style="--c:#a8432a">HAS</a>
+    <a href="#rx-dm" style="--c:#b07a10">DM</a>
+    <a href="#rx-hiv" style="--c:#8a2f6a">HIV e sífilis</a>
+    <a href="#rx-hep" style="--c:#8a6a10">Hepatites B e C</a>
+    <a href="#rx-neo" style="--c:#6030a8">Triagem neonatal</a>
+    <a href="#rx-tab" style="--c:#5c6e35">Tabagismo</a>
+    <a href="#rx-uspstf" style="--c:#1a5ea8">O que é USPSTF?</a>
+  </nav>
+
+<section class="card" id="rx-visao" style="--m:#1a5ea8">
+  <div class="top"><h2>Visão geral — o que o SUS faz hoje</h2></div>
+  <div class="tw" style="margin-top:12px"><table class="ov">
+    <tr><th>Tema</th><th>Quem</th><th>Exame</th><th>Intervalo</th><th>Referência</th></tr>
+    <tr><td>Colo do útero</td><td>25–64 anos</td><td><b>DNA-HPV</b> <span class="new">2025</span></td><td>5 anos se negativo</td><td>MS/INCA 2025</td></tr>
+    <tr><td>Mama</td><td><b>50–74</b> · 40–49 sob demanda <span class="new">2025</span></td><td>Mamografia</td><td>2 anos</td><td>MS, set/2025</td></tr>
+    <tr><td>Colorretal</td><td>50–75 anos, risco padrão</td><td><b>FIT</b> <span class="new">2026</span></td><td>2 anos</td><td>MS/INCA 2026</td></tr>
+    <tr><td>Próstata</td><td>—</td><td>PSA ± toque</td><td>—</td><td><b>Não recomenda</b> (NT 9/2023)</td></tr>
+    <tr><td>Pulmão</td><td>—</td><td>TC baixa dose</td><td>—</td><td><b>Sem programa</b> · INCA em estudo</td></tr>
+    <tr><td>HAS</td><td>≥18 anos (e crianças ≥3)</td><td>PA no consultório</td><td>Anual</td><td>PCDT-HAS 2025</td></tr>
+    <tr><td>DM2</td><td><b>≥35 anos</b> <span class="new">2025</span> · &lt;35 com IMC ≥25 + FR</td><td>GJ, HbA1c ou TOTG</td><td>3 anos (anual se pré-DM)</td><td>SBD 2025</td></tr>
+    <tr><td>HIV e sífilis</td><td>Sexualmente ativos · gestantes · populações-chave</td><td>Teste rápido</td><td>Por grupo</td><td>PCDT-IST 2022</td></tr>
+    <tr><td>Hepatites B e C</td><td>≥1 vez na vida · prioridade ≥40 anos · gestantes</td><td>Teste rápido</td><td>Por grupo</td><td>MS / PCDTs</td></tr>
+    <tr><td>Teste do pezinho</td><td>Todo RN</td><td>Sangue em papel-filtro</td><td>3º–5º dia</td><td>PNTN · Lei 14.154/2021</td></tr>
+  </table></div>
+</section>
+
+<p class="grp">Oncológico</p>
+
+<section class="card" id="rx-colo" style="--m:#b83068;--mb:#fceef4;--md:#7a1f45">
+  <div class="top"><h2>Colo do útero</h2><span class="status">SUS · organizado</span><span class="src">MS/INCA 2025 · Portaria Conjunta SAES/SECTICS nº 13, de 29/07/2025</span></div>
+  <div class="hero">
+    <div class="hb"><div class="big">25–64 anos</div><div class="lb">risco padrão</div></div>
+    <div class="hb"><div class="big">DNA-HPV <span class="new">2025</span></div><div class="lb">teste molecular · 14 tipos oncogênicos · substitui o Papanicolau</div></div>
+    <div class="hb"><div class="big">a cada 5 anos</div><div class="lb">se o teste for negativo</div></div>
   </div>
-
-  <div class="rast-grid" id="rastGrid">
-
-    <div class="rast-card">
-      <div class="rast-card-header"><div style="font-size:1.4rem">🔬</div><div><h3>Colo do Útero</h3><div class="rast-sub">Papanicolau · SUS</div></div></div>
-      <div class="rast-card-body">
-        <div class="rast-row"><span class="rast-key">Início</span><span class="rast-val">25 anos (início de atividade sexual)</span></div>
-        <div class="rast-row"><span class="rast-key">Intervalo</span><span class="rast-val">Anual por 2 anos → a cada 3 anos se normais</span></div>
-        <div class="rast-row"><span class="rast-key">Encerra</span><span class="rast-val">64 anos (2 negativos nos últimos 5 anos)</span></div>
-        <div class="rast-row"><span class="rast-key">Alto risco</span><span class="rast-val">HIV+, imunossuprimidas: anual indefinidamente</span></div>
-        <div class="rast-row"><span class="rast-key">Colposcopia</span><span class="rast-val">ASC-US + HPV 16/18 ou LSIL+</span></div>
-        <div class="rast-row"><span class="rast-key">Grau de recomendação</span><span class="rast-val">A</span></div>
-        <button class="btn-add-row" onclick="addRow(this)">+ adicionar linha</button>
-      </div>
-      <div class="rast-card-controls">
-        <button class="btn-card-ctrl" onclick="moveCard(this,-1)">↑ mover</button>
-        <button class="btn-card-ctrl" onclick="moveCard(this,1)">↓ mover</button>
-        <button class="btn-card-ctrl delete" onclick="deleteCard(this)">✕ excluir card</button>
+  <div class="grid">
+    <div class="c full" style="--c:#b83068">
+      <h3>Fluxo</h3>
+      <div class="flow">
+        <div class="n t">Teste DNA-HPV oncogênico</div>
+        <div class="row" style="--k:3">
+          <div class="col"><div class="ar">↓ negativo</div><div class="n ok">Repetir em <b>5 anos</b></div></div>
+          <div class="col"><div class="ar">↓ HPV 16 e/ou 18</div><div class="n bad"><b>Colposcopia direta</b></div></div>
+          <div class="col"><div class="ar">↓ outros HPV oncogênicos</div><div class="n">Citologia <b>reflexa</b><small>na mesma amostra</small></div>
+            <div class="row" style="--k:2">
+              <div class="col"><div class="ar">↓ ASC-US+ ou insatisfatória</div><div class="n bad">Colposcopia</div></div>
+              <div class="col"><div class="ar">↓ normal</div><div class="n ok">DNA-HPV em <b>1 ano</b><small>persistiu 24 meses → colposcopia</small></div></div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-
-    <div class="rast-card">
-      <div class="rast-card-header"><div style="font-size:1.4rem">🩻</div><div><h3>Câncer de Mama</h3><div class="rast-sub">Mamografia · SUS vs Privado</div></div></div>
-      <div class="rast-card-body">
-        <div class="rast-row"><span class="rast-key">SUS (MS)</span><span class="rast-val">50–74 anos · a cada 2 anos</span></div>
-        <div class="rast-row"><span class="rast-key">SBM / privado</span><span class="rast-val">A partir dos 40–74 anos · anual</span></div>
-        <div class="rast-row"><span class="rast-key">Alto risco</span><span class="rast-val">BRCA1/2: a partir dos 25–30 anos RM de mama · familiar 1º grau &lt;50a: iniciar 10 anos antes do diagnóstico · histórico de radioterapia antes dos 30 anos: rastreamento a partir de 8 anos após o tratamento</span></div>
-        <div class="rast-row"><span class="rast-key">Obs.</span><span class="rast-val">Autoexame não substitui a mamografia como método de rastreio</span></div>
-        <div class="rast-row"><span class="rast-key">Grau recomendação</span><span class="rast-val">B</span></div>
-        <div class="rast-row"><span class="rast-key">2025</span><span class="rast-val">Permite o acesso ao rastreamento 40–49 anos</span></div>
-        <div class="rast-row"><span class="rast-key">Outras indicações</span><span class="rast-val">Homens trans sem mastectomia · mulher trans: com hormonização</span></div>
-        <div class="rast-row"><span class="rast-key">RM</span><span class="rast-val">Alto risco · achados discordantes · implantes</span></div>
-        <button class="btn-add-row" onclick="addRow(this)">+ adicionar linha</button>
-      </div>
-      <div class="rast-card-controls">
-        <button class="btn-card-ctrl" onclick="moveCard(this,-1)">↑ mover</button>
-        <button class="btn-card-ctrl" onclick="moveCard(this,1)">↓ mover</button>
-        <button class="btn-card-ctrl delete" onclick="deleteCard(this)">✕ excluir card</button>
-      </div>
+    <div class="c" style="--c:#8a7f73">
+      <h3>Situações especiais</h3>
+      <ul>
+        <li><b>&lt;25 anos:</b> não rastrear (se fez, desconsiderar o resultado e orientar)</li>
+        <li><b>Gestantes:</b> mesmo rastreamento; colposcopia permitida, tratar só suspeita de invasão</li>
+        <li><b>HIV, transplantadas, imunossupressão crônica:</b> começam aos 25, com intervalos menores (detalhes na Parte II da diretriz)</li>
+        <li><b>Após tratar NIC2+/AIS:</b> manter rastreamento por 25 anos</li>
+        <li><b>Autocoleta:</b> só se houver barreira à coleta pelo profissional</li>
+      </ul>
     </div>
-
-    <div class="rast-card">
-      <div class="rast-card-header"><div style="font-size:1.4rem">🫁</div><div><h3>Câncer de Pulmão</h3><div class="rast-sub">LDCT · Alto risco</div></div></div>
-      <div class="rast-card-body">
-        <div class="rast-row"><span class="rast-key">Critérios</span><span class="rast-val">50–80 anos + ≥20 maços-ano + fumante ou parou há &lt;15 anos</span></div>
-        <div class="rast-row"><span class="rast-key">Exame</span><span class="rast-val">TC de tórax de baixa dose (LDCT) · anual</span></div>
-        <div class="rast-row"><span class="rast-key">Suspender</span><span class="rast-val">Parou há &gt;15 anos ou comorbidades que impeçam cirurgia</span></div>
-        <div class="rast-row"><span class="rast-key">SUS</span><span class="rast-val">Ainda não incorporado — protocolos INCA em avaliação</span></div>
-        <button class="btn-add-row" onclick="addRow(this)">+ adicionar linha</button>
-      </div>
-      <div class="rast-card-controls">
-        <button class="btn-card-ctrl" onclick="moveCard(this,-1)">↑ mover</button>
-        <button class="btn-card-ctrl" onclick="moveCard(this,1)">↓ mover</button>
-        <button class="btn-card-ctrl delete" onclick="deleteCard(this)">✕ excluir card</button>
-      </div>
+    <div class="c" style="--c:#7f9a7a">
+      <h3>Como era (citologia, 2016)</h3>
+      <ul>
+        <li>Papanicolau dos 25 aos 64 anos</li>
+        <li>2 exames anuais negativos → a cada <b>3 anos</b></li>
+        <li>Parar aos 64 com 2 negativos nos últimos 5 anos</li>
+        <li>Agora a citologia é <b>triagem (reflexa)</b> do HPV não 16/18</li>
+      </ul>
+      <p class="note">A troca é progressiva: onde o DNA-HPV ainda não chegou, segue a citologia.</p>
     </div>
-
-    <div class="rast-card">
-      <div class="rast-card-header"><div style="font-size:1.4rem">🫀</div><div><h3>Câncer Colorretal</h3><div class="rast-sub">SOF e Colonoscopia · SUS</div></div></div>
-      <div class="rast-card-body">
-        <div class="rast-row"><span class="rast-key">Risco médio</span><span class="rast-val">50–75 anos · SOF anual ou colonoscopia a cada 10 anos</span></div>
-        <div class="rast-row"><span class="rast-key">Pólipo adeno.</span><span class="rast-val">Colonoscopia a cada 5 anos</span></div>
-        <div class="rast-row"><span class="rast-key">PAF / HNPCC</span><span class="rast-val">Colonoscopia a partir dos 20–25 anos</span></div>
-        <div class="rast-row"><span class="rast-key">DII</span><span class="rast-val">RCU ou Crohn: colonoscopia anual após 8 anos de doença</span></div>
-        <div class="rast-row"><span class="rast-key">Grau recomendação</span><span class="rast-val">A</span></div>
-        <button class="btn-add-row" onclick="addRow(this)">+ adicionar linha</button>
-      </div>
-      <div class="rast-card-controls">
-        <button class="btn-card-ctrl" onclick="moveCard(this,-1)">↑ mover</button>
-        <button class="btn-card-ctrl" onclick="moveCard(this,1)">↓ mover</button>
-        <button class="btn-card-ctrl delete" onclick="deleteCard(this)">✕ excluir card</button>
-      </div>
-    </div>
-
-    <div class="rast-card">
-      <div class="rast-card-header"><div style="font-size:1.4rem">⚕️</div><div><h3>Câncer de Próstata</h3><div class="rast-sub">PSA · Decisão compartilhada</div></div></div>
-      <div class="rast-card-body">
-        <div class="rast-row"><span class="rast-key">SUS</span><span class="rast-val">Não recomenda rastreamento universal — oferta via decisão compartilhada</span></div>
-        <div class="rast-row"><span class="rast-key">SBU</span><span class="rast-val">50–75 anos (risco médio); negro ou familiar 1º grau &lt;65a: a partir dos 45 anos</span></div>
-        <div class="rast-row"><span class="rast-key">Exame</span><span class="rast-val">PSA total + toque retal · anual (se PSA &lt;1 ng/mL: a cada 2 anos)</span></div>
-        <div class="rast-row"><span class="rast-key">Encerra</span><span class="rast-val">75 anos ou expectativa de vida &lt;10 anos</span></div>
-        <button class="btn-add-row" onclick="addRow(this)">+ adicionar linha</button>
-      </div>
-      <div class="rast-card-controls">
-        <button class="btn-card-ctrl" onclick="moveCard(this,-1)">↑ mover</button>
-        <button class="btn-card-ctrl" onclick="moveCard(this,1)">↓ mover</button>
-        <button class="btn-card-ctrl delete" onclick="deleteCard(this)">✕ excluir card</button>
-      </div>
-    </div>
-
-    <div class="rast-card">
-      <div class="rast-card-header"><div style="font-size:1.4rem">🩸</div><div><h3>DM e HAS</h3><div class="rast-sub">Vigilância metabólica · APS</div></div></div>
-      <div class="rast-card-body">
-        <div class="rast-row"><span class="rast-key">DM — quem</span><span class="rast-val">≥45 anos; ou qualquer adulto com IMC ≥25 + 1 FR</span></div>
-        <div class="rast-row"><span class="rast-key">DM — exame</span><span class="rast-val">Glicemia jejum ou HbA1c · a cada 3 anos (anual se pré-DM)</span></div>
-        <div class="rast-row"><span class="rast-key">HAS</span><span class="rast-val">Aferição de PA em toda consulta de adultos ≥18 anos</span></div>
-        <div class="rast-row"><span class="rast-key">HAS — intervalo</span><span class="rast-val">PA normal sem FR: 2 anos. PA normal-alta: anual</span></div>
-        <div class="rast-row"><span class="rast-key">Grau recomendação</span><span class="rast-val">HAS &gt;18 anos: A · Dislipidemia mulheres &gt;45 anos / homens &gt;35 anos: A</span></div>
-        <button class="btn-add-row" onclick="addRow(this)">+ adicionar linha</button>
-      </div>
-      <div class="rast-card-controls">
-        <button class="btn-card-ctrl" onclick="moveCard(this,-1)">↑ mover</button>
-        <button class="btn-card-ctrl" onclick="moveCard(this,1)">↓ mover</button>
-        <button class="btn-card-ctrl delete" onclick="deleteCard(this)">✕ excluir card</button>
-      </div>
-    </div>
-
-    <div class="rast-card">
-      <div class="rast-card-header"><div style="font-size:1.4rem">🧬</div><div><h3>HIV e Hepatites B e C</h3><div class="rast-sub">IST · APS e Pré-natal</div></div></div>
-      <div class="rast-card-body">
-        <div class="rast-row"><span class="rast-key">HIV</span><span class="rast-val">Oferta universal na APS + obrigatório no pré-natal (1º, 3º trim. e parto)</span></div>
-        <div class="rast-row"><span class="rast-key">Hep. B</span><span class="rast-val">HBsAg + anti-HBs: gestantes, prof. saúde, PVHIV, usuários de drogas</span></div>
-        <div class="rast-row"><span class="rast-key">Hep. C</span><span class="rast-val">Anti-HCV: nascidos 1945–1975, ex-usuários de drogas IV, hemofílicos</span></div>
-        <div class="rast-row"><span class="rast-key">Sífilis</span><span class="rast-val">VDRL/RPR: 1º, 2º, 3º trim. e parto. Grupos de risco: anual</span></div>
-        <button class="btn-add-row" onclick="addRow(this)">+ adicionar linha</button>
-      </div>
-      <div class="rast-card-controls">
-        <button class="btn-card-ctrl" onclick="moveCard(this,-1)">↑ mover</button>
-        <button class="btn-card-ctrl" onclick="moveCard(this,1)">↓ mover</button>
-        <button class="btn-card-ctrl delete" onclick="deleteCard(this)">✕ excluir card</button>
-      </div>
-    </div>
-
-    <div class="rast-card">
-      <div class="rast-card-header"><div style="font-size:1.4rem">👶</div><div><h3>Triagem Neonatal</h3><div class="rast-sub">Programa Nacional · Obrigatório</div></div></div>
-      <div class="rast-card-body">
-        <div class="rast-row"><span class="rast-key">Pezinho</span><span class="rast-val">3º–5º dia de vida: PKU, hipotireoidismo, hemoglobinopatias, FC, CAH, biotinidase</span></div>
-        <div class="rast-row"><span class="rast-key">Fase ampliada</span><span class="rast-val">+50 erros inatos do metabolismo por espectrometria de massa em tandem</span></div>
-        <div class="rast-row"><span class="rast-key">Olhinho</span><span class="rast-val">Reflexo vermelho antes da alta hospitalar</span></div>
-        <div class="rast-row"><span class="rast-key">Coraçãozinho</span><span class="rast-val">Oximetria em MSD e MI antes da alta (24–48h)</span></div>
-        <div class="rast-row"><span class="rast-key">Orelhinha</span><span class="rast-val">EOA ou PEATE — triagem auditiva universal até 1 mês</span></div>
-        <div class="rast-row"><span class="rast-key">Grau rec. A</span><span class="rast-val">Anemia falciforme · hipotireoidismo congênito · fenilcetonúria</span></div>
-        <button class="btn-add-row" onclick="addRow(this)">+ adicionar linha</button>
-      </div>
-      <div class="rast-card-controls">
-        <button class="btn-card-ctrl" onclick="moveCard(this,-1)">↑ mover</button>
-        <button class="btn-card-ctrl" onclick="moveCard(this,1)">↓ mover</button>
-        <button class="btn-card-ctrl delete" onclick="deleteCard(this)">✕ excluir card</button>
-      </div>
-    </div>
-
-    <div class="rast-card">
-      <div class="rast-card-header"><div style="font-size:1.4rem">🚬</div><div><h3>Tabagismo</h3><div class="rast-sub">Cessação · Grau de recomendação A</div></div></div>
-      <div class="rast-card-body">
-        <div class="rast-row"><span class="rast-key">Rastrear</span><span class="rast-val">Perguntar sobre tabagismo em toda consulta de adultos ≥18 anos — identificar fumantes ativos, ex-fumantes e expostos ao tabagismo passivo</span></div>
-        <div class="rast-row"><span class="rast-key">Intervenção</span><span class="rast-val">5 As: <strong>A</strong>veriguar · <strong>A</strong>conselhar (cessação, não redução) · <strong>A</strong>valiar motivação · <strong>A</strong>uxiliar (plano + farmacoterapia) · <strong>A</strong>companhar</span></div>
-        <div class="rast-row"><span class="rast-key">1ª linha</span><span class="rast-val">Vareniclina (Champix) 0,5 mg/d → 1 mg 2x/d · 12 semanas (prorrogável) · taxa cessação ~44% · contraindicada na gestação</span></div>
-        <div class="rast-row"><span class="rast-key">2ª linha</span><span class="rast-val">Bupropiona 150 mg 1x/d por 3 dias → 150 mg 2x/d · 12 semanas · associar à TRN se necessário</span></div>
-        <div class="rast-row"><span class="rast-key">TRN</span><span class="rast-val">Adesivo (21/14/7 mg) + goma ou pastilha (2/4 mg) · pode combinar adesivo + forma oral para maior eficácia</span></div>
-        <div class="rast-row"><span class="rast-key">SUS</span><span class="rast-val">PNCT — grupo de cessação nas UBS · bupropiona e TRN disponíveis pelo RENAME · encaminhar ao NASF se necessário</span></div>
-        <div class="rast-row"><span class="rast-key">Gestante</span><span class="rast-val">Aconselhamento intensivo em toda consulta · TRN com cautela se benefício superar risco · vareniclina e bupropiona: evitar</span></div>
-        <div class="rast-row"><span class="rast-key">Grau recomendação</span><span class="rast-val">A — USPSTF 2021 · MS Brasil</span></div>
-        <button class="btn-add-row" onclick="addRow(this)">+ adicionar linha</button>
-      </div>
-      <div class="rast-card-controls">
-        <button class="btn-card-ctrl" onclick="moveCard(this,-1)">↑ mover</button>
-        <button class="btn-card-ctrl" onclick="moveCard(this,1)">↓ mover</button>
-        <button class="btn-card-ctrl delete" onclick="deleteCard(this)">✕ excluir card</button>
-      </div>
-    </div>
-
   </div>
+  <div class="trap"><h3>Pegadinhas</h3><ul>
+    <li>"DNA-HPV negativo → repetir em 3 anos" → <b>errado</b>: 5 anos</li>
+    <li>"HPV 16/18 positivo → fazer citologia" → <b>errado</b>: colposcopia direta</li>
+    <li>"Rastrear a partir do início da vida sexual" → <b>errado</b>: 25 anos</li>
+    <li>"HPV não 16/18 + citologia normal → colposcopia" → <b>errado</b>: repetir em 1 ano</li>
+  </ul></div>
+</section>
+
+<section class="card" id="rx-mama" style="--m:#c0567a;--mb:#fbe9ef;--md:#7a2a46">
+  <div class="top"><h2>Mama</h2><span class="status">SUS · recomendado</span><span class="src">Ministério da Saúde, 23/09/2025</span></div>
+  <div class="hero">
+    <div class="hb"><div class="big">50–74 anos <span class="new">2025</span></div><div class="lb">rastreamento ativo (antes era até 69)</div></div>
+    <div class="hb"><div class="big">Mamografia</div><div class="lb">bilateral</div></div>
+    <div class="hb"><div class="big">a cada 2 anos</div><div class="lb">acima de 74: individualizar</div></div>
+  </div>
+  <div class="grid">
+    <div class="c" style="--c:#c0567a">
+      <h3>Faixas etárias no SUS (2025)</h3>
+      <div class="flow">
+        <div class="n">&lt;40 anos: <b>não rastrear</b> (risco habitual)</div><div class="ar">↓</div>
+        <div class="n t">40–49 anos: <b>sob demanda</b> <span class="new">NOVO</span><small>decisão compartilhada, orientando benefícios e riscos</small></div><div class="ar">↓</div>
+        <div class="n ok">50–74 anos: <b>bienal, rastreamento ativo</b></div><div class="ar">↓</div>
+        <div class="n">&gt;74 anos: individualizar<small>comorbidades e expectativa de vida</small></div>
+      </div>
+    </div>
+    <div class="c" style="--c:#7a5fa0">
+      <h3>Comparação</h3>
+      <div class="tw"><table>
+        <tr><th></th><th>Idade</th><th>Intervalo</th></tr>
+        <tr><td><b>SUS 2025</b></td><td>50–74 (40–49 sob demanda)</td><td>2 anos</td></tr>
+        <tr><td><b>USPSTF 2024</b></td><td>40–74 (B)</td><td>2 anos</td></tr>
+        <tr><td><b>SBM / CBR / Febrasgo</b></td><td>40–74</td><td>Anual</td></tr>
+      </table></div>
+      <h3 style="margin-top:10px">Alto risco (sociedades)</h3>
+      <ul>
+        <li><b>BRCA1/2</b> ou risco ≥20% na vida: <b>RM anual</b> a partir de 25–30 anos, mamografia a partir dos 30</li>
+        <li><b>Parente de 1º grau &lt;50 anos:</b> iniciar 10 anos antes da idade do diagnóstico</li>
+        <li><b>RT de tórax antes dos 30:</b> anual, a partir de 8 anos após a RT</li>
+      </ul>
+      <p class="note">Alto risco: SBM/CBR, não é recomendação do MS.</p>
+    </div>
+  </div>
+  <div class="trap"><h3>Pegadinhas</h3><ul>
+    <li>"SUS: 50–69 anos" → <b>desatualizado</b>: agora 50–74</li>
+    <li>"40–49 no SUS: bienal obrigatório" → <b>errado</b>: sob demanda</li>
+    <li>"Autoexame é método de rastreamento" → <b>errado</b>: o INCA recomenda contra ensinar o autoexame como rastreamento</li>
+    <li>"USPSTF: 50–74" → <b>desatualizado</b>: 40–74 desde 2024</li>
+  </ul></div>
+</section>
+
+<section class="card" id="rx-ccr" style="--m:#3f6a3a;--mb:#e6efe2;--md:#2f4a2c">
+  <div class="top"><h2>Colorretal</h2><span class="status">SUS · organizado</span><span class="src">MS/INCA · Portaria Conjunta SAES/SCTIE nº 104, de 20/10/2026</span></div>
+  <div class="hero">
+    <div class="hb"><div class="big">50–75 anos</div><div class="lb">ambos os sexos · assintomáticos · risco padrão</div></div>
+    <div class="hb"><div class="big">FIT <span class="new">2026</span></div><div class="lb">teste imunoquímico fecal · 1 amostra em casa · sem dieta</div></div>
+    <div class="hb"><div class="big">a cada 2 anos</div><div class="lb">FIT positivo → colonoscopia</div></div>
+  </div>
+  <div class="grid">
+    <div class="c" style="--c:#3f6a3a">
+      <h3>Fluxo</h3>
+      <div class="flow">
+        <div class="n t">FIT</div>
+        <div class="row">
+          <div class="col"><div class="ar">↓ negativo</div><div class="n ok">Repetir em <b>2 anos</b></div></div>
+          <div class="col"><div class="ar">↓ positivo</div><div class="n bad"><b>Colonoscopia</b></div></div>
+        </div>
+        <div class="row">
+          <div class="col"><div class="ar">↓ inválido</div><div class="n">Repetir com novo dispositivo</div></div>
+          <div class="col"><div class="ar">↓</div><div class="n ok" style="margin-bottom:6px">Normal → <b>volta ao FIT bienal</b></div><div class="n">Adenoma, lesão ou câncer → <b>especializado</b></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="c" style="--c:#7f9a7a">
+      <h3>Por que FIT e por que essa faixa?</h3>
+      <ul>
+        <li>Anticorpo contra <b>globina</b>: dieta não interfere</li>
+        <li>Corte <b>50 ng/mL</b> (≈10 µg Hb/g de fezes)</li>
+        <li>Sensibilidade <b>FIT 89%</b> × guáiaco 59%</li>
+        <li><b>50, não 45:</b> NNR para evitar 1 morte = 2.655 (45–59 a) × 492 (60–80 a)</li>
+        <li><b>Para aos 75:</b> riscos da colonoscopia superam o benefício</li>
+      </ul>
+    </div>
+    <div class="c" style="--c:#c0704e">
+      <h3>Fora do rastreamento com FIT</h3>
+      <ul>
+        <li><b>Sintomáticos → investigação:</b> sangue nas fezes, alteração do hábito, anemia ferropriva, perda de peso, dor abdominal, tenesmo, massa retal</li>
+        <li><b>Alto risco → colonoscopia individualizada:</b> CCR ou adenoma prévio, DII, Lynch, PAF</li>
+      </ul>
+    </div>
+    <div class="c" style="--c:#7a5fa0">
+      <h3>Alto risco (fora da diretriz MS)</h3>
+      <div class="tw"><table>
+        <tr><th>Grupo</th><th>Início</th><th>Intervalo</th></tr>
+        <tr><td>1º grau &lt;60 a ou ≥2 de 1º grau</td><td>40 a ou 10 a antes do caso mais jovem</td><td>Colono a cada 5 a</td></tr>
+        <tr><td>Lynch</td><td>20–25 a</td><td>Colono a cada 1–2 a</td></tr>
+        <tr><td>PAF</td><td>10–12 a</td><td>Anual</td></tr>
+        <tr><td>DII (colite extensa)</td><td>8 a de doença</td><td>Colono a cada 1–3 a</td></tr>
+      </table></div>
+    </div>
+  </div>
+  <div class="trap"><h3>Pegadinhas</h3><ul>
+    <li>"Iniciar aos 45 no SUS" → <b>errado</b> (45 é USPSTF)</li>
+    <li>"Colonoscopia é o rastreamento de 1ª linha no SUS" → <b>errado</b></li>
+    <li>"Anemia ferropriva → pedir FIT" → <b>errado</b>: colonoscopia</li>
+    <li>"FIT anual no SUS" → <b>errado</b>: bienal</li>
+  </ul></div>
+</section>
+
+<section class="card" id="rx-prostata" style="--m:#2f5f8a;--mb:#e6eff7;--md:#1f3f5e">
+  <div class="top"><h2>Próstata</h2><span class="status no">SUS · não recomenda</span><span class="src">Nota Técnica MS/INCA nº 9/2023 · SBU 2026</span></div>
+  <div class="hero">
+    <div class="hb"><div class="big">Não rastrear</div><div class="lb">homens assintomáticos, em nível populacional (MS/INCA)</div></div>
+    <div class="hb"><div class="big">Decisão compartilhada</div><div class="lb">quem pedir o exame recebe explicação de riscos e benefícios</div></div>
+    <div class="hb"><div class="big">PSA ± toque</div><div class="lb">quando feito · sintomático = diagnóstico</div></div>
+  </div>
+  <div class="grid">
+    <div class="c" style="--c:#2f5f8a">
+      <h3>Por que o MS não recomenda?</h3>
+      <ul>
+        <li><b>Falso-positivo:</b> PSA sobe sem câncer (HPB, prostatite)</li>
+        <li><b>Sobrediagnóstico:</b> muitos tumores nunca dariam sintoma</li>
+        <li><b>Sobretratamento:</b> incontinência, impotência, complicações da biópsia</li>
+        <li>Benefício pequeno na mortalidade (ERSPC) frente aos danos</li>
+        <li>Mesma posição de OMS (2020) e força-tarefa canadense</li>
+      </ul>
+    </div>
+    <div class="c" style="--c:#7a5fa0">
+      <h3>Comparação</h3>
+      <div class="tw"><table>
+        <tr><th></th><th>Recomendação</th></tr>
+        <tr><td><b>MS/INCA</b></td><td>Não rastrear população; decisão compartilhada se o homem pedir</td></tr>
+        <tr><td><b>USPSTF 2018</b></td><td>55–69 a: decisão individual (C) · ≥70 a: não rastrear (D)</td></tr>
+        <tr><td><b>SBU 2026</b> <span class="new">NOVO</span></td><td>Início <b>50</b> a · <b>45</b> se negro ou história familiar · <b>40</b> se BRCA · corte PSA <b>3 ng/mL</b> · &gt;75 a individualizar</td></tr>
+      </table></div>
+      <p class="note">SBU: diretriz conjunta com outras 6 entidades, lançada em 17/11/2026.</p>
+    </div>
+  </div>
+  <div class="trap"><h3>Pegadinhas</h3><ul>
+    <li>"MS: PSA anual a partir dos 50" → <b>errado</b>: MS não recomenda</li>
+    <li>"Homem com sintoma urinário: não pedir PSA" → <b>errado</b>: sintomático = investigação</li>
+    <li>"USPSTF recomenda acima de 70" → <b>errado</b>: grau D</li>
+    <li>Banca SUS → resposta do MS · banca privada pode cobrar SBU</li>
+  </ul></div>
+</section>
+
+<section class="card" id="rx-pulmao" style="--m:#6b5a4a;--mb:#f1ede7;--md:#4a3e33">
+  <div class="top"><h2>Pulmão</h2><span class="status no">SUS · sem programa</span><span class="src">USPSTF 2021 · SBPT/CBR · INCA (estudo 2026)</span></div>
+  <div class="hero">
+    <div class="hb"><div class="big">50–80 anos</div><div class="lb">fumante atual ou parou há ≤15 anos</div></div>
+    <div class="hb"><div class="big">≥20 maços-ano</div><div class="lb">carga tabágica</div></div>
+    <div class="hb"><div class="big">TC baixa dose</div><div class="lb">anual</div></div>
+  </div>
+  <div class="grid">
+    <div class="c" style="--c:#6b5a4a">
+      <h3>Critérios (USPSTF 2021 e sociedades brasileiras)</h3>
+      <ul>
+        <li><b>Idade:</b> 50 a 80 anos</li>
+        <li><b>Carga tabágica:</b> ≥20 maços-ano (maços/dia × anos)</li>
+        <li><b>Status:</b> fumante atual ou parou há ≤15 anos</li>
+        <li><b>Parar:</b> após 15 anos sem fumar, ou se a saúde não permitir cirurgia curativa</li>
+        <li>Sempre junto com <b>cessação do tabagismo</b></li>
+      </ul>
+    </div>
+    <div class="c" style="--c:#2f5f8a">
+      <h3>Situação no Brasil</h3>
+      <ul>
+        <li><b>Não há</b> programa nacional nem diretriz do MS</li>
+        <li>INCA lançou em <b>abril/2026</b> estudo de viabilidade para criar diretriz nacional <span class="new">2026</span></li>
+        <li>Câncer que <b>mais mata</b> no Brasil · ~85% diagnosticados em estágio avançado</li>
+        <li>TCBD reduz mortalidade em ~20%; com cessação do tabagismo, até 38%</li>
+      </ul>
+    </div>
+  </div>
+  <div class="trap"><h3>Pegadinhas</h3><ul>
+    <li>"Raio-X de tórax anual" → <b>errado</b>: não reduz mortalidade</li>
+    <li>"55–80 anos e 30 maços-ano" → <b>desatualizado</b> (USPSTF 2013)</li>
+    <li>"Parou há 20 anos → rastrear" → <b>errado</b>: limite de 15 anos</li>
+    <li>"SUS tem programa de TCBD" → <b>errado</b>: ainda em estudo</li>
+  </ul></div>
+</section>
+
+<p class="grp">Metabólico</p>
+
+<section class="card" id="rx-has" style="--m:#a8432a;--mb:#f8e6dc;--md:#6e2a18">
+  <div class="top"><h2>Hipertensão arterial</h2><span class="status">SUS · APS</span><span class="src">PCDT-HAS MS 2025 · Diretriz Brasileira de HA 2025 (SBC/SBH/SBN)</span></div>
+  <div class="hero">
+    <div class="hb"><div class="big">≥18 anos</div><div class="lb">todo adulto sem diagnóstico</div></div>
+    <div class="hb"><div class="big">2 medidas</div><div class="lb">PA no consultório</div></div>
+    <div class="hb"><div class="big">anual</div><div class="lb">crianças: anual a partir dos 3 anos</div></div>
+  </div>
+  <div class="grid">
+    <div class="c full" style="--c:#a8432a">
+      <h3>Classificação: MS × SBC 2025</h3>
+      <div class="tw"><table>
+        <tr><th>PAS / PAD (mmHg)</th><th>PCDT-HAS 2025 (MS)</th><th>Diretriz SBC 2025</th></tr>
+        <tr><td>&lt;120 / &lt;80</td><td>Ótima</td><td>Normal</td></tr>
+        <tr><td>120–129 / 80–84</td><td>Normal</td><td rowspan="2"><b>Pré-hipertensão</b> <span class="new">2025</span><br><span style="font-size:.85em">(120–139 / 80–89)</span></td></tr>
+        <tr><td>130–139 / 85–89</td><td>Normal alta</td></tr>
+        <tr><td>140–159 / 90–99</td><td>HAS grau 1</td><td>Estágio 1</td></tr>
+        <tr><td>160–179 / 100–109</td><td>HAS grau 2</td><td>Estágio 2</td></tr>
+        <tr><td>≥180 / ≥110</td><td>HAS grau 3</td><td>Estágio 3</td></tr>
+      </table></div>
+      <p class="note">Diagnóstico nos dois: PA ≥140 e/ou ≥90 em pelo menos 2 ocasiões, sem anti-hipertensivo. No SUS, a referência oficial é o PCDT, e "pré-hipertensão" não existe no prontuário eletrônico.</p>
+    </div>
+    <div class="c" style="--c:#a8432a">
+      <h3>Fluxo no PCDT (adulto)</h3>
+      <div class="flow">
+        <div class="n t">Rastreio anual: 2 medidas no consultório</div><div class="ar">↓ PA ≥140/90</div>
+        <div class="n bad">Confirmar diagnóstico<small>2 ou mais visitas, ou MAPA/MRPA</small></div><div class="ar">↓ PA &lt;140/90</div>
+        <div class="n">Com fator de risco CV → <b>repetir em 2 ocasiões, com 7 a 14 dias</b><small>sem FR: orientação de estilo de vida</small></div>
+      </div>
+    </div>
+    <div class="c" style="--c:#7f9a7a">
+      <h3>Pontos-chave</h3>
+      <ul>
+        <li>Risco CV: estratificar anualmente <b>de 40 a 74 anos</b> (calculadora HEARTS/OPAS)</li>
+        <li><b>Crianças:</b> rastreio anual ≥3 anos · 1–13 anos: positivo se ≥P90 · ≥13 anos: positivo se ≥120/80</li>
+        <li><b>SBC 2025:</b> pré-hipertensão → mudança de estilo de vida, e MAPA ou MRPA para afastar HAS mascarada</li>
+        <li>Aparelho automático é o preferido para medir</li>
+      </ul>
+    </div>
+  </div>
+  <div class="trap"><h3>Pegadinhas</h3><ul>
+    <li>"1 medida ≥140/90 fecha diagnóstico" → <b>errado</b>: confirmar</li>
+    <li>"Pré-hipertensão é termo do MS" → <b>errado</b>: é da SBC 2025</li>
+    <li>"Criança só mede PA se tiver sintoma" → <b>errado</b>: anual a partir dos 3 anos</li>
+    <li>Corte de HAS não mudou: continua ≥140/90</li>
+  </ul></div>
+</section>
+
+<section class="card" id="rx-dm" style="--m:#b07a10;--mb:#fdf3e0;--md:#6e4a06">
+  <div class="top"><h2>Diabetes tipo 2</h2><span class="status">Sociedade · SBD 2025</span><span class="src">Diretriz SBD 2025 (mar/2025) · PCDT DM2 MS 2026</span></div>
+  <div class="hero">
+    <div class="hb"><div class="big">≥35 anos <span class="new">2025</span></div><div class="lb">todos, mesmo sem fator de risco (antes era 45)</div></div>
+    <div class="hb"><div class="big">GJ · HbA1c · TOTG</div><div class="lb">TOTG de 1 hora é o preferido da SBD</div></div>
+    <div class="hb"><div class="big">a cada 3 anos</div><div class="lb">anual se pré-diabetes</div></div>
+  </div>
+  <div class="grid">
+    <div class="c" style="--c:#b07a10">
+      <h3>Quem rastrear</h3>
+      <ul>
+        <li><b>≥35 anos:</b> todos (universal)</li>
+        <li><b>&lt;35 anos:</b> sobrepeso ou obesidade + 1 fator de risco (DM em parente de 1º grau, HAS, dislipidemia, DCV, SOP, sedentarismo, DMG prévio, acantose, pré-DM)</li>
+        <li><b>Crianças ≥10 anos</b> (ou após puberdade): excesso de peso + fator de risco</li>
+        <li>Pontuação alta no escore FINDRISC</li>
+      </ul>
+    </div>
+    <div class="c" style="--c:#7a5fa0">
+      <h3>Pontos de corte</h3>
+      <div class="tw"><table>
+        <tr><th>Exame</th><th>Pré-DM</th><th>DM</th></tr>
+        <tr><td>Glicemia de jejum</td><td>100–125</td><td>≥126</td></tr>
+        <tr><td>HbA1c</td><td>5,7–6,4%</td><td>≥6,5%</td></tr>
+        <tr><td>TOTG 1 h</td><td>155–208</td><td>≥209</td></tr>
+        <tr><td>TOTG 2 h</td><td>140–199</td><td>≥200</td></tr>
+      </table></div>
+      <p class="note">Glicemias em mg/dL. Em assintomático, confirmar com 2º exame alterado.</p>
+    </div>
+  </div>
+  <div class="trap"><h3>Pegadinhas</h3><ul>
+    <li>"Rastrear a partir dos 45" → <b>desatualizado</b>: SBD 2025 = 35</li>
+    <li>"Exame normal → repetir anualmente" → <b>errado</b>: 3 anos (anual só se pré-DM)</li>
+    <li>"TOTG 1 h não serve para diagnóstico" → <b>errado</b>: SBD 2025 adotou</li>
+    <li>Glicemia ao acaso ≥200 + sintomas = diagnóstico (não é rastreamento)</li>
+  </ul></div>
+</section>
+
+<p class="grp">IST e hepatites</p>
+
+<section class="card" id="rx-hiv" style="--m:#8a2f6a;--mb:#f7e8f2;--md:#5a1c45">
+  <div class="top"><h2>HIV e sífilis</h2><span class="status">SUS · teste rápido</span><span class="src">PCDT-IST 2022 · PCDT Transmissão Vertical</span></div>
+  <div class="hero">
+    <div class="hb"><div class="big">Oferta universal</div><div class="lb">a toda pessoa sexualmente ativa</div></div>
+    <div class="hb"><div class="big">Teste rápido</div><div class="lb">resultado em até 30 min na APS</div></div>
+    <div class="hb"><div class="big">3 vezes</div><div class="lb">na gestação: 1º tri, 28 sem e parto</div></div>
+  </div>
+  <div class="grid">
+    <div class="c full" style="--c:#8a2f6a">
+      <h3>Frequência por grupo (PCDT-IST)</h3>
+      <div class="tw"><table>
+        <tr><th>Grupo</th><th>HIV</th><th>Sífilis</th><th>Hepatites B e C</th></tr>
+        <tr><td><b>Adolescentes e jovens &lt;30 anos</b> sexualmente ativos</td><td>Anual</td><td>Anual</td><td>Conforme outros subgrupos</td></tr>
+        <tr><td><b>Gestantes</b></td><td colspan="2">1ª consulta (ideal 1º tri) · início do 3º tri (28 sem) · parto · sífilis também se aborto ou natimorto</td><td>1ª consulta do pré-natal</td></tr>
+        <tr><td><b>Populações-chave</b>: gays e HSH, trabalhadores do sexo, pessoas trans, uso de álcool e drogas, privados de liberdade</td><td>Semestral</td><td>Semestral</td><td>Semestral a anual</td></tr>
+        <tr><td><b>PVHIV</b></td><td>—</td><td>Semestral</td><td>Semestral a anual</td></tr>
+        <tr><td><b>Em uso de PrEP</b></td><td>A cada visita</td><td>Trimestral</td><td>Trimestral</td></tr>
+        <tr><td><b>Diagnóstico de outra IST, hepatite ou TB</b></td><td colspan="3">Testar no momento do diagnóstico</td></tr>
+      </table></div>
+    </div>
+  </div>
+  <div class="trap"><h3>Pegadinhas</h3><ul>
+    <li>"Gestante: HIV só no 1º trimestre" → <b>errado</b>: 1º tri, 28 sem e parto</li>
+    <li>"Exame anterior negativo dispensa teste no parto" → <b>errado</b></li>
+    <li>"Aborto ou natimorto: não precisa testar sífilis" → <b>errado</b></li>
+    <li>"Jovem &lt;30 anos sem fator de risco não testa" → <b>errado</b>: anual</li>
+  </ul></div>
+</section>
+
+<section class="card" id="rx-hep" style="--m:#8a6a10;--mb:#fbf3dc;--md:#5a4406">
+  <div class="top"><h2>Hepatites B e C</h2><span class="status">SUS · teste rápido</span><span class="src">MS · PCDT Hepatite C e Coinfecções (2026) · PCDT Hepatite B · PCDT-TV</span></div>
+  <div class="hero">
+    <div class="hb"><div class="big">≥1 vez na vida</div><div class="lb">todo adulto</div></div>
+    <div class="hb"><div class="big">≥40 anos</div><div class="lb">prioridade para testar (MS)</div></div>
+    <div class="hb"><div class="big">Gestantes</div><div class="lb">HBsAg e anti-HCV na 1ª consulta</div></div>
+  </div>
+  <div class="grid">
+    <div class="c" style="--c:#8a6a10">
+      <h3>Quem testar com prioridade</h3>
+      <ul>
+        <li><b>Pessoas com 40 anos ou mais</b></li>
+        <li>Transfusão de sangue ou derivados <b>antes de 1993</b></li>
+        <li>Uso atual ou prévio de drogas (injetáveis ou inaladas)</li>
+        <li>Hemodiálise · procedimentos com material perfurocortante (tatuagem, piercing)</li>
+        <li>PVHIV, populações-chave, outras IST · diabetes</li>
+        <li>Gestantes: <b>HBsAg</b> e <b>anti-HCV</b> no pré-natal</li>
+      </ul>
+    </div>
+    <div class="c" style="--c:#7a5fa0">
+      <h3>Exame e conduta</h3>
+      <div class="tw"><table>
+        <tr><th></th><th>Hepatite B</th><th>Hepatite C</th></tr>
+        <tr><td><b>Triagem</b></td><td>HBsAg (teste rápido)</td><td>Anti-HCV (teste rápido)</td></tr>
+        <tr><td><b>Se reagente</b></td><td>Confirmar e estadiar · HBV-DNA</td><td><b>HCV-RNA</b> para confirmar infecção ativa</td></tr>
+        <tr><td><b>Prevenção</b></td><td><b>Vacina</b> para todos os não vacinados</td><td>Sem vacina · tratamento cura &gt;95%</td></tr>
+      </table></div>
+      <p class="note">Anti-HCV positivo pode ser cicatriz sorológica: só o HCV-RNA confirma infecção atual.</p>
+    </div>
+  </div>
+  <div class="trap"><h3>Pegadinhas</h3><ul>
+    <li>"Anti-HCV reagente = hepatite C ativa" → <b>errado</b>: pedir HCV-RNA</li>
+    <li>"Hepatite C só testa se tiver fator de risco" → <b>errado</b>: ≥40 anos já é indicação</li>
+    <li>"Gestante não precisa de anti-HCV" → <b>errado</b>: testagem universal no pré-natal</li>
+    <li>"Hepatite C tem vacina" → <b>errado</b></li>
+  </ul></div>
+</section>
+
+<p class="grp">Neonatal</p>
+
+<section class="card" id="rx-neo" style="--m:#6030a8;--mb:#f0eafb;--md:#3f1f70">
+  <div class="top"><h2>Triagem neonatal</h2><span class="status">SUS · obrigatória</span><span class="src">Programa Nacional de Triagem Neonatal (PNTN) · Lei 14.154/2021 · Portaria GM/MS nº 7.293/2025</span></div>
+  <div class="hero">
+    <div class="hb"><div class="big">Pezinho</div><div class="lb">sangue do calcanhar em papel-filtro</div></div>
+    <div class="hb"><div class="big">3º–5º dia</div><div class="lb">de vida (a partir de 48 h)</div></div>
+    <div class="hb"><div class="big">7 condições</div><div class="lb">no SUS hoje, na maioria dos estados</div></div>
+  </div>
+  <div class="grid">
+    <div class="c" style="--c:#6030a8">
+      <h3>Teste do pezinho no SUS</h3>
+      <ul>
+        <li><b>Fenilcetonúria</b></li>
+        <li><b>Hipotireoidismo congênito</b></li>
+        <li><b>Doença falciforme</b> e outras hemoglobinopatias</li>
+        <li><b>Fibrose cística</b></li>
+        <li><b>Hiperplasia adrenal congênita</b></li>
+        <li><b>Deficiência de biotinidase</b></li>
+        <li><b>Toxoplasmose congênita</b> <span class="new">etapa 1</span></li>
+      </ul>
+      <p class="note">Mnemônico: os "6 clássicos" + toxoplasmose.</p>
+    </div>
+    <div class="c" style="--c:#7a5fa0">
+      <h3>Ampliação (Lei 14.154/2021)</h3>
+      <ul>
+        <li>De 6 para <b>mais de 50 doenças</b>, em <b>5 etapas</b></li>
+        <li><b>Etapa 1:</b> + toxoplasmose congênita e outras hiperfenilalaninemias e hemoglobinopatias</li>
+        <li><b>Etapas 2–4:</b> galactosemias, erros inatos do metabolismo, doenças lisossômicas, imunodeficiências primárias (SCID)</li>
+        <li><b>Etapa 5:</b> <b>AME</b> (atrofia muscular espinhal)</li>
+        <li>Implantação depende do estado: poucos já triam AME (ex.: DF, MG, MS, ES)</li>
+      </ul>
+    </div>
+    <div class="c full" style="--c:#2f5f8a">
+      <h3>Os outros "testes" da triagem neonatal</h3>
+      <div class="tw"><table>
+        <tr><th>Teste</th><th>O que avalia</th><th>Quando e como</th><th>Alterado</th></tr>
+        <tr><td><b>Olhinho</b></td><td>Reflexo vermelho: catarata, glaucoma, retinoblastoma</td><td>Antes da alta e nas consultas de puericultura</td><td>Reflexo ausente, assimétrico ou leucocoria → oftalmologista</td></tr>
+        <tr><td><b>Orelhinha</b></td><td>Triagem auditiva (EOA ou PEATE)</td><td>Ideal nas primeiras 24–48 h, até 1 mês · com risco para perda auditiva: PEATE</td><td>Falhou → reteste · persistiu → avaliação até 3 meses, intervenção até 6 meses</td></tr>
+        <tr><td><b>Coraçãozinho</b></td><td>Cardiopatia congênita crítica (oximetria)</td><td>24–48 h de vida, membro superior direito e um membro inferior</td><td>SpO₂ &lt;95% ou diferença ≥3% → repetir em 1 h · persistiu → ecocardiograma</td></tr>
+        <tr><td><b>Linguinha</b></td><td>Anquiloglossia (protocolo de Bristol)</td><td>Na maternidade (Lei 13.002/2014)</td><td>Alterado → avaliar frenotomia</td></tr>
+      </table></div>
+    </div>
+  </div>
+  <div class="trap"><h3>Pegadinhas</h3><ul>
+    <li>"Pezinho nas primeiras 24 h" → <b>errado</b>: entre o 3º e o 5º dia (após 48 h de amamentação)</li>
+    <li>"SUS já tria AME em todo o país" → <b>errado</b>: depende do estado</li>
+    <li>"Coraçãozinho: oxímetro nos dois membros inferiores" → <b>errado</b>: MSD + um MI</li>
+    <li>"Toxoplasmose não entra no pezinho" → <b>desatualizado</b>: entrou na etapa 1</li>
+  </ul></div>
+</section>
+
+<p class="grp">Hábitos</p>
+
+<section class="card" id="rx-tab" style="--m:#5c6e35;--mb:#edf0e3;--md:#3a4720">
+  <div class="top"><h2>Tabagismo</h2><span class="status">SUS · PNCT</span><span class="src">USPSTF (A) · Programa Nacional de Controle do Tabagismo</span></div>
+  <div class="hero">
+    <div class="hb"><div class="big">Toda consulta</div><div class="lb">perguntar sobre tabagismo a todo adulto</div></div>
+    <div class="hb"><div class="big">5 As</div><div class="lb">abordagem estruturada</div></div>
+    <div class="hb"><div class="big">TRN + bupropiona</div><div class="lb">disponíveis no SUS</div></div>
+  </div>
+  <div class="grid">
+    <div class="c" style="--c:#5c6e35">
+      <h3>Abordagem dos 5 As</h3>
+      <div class="flow">
+        <div class="n t"><b>Averiguar</b>: fuma? quanto? há quanto tempo?</div><div class="ar">↓</div>
+        <div class="n"><b>Aconselhar</b>: parar, não só reduzir</div><div class="ar">↓</div>
+        <div class="n"><b>Avaliar</b> a motivação</div><div class="ar">↓</div>
+        <div class="n"><b>Assistir</b>: plano + farmacoterapia</div><div class="ar">↓</div>
+        <div class="n ok"><b>Acompanhar</b> (arranjar o seguimento)</div>
+      </div>
+    </div>
+    <div class="c" style="--c:#7a5fa0">
+      <h3>Farmacoterapia</h3>
+      <div class="tw"><table>
+        <tr><th></th><th>Esquema</th></tr>
+        <tr><td><b>Vareniclina</b></td><td>0,5 mg/dia → 1 mg 2×/dia · 12 semanas · evitar na gestação · <b>não</b> está no PNCT</td></tr>
+        <tr><td><b>Bupropiona</b></td><td>150 mg 1×/dia por 3 dias → 150 mg 2×/dia · 12 semanas · cuidado com convulsão</td></tr>
+        <tr><td><b>TRN</b></td><td>Adesivo (21/14/7 mg) + goma ou pastilha (2/4 mg) · pode combinar adesivo com forma oral</td></tr>
+      </table></div>
+      <p class="note">Gestante: abordagem intensiva em toda consulta; TRN só se o benefício superar o risco.</p>
+    </div>
+  </div>
+  <div class="trap"><h3>Pegadinhas</h3><ul>
+    <li>"Orientar redução gradual como meta" → <b>errado</b>: meta é parar</li>
+    <li>"Bupropiona em paciente com história de convulsão" → <b>contraindicada</b></li>
+    <li>"Vareniclina é distribuída no PNCT" → <b>errado</b>: SUS oferece TRN e bupropiona</li>
+    <li>Combinar adesivo + goma é mais eficaz que um só</li>
+  </ul></div>
+</section>
+
+<section class="card" id="rx-uspstf" style="--m:#1a5ea8">
+  <div class="top"><h2>O que é a USPSTF?</h2></div>
+  <div class="grid">
+    <div class="c" style="--c:#1a5ea8">
+      <h3>Quem são</h3>
+      <ul>
+        <li><b>U.S. Preventive Services Task Force</b>: Força-Tarefa de Serviços Preventivos dos EUA</li>
+        <li>Painel independente de especialistas em atenção primária e medicina preventiva, ligado à AHRQ (agência de pesquisa em saúde do governo americano)</li>
+        <li>Revisa a evidência e recomenda rastreamento, aconselhamento e medicações preventivas em pessoas <b>assintomáticas</b></li>
+        <li>Aparece em prova quando o Brasil não tem diretriz (ex.: pulmão) ou como comparação com o SUS</li>
+      </ul>
+    </div>
+    <div class="c" style="--c:#7a5fa0">
+      <h3>Graus de recomendação</h3>
+      <div class="tw"><table>
+        <tr><th>Grau</th><th>Significado</th><th>Na prática</th></tr>
+        <tr><td><b>A</b></td><td>Benefício substancial, alta certeza</td><td>Recomenda fazer</td></tr>
+        <tr><td><b>B</b></td><td>Benefício moderado, ou substancial com certeza moderada</td><td>Recomenda fazer</td></tr>
+        <tr><td><b>C</b></td><td>Benefício pequeno</td><td>Oferecer de forma seletiva</td></tr>
+        <tr><td><b>D</b></td><td>Sem benefício ou dano maior</td><td>Recomenda <b>não</b> fazer</td></tr>
+        <tr><td><b>I</b></td><td>Evidência insuficiente</td><td>Não dá para concluir</td></tr>
+      </table></div>
+    </div>
+  </div>
+  <div class="trap" style="background:#e6f0fb;border-color:#1a5ea8"><h3 style="color:#1a5ea8">Exemplos e dica de prova</h3><ul>
+    <li>Colorretal: 50–75 anos = <b>A</b> · 45–49 anos = <b>B</b></li>
+    <li>Próstata: 55–69 anos = <b>C</b> · ≥70 anos = <b>D</b></li>
+    <li>Banca SUS → resposta do <b>MS/INCA</b></li>
+    <li>USPSTF só quando a questão compara ou pede "segundo a USPSTF"</li>
+  </ul></div>
+</section>
+
+<div class="fontes"><b>Fontes</b><ul>
+  <li>MS/INCA — Diretrizes Brasileiras para o Rastreamento do Câncer do Colo do Útero, 3ª ed., 2025 · MS, recomendações para mamografia, 23/09/2025</li>
+  <li>MS/INCA — Diretrizes do Rastreamento do Câncer de Cólon e Reto (Portaria Conjunta nº 104/2026) · Nota Técnica nº 9/2023 (próstata) · SBU 2026</li>
+  <li>PCDT-HAS MS 2025 · Diretriz Brasileira de Hipertensão Arterial 2025 · Diretriz SBD 2025 (rastreamento e diagnóstico do DM2)</li>
+  <li>PCDT-IST 2022 · PCDT Transmissão Vertical · PCDT Hepatite C e Coinfecções (Portaria SCTIE nº 39/2026) · PCDT Hepatite B</li>
+  <li>PNTN · Lei 14.154/2021 · Portaria GM/MS nº 7.293/2025 · USPSTF (mama 2024, colorretal 2021, pulmão 2021, próstata 2018)</li>
+</ul></div>
 </div>
+</div>
+
 
 <!-- ══════════════════════ CALENDÁRIO VACINAL ══════════════════════ -->
 <div class="panel" id="panel-vacinal">
@@ -1726,6 +2155,15 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
 
 <script>
   // ── PANEL NAV ──
+  window.addEventListener('DOMContentLoaded', () => {
+    const h = (location.hash || '').replace('#','');
+    const map = {rastreamento:1, vacinal:2, notificacoes:0};
+    const key = h.startsWith('rx-') ? 'rastreamento' : h;
+    if (key in map) {
+      const btn = document.querySelectorAll('.nav-btn')[map[key]];
+      if (btn) { showPanel(key, btn); if (h.startsWith('rx-')) setTimeout(()=>{const el=document.getElementById(h); if(el) el.scrollIntoView();},50); }
+    }
+  });
   function showPanel(id, btn) {
     document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
