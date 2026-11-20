@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rastreamento oncológico — cards visuais</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,600;0,700;1,600&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:#faf6ef;font-family:'Source Sans 3',sans-serif;color:#33302b;line-height:1.45}
+a{color:inherit}
+.wrap{max-width:1240px;margin:0 auto;padding:0 22px}
+header{padding:34px 0 10px}
+.back{font-size:.88rem;color:#6e675e;text-decoration:none}.back:hover{color:#c0704e}
+.e{display:inline-block;margin-top:12px;font-weight:700;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:#1a5ea8;background:#e6f0fb;padding:5px 13px;border-radius:999px}
+h1{font-family:'Lora',serif;font-size:clamp(2rem,5vw,3rem);line-height:1.05;margin-top:10px}
+h1 em{color:#c0704e}
+.lead{color:#6e675e;font-size:1.05rem;margin-top:6px;max-width:820px}
+nav{position:sticky;top:0;z-index:10;background:rgba(250,246,239,.95);backdrop-filter:blur(6px);border-bottom:1px solid #e8dfd2;margin-top:16px}
+nav .wrap{display:flex;gap:8px;overflow-x:auto;padding:10px 22px}
+nav a{flex:0 0 auto;text-decoration:none;border:1.5px solid var(--c,#e8dfd2);color:var(--c,#33302b);background:#fffdf9;font-weight:700;font-size:.9rem;padding:6px 13px;border-radius:999px}
+nav a:hover{background:var(--c);color:#fff}
+section.card{margin:30px 0 8px;padding:26px 26px 22px;background:#fffaf3;border:1px solid #ecdfcf;border-radius:24px;scroll-margin-top:70px}
+.top{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.top h2{font-family:'Lora',serif;font-size:clamp(1.6rem,3.6vw,2.3rem);color:var(--m)}
+.src{color:#6e675e;font-size:.95rem}
+.status{display:inline-block;font-weight:700;font-size:12px;letter-spacing:.06em;text-transform:uppercase;padding:3px 10px;border-radius:999px;background:var(--m);color:#fff}
+.status.no{background:#8a7f73}
+.hero{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}
+.hb{border-radius:18px;padding:16px 16px;text-align:center;background:#fffdf9;border:2.5px solid var(--m)}
+.hb .big{font-family:'Lora',serif;font-weight:700;font-size:clamp(1.6rem,3.4vw,2.5rem);color:var(--m);line-height:1.05}
+.hb .lb{font-size:.98rem;color:#4a443d;margin-top:6px;font-weight:600}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+.c{background:#fffdf9;border:2px solid var(--c);border-radius:18px;padding:15px 18px}
+.c.full{grid-column:1/-1}
+.c h3{font-family:'Lora',serif;font-size:1.25rem;color:var(--c);margin-bottom:8px}
+.c ul{padding-left:18px;font-size:1rem}.c li{margin:2px 0}
+b{font-weight:700}
+.flow{display:flex;flex-direction:column;align-items:center}
+.n{border-radius:12px;padding:8px 12px;text-align:center;font-size:.98rem;border:2px solid #cfc4b6;background:#fffdf9;width:100%}
+.n.t{border-color:var(--m);background:var(--mb);font-weight:700;color:var(--md)}
+.n.ok{border-color:#7f9a7a;background:#e6efe2;color:#2f4a2c}
+.n.bad{border-color:#c0704e;background:#f8e6dc;color:#7a3a20}
+.n small{display:block;font-size:.86rem;font-weight:400;opacity:.9}
+.ar{color:#6e675e;font-size:.85rem;font-weight:700;padding:4px 0}
+.row{display:grid;grid-template-columns:repeat(var(--k,2),1fr);gap:10px;width:100%}
+.row .col{display:flex;flex-direction:column;align-items:center}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.96rem}
+th,td{padding:7px 9px;border-bottom:1px solid #e3d9cc;text-align:left;vertical-align:top}
+th{color:#5a3f80;background:#f0eaf8}
+.trap{background:#fbe4dd;border:2px solid #b5523b;border-radius:18px;padding:13px 18px;margin-top:16px}
+.trap h3{font-family:'Lora',serif;color:#9c3f2a;font-size:1.25rem;margin-bottom:6px}
+.trap ul{display:grid;grid-template-columns:1fr 1fr;gap:3px 26px;padding-left:18px}
+.note{font-size:.84rem;color:#6e675e;margin-top:6px}
+.new{display:inline-block;background:#c0704e;color:#fff;font-size:10.5px;font-weight:700;letter-spacing:.05em;padding:1px 7px;border-radius:999px;vertical-align:2px;margin-left:3px}
+.ov th{background:#e6f0fb;color:#1a5ea8}
+.ov td:first-child{font-weight:700}
+footer{color:#6e675e;font-size:.85rem;padding:26px 0 40px}
+footer li{margin:2px 0 2px 18px}
+@media(max-width:820px){.hero,.grid,.trap ul{grid-template-columns:1fr}.row{--k:1!important}section.card{padding:18px 14px}}
+</style>
+</head>
+<body>
+<header class="wrap">
+  <a class="back" href="index.html">← Hub de estudos</a><br>
+  <span class="e">Preventiva · Rastreamento</span>
+  <h1>Rastreamento <em>oncológico</em></h1>
+  <p class="lead">Um card por câncer: o que o SUS recomenda hoje, o fluxo de conduta, a comparação com sociedades e USPSTF e as pegadinhas de prova. <span class="new">NOVO</span> marca o que mudou em 2025–2026.</p>
+</header>
+
+<nav><div class="wrap">
+  <a href="#visao" style="--c:#1a5ea8">Visão geral</a>
+  <a href="#colo" style="--c:#b83068">Colo do útero</a>
+  <a href="#mama" style="--c:#c0567a">Mama</a>
+  <a href="#ccr" style="--c:#3f6a3a">Colorretal</a>
+  <a href="#prostata" style="--c:#2f5f8a">Próstata</a>
+  <a href="#pulmao" style="--c:#6b5a4a">Pulmão</a>
+</div></nav>
+
+<main class="wrap">
+
+<!-- VISÃO GERAL -->
+<section class="card" id="visao" style="--m:#1a5ea8">
+  <div class="top"><h2>Visão geral — SUS hoje</h2></div>
+  <div class="tw" style="margin-top:14px"><table class="ov">
+    <tr><th>Câncer</th><th>Quem</th><th>Exame</th><th>Intervalo</th><th>Situação no SUS</th></tr>
+    <tr><td>Colo do útero</td><td>Mulheres 25–64 anos</td><td><b>DNA-HPV</b> <span class="new">2025</span></td><td>5 anos se negativo</td><td>Rastreamento organizado · Portaria Conjunta nº 13/2025</td></tr>
+    <tr><td>Mama</td><td><b>50–74</b> anos · 40–49 sob demanda <span class="new">2025</span></td><td>Mamografia</td><td>2 anos</td><td>Recomendado (MS, set/2025)</td></tr>
+    <tr><td>Colorretal</td><td>50–75 anos, risco padrão</td><td><b>FIT</b> <span class="new">2026</span></td><td>2 anos</td><td>Rastreamento organizado · Portaria Conjunta nº 104/2026</td></tr>
+    <tr><td>Próstata</td><td>—</td><td>PSA ± toque</td><td>—</td><td><b>Não recomenda</b> rastreamento populacional · decisão compartilhada</td></tr>
+    <tr><td>Pulmão</td><td>—</td><td>TC baixa dose</td><td>—</td><td><b>Sem programa nacional</b> · INCA em estudo (2026)</td></tr>
+  </table></div>
+</section>
+
+<!-- COLO DO ÚTERO -->
+<section class="card" id="colo" style="--m:#b83068;--mb:#fceef4;--md:#7a1f45">
+  <div class="top"><h2>Colo do útero</h2><span class="status">SUS · organizado</span><span class="src">Diretrizes Brasileiras MS/INCA 2025 · Portaria Conjunta SAES/SECTICS nº 13, de 29/07/2025</span></div>
+  <div class="hero">
+    <div class="hb"><div class="big">25–64 anos</div><div class="lb">mulheres e pessoas com colo do útero · risco padrão</div></div>
+    <div class="hb"><div class="big">DNA-HPV <span class="new">2025</span></div><div class="lb">teste molecular · 14 tipos oncogênicos · substitui o Papanicolau</div></div>
+    <div class="hb"><div class="big">a cada 5 anos</div><div class="lb">se o teste for negativo</div></div>
+  </div>
+  <div class="grid">
+    <div class="c full" style="--c:#b83068">
+      <h3>Fluxo</h3>
+      <div class="flow">
+        <div class="n t">Teste DNA-HPV oncogênico</div>
+        <div class="row" style="--k:3">
+          <div class="col"><div class="ar">↓ negativo</div><div class="n ok">Repetir em <b>5 anos</b></div></div>
+          <div class="col"><div class="ar">↓ HPV 16 e/ou 18</div><div class="n bad"><b>Colposcopia direta</b></div></div>
+          <div class="col"><div class="ar">↓ outros HPV oncogênicos</div><div class="n">Citologia <b>reflexa</b><small>na mesma amostra</small></div>
+            <div class="row" style="--k:2">
+              <div class="col"><div class="ar">↓ ASC-US+ ou insatisfatória</div><div class="n bad">Colposcopia</div></div>
+              <div class="col"><div class="ar">↓ normal</div><div class="n ok">Repetir DNA-HPV em <b>1 ano</b><small>persistiu 24 meses → colposcopia</small></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="c" style="--c:#8a7f73">
+      <h3>Situações especiais</h3>
+      <ul>
+        <li><b>&lt;25 anos:</b> não rastrear (se fez, desconsiderar o resultado e orientar)</li>
+        <li><b>Gestantes:</b> mesmo rastreamento; colposcopia permitida, tratar só suspeita de invasão</li>
+        <li><b>HIV, transplantadas, imunossupressão crônica:</b> começam aos 25, com intervalos menores (detalhes na Parte II da diretriz)</li>
+        <li><b>Após tratar NIC2+/AIS:</b> manter rastreamento por 25 anos, independentemente da idade</li>
+        <li><b>Autocoleta:</b> permitida quando há barreira à coleta pelo profissional; se positiva para HPV não 16/18, volta para coletar citologia</li>
+      </ul>
+    </div>
+    <div class="c" style="--c:#7f9a7a">
+      <h3>Como era (citologia, 2016)</h3>
+      <ul>
+        <li>Papanicolau dos 25 aos 64 anos</li>
+        <li>2 exames anuais negativos → a cada <b>3 anos</b></li>
+        <li>Parar aos 64 com 2 negativos nos últimos 5 anos</li>
+        <li>Agora a citologia virou <b>exame de triagem (reflexa)</b> do HPV positivo não 16/18</li>
+      </ul>
+      <p class="note">A substituição é progressiva: onde o DNA-HPV ainda não chegou, segue a citologia.</p>
+    </div>
+  </div>
+  <div class="trap"><h3>Pegadinhas</h3><ul>
+    <li>"DNA-HPV negativo → repetir em 3 anos" → <b>errado</b>: 5 anos</li>
+    <li>"HPV 16/18 positivo → fazer citologia" → <b>errado</b>: colposcopia direta</li>
+    <li>"Rastrear a partir do início da vida sexual" → <b>errado</b>: 25 anos</li>
+    <li>"HPV não 16/18 + citologia normal → colposcopia" → <b>errado</b>: repetir em 1 ano</li>
+  </ul></div>
+</section>
+
+<!-- MAMA -->
+<section class="card" id="mama" style="--m:#c0567a;--mb:#fbe9ef;--md:#7a2a46">
+  <div class="top"><h2>Mama</h2><span class="status">SUS · recomendado</span><span class="src">Ministério da Saúde, 23/09/2025</span></div>
+  <div class="hero">
+    <div class="hb"><div class="big">50–74 anos <span class="new">2025</span></div><div class="lb">rastreamento ativo, populacional (antes era até 69)</div></div>
+    <div class="hb"><div class="big">Mamografia</div><div class="lb">bilateral</div></div>
+    <div class="hb"><div class="big">a cada 2 anos</div><div class="lb">acima de 74: individualizar</div></div>
+  </div>
+  <div class="grid">
+    <div class="c" style="--c:#c0567a">
+      <h3>Faixas etárias no SUS (2025)</h3>
+      <div class="flow">
+        <div class="n">&lt;40 anos: <b>não rastrear</b> (risco habitual)</div><div class="ar">↓</div>
+        <div class="n t">40–49 anos: <b>sob demanda</b> <span class="new">NOVO</span><small>decisão compartilhada, orientando benefícios e riscos</small></div><div class="ar">↓</div>
+        <div class="n ok">50–74 anos: <b>bienal, rastreamento ativo</b></div><div class="ar">↓</div>
+        <div class="n">&gt;74 anos: individualizar<small>comorbidades e expectativa de vida</small></div>
+      </div>
+    </div>
+    <div class="c" style="--c:#7a5fa0">
+      <h3>Comparação</h3>
+      <div class="tw"><table>
+        <tr><th></th><th>Idade</th><th>Intervalo</th></tr>
+        <tr><td><b>SUS 2025</b></td><td>50–74 (40–49 sob demanda)</td><td>2 anos</td></tr>
+        <tr><td><b>USPSTF 2024</b></td><td>40–74 (B)</td><td>2 anos</td></tr>
+        <tr><td><b>SBM / CBR / Febrasgo</b></td><td>40–74</td><td>Anual</td></tr>
+      </table></div>
+      <h3 style="margin-top:12px">Alto risco (sociedades)</h3>
+      <ul>
+        <li><b>BRCA1/2</b> ou risco ≥20% ao longo da vida: <b>RM anual</b> a partir de 25–30 anos, mamografia a partir dos 30</li>
+        <li><b>Parente de 1º grau &lt;50 anos:</b> iniciar 10 anos antes da idade do diagnóstico</li>
+        <li><b>RT de tórax antes dos 30:</b> anual, a partir de 8 anos após a RT</li>
+      </ul>
+      <p class="note">Alto risco: SBM/CBR, não é recomendação do MS.</p>
+    </div>
+  </div>
+  <div class="trap"><h3>Pegadinhas</h3><ul>
+    <li>"SUS: 50–69 anos" → <b>desatualizado</b>: agora 50–74</li>
+    <li>"40–49 no SUS: rastreamento bienal obrigatório" → <b>errado</b>: sob demanda</li>
+    <li>"Autoexame é método de rastreamento" → <b>errado</b>: o INCA recomenda contra ensinar o autoexame como rastreamento</li>
+    <li>"USPSTF: 50–74" → <b>desatualizado</b>: 40–74 desde 2024</li>
+  </ul></div>
+</section>
+
+<!-- COLORRETAL -->
+<section class="card" id="ccr" style="--m:#3f6a3a;--mb:#e6efe2;--md:#2f4a2c">
+  <div class="top"><h2>Colorretal</h2><span class="status">SUS · organizado</span><span class="src">Diretrizes Brasileiras MS/INCA · Portaria Conjunta SAES/SCTIE nº 104, de 20/10/2026</span></div>
+  <div class="hero">
+    <div class="hb"><div class="big">50–75 anos</div><div class="lb">ambos os sexos · assintomáticos · risco padrão</div></div>
+    <div class="hb"><div class="big">FIT <span class="new">2026</span></div><div class="lb">teste imunoquímico fecal · 1 amostra em casa · sem dieta</div></div>
+    <div class="hb"><div class="big">a cada 2 anos</div><div class="lb">FIT positivo → colonoscopia</div></div>
+  </div>
+  <div class="grid">
+    <div class="c" style="--c:#3f6a3a">
+      <h3>Fluxo</h3>
+      <div class="flow">
+        <div class="n t">FIT</div>
+        <div class="row">
+          <div class="col"><div class="ar">↓ negativo</div><div class="n ok">Repetir em <b>2 anos</b></div></div>
+          <div class="col"><div class="ar">↓ positivo</div><div class="n bad"><b>Colonoscopia</b></div></div>
+        </div>
+        <div class="row">
+          <div class="col"><div class="ar">↓ inválido</div><div class="n">Repetir com novo dispositivo</div></div>
+          <div class="col"><div class="ar">↓</div><div class="n ok" style="margin-bottom:6px">Normal → <b>volta ao FIT bienal</b></div><div class="n">Adenoma, lesão ou câncer → <b>especializado</b></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="c" style="--c:#7f9a7a">
+      <h3>Por que FIT e por que essa faixa?</h3>
+      <ul>
+        <li>Anticorpo contra <b>globina</b>: dieta não interfere</li>
+        <li>Corte <b>50 ng/mL</b> (≈10 µg Hb/g de fezes)</li>
+        <li>Sensibilidade <b>FIT 89%</b> × guáiaco 59%</li>
+        <li><b>50, não 45:</b> NNR para evitar 1 morte = 2.655 (45–59 a) × 492 (60–80 a)</li>
+        <li><b>Para aos 75:</b> riscos da colonoscopia superam o benefício</li>
+      </ul>
+    </div>
+    <div class="c" style="--c:#c0704e">
+      <h3>Fora do rastreamento com FIT</h3>
+      <ul>
+        <li><b>Sintomáticos → investigação diagnóstica:</b> sangue nas fezes, alteração do hábito, anemia ferropriva, perda de peso, dor abdominal, tenesmo, massa retal</li>
+        <li><b>Alto risco → colonoscopia individualizada:</b> CCR ou adenoma prévio, DII, Lynch, PAF</li>
+      </ul>
+    </div>
+    <div class="c" style="--c:#7a5fa0">
+      <h3>Alto risco (fora da diretriz MS)</h3>
+      <div class="tw"><table>
+        <tr><th>Grupo</th><th>Início</th><th>Intervalo</th></tr>
+        <tr><td>1º grau &lt;60 a ou ≥2 de 1º grau</td><td>40 a ou 10 a antes do caso mais jovem</td><td>Colono 5/5 a</td></tr>
+        <tr><td>Lynch</td><td>20–25 a</td><td>Colono 1–2 a</td></tr>
+        <tr><td>PAF</td><td>10–12 a</td><td>Anual</td></tr>
+        <tr><td>DII (colite extensa)</td><td>8 a de doença</td><td>Colono 1–3 a</td></tr>
+      </table></div>
+    </div>
+  </div>
+  <div class="trap"><h3>Pegadinhas</h3><ul>
+    <li>"Iniciar aos 45 no SUS" → <b>errado</b> (45 é USPSTF)</li>
+    <li>"Colonoscopia é o rastreamento de 1ª linha no SUS" → <b>errado</b></li>
+    <li>"Anemia ferropriva → pedir FIT" → <b>errado</b>: colonoscopia</li>
+    <li>"FIT anual no SUS" → <b>errado</b>: bienal</li>
+  </ul></div>
+</section>
+
+<!-- PRÓSTATA -->
+<section class="card" id="prostata" style="--m:#2f5f8a;--mb:#e6eff7;--md:#1f3f5e">
+  <div class="top"><h2>Próstata</h2><span class="status no">SUS · não recomenda</span><span class="src">Nota Técnica MS/INCA nº 9/2023 · SBU 2026</span></div>
+  <div class="hero">
+    <div class="hb"><div class="big">Não rastrear</div><div class="lb">homens assintomáticos, em nível populacional (MS/INCA)</div></div>
+    <div class="hb"><div class="big">Decisão compartilhada</div><div class="lb">quem pedir o exame recebe explicação de riscos e benefícios</div></div>
+    <div class="hb"><div class="big">PSA ± toque</div><div class="lb">quando feito; sintomático = diagnóstico</div></div>
+  </div>
+  <div class="grid">
+    <div class="c" style="--c:#2f5f8a">
+      <h3>Por que o MS não recomenda?</h3>
+      <ul>
+        <li><b>Falso-positivo:</b> PSA sobe sem câncer (HPB, prostatite)</li>
+        <li><b>Sobrediagnóstico:</b> muitos tumores nunca dariam sintoma</li>
+        <li><b>Sobretratamento:</b> incontinência, impotência, complicações da biópsia</li>
+        <li>Benefício pequeno na mortalidade (ERSPC) frente aos danos</li>
+        <li>Mesma posição de OMS (2020) e força-tarefa canadense</li>
+      </ul>
+    </div>
+    <div class="c" style="--c:#7a5fa0">
+      <h3>Comparação</h3>
+      <div class="tw"><table>
+        <tr><th></th><th>Recomendação</th></tr>
+        <tr><td><b>MS/INCA</b></td><td>Não rastrear população; decisão compartilhada se o homem pedir</td></tr>
+        <tr><td><b>USPSTF 2018</b></td><td>55–69 a: decisão individual (C) · ≥70 a: não rastrear (D)</td></tr>
+        <tr><td><b>SBU 2026</b> <span class="new">NOVO</span></td><td>Início <b>50</b> a · <b>45</b> se negro ou história familiar · <b>40</b> se BRCA · corte PSA <b>3 ng/mL</b> · &gt;75 a individualizar</td></tr>
+      </table></div>
+      <p class="note">SBU: diretriz conjunta com outras 6 entidades, lançada em 17/11/2026.</p>
+    </div>
+  </div>
+  <div class="trap"><h3>Pegadinhas</h3><ul>
+    <li>"MS: PSA anual a partir dos 50" → <b>errado</b>: MS não recomenda rastreamento</li>
+    <li>"Homem com sintoma urinário: não pedir PSA" → <b>errado</b>: sintomático = investigação</li>
+    <li>"USPSTF recomenda acima de 70" → <b>errado</b>: grau D</li>
+    <li>Prova de banca SUS → resposta do MS · banca privada pode cobrar SBU</li>
+  </ul></div>
+</section>
+
+<!-- PULMÃO -->
+<section class="card" id="pulmao" style="--m:#6b5a4a;--mb:#f1ede7;--md:#4a3e33">
+  <div class="top"><h2>Pulmão</h2><span class="status no">SUS · sem programa</span><span class="src">USPSTF 2021 · SBPT/CBR · INCA (estudo 2026)</span></div>
+  <div class="hero">
+    <div class="hb"><div class="big">50–80 anos</div><div class="lb">fumante atual ou parou há ≤15 anos</div></div>
+    <div class="hb"><div class="big">≥20 maços-ano</div><div class="lb">carga tabágica</div></div>
+    <div class="hb"><div class="big">TC baixa dose</div><div class="lb">anual</div></div>
+  </div>
+  <div class="grid">
+    <div class="c" style="--c:#6b5a4a">
+      <h3>Critérios (USPSTF 2021 e sociedades brasileiras)</h3>
+      <ul>
+        <li><b>Idade:</b> 50 a 80 anos</li>
+        <li><b>Carga tabágica:</b> ≥20 maços-ano (maços/dia × anos de tabagismo)</li>
+        <li><b>Status:</b> fumante atual ou ex-fumante que parou há ≤15 anos</li>
+        <li><b>Parar:</b> após 15 anos sem fumar, ou se a saúde ou a expectativa de vida não permitirem cirurgia curativa</li>
+        <li>Sempre junto com <b>cessação do tabagismo</b></li>
+      </ul>
+    </div>
+    <div class="c" style="--c:#2f5f8a">
+      <h3>Situação no Brasil</h3>
+      <ul>
+        <li><b>Não há</b> programa nacional nem diretriz do MS</li>
+        <li>INCA lançou em <b>abril/2026</b> um estudo de viabilidade para criar diretriz nacional <span class="new">2026</span></li>
+        <li>Câncer que <b>mais mata</b> no Brasil · ~85% diagnosticados em estágio avançado</li>
+        <li>TCBD reduz mortalidade em ~20% (NLST); somado à cessação do tabagismo, até 38%</li>
+      </ul>
+    </div>
+  </div>
+  <div class="trap"><h3>Pegadinhas</h3><ul>
+    <li>"Raio-X de tórax anual" → <b>errado</b>: não reduz mortalidade</li>
+    <li>"55–80 anos e 30 maços-ano" → <b>desatualizado</b> (USPSTF 2013)</li>
+    <li>"Parou há 20 anos → rastrear" → <b>errado</b>: limite de 15 anos</li>
+    <li>"SUS tem programa de TCBD" → <b>errado</b>: ainda em estudo</li>
+  </ul></div>
+</section>
+
+</main>
+
+<footer class="wrap">
+  <b>Fontes</b>
+  <ul>
+    <li>MS/INCA — Diretrizes Brasileiras para o Rastreamento do Câncer do Colo do Útero, 3ª ed., 2025 (Portaria Conjunta SAES/SECTICS nº 13/2025)</li>
+    <li>Ministério da Saúde — novas recomendações para mamografia, 23/09/2025</li>
+    <li>MS/INCA — Diretrizes Brasileiras do Rastreamento do Câncer de Cólon e Reto (Portaria Conjunta SAES/SCTIE nº 104/2026) · Nota Técnica Conjunta nº 399/2026</li>
+    <li>MS/INCA — Nota Técnica nº 9/2023 (câncer de próstata) · SBU, diretriz brasileira de câncer de próstata, 2026</li>
+    <li>USPSTF — mama (2024), colorretal (2021), pulmão (2021), próstata (2018) · INCA, estudo de rastreamento de câncer de pulmão (2026)</li>
+  </ul>
+  <p style="margin-top:8px">Atualizado em nov/2026.</p>
+</footer>
+</body>
+</html>
