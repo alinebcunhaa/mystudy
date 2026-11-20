@@ -609,6 +609,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
     <button class="nav-btn active" onclick="showPanel('notificacoes', this)">Notificações Compulsórias</button>
     <button class="nav-btn" onclick="showPanel('rastreamento', this)">Rastreamento</button>
     <button class="nav-btn" onclick="showPanel('vacinal', this)">Calendário Vacinal</button>
+    <button class="nav-btn" onclick="showPanel('estatistica', this)">Estatística</button>
   </div>
 </nav>
 
@@ -1351,7 +1352,8 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
 .rx .c{background:#fffdf9;border:2px solid var(--c);border-radius:16px;padding:14px 17px}
 .rx .c.full{grid-column:1/-1}
 .rx .grid>*,.rx .hero>*,.rx .row>*,.rx .c,.rx section.card{min-width:0}
-.rx{max-width:100%;overflow-wrap:anywhere}
+.rx{max-width:100%;overflow-wrap:break-word}
+.rx .res span{overflow-wrap:normal;word-break:normal;hyphens:auto}
 .rx .c h3{font-size:1.15rem;color:var(--c);margin-bottom:7px;font-weight:700}
 .rx .c ul{padding-left:18px;font-size:.98rem}.rx .c li{margin:2px 0}
 .rx b{font-weight:700}
@@ -1940,6 +1942,477 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
 </div>
 
 
+<!-- ══════════════════════ ESTATÍSTICA ══════════════════════ -->
+<div class="panel" id="panel-estatistica">
+<style>
+.rx .fx{font-family:'JetBrains Mono',monospace;font-size:.92rem;background:#f4eee4;border:1px solid #e3d6c3;border-radius:10px;padding:8px 11px;margin:6px 0;display:block;color:#3a2a18;overflow-x:auto;white-space:nowrap}
+.rx .fx b{color:#b5521e}
+.rx .t22{border-collapse:separate;border-spacing:4px;width:auto;margin:6px auto}
+.rx .t22 td,.rx .t22 th{border:none;text-align:center;padding:9px 14px;border-radius:9px;font-size:.98rem}
+.rx .t22 th{background:transparent;color:#6e675e;font-weight:700}
+.rx .t22 .va{background:#e6efe2;color:#2f4a2c;font-weight:700}
+.rx .t22 .fa{background:#f8e6dc;color:#7a3a20;font-weight:700}
+.rx .t22 .tot{background:#f0eaf8;color:#5a3f80}
+.rx .calc{display:grid;grid-template-columns:repeat(2,minmax(0,140px));gap:8px;justify-content:center;margin:8px 0}
+.rx .calc label{font-size:.85rem;font-weight:700;color:#5a3f80;display:block}
+.rx .calc input{width:100%;padding:7px 9px;border:1.5px solid #cfc4b6;border-radius:9px;font:inherit;font-size:1rem;background:#fffdf9}
+.rx .res{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
+.rx .res div{background:#fffdf9;border:1.5px solid #e3d6c3;border-radius:10px;padding:8px;text-align:center}
+.rx .res span{display:block;font-size:.78rem;color:#6e675e;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.rx .res strong{font-family:'Lora',serif;font-size:1.25rem;color:var(--m)}
+.rx .pyr{display:flex;flex-direction:column;align-items:center;gap:4px;margin:8px 0}
+.rx .pyr div{text-align:center;padding:7px 10px;border-radius:9px;font-weight:700;font-size:.93rem;color:#fff}
+@media(max-width:820px){.rx .res{grid-template-columns:repeat(2,1fr)}}
+</style>
+
+  <div class="section-intro">
+    <h2>Estatística <span>e Epidemiologia — o básico para prova</span></h2>
+    <p class="section-meta">Testes diagnósticos · medidas de frequência, associação e impacto · tipos de estudo · vieses · testes de hipótese</p>
+  </div>
+  <div class="info-box">
+    <strong>Como usar:</strong> cada card traz a fórmula, a tabela 2×2 correspondente e as pegadinhas. A calculadora no fim faz as contas para você conferir os exercícios.
+  </div>
+
+<div class="rx">
+  <nav class="rxnav">
+    <a href="#es-diag" style="--c:#3f6a3a">Testes diagnósticos</a>
+    <a href="#es-freq" style="--c:#1a5ea8">Incidência e prevalência</a>
+    <a href="#es-assoc" style="--c:#8a2f6a">RR · OR · RP</a>
+    <a href="#es-impact" style="--c:#b5521e">RRA · RRR · NNT</a>
+    <a href="#es-estudos" style="--c:#6030a8">Tipos de estudo</a>
+    <a href="#es-vies" style="--c:#a8432a">Vieses</a>
+    <a href="#es-ecr" style="--c:#2f5f8a">Ensaio clínico</a>
+    <a href="#es-hip" style="--c:#6b5a4a">p, IC, erros α e β</a>
+    <a href="#es-desc" style="--c:#5c6e35">Estatística descritiva</a>
+    <a href="#es-calc" style="--c:#b07a10">Calculadora 2×2</a>
+  </nav>
+
+<!-- TESTES DIAGNÓSTICOS -->
+<section class="card" id="es-diag" style="--m:#3f6a3a;--mb:#e6efe2;--md:#2f4a2c">
+  <div class="top"><h2>Testes diagnósticos</h2></div>
+  <div class="grid">
+    <div class="c" style="--c:#3f6a3a">
+      <h3>A tabela 2×2</h3>
+      <table class="t22">
+        <tr><th></th><th>Doente</th><th>Não doente</th></tr>
+        <tr><th>Teste +</th><td class="va">a<br><small>VP</small></td><td class="fa">b<br><small>FP</small></td></tr>
+        <tr><th>Teste −</th><td class="fa">c<br><small>FN</small></td><td class="va">d<br><small>VN</small></td></tr>
+      </table>
+      <p class="note" style="text-align:center">Doença nas colunas, teste nas linhas. Se a questão inverter, refaça a tabela antes de calcular.</p>
+    </div>
+    <div class="c" style="--c:#3f6a3a">
+      <h3>Fórmulas</h3>
+      <span class="fx"><b>Sensibilidade</b> = a / (a + c) → acerta os doentes</span>
+      <span class="fx"><b>Especificidade</b> = d / (b + d) → acerta os sadios</span>
+      <span class="fx"><b>VPP</b> = a / (a + b) → teste + e doente</span>
+      <span class="fx"><b>VPN</b> = d / (c + d) → teste − e sadio</span>
+      <span class="fx"><b>Acurácia</b> = (a + d) / total</span>
+      <span class="fx"><b>RV+</b> = Se / (1 − Es) · <b>RV−</b> = (1 − Se) / Es</span>
+    </div>
+    <div class="c" style="--c:#c0704e">
+      <h3>O que muda com a prevalência</h3>
+      <div class="flow">
+        <div class="n t">Prevalência ↑</div><div class="ar">↓</div>
+        <div class="row">
+          <div class="col"><div class="n ok"><b>VPP ↑</b></div></div>
+          <div class="col"><div class="n bad"><b>VPN ↓</b></div></div>
+        </div>
+        <div class="ar">↓</div>
+        <div class="n">Sensibilidade e especificidade <b>não mudam</b><small>são propriedades do teste</small></div>
+      </div>
+    </div>
+    <div class="c" style="--c:#7a5fa0">
+      <h3>Quando usar cada um</h3>
+      <ul>
+        <li><b>Alta sensibilidade → rastreamento</b> e para <b>descartar</b>: teste negativo exclui (<b>SnNout</b>)</li>
+        <li><b>Alta especificidade → confirmação</b>: teste positivo confirma (<b>SpPin</b>)</li>
+        <li><b>Ponto de corte mais baixo</b> → Se ↑ e Es ↓ (e vice-versa)</li>
+        <li><b>Testes em paralelo</b> → Se ↑ · <b>em série</b> → Es ↑</li>
+        <li><b>Curva ROC:</b> Se × (1 − Es); melhor teste = maior área sob a curva; melhor ponto = mais próximo do canto superior esquerdo</li>
+        <li><b>RV+ &gt;10</b> ou <b>RV− &lt;0,1</b>: muda muito a probabilidade pós-teste</li>
+      </ul>
+    </div>
+  </div>
+  <div class="trap"><h3>Pegadinhas</h3><ul>
+    <li>"Sensibilidade aumenta com a prevalência" → <b>errado</b></li>
+    <li>"Teste de rastreamento deve ser muito específico" → <b>errado</b>: sensível</li>
+    <li>VPP = probabilidade de <b>estar doente dado teste +</b> (o que o paciente quer saber)</li>
+    <li>Sensibilidade = probabilidade de <b>teste + dado doente</b></li>
+  </ul></div>
+</section>
+
+<!-- FREQUÊNCIA -->
+<section class="card" id="es-freq" style="--m:#1a5ea8;--mb:#e6f0fb;--md:#0f3c6e">
+  <div class="top"><h2>Medidas de frequência</h2></div>
+  <div class="hero">
+    <div class="hb"><div class="big">Incidência</div><div class="lb">casos <b>novos</b> em um período</div></div>
+    <div class="hb"><div class="big">Prevalência</div><div class="lb">casos <b>existentes</b> (novos + antigos)</div></div>
+    <div class="hb"><div class="big">P ≈ I × D</div><div class="lb">prevalência ≈ incidência × duração</div></div>
+  </div>
+  <div class="grid">
+    <div class="c" style="--c:#1a5ea8">
+      <h3>Fórmulas</h3>
+      <span class="fx"><b>Incidência cumulativa</b> = casos novos / população em risco no início</span>
+      <span class="fx"><b>Densidade de incidência</b> = casos novos / pessoas-tempo</span>
+      <span class="fx"><b>Prevalência</b> = casos existentes / população total</span>
+      <span class="fx"><b>Mortalidade</b> = óbitos pela doença / população</span>
+      <span class="fx"><b>Letalidade</b> = óbitos pela doença / doentes</span>
+      <span class="fx"><b>Taxa de ataque</b> = casos novos / expostos (surto)</span>
+    </div>
+    <div class="c" style="--c:#7a5fa0">
+      <h3>O que aumenta ou diminui a prevalência</h3>
+      <div class="tw"><table>
+        <tr><th>Prevalência ↑</th><th>Prevalência ↓</th></tr>
+        <tr><td>Mais casos novos (incidência ↑)</td><td>Menos casos novos</td></tr>
+        <tr><td>Tratamento que <b>prolonga a vida sem curar</b> (ex.: TARV no HIV)</td><td>Cura mais rápida</td></tr>
+        <tr><td>Imigração de doentes</td><td>Morte mais rápida (letalidade ↑)</td></tr>
+        <tr><td>Melhora do diagnóstico</td><td>Emigração de doentes</td></tr>
+      </table></div>
+      <p class="note">Doença aguda e curta (gripe): incidência alta, prevalência baixa. Crônica (DM): prevalência alta.</p>
+    </div>
+  </div>
+  <div class="trap"><h3>Pegadinhas</h3><ul>
+    <li>"Novo tratamento que não cura reduz a prevalência" → <b>errado</b>: aumenta</li>
+    <li>Mortalidade usa a <b>população</b>; letalidade usa os <b>doentes</b></li>
+    <li>Estudo transversal mede <b>prevalência</b>; coorte mede <b>incidência</b></li>
+    <li>Vacina eficaz reduz a <b>incidência</b></li>
+  </ul></div>
+</section>
+
+<!-- ASSOCIAÇÃO -->
+<section class="card" id="es-assoc" style="--m:#8a2f6a;--mb:#f7e8f2;--md:#5a1c45">
+  <div class="top"><h2>Medidas de associação</h2></div>
+  <div class="grid">
+    <div class="c" style="--c:#8a2f6a">
+      <h3>A tabela 2×2 de exposição</h3>
+      <table class="t22">
+        <tr><th></th><th>Doente</th><th>Não doente</th></tr>
+        <tr><th>Exposto</th><td class="fa">a</td><td class="tot">b</td></tr>
+        <tr><th>Não exposto</th><td class="fa">c</td><td class="tot">d</td></tr>
+      </table>
+      <span class="fx"><b>RR</b> = [a/(a+b)] / [c/(c+d)] → risco nos expostos ÷ não expostos</span>
+      <span class="fx"><b>OR</b> = (a × d) / (b × c) → razão de chances</span>
+      <span class="fx"><b>RP</b> = prevalência nos expostos ÷ não expostos</span>
+    </div>
+    <div class="c" style="--c:#7a5fa0">
+      <h3>Como interpretar</h3>
+      <div class="flow">
+        <div class="n bad"><b>&gt; 1</b> → fator de <b>risco</b><small>RR = 2: expostos têm o dobro do risco</small></div><div class="ar"></div>
+        <div class="n"><b>= 1</b> → <b>sem associação</b></div><div class="ar"></div>
+        <div class="n ok"><b>&lt; 1</b> → fator de <b>proteção</b><small>RR = 0,7: risco 30% menor</small></div>
+      </div>
+      <h3 style="margin-top:12px">Qual medida em cada estudo</h3>
+      <div class="tw"><table>
+        <tr><th>Estudo</th><th>Medida</th></tr>
+        <tr><td>Transversal</td><td>RP (ou OR de prevalência)</td></tr>
+        <tr><td>Caso-controle</td><td><b>OR</b> (não calcula incidência nem RR)</td></tr>
+        <tr><td>Coorte</td><td><b>RR</b> (incidência)</td></tr>
+        <tr><td>Ensaio clínico</td><td>RR, RRA, RRR, NNT</td></tr>
+      </table></div>
+    </div>
+  </div>
+  <div class="trap"><h3>Pegadinhas</h3><ul>
+    <li>"Calcular RR em caso-controle" → <b>errado</b>: OR</li>
+    <li>OR ≈ RR quando a doença é <b>rara</b></li>
+    <li>IC 95% que <b>contém o 1</b> → sem significância estatística</li>
+    <li>Associação não é causalidade (ver critérios de Bradford Hill)</li>
+  </ul></div>
+</section>
+
+<!-- IMPACTO -->
+<section class="card" id="es-impact" style="--m:#b5521e;--mb:#f8e6dc;--md:#6e2a10">
+  <div class="top"><h2>Medidas de impacto (ensaio clínico)</h2></div>
+  <div class="hero">
+    <div class="hb"><div class="big">RRA</div><div class="lb">redução absoluta do risco</div></div>
+    <div class="hb"><div class="big">RRR</div><div class="lb">redução relativa do risco</div></div>
+    <div class="hb"><div class="big">NNT = 1/RRA</div><div class="lb">quantos tratar para evitar 1 evento</div></div>
+  </div>
+  <div class="grid">
+    <div class="c" style="--c:#b5521e">
+      <h3>Fórmulas</h3>
+      <span class="fx">Risco controle = <b>RC</b> · risco tratado = <b>RT</b></span>
+      <span class="fx"><b>RRA</b> = RC − RT</span>
+      <span class="fx"><b>RRR</b> = (RC − RT) / RC = 1 − RR</span>
+      <span class="fx"><b>NNT</b> = 1 / RRA (arredondar para cima)</span>
+      <span class="fx"><b>NNH</b> = 1 / aumento absoluto do risco de efeito adverso</span>
+      <span class="fx"><b>Risco atribuível</b> = Iexpostos − Inão expostos</span>
+    </div>
+    <div class="c" style="--c:#3f6a3a">
+      <h3>Exemplo resolvido</h3>
+      <ul>
+        <li>AVC em 1 ano: placebo <b>10%</b> × droga <b>8%</b></li>
+        <li><b>RR</b> = 8 / 10 = <b>0,8</b></li>
+        <li><b>RRR</b> = 1 − 0,8 = <b>20%</b></li>
+        <li><b>RRA</b> = 10% − 8% = <b>2%</b> (0,02)</li>
+        <li><b>NNT</b> = 1 / 0,02 = <b>50</b> pacientes tratados por 1 ano para evitar 1 AVC</li>
+      </ul>
+      <p class="note">A RRR (20%) "impressiona mais" que a RRA (2%): propaganda costuma mostrar a relativa.</p>
+    </div>
+  </div>
+  <div class="trap"><h3>Pegadinhas</h3><ul>
+    <li>NNT usa a <b>absoluta</b>, nunca a relativa</li>
+    <li>Mesma RRR em população de baixo risco → RRA menor → NNT maior</li>
+    <li>NNT menor = intervenção mais eficaz</li>
+    <li>NNH grande = droga mais segura</li>
+  </ul></div>
+</section>
+
+<!-- TIPOS DE ESTUDO -->
+<section class="card" id="es-estudos" style="--m:#6030a8;--mb:#f0eafb;--md:#3f1f70">
+  <div class="top"><h2>Tipos de estudo</h2></div>
+  <div class="grid">
+    <div class="c full" style="--c:#6030a8">
+      <h3>Como classificar (em 3 perguntas)</h3>
+      <div class="flow">
+        <div class="n t">O pesquisador <b>interveio</b> (decidiu quem recebe a exposição)?</div>
+        <div class="row">
+          <div class="col"><div class="ar">↓ sim</div><div class="n ok"><b>Experimental</b><small>ensaio clínico randomizado · ensaio de campo · ensaio comunitário</small></div></div>
+          <div class="col"><div class="ar">↓ não</div><div class="n"><b>Observacional</b></div>
+            <div class="ar">↓ unidade de análise é o grupo?</div>
+            <div class="row">
+              <div class="col"><div class="ar">sim</div><div class="n bad"><b>Ecológico</b></div></div>
+              <div class="col"><div class="ar">não: indivíduo</div><div class="n">Exposição e doença medidas <b>ao mesmo tempo</b>? → <b>Transversal</b><small>se não: parte da <b>doença</b> → caso-controle · parte da <b>exposição</b> → coorte</small></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="c full" style="--c:#7a5fa0">
+      <h3>Comparação</h3>
+      <div class="tw"><table>
+        <tr><th>Estudo</th><th>Como é</th><th>Medida</th><th>Bom para</th><th>Limitações</th></tr>
+        <tr><td><b>Relato / série de casos</b></td><td>Descreve 1 ou poucos casos</td><td>—</td><td>Doença nova, evento raro, gerar hipótese</td><td>Sem grupo controle</td></tr>
+        <tr><td><b>Ecológico</b></td><td>Compara grupos/populações (dados agregados)</td><td>Correlação</td><td>Barato, rápido, gerar hipótese</td><td><b>Falácia ecológica</b></td></tr>
+        <tr><td><b>Transversal</b></td><td>"Fotografia": exposição e doença no mesmo momento</td><td>Prevalência · RP</td><td>Planejamento em saúde, inquéritos</td><td>Não define temporalidade (causa × efeito)</td></tr>
+        <tr><td><b>Caso-controle</b></td><td>Parte de doentes e não doentes e olha para trás (exposição)</td><td><b>OR</b></td><td><b>Doença rara</b>, latência longa, várias exposições</td><td>Viés de memória e de seleção · não calcula incidência</td></tr>
+        <tr><td><b>Coorte</b></td><td>Parte de expostos e não expostos e acompanha até a doença (prospectiva ou histórica)</td><td><b>Incidência · RR</b></td><td><b>Exposição rara</b>, vários desfechos, temporalidade</td><td>Cara, longa, perdas de seguimento · ruim para doença rara</td></tr>
+        <tr><td><b>Ensaio clínico randomizado</b></td><td>Pesquisador aloca a intervenção por sorteio</td><td>RR · RRA · NNT</td><td><b>Padrão-ouro</b> para eficácia de tratamento</td><td>Caro, ético só com equipoise, validade externa limitada</td></tr>
+        <tr><td><b>Revisão sistemática / metanálise</b></td><td>Reúne estudos com método explícito; metanálise combina os números</td><td>Medida combinada (forest plot)</td><td>Topo da evidência</td><td>Viés de publicação · heterogeneidade (I²)</td></tr>
+      </table></div>
+    </div>
+    <div class="c" style="--c:#6030a8">
+      <h3>Pirâmide de evidência</h3>
+      <div class="pyr">
+        <div style="width:40%;background:#3f1f70">Revisão sistemática / metanálise</div>
+        <div style="width:52%;background:#6030a8">Ensaio clínico randomizado</div>
+        <div style="width:64%;background:#7a5fa0">Coorte</div>
+        <div style="width:76%;background:#9a82c0">Caso-controle</div>
+        <div style="width:88%;background:#b8a6d6;color:#3f1f70">Transversal · ecológico</div>
+        <div style="width:100%;background:#ddd2ee;color:#3f1f70">Relato/série de casos · opinião de especialista</div>
+      </div>
+    </div>
+    <div class="c" style="--c:#c0704e">
+      <h3>Dicas para identificar</h3>
+      <ul>
+        <li>"Selecionaram pacientes <b>com e sem</b> a doença e perguntaram sobre exposições passadas" → <b>caso-controle</b></li>
+        <li>"Acompanharam fumantes e não fumantes por 10 anos" → <b>coorte</b></li>
+        <li>"Em 2010, analisaram prontuários de 1990 e seguiram até 2010" → <b>coorte histórica</b> (retrospectiva)</li>
+        <li>"Compararam o consumo de sal e a taxa de AVC entre países" → <b>ecológico</b></li>
+        <li>"Questionário aplicado em um dia para medir prevalência" → <b>transversal</b></li>
+        <li>"Sorteio para receber droga ou placebo" → <b>ECR</b></li>
+      </ul>
+    </div>
+  </div>
+  <div class="trap"><h3>Pegadinhas</h3><ul>
+    <li>Coorte "retrospectiva" continua sendo coorte: parte da <b>exposição</b></li>
+    <li>Doença rara → caso-controle · exposição rara → coorte</li>
+    <li>Estudo ecológico não permite conclusão sobre o <b>indivíduo</b></li>
+    <li>Transversal não prova causa: não sabe o que veio primeiro</li>
+  </ul></div>
+</section>
+
+<!-- VIESES -->
+<section class="card" id="es-vies" style="--m:#a8432a;--mb:#f8e6dc;--md:#6e2a18">
+  <div class="top"><h2>Vieses e confundimento</h2></div>
+  <div class="grid">
+    <div class="c full" style="--c:#a8432a">
+      <div class="tw"><table>
+        <tr><th>Viés</th><th>O que é</th><th>Onde aparece</th></tr>
+        <tr><td><b>Seleção</b></td><td>Grupos diferentes desde a escolha dos participantes</td><td>Qualquer estudo; clássico no caso-controle</td></tr>
+        <tr><td><b>Berkson</b></td><td>Seleção de casos e controles no <b>hospital</b> distorce a associação</td><td>Caso-controle hospitalar</td></tr>
+        <tr><td><b>Neyman</b> (prevalência-incidência)</td><td>Só entram os sobreviventes (casos fatais ou curados rapidamente ficam de fora)</td><td>Caso-controle com casos prevalentes, transversal</td></tr>
+        <tr><td><b>Memória</b> (recordação)</td><td>Doentes lembram mais das exposições que os controles</td><td><b>Caso-controle</b></td></tr>
+        <tr><td><b>Informação / aferição</b></td><td>Erro na medida da exposição ou do desfecho</td><td>Qualquer estudo · reduz com cegamento</td></tr>
+        <tr><td><b>Perda de seguimento</b> (atrito)</td><td>Perdas diferentes entre os grupos</td><td><b>Coorte</b> e ECR</td></tr>
+        <tr><td><b>Confundimento</b></td><td>Terceira variável ligada à exposição e ao desfecho (ex.: tabagismo entre café e câncer de pulmão)</td><td>Observacionais · controla com randomização, pareamento, estratificação, análise multivariada</td></tr>
+        <tr><td><b>Lead time</b> (tempo de antecipação)</td><td>Rastreamento antecipa o diagnóstico e parece aumentar a sobrevida sem mudar a data da morte</td><td>Avaliação de rastreamento</td></tr>
+        <tr><td><b>Length time</b> (duração)</td><td>Rastreamento detecta mais as doenças lentas, de melhor prognóstico</td><td>Avaliação de rastreamento</td></tr>
+        <tr><td><b>Sobrediagnóstico</b></td><td>Detecta doença que nunca daria sintoma</td><td>Rastreamento (ex.: PSA)</td></tr>
+      </table></div>
+    </div>
+  </div>
+  <div class="trap"><h3>Pegadinhas</h3><ul>
+    <li>Randomização controla confundidores <b>conhecidos e desconhecidos</b></li>
+    <li>Cegamento reduz viés de <b>aferição</b>, não de confusão</li>
+    <li>Rastreamento eficaz reduz <b>mortalidade</b>, não só aumenta "sobrevida"</li>
+    <li>Viés de memória = caso-controle (pegadinha clássica)</li>
+  </ul></div>
+</section>
+
+<!-- ECR -->
+<section class="card" id="es-ecr" style="--m:#2f5f8a;--mb:#e6eff7;--md:#1f3f5e">
+  <div class="top"><h2>Ensaio clínico</h2></div>
+  <div class="grid">
+    <div class="c" style="--c:#2f5f8a">
+      <h3>Elementos de qualidade</h3>
+      <ul>
+        <li><b>Randomização:</b> distribui igualmente os fatores de confusão</li>
+        <li><b>Sigilo de alocação:</b> quem inclui não sabe o próximo grupo (protege a randomização)</li>
+        <li><b>Cegamento:</b> simples (paciente), duplo (paciente + avaliador), triplo (+ análise)</li>
+        <li><b>Intenção de tratar (ITT):</b> analisa como foi randomizado, mesmo quem abandonou → preserva a randomização, mais conservadora</li>
+        <li><b>Por protocolo:</b> só quem seguiu tudo → superestima o efeito</li>
+        <li><b>Validade interna:</b> o resultado é verdadeiro no estudo · <b>externa:</b> dá para generalizar</li>
+      </ul>
+    </div>
+    <div class="c" style="--c:#7a5fa0">
+      <h3>Fases da pesquisa clínica</h3>
+      <div class="tw"><table>
+        <tr><th>Fase</th><th>Quem</th><th>Objetivo</th></tr>
+        <tr><td><b>I</b></td><td>Poucos voluntários sadios</td><td>Segurança, dose, farmacocinética</td></tr>
+        <tr><td><b>II</b></td><td>Dezenas a centenas de doentes</td><td>Eficácia inicial, dose ideal</td></tr>
+        <tr><td><b>III</b></td><td>Centenas a milhares (ECR)</td><td>Eficácia comparada ao padrão → registro</td></tr>
+        <tr><td><b>IV</b></td><td>População geral</td><td>Farmacovigilância pós-comercialização (efeitos raros)</td></tr>
+      </table></div>
+      <p class="note">Estudo de <b>não inferioridade</b>: mostra que a droga nova não é pior que a padrão além de uma margem.</p>
+    </div>
+  </div>
+</section>
+
+<!-- HIPÓTESE -->
+<section class="card" id="es-hip" style="--m:#6b5a4a;--mb:#f1ede7;--md:#4a3e33">
+  <div class="top"><h2>Testes de hipótese: p, IC, erros α e β</h2></div>
+  <div class="grid">
+    <div class="c" style="--c:#6b5a4a">
+      <h3>Os 2 erros</h3>
+      <table class="t22">
+        <tr><th></th><th>H₀ verdadeira<br><small>(sem diferença)</small></th><th>H₀ falsa<br><small>(há diferença)</small></th></tr>
+        <tr><th>Rejeito H₀</th><td class="fa">Erro tipo I (α)<br><small>falso-positivo</small></td><td class="va">Acerto<br><small>poder = 1 − β</small></td></tr>
+        <tr><th>Não rejeito H₀</th><td class="va">Acerto</td><td class="fa">Erro tipo II (β)<br><small>falso-negativo</small></td></tr>
+      </table>
+    </div>
+    <div class="c" style="--c:#7a5fa0">
+      <h3>Conceitos</h3>
+      <ul>
+        <li><b>H₀ (nula):</b> não há diferença/associação</li>
+        <li><b>p-valor:</b> probabilidade de achar um resultado igual ou mais extremo <b>se H₀ fosse verdadeira</b> · p &lt; 0,05 → rejeita H₀</li>
+        <li><b>α = 5%:</b> chance aceita de erro tipo I</li>
+        <li><b>Poder (1 − β):</b> geralmente 80%; aumenta com <b>amostra maior</b> e efeito maior</li>
+        <li><b>IC 95%:</b> faixa provável do valor real · RR/OR: significativo se <b>não contém 1</b> · diferença de médias: se <b>não contém 0</b></li>
+        <li>Significância estatística ≠ relevância clínica</li>
+      </ul>
+    </div>
+  </div>
+  <div class="trap"><h3>Pegadinhas</h3><ul>
+    <li>"p = 0,03 → 97% de chance de a droga funcionar" → <b>errado</b></li>
+    <li>Amostra pequena → erro <b>tipo II</b> (não acha diferença que existe)</li>
+    <li>Muitas comparações → erro <b>tipo I</b> ↑</li>
+    <li>IC estreito = estimativa mais precisa (amostra maior)</li>
+  </ul></div>
+</section>
+
+<!-- DESCRITIVA -->
+<section class="card" id="es-desc" style="--m:#5c6e35;--mb:#edf0e3;--md:#3a4720">
+  <div class="top"><h2>Estatística descritiva</h2></div>
+  <div class="grid">
+    <div class="c" style="--c:#5c6e35">
+      <h3>Tipos de variável</h3>
+      <div class="tw"><table>
+        <tr><th>Tipo</th><th>Subtipo</th><th>Exemplo</th></tr>
+        <tr><td rowspan="2"><b>Qualitativa</b> (categórica)</td><td>Nominal</td><td>Sexo, tipo sanguíneo</td></tr>
+        <tr><td>Ordinal</td><td>Estadiamento, escolaridade, dor leve/moderada/grave</td></tr>
+        <tr><td rowspan="2"><b>Quantitativa</b> (numérica)</td><td>Discreta</td><td>Nº de filhos, nº de crises</td></tr>
+        <tr><td>Contínua</td><td>Peso, PA, glicemia</td></tr>
+      </table></div>
+      <h3 style="margin-top:10px">Tendência central e dispersão</h3>
+      <ul>
+        <li><b>Média:</b> sensível a valores extremos · <b>mediana:</b> valor do meio, robusta · <b>moda:</b> mais frequente</li>
+        <li>Distribuição <b>simétrica</b> (normal): média = mediana = moda</li>
+        <li><b>Assimetria positiva</b> (cauda à direita): média &gt; mediana &gt; moda</li>
+        <li><b>Desvio-padrão:</b> dispersão em torno da média · <b>variância</b> = DP²</li>
+      </ul>
+    </div>
+    <div class="c" style="--c:#7a5fa0">
+      <h3>Curva normal</h3>
+      <div class="flow">
+        <div class="n">Média <b>± 1 DP</b> → <b>68%</b> dos valores</div><div class="ar"></div>
+        <div class="n t">Média <b>± 2 DP</b> → <b>95%</b> dos valores</div><div class="ar"></div>
+        <div class="n">Média <b>± 3 DP</b> → <b>99,7%</b> dos valores</div>
+      </div>
+      <h3 style="margin-top:12px">Qual teste usar (básico)</h3>
+      <div class="tw"><table>
+        <tr><th>Comparação</th><th>Teste</th></tr>
+        <tr><td>2 proporções (qualitativas)</td><td>Qui-quadrado (Fisher se amostra pequena)</td></tr>
+        <tr><td>Médias de 2 grupos (normal)</td><td>t de Student</td></tr>
+        <tr><td>Médias de ≥3 grupos</td><td>ANOVA</td></tr>
+        <tr><td>2 grupos sem normalidade</td><td>Mann-Whitney</td></tr>
+        <tr><td>Correlação entre 2 numéricas</td><td>Pearson (paramétrico) · Spearman (não paramétrico)</td></tr>
+      </table></div>
+    </div>
+  </div>
+</section>
+
+<!-- CALCULADORA -->
+<section class="card" id="es-calc" style="--m:#b07a10;--mb:#fdf3e0;--md:#6e4a06">
+  <div class="top"><h2>Calculadora 2×2</h2><span class="src">digite os valores de a, b, c e d</span></div>
+  <div class="grid">
+    <div class="c" style="--c:#b07a10">
+      <h3>Teste diagnóstico</h3>
+      <p class="note">a = VP · b = FP · c = FN · d = VN</p>
+      <div class="calc">
+        <div><label>a (doente, teste +)</label><input type="number" min="0" id="dA" value="90"></div>
+        <div><label>b (sadio, teste +)</label><input type="number" min="0" id="dB" value="40"></div>
+        <div><label>c (doente, teste −)</label><input type="number" min="0" id="dC" value="10"></div>
+        <div><label>d (sadio, teste −)</label><input type="number" min="0" id="dD" value="860"></div>
+      </div>
+      <div class="res" id="dRes"></div>
+    </div>
+    <div class="c" style="--c:#8a2f6a">
+      <h3>Exposição × doença</h3>
+      <p class="note">a = exposto doente · b = exposto sadio · c = não exposto doente · d = não exposto sadio</p>
+      <div class="calc">
+        <div><label>a (exposto, doente)</label><input type="number" min="0" id="eA" value="30"></div>
+        <div><label>b (exposto, sadio)</label><input type="number" min="0" id="eB" value="70"></div>
+        <div><label>c (não exposto, doente)</label><input type="number" min="0" id="eC" value="10"></div>
+        <div><label>d (não exposto, sadio)</label><input type="number" min="0" id="eD" value="90"></div>
+      </div>
+      <div class="res" id="eRes"></div>
+      <p class="note">Em ensaio clínico, use "exposto" = tratado: RR &lt; 1 indica proteção, e RRA e NNT aparecem com o sinal correto.</p>
+    </div>
+  </div>
+</section>
+
+<script>
+(function(){
+  const g=id=>Math.max(0,parseFloat(document.getElementById(id).value)||0);
+  const pct=x=>isFinite(x)?(x*100).toFixed(1).replace('.',',')+'%':'—';
+  const num=(x,d=2)=>isFinite(x)?x.toFixed(d).replace('.',','):'—';
+  const box=(l,v)=>'<div><span>'+l+'</span><strong>'+v+'</strong></div>';
+  function diag(){
+    const a=g('dA'),b=g('dB'),c=g('dC'),d=g('dD'),n=a+b+c+d;
+    const se=a/(a+c),es=d/(b+d);
+    document.getElementById('dRes').innerHTML=
+      box('Sensibilidade',pct(se))+box('Especificidade',pct(es))+box('VPP',pct(a/(a+b)))+box('VPN',pct(d/(c+d)))+
+      box('Acurácia',pct((a+d)/n))+box('Prevalência',pct((a+c)/n))+box('RV+',num(se/(1-es)))+box('RV−',num((1-se)/es));
+  }
+  function expo(){
+    const a=g('eA'),b=g('eB'),c=g('eC'),d=g('eD');
+    const ie=a/(a+b),in0=c/(c+d),rr=ie/in0,or=(a*d)/(b*c),diff=in0-ie;
+    const nnt=diff!==0&&isFinite(diff)?Math.ceil(1/Math.abs(diff)):NaN;
+    document.getElementById('eRes').innerHTML=
+      box('Risco expostos',pct(ie))+box('Risco não expostos',pct(in0))+box('RR',num(rr))+box('OR',num(or))+
+      box(diff>=0?'RRA':'Aumento abs. risco',pct(Math.abs(diff)))+box(rr<1?'RRR':'Aumento rel. risco',pct(Math.abs(1-rr)))+
+      box(diff>=0?'NNT':'NNH',isFinite(nnt)?nnt:'—')+box('Risco atribuível',pct(ie-in0));
+  }
+  ['dA','dB','dC','dD'].forEach(i=>document.getElementById(i).addEventListener('input',diag));
+  ['eA','eB','eC','eD'].forEach(i=>document.getElementById(i).addEventListener('input',expo));
+  diag();expo();
+})();
+</script>
+
+<div class="fontes"><b>Base:</b> conceitos clássicos de epidemiologia clínica (Fletcher — Epidemiologia Clínica; Rouquayrol — Epidemiologia & Saúde; Medronho — Epidemiologia).</div>
+</div>
+</div>
+
 <!-- ══════════════════════ CALENDÁRIO VACINAL ══════════════════════ -->
 <div class="panel" id="panel-vacinal">
   <div class="section-intro">
@@ -2157,11 +2630,11 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
   // ── PANEL NAV ──
   window.addEventListener('DOMContentLoaded', () => {
     const h = (location.hash || '').replace('#','');
-    const map = {rastreamento:1, vacinal:2, notificacoes:0};
-    const key = h.startsWith('rx-') ? 'rastreamento' : h;
+    const map = {rastreamento:1, vacinal:2, notificacoes:0, estatistica:3};
+    const key = h.startsWith('rx-') ? 'rastreamento' : h.startsWith('es-') ? 'estatistica' : h;
     if (key in map) {
       const btn = document.querySelectorAll('.nav-btn')[map[key]];
-      if (btn) { showPanel(key, btn); if (h.startsWith('rx-')) setTimeout(()=>{const el=document.getElementById(h); if(el) el.scrollIntoView();},50); }
+      if (btn) { showPanel(key, btn); if (h.startsWith('rx-')||h.startsWith('es-')) setTimeout(()=>{const el=document.getElementById(h); if(el) el.scrollIntoView();},50); }
     }
   });
   function showPanel(id, btn) {
