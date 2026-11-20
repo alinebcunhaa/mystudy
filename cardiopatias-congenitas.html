@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cardiopatias Congênitas — R1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;0,700;1,500&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#faf6ef;--card:#fffdf9;--ink:#33302b;--soft:#6e675e;--line:#e8dfd2;
+  --terra:#c0704e;--terra-bg:#f8e6dc;--sage:#7f9a7a;--sage-bg:#e6efe2;
+  --ped:#7a5fa0;--ped-bg:#f0eaf8;--warn:#b5523b;--warn-bg:#fbe4dd;
+  --o2:#c8574d;--o2f:#f7dcd5;--v:#4a7fa0;--vf:#d8e7f1;--m:#8a6aa8;--mf:#e8def2;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:'Source Sans 3',sans-serif;line-height:1.55;font-size:16px}
+header{max-width:1000px;margin:0 auto;padding:36px 20px 14px}
+.back{font-size:.85rem;color:var(--soft);text-decoration:none}
+.back:hover{color:var(--terra)}
+.eyebrow{display:inline-block;margin-top:14px;font-weight:700;font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--ped);background:var(--ped-bg);padding:5px 12px;border-radius:999px}
+h1{font-family:'Lora',serif;font-size:clamp(1.8rem,4.5vw,2.6rem);line-height:1.1;margin:10px 0 6px}
+h1 em{color:var(--terra)}
+.sub{color:var(--soft);max-width:720px}
+nav{position:sticky;top:0;z-index:10;background:rgba(250,246,239,.95);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+.tabs{max-width:1000px;margin:0 auto;display:flex;gap:6px;overflow-x:auto;padding:10px 20px}
+.tab{flex:0 0 auto;border:1.5px solid var(--line);background:var(--card);color:var(--ink);font:600 .88rem 'Source Sans 3',sans-serif;padding:7px 13px;border-radius:999px;cursor:pointer}
+.tab.on{background:var(--terra);border-color:var(--terra);color:#fff}
+main{max-width:1000px;margin:0 auto;padding:22px 20px 60px}
+.panel{display:none}.panel.on{display:block}
+h2{font-family:'Lora',serif;font-size:1.45rem;margin:4px 0 12px}
+h3{font-family:'Lora',serif;font-size:1.15rem;margin:0 0 8px;color:var(--terra)}
+h4{font-family:'Lora',serif;font-size:1.02rem;margin:16px 0 6px;color:var(--ped)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px;margin:12px 0}
+ul{padding-left:20px}li{margin:3px 0}
+table{width:100%;border-collapse:collapse;font-size:.94rem;background:var(--card);border-radius:12px;overflow:hidden;margin:8px 0}
+th,td{padding:9px 11px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{background:var(--ped-bg);color:#4d3a6e;font-weight:700}
+.tag{display:inline-block;font-size:.7rem;font-weight:700;letter-spacing:.05em;padding:2px 8px;border-radius:999px;text-transform:uppercase;vertical-align:middle;background:var(--terra);color:#fff}
+.callout{border-left:4px solid var(--terra);background:var(--terra-bg);padding:12px 14px;border-radius:10px;margin:12px 0}
+.callout.warn{border-color:var(--warn);background:var(--warn-bg)}
+.callout.ok{border-color:var(--sage);background:var(--sage-bg)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:720px){.grid2{grid-template-columns:1fr}}
+.flow{display:flex;flex-direction:column;align-items:center;gap:6px;margin:10px 0}
+.box{width:100%;max-width:560px;text-align:center;border:1.5px solid var(--line);background:var(--card);border-radius:12px;padding:9px 12px}
+.box.q{border-color:var(--ped);background:var(--ped-bg)}
+.box.act{border-color:var(--terra);background:var(--terra-bg)}
+.box.ok{border-color:var(--sage);background:var(--sage-bg)}
+.box.bad{border-color:var(--warn);background:var(--warn-bg)}
+.arrow{color:var(--soft);font-size:.85rem}
+.row3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%;max-width:760px}
+@media(max-width:640px){.row3{grid-template-columns:1fr}}
+
+/* cardiopatia cards */
+.dz{display:grid;grid-template-columns:300px 1fr;gap:18px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin:14px 0}
+.dz.acia{border-top:5px solid var(--o2)}
+.dz.cia{border-top:5px solid var(--v)}
+@media(max-width:720px){.dz{grid-template-columns:1fr}}
+.fig{background:#fff;border:1px dashed var(--line);border-radius:14px;padding:6px}
+.fig svg{width:100%;height:auto;display:block}
+.cap{font-size:.84rem;color:var(--soft);padding:4px 6px 2px;line-height:1.4}
+dl{display:grid;grid-template-columns:118px 1fr;gap:5px 10px;font-size:.95rem}
+dt{font-weight:700;color:var(--soft);font-size:.82rem;text-transform:uppercase;letter-spacing:.04em;padding-top:2px}
+@media(max-width:480px){dl{grid-template-columns:1fr}dt{padding-top:6px}}
+.pega{margin-top:10px;background:var(--ped-bg);border-radius:10px;padding:8px 11px;font-size:.92rem}
+.pega b{color:var(--ped)}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:.88rem;margin:8px 0}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:16px;height:16px;border-radius:4px;border:2px solid #5a5149;display:inline-block}
+.heart text{font:700 14px 'Source Sans 3',sans-serif;fill:#33302b;paint-order:stroke;stroke:#fffdf9;stroke-width:4px;stroke-linejoin:round}
+.heart text.s{font-size:11.5px;font-weight:600}
+.heart text.b{fill:#fff;stroke:none;font-size:12px}
+.quiz details{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 14px;margin:8px 0}
+.quiz summary{cursor:pointer;font-weight:600}
+.quiz details p{margin-top:6px;color:var(--soft)}
+.info img{width:100%;max-width:640px;border-radius:14px;border:1px solid var(--line);display:block;margin:10px auto}
+.fix td:nth-child(2){color:var(--warn);text-decoration:line-through;text-decoration-color:rgba(181,82,59,.5)}
+.fix td:nth-child(3){background:var(--sage-bg);font-weight:600}
+footer{max-width:1000px;margin:0 auto;padding:0 20px 40px;color:var(--soft);font-size:.82rem}
+</style>
+</head>
+<body>
+<!-- marcadores de seta compartilhados pelos desenhos -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <marker id="a-o2" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#c8574d"/></marker>
+  <marker id="a-v" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#4a7fa0"/></marker>
+  <marker id="a-m" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#8a6aa8"/></marker>
+</defs></svg>
+
+<header>
+  <a class="back" href="index.html">← Hub de estudos</a><br>
+  <span class="eyebrow">Pediatria · Cardiologia</span>
+  <h1>Cardiopatias <em>congênitas</em></h1>
+  <p class="sub">Acianóticas × cianóticas (os 5 Ts), cada uma com o desenho do defeito e do desvio de sangue. Mais RN cianótico, PGE1, crise hipoxêmica e teste do coraçãozinho (SBP 2022).</p>
+</header>
+
+<nav><div class="tabs" id="tabs"></div></nav>
+
+<main>
+
+<!-- ============ VISÃO GERAL ============ -->
+<section class="panel" data-t="Visão geral">
+  <h2>O raciocínio em 3 perguntas</h2>
+  <div class="dz">
+    <div class="fig"><div data-h="normal"></div><p class="cap">Coração normal: lado direito venoso (azul), lado esquerdo oxigenado (vermelho), sem comunicação entre eles.</p></div>
+    <div>
+      <div class="legend">
+        <span><i class="sw" style="background:var(--o2f);border-color:var(--o2)"></i>Oxigenado</span>
+        <span><i class="sw" style="background:var(--vf);border-color:var(--v)"></i>Venoso</span>
+        <span><i class="sw" style="background:var(--mf);border-color:var(--m)"></i>Misturado</span>
+        <span><i class="sw" style="background:#fff;border:2px dashed #e0a526"></i>Onde está o defeito</span>
+      </div>
+      <ol style="padding-left:20px">
+        <li><b>Tem cianose?</b> Shunt E→D (ou obstrução) = <b>acianótica</b>. Sangue venoso chegando à aorta (shunt D→E ou mistura) = <b>cianótica</b>.</li>
+        <li><b>Como está o fluxo pulmonar no RX?</b> Hiperfluxo (trama vascular aumentada) ou hipofluxo (campos “limpos”, escuros).</li>
+        <li><b>Depende do canal arterial?</b> Se sim: <b>PGE1 já</b>, antes do eco.</li>
+      </ol>
+      <div class="callout"><b>Por que a CIV grande “aparece” com ~2 meses?</b> A resistência vascular pulmonar (RVP) cai nas primeiras semanas. Quanto menor a RVP, maior o shunt E→D, e vem a ICC (taquipneia, sudorese às mamadas, baixo ganho de peso).</div>
+    </div>
+  </div>
+
+  <h4>Hiperfluxo × hipofluxo pulmonar</h4>
+  <table>
+    <tr><th></th><th>Hiperfluxo</th><th>Hipofluxo</th></tr>
+    <tr><td><b>Acianóticas</b></td><td>CIV, CIA, PCA, DSAV</td><td>(fluxo normal) obstrutivas: coarctação, estenose pulmonar/aórtica</td></tr>
+    <tr><td><b>Cianóticas</b></td><td><b>TGA, truncus, DATVP</b></td><td><b>Fallot, atresia tricúspide</b>, atresia pulmonar, Ebstein</td></tr>
+  </table>
+
+  <h4>Síndrome de Eisenmenger</h4>
+  <div class="card">Shunt E→D grande e prolongado (CIV, PCA, DSAV) leva a hiperfluxo crônico, remodelamento arteriolar e hipertensão pulmonar irreversível. Quando a pressão pulmonar supera a sistêmica, o <b>shunt inverte (D→E)</b> e aparece cianose tardia. A partir daí <b>não se fecha mais o defeito</b>. Por isso CIV grande e DSAV são operados cedo.</div>
+
+  <h4>Associações que caem</h4>
+  <table>
+    <tr><th>Síndrome / contexto</th><th>Cardiopatia</th></tr>
+    <tr><td>Down (T21)</td><td><b>DSAV</b> (a mais característica), CIV</td></tr>
+    <tr><td>Turner (45,X)</td><td><b>Coarctação</b>, valva aórtica bicúspide</td></tr>
+    <tr><td>DiGeorge (22q11)</td><td><b>Truncus</b>, interrupção do arco, Fallot</td></tr>
+    <tr><td>Rubéola congênita</td><td><b>PCA</b>, estenose de ramos pulmonares</td></tr>
+    <tr><td>Filho de mãe diabética</td><td><b>TGA</b>, hipertrofia septal assimétrica</td></tr>
+    <tr><td>Williams</td><td>Estenose aórtica supravalvar</td></tr>
+    <tr><td>Noonan</td><td>Estenose pulmonar (valva displásica)</td></tr>
+    <tr><td>Holt-Oram</td><td>CIA + anomalias de membros superiores</td></tr>
+    <tr><td>Lítio na gestação</td><td>Ebstein</td></tr>
+  </table>
+</section>
+
+<!-- ============ ACIANÓTICAS ============ -->
+<section class="panel" data-t="Acianóticas">
+  <h2>Acianóticas: shunt E→D ou obstrução</h2>
+
+  <article class="dz acia">
+    <div class="fig"><div data-h="civ"></div><p class="cap">Buraco no septo interventricular: o VE (pressão alta) joga sangue para o VD e daí para o pulmão (hiperfluxo).</p></div>
+    <div><h3>CIV — Comunicação interventricular</h3><dl>
+      <dt>Defeito</dt><dd>Orifício no septo interventricular (perimembranoso é o mais comum). <b>Cardiopatia congênita mais comum</b> (fora a aorta bicúspide).</dd>
+      <dt>Fisiopatologia</dt><dd>Shunt E→D, hiperfluxo pulmonar, sobrecarga de volume de AE e VE.</dd>
+      <dt>Exame</dt><dd>Sopro <b>holossistólico</b>, rude, em borda esternal esquerda baixa (3º–4º EIE), com frêmito. CIV pequena = sopro mais alto (“muito barulho para pouca CIV”).</dd>
+      <dt>RX / ECG</dt><dd>Cardiomegalia + hiperfluxo · ECG com SVE ou biventricular.</dd>
+      <dt>Conduta</dt><dd>Pequena (muscular): observar, a maioria fecha sozinha. Grande com ICC: furosemida ± IECA e <b>cirurgia</b> se ICC refratária, falha de crescimento ou hipertensão pulmonar (evitar Eisenmenger).</dd>
+    </dl><p class="pega"><b>Pegadinha:</b> sintomas por volta de 4–8 semanas, quando cai a RVP, e não ao nascer.</p></div>
+  </article>
+
+  <article class="dz acia">
+    <div class="fig"><div data-h="cia"></div><p class="cap">Buraco no septo interatrial: AE → AD, com sobrecarga de volume das câmaras direitas.</p></div>
+    <div><h3>CIA — Comunicação interatrial</h3><dl>
+      <dt>Defeito</dt><dd>Orifício no septo interatrial. <b>Ostium secundum</b> é o mais comum. Ostium primum faz parte do espectro do DSAV.</dd>
+      <dt>Fisiopatologia</dt><dd>Shunt E→D de baixa pressão. Costuma ser <b>assintomática</b> na infância.</dd>
+      <dt>Exame</dt><dd><b>B2 com desdobramento amplo e fixo</b> + sopro sistólico ejetivo em foco pulmonar (hiperfluxo pela valva pulmonar, e não pelo defeito) ± ruflar diastólico tricúspide.</dd>
+      <dt>RX / ECG</dt><dd>Aumento de AD/VD + hiperfluxo · ECG: <b>BRD incompleto + eixo desviado para a direita</b> (OS). Eixo para a esquerda sugere ostium primum.</dd>
+      <dt>Conduta</dt><dd>Defeitos pequenos podem fechar sozinhos. Se houver repercussão (aumento de câmaras direitas), fechamento eletivo na idade pré-escolar, <b>percutâneo</b> se ostium secundum.</dd>
+    </dl><p class="pega"><b>Pegadinha:</b> o sopro <i>não</i> é gerado pela CIA, e sim pelo hiperfluxo na valva pulmonar.</p></div>
+  </article>
+
+  <article class="dz acia">
+    <div class="fig"><div data-h="pca"></div><p class="cap">O canal arterial (que deveria fechar) continua ligando aorta e artéria pulmonar: Ao → AP na sístole e na diástole.</p></div>
+    <div><h3>PCA — Persistência do canal arterial</h3><dl>
+      <dt>Defeito</dt><dd>Canal arterial patente após o período de fechamento esperado. Comum em <b>prematuros</b> e na <b>rubéola congênita</b>.</dd>
+      <dt>Fisiopatologia</dt><dd>Shunt Ao→AP contínuo, hiperfluxo pulmonar e roubo diastólico sistêmico.</dd>
+      <dt>Exame</dt><dd>Sopro <b>contínuo em “maquinaria”</b>, infraclavicular esquerdo · <b>pulsos amplos</b>, PA divergente (diastólica baixa).</dd>
+      <dt>RX / ECG</dt><dd>Hiperfluxo, aumento de AE/VE · ECG com SVE se grande.</dd>
+      <dt>Conduta</dt><dd><b>Prematuro</b> com repercussão: ibuprofeno, indometacina ou paracetamol. <b>RN a termo</b>: AINE não funciona, o fechamento é percutâneo ou cirúrgico.</dd>
+    </dl><p class="pega"><b>Pegadinha:</b> PGE1 <i>mantém</i> o canal aberto; AINE <i>fecha</i>. Na prova, AINE é para PCA do prematuro.</p></div>
+  </article>
+
+  <article class="dz acia">
+    <div class="fig"><div data-h="dsav"></div><p class="cap">Falha no “centro” do coração: CIA baixa + CIV alta + uma única valva AV comum.</p></div>
+    <div><h3>DSAV — Defeito do septo atrioventricular</h3><dl>
+      <dt>Defeito</dt><dd>Defeito dos coxins endocárdicos: CIA ostium primum + CIV de via de entrada + <b>valva AV única</b> (forma total).</dd>
+      <dt>Associação</dt><dd><b>Síndrome de Down</b> (a cardiopatia mais característica da T21).</dd>
+      <dt>Clínica</dt><dd>ICC precoce, hiperfluxo importante e <b>hipertensão pulmonar precoce</b>.</dd>
+      <dt>RX / ECG</dt><dd>Cardiomegalia + hiperfluxo · ECG: <b>eixo desviado para a esquerda (superior)</b>, padrão de BDAS.</dd>
+      <dt>Conduta</dt><dd>Controle da ICC e correção cirúrgica por volta de <b>3–6 meses</b>, antes da hipertensão pulmonar fixa.</dd>
+    </dl><p class="pega"><b>Pegadinha:</b> Down + eixo para a esquerda (BDAS) = DSAV.</p></div>
+  </article>
+
+  <article class="dz acia">
+    <div class="fig"><div data-h="coarc"></div><p class="cap">Estreitamento da aorta descendente perto do canal: sobra pressão para cima (MMSS) e falta para baixo (MMII).</p></div>
+    <div><h3>Coarctação da aorta</h3><dl>
+      <dt>Defeito</dt><dd>Estreitamento da aorta, em geral justaductal (após a subclávia esquerda). Associa-se a <b>Turner</b> e a <b>valva aórtica bicúspide</b>.</dd>
+      <dt>Exame</dt><dd><b>Pulsos femorais diminuídos ou atrasados</b> · PA MMSS &gt; MMII · sopro sistólico interescapular.</dd>
+      <dt>RX</dt><dd><b>Sinal do 3</b> (aorta) e <b>sinal de Roesler</b> (corrosão costal pelas colaterais intercostais), achados de criança maior, não do RN.</dd>
+      <dt>Neonatal crítica</dt><dd>Fluxo sistêmico <b>canal-dependente</b>: choque quando o canal fecha → <b>PGE1</b>.</dd>
+      <dt>Conduta</dt><dd>Correção cirúrgica (RN/lactente) ou angioplastia ± stent (criança maior).</dd>
+    </dl><p class="pega"><b>Pegadinha:</b> criança com HAS → palpar femorais e medir PA nos quatro membros.</p></div>
+  </article>
+</section>
+
+<!-- ============ CIANÓTICAS ============ -->
+<section class="panel" data-t="Cianóticas (5 Ts)">
+  <h2>Cianóticas: os 5 Ts</h2>
+  <p class="sub" style="margin-bottom:6px">Tetralogia · Transposição · Tricúspide (atresia) · Truncus · Total (drenagem anômala das veias pulmonares).</p>
+
+  <article class="dz cia">
+    <div class="fig"><div data-h="fallot"></div><p class="cap">① CIV · ② aorta cavalgando o septo · ③ estenose pulmonar (infundibular) · ④ hipertrofia de VD. O sangue venoso do VD sai pela aorta.</p></div>
+    <div><h3>Tetralogia de Fallot</h3><dl>
+      <dt>Defeito</dt><dd>CIV + <b>dextroposição (cavalgamento) da aorta</b> + <b>estenose pulmonar infundibular</b> + HVD. Cianótica mais comum <b>após o período neonatal</b>.</dd>
+      <dt>Fisiopatologia</dt><dd>Quanto maior a obstrução pulmonar, maior o shunt D→E e maior a cianose.</dd>
+      <dt>Exame</dt><dd>Cianose progressiva · sopro sistólico ejetivo em BEE alta (da <b>estenose pulmonar</b>, não da CIV) · <b>posição de cócoras</b> (squatting) espontânea.</dd>
+      <dt>RX / ECG</dt><dd><b>Coração em bota</b> (“tamanco holandês”): ápice elevado + concavidade da AP · hipofluxo · ECG com SVD e eixo à direita.</dd>
+      <dt>Conduta</dt><dd>Correção total eletiva no 1º ano (geralmente 3–6 meses). Blalock-Taussig (shunt sistêmico-pulmonar) como paliativo se necessário.</dd>
+    </dl><p class="pega"><b>Pegadinha:</b> na crise hipoxêmica o sopro <b>diminui ou some</b> (menos sangue passa pela via pulmonar).</p></div>
+  </article>
+
+  <article class="dz cia">
+    <div class="fig"><div data-h="tga"></div><p class="cap">Artérias trocadas: a aorta sai do VD e a AP sai do VE. Ficam dois circuitos em paralelo, e só se sobrevive se houver mistura (CIA, CIV ou PCA).</p></div>
+    <div><h3>TGA — Transposição das grandes artérias</h3><dl>
+      <dt>Defeito</dt><dd><b>Aorta sai do VD</b> e <b>AP sai do VE</b>. É a <b>cianótica mais comum no período neonatal</b>. Mais em meninos e em filhos de mãe diabética.</dd>
+      <dt>Clínica</dt><dd><b>Cianose intensa nas primeiras horas</b>, muitas vezes sem sopro. Teste de hiperóxia: a PaO₂ <b>não sobe</b>.</dd>
+      <dt>RX</dt><dd><b>“Ovo deitado no fio”</b> (ovo de lado): mediastino superior estreito + hiperfluxo.</dd>
+      <dt>Conduta</dt><dd><b>PGE1</b> → <b>atriosseptostomia de Rashkind</b> se a mistura for insuficiente → <b>cirurgia de Jatene</b> (switch arterial) nas primeiras semanas de vida.</dd>
+    </dl><p class="pega"><b>Pegadinha:</b> RN muito cianótico, sem desconforto respiratório e sem sopro → TGA.</p></div>
+  </article>
+
+  <article class="dz cia">
+    <div class="fig"><div data-h="atresiaT"></div><p class="cap">Não existe valva tricúspide (✕). O sangue do AD é obrigado a passar pela CIA para o AE, mistura e volta ao VD pequeno pela CIV.</p></div>
+    <div><h3>Atresia tricúspide</h3><dl>
+      <dt>Defeito</dt><dd>Ausência da valva tricúspide + <b>VD hipoplásico</b>. Depende de <b>CIA</b> (obrigatória) e, em geral, de CIV ou PCA para chegar sangue ao pulmão.</dd>
+      <dt>Clínica</dt><dd>Cianose neonatal. Na maioria das vezes há hipofluxo pulmonar.</dd>
+      <dt>RX / ECG</dt><dd>Hipofluxo · ECG: <b>eixo desviado para a ESQUERDA + SVE</b>.</dd>
+      <dt>Conduta</dt><dd>Fisiologia univentricular: Blalock-Taussig se canal-dependente → <b>Glenn</b> (~4–6 meses) → <b>Fontan</b> (~2–4 anos).</dd>
+    </dl><p class="pega"><b>Pegadinha:</b> cianótica com <b>eixo à esquerda</b> = atresia tricúspide (no Fallot o eixo é para a direita).</p></div>
+  </article>
+
+  <article class="dz cia">
+    <div class="fig"><div data-h="truncus"></div><p class="cap">Um único tronco arterial sai dos dois ventrículos, por cima de uma CIV, e dele nascem aorta e artérias pulmonares. Tudo misturado.</p></div>
+    <div><h3>Truncus arteriosus</h3><dl>
+      <dt>Defeito</dt><dd><b>Vaso único</b> (com valva truncal) originando circulação sistêmica, pulmonar e coronária, sempre com CIV.</dd>
+      <dt>Associação</dt><dd><b>DiGeorge (22q11)</b>: hipocalcemia, timo ausente.</dd>
+      <dt>Clínica</dt><dd>Cianose leve + <b>hiperfluxo</b> e ICC precoce · pulsos amplos.</dd>
+      <dt>RX</dt><dd>Cardiomegalia + hiperfluxo ± arco aórtico à direita.</dd>
+      <dt>Conduta</dt><dd>Correção cirúrgica precoce (<b>Rastelli</b>: tubo VD-AP + fechamento da CIV).</dd>
+    </dl><p class="pega"><b>Pegadinha:</b> cianose + ICC + hipocalcemia → truncus com DiGeorge.</p></div>
+  </article>
+
+  <article class="dz cia">
+    <div class="fig"><div data-h="datvp"></div><p class="cap">As veias pulmonares não chegam ao AE: sobem por uma veia vertical e drenam na VCS → AD (forma supracardíaca). O AE só recebe sangue pela CIA.</p></div>
+    <div><h3>DATVP — Drenagem anômala total das veias pulmonares</h3><dl>
+      <dt>Defeito</dt><dd>Todas as veias pulmonares drenam para a circulação venosa sistêmica. Tipos: supracardíaca (a mais comum), cardíaca e infracardíaca. <b>CIA obrigatória</b>.</dd>
+      <dt>Clínica</dt><dd>Cianose + hiperfluxo. A forma <b>obstrutiva (infracardíaca)</b> é emergência, com edema pulmonar grave.</dd>
+      <dt>RX</dt><dd>Supracardíaca: <b>“boneco de neve”</b> (figura em 8). Obstrutiva: coração pequeno + padrão de edema pulmonar.</dd>
+      <dt>Conduta</dt><dd><b>Cirúrgica</b>, de emergência se obstruída. PGE1 não resolve.</dd>
+    </dl><p class="pega"><b>Pegadinha:</b> RN cianótico com RX de “edema pulmonar” e coração pequeno → DATVP obstrutiva.</p></div>
+  </article>
+
+  <h4>Sinais de RX: resumo</h4>
+  <table>
+    <tr><th>Imagem</th><th>Cardiopatia</th></tr>
+    <tr><td>Coração em bota / tamanco holandês</td><td>Tetralogia de Fallot</td></tr>
+    <tr><td>Ovo deitado no fio (ovo de lado)</td><td>TGA</td></tr>
+    <tr><td>Boneco de neve / figura em 8</td><td>DATVP supracardíaca</td></tr>
+    <tr><td>Sinal do 3 + Roesler (corrosão costal)</td><td>Coarctação da aorta (criança maior)</td></tr>
+    <tr><td>Cardiomegalia “parede a parede” (coração em moringa)</td><td>Ebstein</td></tr>
+  </table>
+</section>
+
+<!-- ============ RN CIANÓTICO ============ -->
+<section class="panel" data-t="RN cianótico & PGE1">
+  <h2>RN cianótico: é coração ou pulmão?</h2>
+  <div class="flow">
+    <div class="box q">RN com <b>cianose central</b></div>
+    <div class="arrow">↓</div>
+    <div class="box">Teste de hiperóxia: O₂ a 100% por ~10 min → gasometria (pré-ductal)</div>
+    <div class="arrow">↓</div>
+    <div class="row3" style="grid-template-columns:1fr 1fr">
+      <div class="box ok">PaO₂ <b>&gt; 150 mmHg</b><br>→ provável doença <b>pulmonar</b></div>
+      <div class="box bad">PaO₂ <b>&lt; 100 mmHg</b> (muitas vezes &lt; 50)<br>→ <b>cardiopatia cianótica</b></div>
+    </div>
+    <div class="arrow">↓</div>
+    <div class="box act">Suspeita de lesão canal-dependente → <b>iniciar PGE1</b> sem esperar o eco</div>
+    <div class="arrow">↓</div>
+    <div class="box">Ecocardiograma + contato com cardiologia pediátrica / transferência</div>
+  </div>
+
+  <h4>Quem depende do canal arterial?</h4>
+  <table>
+    <tr><th>Fluxo que depende do canal</th><th>Exemplos</th><th>Quadro quando o canal fecha</th></tr>
+    <tr><td><b>Pulmonar</b></td><td>Atresia pulmonar, Fallot extremo, atresia tricúspide com EP, Ebstein grave</td><td>Cianose intensa, hipoxemia</td></tr>
+    <tr><td><b>Sistêmico</b></td><td>Hipoplasia do coração esquerdo, coarctação crítica, interrupção do arco, estenose aórtica crítica</td><td><b>Choque</b>, pulsos fracos, acidose (pode simular sepse)</td></tr>
+    <tr><td><b>Mistura</b></td><td>TGA</td><td>Cianose grave</td></tr>
+  </table>
+
+  <div class="card"><h3>Prostaglandina E1 (alprostadil)</h3>
+    <ul>
+      <li>Mantém ou reabre o canal arterial.</li>
+      <li>Dose usual: 0,01–0,1 mcg/kg/min em infusão contínua, com ajuste para a menor dose eficaz (seguir o protocolo local).</li>
+      <li>Efeitos adversos que caem: <b>apneia</b> (deixar via aérea preparada), febre, hipotensão, rubor.</li>
+    </ul>
+  </div>
+  <div class="callout warn">RN “séptico” em choque, com pulsos femorais fracos, na 1ª–2ª semana de vida: pense em <b>lesão obstrutiva esquerda canal-dependente</b> e inicie PGE1.</div>
+</section>
+
+<!-- ============ CRISE HIPOXÊMICA ============ -->
+<section class="panel" data-t="Crise hipoxêmica">
+  <h2>Crise hipoxêmica (crise de cianose) no Fallot</h2>
+  <div class="callout">A lógica é <b>aumentar a resistência vascular SISTÊMICA</b> e <b>relaxar o infundíbulo</b>. Assim, o sangue do VD é empurrado para o pulmão em vez de sair pela aorta através da CIV.</div>
+  <div class="card">
+    <ol style="padding-left:20px">
+      <li><b>Posição genupeitoral</b> (joelhos no peito) → ↑ RVS. É o mesmo princípio do “squatting”.</li>
+      <li><b>Acalmar</b> a criança (colo da mãe) + <b>O₂</b>.</li>
+      <li><b>Morfina</b> → reduz a hiperpneia e o espasmo infundibular.</li>
+      <li><b>Expansão volêmica</b> (SF).</li>
+      <li><b>Bicarbonato</b> se houver acidose metabólica.</li>
+      <li><b>Betabloqueador</b> (propranolol/esmolol) → relaxa o infundíbulo · <b>fenilefrina</b> → ↑ RVS.</li>
+      <li>Refratária: sedação/IOT e cirurgia de urgência (shunt ou correção).</li>
+    </ol>
+  </div>
+  <div class="callout warn"><b>Evitar inotrópicos</b> (dobutamina, adrenalina): aumentam a contratilidade e pioram o espasmo infundibular.</div>
+  <p class="side">Gatilhos típicos: choro, mamada, evacuação, desidratação e febre, geralmente pela manhã, entre 2 e 6 meses.</p>
+</section>
+
+<!-- ============ TESTE DO CORAÇÃOZINHO ============ -->
+<section class="panel" data-t="Teste do coraçãozinho">
+  <h2>Teste do coraçãozinho (oximetria de pulso) — SBP 2022</h2>
+  <div class="card">
+    <ul>
+      <li><b>Quem:</b> RN com IG &gt; 34 semanas, aparentemente saudáveis.</li>
+      <li><b>Quando:</b> entre 24 e 48 h de vida, antes da alta.</li>
+      <li><b>Onde:</b> <b>membro superior direito</b> (pré-ductal) e <b>um dos membros inferiores</b> (pós-ductal).</li>
+      <li><b>Objetivo:</b> triagem de cardiopatia congênita <b>crítica</b> (canal-dependente).</li>
+    </ul>
+  </div>
+  <div class="flow">
+    <div class="box q">Oximetria em MSD e MI</div>
+    <div class="arrow">↓</div>
+    <div class="row3">
+      <div class="box ok"><b>NEGATIVO</b><br>SpO₂ ≥ 95% nos dois<br>e diferença ≤ 3%<br>→ rotina</div>
+      <div class="box q"><b>DUVIDOSO</b><br>SpO₂ 90–94%<br>ou diferença ≥ 4%<br>→ repetir em 1 h, até 2 vezes</div>
+      <div class="box bad"><b>POSITIVO</b><br>SpO₂ ≤ 89%<br>em qualquer membro<br>→ ecocardiograma</div>
+    </div>
+    <div class="arrow">↓</div>
+    <div class="box act">Duvidoso que persiste na 3ª medida = <b>positivo</b> → <b>não dar alta</b> e fazer ecocardiograma</div>
+  </div>
+  <div class="callout ok">Teste negativo <b>não exclui</b> cardiopatia (CIV, CIA e coarctação podem passar). Exame físico completo e palpação de pulsos femorais continuam obrigatórios.</div>
+</section>
+
+<!-- ============ PEGADINHAS ============ -->
+<section class="panel" data-t="Pegadinhas">
+  <h2>Pegadinhas de prova</h2>
+  <div class="quiz">
+    <details><summary>Cardiopatia congênita mais comum?</summary><p>CIV (fora a valva aórtica bicúspide).</p></details>
+    <details><summary>Cianótica mais comum no período neonatal × após o 1º ano?</summary><p>Neonatal: TGA. Depois: Tetralogia de Fallot.</p></details>
+    <details><summary>Desdobramento fixo de B2?</summary><p>CIA.</p></details>
+    <details><summary>Sopro contínuo em maquinaria + pulsos amplos?</summary><p>PCA.</p></details>
+    <details><summary>Down + ECG com eixo para a esquerda?</summary><p>DSAV.</p></details>
+    <details><summary>Cianótica com eixo para a esquerda e SVE?</summary><p>Atresia tricúspide.</p></details>
+    <details><summary>PA de MMSS maior que de MMII + Turner?</summary><p>Coarctação da aorta.</p></details>
+    <details><summary>Na crise hipoxêmica, o sopro do Fallot aumenta ou diminui?</summary><p>Diminui: menos sangue passa pela via de saída pulmonar.</p></details>
+    <details><summary>Qual efeito colateral da PGE1 exige atenção imediata?</summary><p>Apneia.</p></details>
+    <details><summary>PCA no RN a termo: indometacina?</summary><p>Não. AINE funciona no prematuro; no termo o fechamento é percutâneo ou cirúrgico.</p></details>
+    <details><summary>Cirurgia de Jatene, Rastelli, Glenn/Fontan?</summary><p>Jatene: TGA (switch arterial). Rastelli: truncus. Glenn → Fontan: fisiologia univentricular (atresia tricúspide, hipoplasia de VE).</p></details>
+    <details><summary>RN “séptico” com pulsos femorais ausentes na 1ª semana?</summary><p>Lesão obstrutiva esquerda canal-dependente (coarctação crítica, hipoplasia de VE) → PGE1.</p></details>
+  </div>
+</section>
+
+<!-- ============ INFOGRÁFICO ============ -->
+<section class="panel info" data-t="Infográfico">
+  <h2>Infográfico original (NotebookLM)</h2>
+  <div class="callout warn">O infográfico gerado tem alguns erros. Esta página já está corrigida; vale conferir a tabela abaixo antes de usar a imagem para revisar.</div>
+  <table class="fix">
+    <tr><th>Onde</th><th>No infográfico</th><th>Correto</th></tr>
+    <tr><td>Teste do coraçãozinho</td><td>Positivo se SpO₂ “± 89%”</td><td>Positivo se SpO₂ ≤ 89%</td></tr>
+    <tr><td>Teste do coraçãozinho</td><td>RN &gt; 35 semanas</td><td>RN &gt; 34 semanas</td></tr>
+    <tr><td>Crise hipoxêmica</td><td>Genupeitoral “para elevar RVP”</td><td>Eleva a RVS (sistêmica)</td></tr>
+    <tr><td>Coarctação</td><td>“Valva bivalvular”</td><td>Valva aórtica bicúspide</td></tr>
+    <tr><td>Coarctação</td><td>“Sinal de Reesier”</td><td>Sinal de Roesler (corrosão costal), em criança maior</td></tr>
+    <tr><td>CIA</td><td>ECG com onda P apiculada</td><td>BRD incompleto + eixo à direita</td></tr>
+  </table>
+  <img src="cardiopatias-infografico.jpg" alt="Infográfico de cardiopatias congênitas gerado no NotebookLM" loading="lazy">
+</section>
+
+</main>
+
+<footer>Fontes: SBP — Sistematização do atendimento ao RN com suspeita ou diagnóstico de cardiopatia congênita (2022); Tratado de Pediatria SBP; Nelson Textbook of Pediatrics. Desenhos esquemáticos, fora de escala.</footer>
+
+<script>
+/* ===== Desenhos esquemáticos do coração ===== */
+const C={o2:'#c8574d',o2f:'#f7dcd5',v:'#4a7fa0',vf:'#d8e7f1',m:'#8a6aa8',mf:'#e8def2',wall:'#5a5149',hl:'#e0a526',mus:'#e4d3c4'};
+const tube=(d,k,w)=>`<path d="${d}" fill="none" stroke="${C.wall}" stroke-width="${w+5}" stroke-linecap="round" stroke-linejoin="round"/><path d="${d}" fill="none" stroke="${C[k]}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"/>`;
+const arr=(x1,y1,x2,y2,k,both)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${C[k]}" stroke-width="4" stroke-linecap="round" marker-end="url(#a-${k})"${both?` marker-start="url(#a-${k})"`:''}/>`;
+const hl=(x,y,r)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="${C.hl}" stroke-width="3" stroke-dasharray="6 4"/>`;
+const hole=(x,y,w,h,k)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${C[k+'f']}"/>`;
+const badge=(x,y,n)=>`<circle cx="${x}" cy="${y}" r="10" fill="${C.wall}"/><text class="b" x="${x}" y="${y+4}" text-anchor="middle">${n}</text>`;
+const X=(x,y,s=9)=>`<path d="M${x-s} ${y-s}L${x+s} ${y+s}M${x+s} ${y-s}L${x-s} ${y+s}" stroke="${C.o2}" stroke-width="4.5" stroke-linecap="round"/>`;
+const T=(x,y,t,cls='')=>`<text x="${x}" y="${y}" text-anchor="middle"${cls?` class="${cls}"`:''}>${t}</text>`;
+
+const V={
+  vcs:k=>['M60 18 L60 126',k,22],
+  vvpp:k=>['M316 152 L282 152',k,14],
+  ao:k=>['M186 214 L186 70 Q186 30 224 30 Q262 30 262 70 L262 110',k,22],
+  ap:k=>[['M128 214 L128 92',k,22],['M128 92 Q128 82 112 82 L86 82',k,14],['M128 92 Q130 80 150 80 L236 80',k,14]],
+};
+const LBL_N=[[224,13,'Ao'],[98,70,'AP'],[26,34,'VCS'],[298,140,'VVPP']];
+
+function heart(c){
+  const f=Object.assign({AD:'v',VD:'v',AE:'o2',VE:'o2'},c.fill||{});
+  const F=k=>C[f[k]+'f'];
+  let s=`<svg viewBox="0 0 320 310" class="heart" role="img" aria-label="${c.alt||''}">`;
+  // câmaras
+  s+=`<rect x="36" y="120" width="124" height="72" rx="16" fill="${F('AD')}" stroke="${C.wall}" stroke-width="3"/>`;
+  s+=`<rect x="160" y="120" width="124" height="72" rx="16" fill="${F('AE')}" stroke="${C.wall}" stroke-width="3"/>`;
+  if(c.vdSmall){
+    s+=`<rect x="36" y="196" width="124" height="102" rx="16" fill="${C.mus}" stroke="${C.wall}" stroke-width="3"/>`;
+    s+=`<rect x="96" y="204" width="60" height="56" rx="12" fill="${F('VD')}"/>`;
+  } else s+=`<rect x="36" y="196" width="124" height="102" rx="16" fill="${F('VD')}" stroke="${C.wall}" stroke-width="3"/>`;
+  s+=`<rect x="160" y="196" width="124" height="102" rx="16" fill="${F('VE')}" stroke="${C.wall}" stroke-width="3"/>`;
+  // septos
+  s+=`<rect x="152" y="120" width="16" height="72" fill="${C.wall}"/><rect x="152" y="196" width="16" height="102" fill="${C.wall}"/>`;
+  // plano valvar AV
+  s+=`<rect x="36" y="188" width="248" height="12" fill="${C.wall}"/>`;
+  if(c.avCommon){
+    s+=`<rect x="64" y="188" width="192" height="12" fill="${C.mf}"/><path d="M64 194 L78 212 M256 194 L242 212" stroke="${C.wall}" stroke-width="3"/>`;
+  } else {
+    if(c.tricuspid!==false) s+=`<rect x="66" y="188" width="58" height="12" fill="${F('AD')}"/><path d="M66 194 L80 212 M124 194 L110 212" stroke="${C.wall}" stroke-width="3"/>`;
+    s+=`<rect x="196" y="188" width="58" height="12" fill="${F('AE')}"/><path d="M196 194 L210 212 M254 194 L240 212" stroke="${C.wall}" stroke-width="3"/>`;
+  }
+  (c.holes||[]).forEach(h=>s+=hole(...h));
+  if(c.pre) s+=c.pre;
+  // vasos
+  (c.vessels||[]).forEach(v=>s+=tube(...v));
+  if(c.extra) s+=c.extra;
+  // rótulos de câmaras
+  const lab=c.chLabels||[[78,162,'AD'],[244,162,'AE'],[c.vdSmall?126:84,c.vdSmall?238:262,'VD'],[234,262,'VE']];
+  lab.forEach(l=>s+=T(...l));
+  (c.labels||[]).forEach(l=>s+=T(...l));
+  return s+'</svg>';
+}
+const N=(o={})=>{ // vasos padrão
+  const k=Object.assign({vcs:'v',vv:'o2',ao:'o2',ap:'v'},o);
+  return [V.vcs(k.vcs),V.vvpp(k.vv),V.ao(k.ao),...V.ap(k.ap)];
+};
+
+const HEARTS={
+  normal:{alt:'Coração normal',vessels:N(),labels:LBL_N},
+
+  civ:{alt:'CIV',fill:{VD:'m'},vessels:N({ap:'m'}),labels:LBL_N,
+    holes:[[150,236,20,24,'m']],
+    extra:arr(214,248,112,248,'o2')+hl(160,248,26)},
+
+  cia:{alt:'CIA',fill:{AD:'m',VD:'m'},vessels:N({ap:'m'}),labels:LBL_N,
+    holes:[[150,140,20,28,'m']],
+    extra:arr(214,154,104,154,'o2')+hl(160,154,26)},
+
+  pca:{alt:'PCA',vessels:N({ap:'m'}),labels:[...LBL_N,[290,58,'canal','s']],
+    extra:tube('M246 50 L238 74','m',9)+arr(266,44,252,76,'o2')+hl(242,62,22)},
+
+  dsav:{alt:'DSAV',fill:{AD:'m',VD:'m'},avCommon:true,vessels:N({ap:'m'}),labels:LBL_N,
+    holes:[[150,166,20,58,'m']],
+    extra:arr(222,176,100,176,'o2')+arr(222,226,100,226,'o2')+hl(160,194,36)},
+
+  coarc:{alt:'Coarctação da aorta',vessels:N(),labels:[...LBL_N,[300,108,'↓ MMII','s']],
+    extra:`<path d="M248 80 L260 90 L248 100Z M276 80 L264 90 L276 100Z" fill="${C.wall}"/>`+hl(262,90,22)},
+
+  fallot:{alt:'Tetralogia de Fallot',fill:{VE:'o2'},
+    vessels:[V.vcs('v'),V.vvpp('o2'),
+      ['M162 214 L162 70 Q162 30 212 30 Q262 30 262 70 L262 110','m',24],
+      ['M120 214 L120 98','v',9],['M120 98 Q120 88 106 88 L86 88','v',8],['M120 98 Q122 86 136 86 L236 86','v',8]],
+    holes:[[150,200,20,28,'m']],
+    pre:`<path d="M42 206 L42 292 L148 292" fill="none" stroke="${C.wall}" stroke-width="9" stroke-linecap="round"/>`,
+    extra:arr(96,250,150,222,'v')+badge(180,232,1)+badge(142,58,2)+badge(100,120,3)+badge(56,270,4),
+    labels:[[212,13,'Ao'],[26,34,'VCS'],[298,140,'VVPP']]},
+
+  tga:{alt:'Transposição das grandes artérias',
+    vessels:[V.vcs('v'),V.vvpp('o2'),
+      ['M196 214 L196 98','o2',22],['M196 98 Q196 86 180 86 L86 86','o2',14],['M196 98 Q198 86 212 86 L238 86','o2',14],
+      ['M124 214 L124 70 Q124 30 193 30 Q262 30 262 70 L262 110','v',22]],
+    holes:[[150,142,20,24,'m']],
+    extra:arr(136,154,184,154,'m',true)+hl(160,154,24),
+    labels:[[193,13,'Ao'],[224,110,'AP'],[26,34,'VCS'],[298,140,'VVPP']]},
+
+  atresiaT:{alt:'Atresia tricúspide',fill:{AE:'m',VE:'m',VD:'m'},vdSmall:true,tricuspid:false,
+    vessels:[V.vcs('v'),V.vvpp('o2'),V.ao('m'),['M126 214 L126 94','m',12],['M126 94 Q126 84 112 84 L86 84','m',9],['M126 94 Q128 82 144 82 L236 82','m',9]],
+    holes:[[150,136,20,32,'v'],[150,214,20,22,'m']],
+    extra:X(96,194,11)+arr(96,150,212,150,'v')+arr(216,226,134,226,'m')+hl(96,194,22),
+    labels:[[224,13,'Ao'],[100,72,'AP'],[26,34,'VCS'],[298,140,'VVPP']],
+    chLabels:[[70,170,'AD'],[244,170,'AE'],[126,250,'VD'],[234,262,'VE']]},
+
+  truncus:{alt:'Truncus arteriosus',fill:{VE:'o2'},
+    vessels:[V.vcs('v'),V.vvpp('o2'),
+      ['M160 214 L160 70 Q160 30 211 30 Q262 30 262 70 L262 110','m',30],
+      ['M150 104 Q132 92 110 92 L86 92','m',11],['M172 100 Q192 90 236 90','m',11]],
+    holes:[[150,200,20,28,'m']],
+    extra:arr(96,250,146,224,'v')+arr(226,250,176,224,'o2')+hl(160,214,24),
+    labels:[[211,13,'Tronco'],[104,78,'AP'],[26,34,'VCS'],[298,140,'VVPP']]},
+
+  datvp:{alt:'Drenagem anômala total das veias pulmonares',fill:{AD:'m',VD:'m',AE:'m',VE:'m'},
+    vessels:[['M316 152 L300 152 L300 8 L60 8 L60 22','o2',12],V.vcs('m'),V.ao('m'),...V.ap('m')],
+    holes:[[150,140,20,28,'m']],
+    extra:X(290,176,8)+arr(104,154,212,154,'m')+hl(160,154,24)+hl(300,80,22),
+    labels:[[224,62,'Ao'],[98,70,'AP'],[26,34,'VCS'],[268,96,'veia','s'],[268,109,'vertical','s']]},
+};
+
+document.querySelectorAll('[data-h]').forEach(el=>{const h=HEARTS[el.dataset.h];if(h)el.innerHTML=heart(h)});
+
+/* ===== Abas ===== */
+const panels=[...document.querySelectorAll('.panel')],tabs=document.getElementById('tabs');
+function show(i){panels.forEach((p,j)=>p.classList.toggle('on',i===j));[...tabs.children].forEach((b,j)=>b.classList.toggle('on',i===j));try{localStorage.setItem('ccong-tab',i)}catch(e){}window.scrollTo({top:0})}
+panels.forEach((p,i)=>{const b=document.createElement('button');b.className='tab';b.textContent=p.dataset.t;b.onclick=()=>show(i);tabs.appendChild(b)});
+let start=0;try{start=+localStorage.getItem('ccong-tab')||0}catch(e){}
+show(start<panels.length?start:0);
+</script>
+</body>
+</html>
