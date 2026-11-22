@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Notificação Compulsória · Lista Nacional 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@500;600;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#faf6ef; --paper:#fffdf9; --ink:#2f2a26; --muted:#857a70; --line:#ece3d6;
+    --terra:#c2674a; --terra-soft:#f6e2d9;
+    --amber:#d39a4a; --amber-soft:#f8ecd6;
+    --sage:#7d9a7e; --sage-soft:#e4ede2;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--cream);color:var(--ink);font-family:'Source Sans 3',system-ui,sans-serif;font-size:15px;line-height:1.4}
+  .wrap{max-width:860px;margin:0 auto;padding:28px 18px 60px}
+  a.back{color:var(--muted);text-decoration:none;font-size:14px}
+  h1{font-family:'Lora',serif;font-weight:600;font-size:28px;margin:10px 0 2px}
+  .sub{color:var(--muted);font-size:14px;margin-bottom:22px}
+
+  .legend{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px}
+  .chip{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:6px 14px;font-size:14px;cursor:pointer;display:flex;align-items:center;gap:8px;font-family:inherit;color:var(--ink)}
+  .chip.on{border-color:var(--ink)}
+  .dot{width:11px;height:11px;border-radius:50%;display:inline-block}
+  .d-ms{background:var(--terra)} .d-loc{background:var(--amber)} .d-sem{background:var(--sage)}
+
+  input[type=search]{width:100%;padding:11px 14px;border:1px solid var(--line);border-radius:10px;background:var(--paper);font:inherit;margin-bottom:16px;outline:none}
+  input[type=search]:focus{border-color:var(--muted)}
+
+  table{width:100%;border-collapse:collapse;background:var(--paper);border-radius:14px;overflow:hidden;box-shadow:0 1px 0 var(--line)}
+  thead th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600;padding:12px 8px;border-bottom:2px solid var(--line);text-align:center;background:var(--paper);position:sticky;top:0;z-index:1}
+  thead th.name{text-align:left;padding-left:16px}
+  thead tr.top th{border-bottom:1px solid var(--line);padding-bottom:6px}
+  th.imd{color:var(--terra)} th.sem{color:var(--sage)}
+  td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:center;vertical-align:middle}
+  td.n{color:var(--muted);font-size:13px;width:42px}
+  td.name{text-align:left;padding-left:16px}
+  tr.group td.name{font-weight:600}
+  tr.sub td.name{padding-left:34px;color:#4a433d}
+  tr.sub td.name::before{content:attr(data-l)". ";color:var(--muted)}
+  tr.sub td.n{color:transparent}
+  .x{display:inline-block;width:14px;height:14px;border-radius:50%}
+  .x.ms{background:var(--terra)} .x.loc{background:var(--amber)} .x.sem{background:var(--sage)}
+  col.c{width:62px}
+  .new{font-size:11px;font-weight:700;color:var(--terra);background:var(--terra-soft);border-radius:6px;padding:1px 6px;margin-left:6px;vertical-align:1px}
+  tr.hide{display:none}
+
+  .foot{color:var(--muted);font-size:13px;margin-top:18px;line-height:1.6}
+  @media (max-width:560px){
+    body{font-size:14px} col.c{width:40px} thead th{font-size:10px;padding:10px 2px} td{padding:9px 2px}
+    td.name{padding-left:10px} tr.sub td.name{padding-left:22px} td.n{width:28px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← voltar</a>
+  <h1>Notificação Compulsória</h1>
+  <div class="sub">Lista Nacional · Portaria GM/MS nº 10.175/2026</div>
+
+  <div class="legend" id="filters">
+    <button class="chip on" data-f="all">Todas</button>
+    <button class="chip" data-f="ms"><span class="dot d-ms"></span>Imediata · MS + SES + SMS</button>
+    <button class="chip" data-f="loc"><span class="dot d-loc"></span>Imediata · só SES/SMS</button>
+    <button class="chip" data-f="sem"><span class="dot d-sem"></span>Semanal</button>
+  </div>
+  <input type="search" id="q" placeholder="Buscar doença ou agravo…">
+
+  <table>
+    <colgroup><col><col><col class="c"><col class="c"><col class="c"><col class="c"></colgroup>
+    <thead>
+      <tr class="top"><th></th><th></th><th class="imd" colspan="3">Imediata (até 24h)</th><th></th></tr>
+      <tr><th>Nº</th><th class="name">Doença ou agravo</th><th class="imd">MS</th><th class="imd">SES</th><th class="imd">SMS</th><th class="sem">Semanal</th></tr>
+    </thead>
+    <tbody id="tb"></tbody>
+  </table>
+
+  <div class="foot">
+    <b>MS</b> Ministério da Saúde · <b>SES</b> Secretaria Estadual · <b>SMS</b> Secretaria Municipal<br>
+    Fonte: Anexo 1 do Anexo V da Portaria de Consolidação GM/MS nº 4/2017, alterado pela Portaria GM/MS nº 10.175, de 23/01/2026 (DOU 26/01/2026). Novidade: inclusão das anomalias congênitas (item 4).
+  </div>
+</div>
+
+<script>
+// p = periodicidade: "A" = MS+SES+SMS · "SS" = SES+SMS · "M" = só SMS · "S" = semanal
+const D = [
+ [1,"Acidente de trabalho",null,[["a","com exposição a material biológico","S"],["b","Acidente de trabalho","M"]]],
+ [2,"Acidente por animal peçonhento","M"],
+ [3,"Acidente por animal potencialmente transmissor da raiva","M"],
+ [4,"Anomalias congênitas","S",null,true],
+ [5,"Botulismo","A"],
+ [6,"Câncer relacionado ao trabalho","S"],
+ [7,"Cólera","A"],
+ [8,"Coqueluche","SS"],
+ [9,"Covid-19","A"],
+ [10,"Dengue",null,[["a","Casos","S"],["b","Óbitos","A"]]],
+ [11,"Dermatoses ocupacionais","S"],
+ [12,"Difteria","SS"],
+ [13,"Distúrbio de voz relacionado ao trabalho","S"],
+ [14,"Doença de Chagas",null,[["a","Aguda","SS"],["b","Crônica","S"]]],
+ [15,"Doença de Creutzfeldt-Jakob (DCJ)","S"],
+ [16,"Doença falciforme","S"],
+ [17,"Doença invasiva / meningites",null,[["a","Doença invasiva por Haemophilus influenzae","SS"],["b","Doença meningocócica e outras meningites","SS"]]],
+ [18,"Suspeita de disseminação intencional",null,[["a","Antraz pneumônico","A"],["b","Tularemia","A"],["c","Varíola","A"]]],
+ [19,"Febres hemorrágicas emergentes/reemergentes",null,[["a","Arenavírus","A"],["b","Ebola","A"],["c","Marburg","A"],["d","Lassa","A"],["e","Febre purpúrica brasileira","A"]]],
+ [20,"Zika",null,[["a","Doença aguda pelo vírus Zika","S"],["b","Zika em gestante","SS"],["c","Óbito com suspeita de Zika","A"],["d","Síndrome congênita associada ao Zika","S"]]],
+ [21,"Esporotricose humana","S"],
+ [22,"Esquistossomose","S"],
+ [23,"Evento de Saúde Pública (ESP) que constitua ameaça à saúde pública","A"],
+ [24,"Eventos adversos graves ou óbitos pós-vacinação","A"],
+ [25,"Febre amarela","A"],
+ [26,"Chikungunya",null,[["a","Febre de Chikungunya","S"],["b","Em áreas sem transmissão","A"],["c","Óbito com suspeita de Chikungunya","A"]]],
+ [27,"Febre do Nilo Ocidental e outras arboviroses de importância em saúde pública","A"],
+ [28,"Febre maculosa e outras riquetsioses","A"],
+ [29,"Febre tifoide","SS"],
+ [30,"Hanseníase","S"],
+ [31,"Hantavirose","A"],
+ [32,"Hepatites virais","S"],
+ [33,"Hepatite B em gestante, parturiente ou puérpera e criança exposta (transmissão vertical)","S"],
+ [34,"HIV/AIDS","S"],
+ [35,"HIV em gestante, parturiente ou puérpera e criança exposta (transmissão vertical)","S"],
+ [36,"Infecção pelo HIV","S"],
+ [37,"Infecção pelo HTLV","S"],
+ [38,"HTLV em gestante, parturiente ou puérpera e criança exposta (transmissão vertical)","S"],
+ [39,"Influenza humana por novo subtipo viral","A"],
+ [40,"Intoxicação exógena (químicos, agrotóxicos, gases tóxicos, metais pesados)","S"],
+ [41,"Leishmaniose tegumentar americana","S"],
+ [42,"Leishmaniose visceral","S"],
+ [43,"Leptospirose","M"],
+ [44,"LER/DORT","S"],
+ [45,"Malária",null,[["a","Região amazônica","S"],["b","Região extra-amazônica","A"]]],
+ [46,"Mpox","A"],
+ [47,"Óbito",null,[["a","Infantil","S"],["b","Materno","S"]]],
+ [48,"Perda auditiva relacionada ao trabalho","S"],
+ [49,"Pneumoconioses relacionadas ao trabalho","S"],
+ [50,"Peste","A"],
+ [51,"Poliomielite por poliovírus selvagem","A"],
+ [52,"Raiva humana","A"],
+ [53,"Síndrome da rubéola congênita","A"],
+ [54,"Doenças exantemáticas",null,[["a","Sarampo","A"],["b","Rubéola","A"]]],
+ [55,"Sífilis",null,[["a","Adquirida","S"],["b","Congênita","S"],["c","Em gestante","S"]]],
+ [56,"Síndrome da paralisia flácida aguda","A"],
+ [57,"SIM-A associada à covid-19","A"],
+ [58,"SIM-P associada à covid-19","A"],
+ [59,"SRAG associada a coronavírus",null,[["a","SARS-CoV","A"],["b","MERS-CoV","A"],["c","SARS-CoV-2","A"]]],
+ [60,"Síndrome gripal suspeita de covid-19","A"],
+ [61,"Tétano",null,[["a","Acidental","M"],["b","Neonatal","M"]]],
+ [62,"Toxoplasmose gestacional e congênita","S"],
+ [63,"Transtornos mentais relacionados ao trabalho","S"],
+ [64,"Tuberculose","S"],
+ [65,"Varicela — caso grave internado ou óbito","SS"],
+ [66,"Violência",null,[["a","Doméstica e/ou outras violências","S"],["b","Sexual e tentativa de suicídio","M"]]]
+];
+const cat = p => p==="A"?"ms":p==="S"?"sem":"loc";
+const cells = p => {
+  const d = c => `<td>${c?`<span class="x ${c}"></span>`:""}</td>`;
+  if(p==="A") return d("ms")+d("ms")+d("ms")+d("");
+  if(p==="SS")return d("")+d("loc")+d("loc")+d("");
+  if(p==="M") return d("")+d("")+d("loc")+d("");
+  return d("")+d("")+d("")+d("sem");
+};
+let h="";
+for(const [n,name,p,subs,isNew] of D){
+  const tag = isNew?'<span class="new">NOVO 2026</span>':"";
+  if(!subs){ h+=`<tr data-c="${cat(p)}" data-g="${n}"><td class="n">${n}</td><td class="name">${name}${tag}</td>${cells(p)}</tr>`; continue; }
+  const cs=[...new Set(subs.map(s=>cat(s[2])))].join(" ");
+  h+=`<tr class="group" data-c="${cs}" data-g="${n}" data-head="1"><td class="n">${n}</td><td class="name">${name}</td><td></td><td></td><td></td><td></td></tr>`;
+  for(const [l,sn,sp] of subs) h+=`<tr class="sub" data-c="${cat(sp)}" data-g="${n}"><td class="n">${n}</td><td class="name" data-l="${l}">${sn}</td>${cells(sp)}</tr>`;
+}
+document.getElementById("tb").innerHTML=h;
+
+let f="all";
+const norm=s=>s.normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase();
+function apply(){
+  const q=norm(document.getElementById("q").value.trim());
+  const rows=[...document.querySelectorAll("#tb tr")];
+  const groupText={};
+  rows.forEach(r=>{groupText[r.dataset.g]=(groupText[r.dataset.g]||"")+" "+norm(r.textContent);});
+  const visibleGroups=new Set();
+  rows.filter(r=>!r.dataset.head).forEach(r=>{
+    const okF = f==="all" || r.dataset.c===f;
+    const okQ = !q || norm(r.textContent).includes(q) || groupText[r.dataset.g].includes(q);
+    r.classList.toggle("hide",!(okF&&okQ));
+    if(okF&&okQ) visibleGroups.add(r.dataset.g);
+  });
+  rows.filter(r=>r.dataset.head).forEach(r=>r.classList.toggle("hide",!visibleGroups.has(r.dataset.g)));
+}
+document.querySelectorAll("#filters .chip").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll("#filters .chip").forEach(x=>x.classList.remove("on"));
+  b.classList.add("on"); f=b.dataset.f; apply();
+});
+document.getElementById("q").oninput=apply;
+</script>
+</body>
+</html>
