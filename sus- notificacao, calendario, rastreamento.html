@@ -600,7 +600,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
       <div class="logo-mark">SUS</div>
       <div><div class="site-title">Referência Clínica</div></div>
     </div>
-    <div class="site-sub">Portaria SVS/MS 264/2020 · PNI 2025 · INCA · Medway</div>
+    <div class="site-sub">Portaria GM/MS 10.175/2026 · PNI 2025 · INCA · Medway</div>
   </div>
 </header>
 
@@ -634,6 +634,153 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
     <h2>Notificações <span>Compulsórias</span></h2>
     <p class="section-meta">SINAN · Lista Nacional · Portaria SVS/MS 264/2020 · Portaria GM/MS 10.175/2026</p>
   </div>
+
+  <!-- ── TABELA LIMPA (Portaria GM/MS 10.175/2026) ── -->
+  <style>
+  .nc{--nc-ms:var(--terra);--nc-loc:var(--honey);--nc-sem:var(--olive);--nc-line:#ece3d6;font-family:'Source Sans 3',system-ui,sans-serif;margin:6px 0 28px}
+  .nc-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+  .nc-chip{border:1px solid var(--nc-line);background:#fffdf9;border-radius:999px;padding:6px 13px;font-size:14px;cursor:pointer;display:flex;align-items:center;gap:7px;font-family:inherit;color:inherit}
+  .nc-chip.on{border-color:#2f2a26}
+  .nc-dot{width:11px;height:11px;border-radius:50%;display:inline-block}
+  .nc-q{width:100%;padding:10px 13px;border:1px solid var(--nc-line);border-radius:10px;background:#fffdf9;font:inherit;margin-bottom:12px;outline:none;box-sizing:border-box}
+  .nc table{width:100%;border-collapse:collapse;background:#fffdf9;border-radius:12px;overflow:hidden}
+  .nc thead th{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:#857a70;font-weight:600;padding:10px 6px;border-bottom:2px solid var(--nc-line);text-align:center}
+  .nc thead tr.top th{border-bottom:1px solid var(--nc-line);padding-bottom:4px}
+  .nc th.imd{color:var(--nc-ms)} .nc th.sem{color:var(--nc-sem)} .nc th.name{text-align:left;padding-left:14px}
+  .nc td{padding:9px 6px;border-bottom:1px solid var(--nc-line);text-align:center;font-size:15px}
+  .nc td.n{color:#857a70;font-size:13px;width:38px}
+  .nc td.name{text-align:left;padding-left:14px}
+  .nc tr.group td.name{font-weight:600}
+  .nc tr.sub td.name{padding-left:32px;color:#4a433d}
+  .nc tr.sub td.name::before{content:attr(data-l)". ";color:#857a70}
+  .nc tr.sub td.n{color:transparent}
+  .nc col.c{width:60px}
+  .nc .x{display:inline-block;width:14px;height:14px;border-radius:50%}
+  .nc .x.ms{background:var(--nc-ms)} .nc .x.loc{background:var(--nc-loc)} .nc .x.sem{background:var(--nc-sem)}
+  .nc .new{font-size:11px;font-weight:700;color:var(--terra);background:var(--terra-light);border-radius:6px;padding:1px 6px;margin-left:6px}
+  .nc tr.hide{display:none}
+  .nc-foot{color:#857a70;font-size:13px;margin-top:10px}
+  details.nc-more{margin-top:8px;border-top:1px dashed var(--nc-line, #ece3d6);padding-top:14px}
+  details.nc-more>summary{cursor:pointer;color:#857a70;font-size:14px;margin-bottom:14px;font-family:'Source Sans 3',sans-serif}
+  @media (max-width:560px){.nc col.c{width:38px}.nc thead th{font-size:9px;padding:8px 2px}.nc td{padding:8px 2px;font-size:14px}}
+  </style>
+  <div class="nc">
+    <div class="nc-chips" id="ncFilters">
+      <button class="nc-chip on" data-f="all">Todas</button>
+      <button class="nc-chip" data-f="ms"><span class="nc-dot" style="background:var(--terra)"></span>Imediata · MS + SES + SMS</button>
+      <button class="nc-chip" data-f="loc"><span class="nc-dot" style="background:var(--honey)"></span>Imediata · só SES/SMS</button>
+      <button class="nc-chip" data-f="sem"><span class="nc-dot" style="background:var(--olive)"></span>Semanal</button>
+    </div>
+    <input class="nc-q" type="search" id="ncQ" placeholder="Buscar doença ou agravo…">
+    <table>
+      <colgroup><col><col><col class="c"><col class="c"><col class="c"><col class="c"></colgroup>
+      <thead>
+        <tr class="top"><th></th><th></th><th class="imd" colspan="3">Imediata (até 24h)</th><th></th></tr>
+        <tr><th>Nº</th><th class="name">Doença ou agravo</th><th class="imd">MS</th><th class="imd">SES</th><th class="imd">SMS</th><th class="sem">Semanal</th></tr>
+      </thead>
+      <tbody id="ncBody"></tbody>
+    </table>
+    <div class="nc-foot">MS Ministério da Saúde · SES Secretaria Estadual · SMS Secretaria Municipal · Fonte: Portaria GM/MS nº 10.175/2026 (inclui anomalias congênitas, item 4)</div>
+  </div>
+  <script>
+  (function(){
+  const NC_D = [
+ [1,"Acidente de trabalho",null,[["a","com exposição a material biológico","S"],["b","Acidente de trabalho","M"]]],
+ [2,"Acidente por animal peçonhento","M"],
+ [3,"Acidente por animal potencialmente transmissor da raiva","M"],
+ [4,"Anomalias congênitas","S",null,true],
+ [5,"Botulismo","A"],
+ [6,"Câncer relacionado ao trabalho","S"],
+ [7,"Cólera","A"],
+ [8,"Coqueluche","SS"],
+ [9,"Covid-19","A"],
+ [10,"Dengue",null,[["a","Casos","S"],["b","Óbitos","A"]]],
+ [11,"Dermatoses ocupacionais","S"],
+ [12,"Difteria","SS"],
+ [13,"Distúrbio de voz relacionado ao trabalho","S"],
+ [14,"Doença de Chagas",null,[["a","Aguda","SS"],["b","Crônica","S"]]],
+ [15,"Doença de Creutzfeldt-Jakob (DCJ)","S"],
+ [16,"Doença falciforme","S"],
+ [17,"Doença invasiva / meningites",null,[["a","Doença invasiva por Haemophilus influenzae","SS"],["b","Doença meningocócica e outras meningites","SS"]]],
+ [18,"Suspeita de disseminação intencional",null,[["a","Antraz pneumônico","A"],["b","Tularemia","A"],["c","Varíola","A"]]],
+ [19,"Febres hemorrágicas emergentes/reemergentes",null,[["a","Arenavírus","A"],["b","Ebola","A"],["c","Marburg","A"],["d","Lassa","A"],["e","Febre purpúrica brasileira","A"]]],
+ [20,"Zika",null,[["a","Doença aguda pelo vírus Zika","S"],["b","Zika em gestante","SS"],["c","Óbito com suspeita de Zika","A"],["d","Síndrome congênita associada ao Zika","S"]]],
+ [21,"Esporotricose humana","S"],
+ [22,"Esquistossomose","S"],
+ [23,"Evento de Saúde Pública (ESP) que constitua ameaça à saúde pública","A"],
+ [24,"Eventos adversos graves ou óbitos pós-vacinação","A"],
+ [25,"Febre amarela","A"],
+ [26,"Chikungunya",null,[["a","Febre de Chikungunya","S"],["b","Em áreas sem transmissão","A"],["c","Óbito com suspeita de Chikungunya","A"]]],
+ [27,"Febre do Nilo Ocidental e outras arboviroses de importância em saúde pública","A"],
+ [28,"Febre maculosa e outras riquetsioses","A"],
+ [29,"Febre tifoide","SS"],
+ [30,"Hanseníase","S"],
+ [31,"Hantavirose","A"],
+ [32,"Hepatites virais","S"],
+ [33,"Hepatite B em gestante, parturiente ou puérpera e criança exposta (transmissão vertical)","S"],
+ [34,"HIV/AIDS","S"],
+ [35,"HIV em gestante, parturiente ou puérpera e criança exposta (transmissão vertical)","S"],
+ [36,"Infecção pelo HIV","S"],
+ [37,"Infecção pelo HTLV","S"],
+ [38,"HTLV em gestante, parturiente ou puérpera e criança exposta (transmissão vertical)","S"],
+ [39,"Influenza humana por novo subtipo viral","A"],
+ [40,"Intoxicação exógena (químicos, agrotóxicos, gases tóxicos, metais pesados)","S"],
+ [41,"Leishmaniose tegumentar americana","S"],
+ [42,"Leishmaniose visceral","S"],
+ [43,"Leptospirose","M"],
+ [44,"LER/DORT","S"],
+ [45,"Malária",null,[["a","Região amazônica","S"],["b","Região extra-amazônica","A"]]],
+ [46,"Mpox","A"],
+ [47,"Óbito",null,[["a","Infantil","S"],["b","Materno","S"]]],
+ [48,"Perda auditiva relacionada ao trabalho","S"],
+ [49,"Pneumoconioses relacionadas ao trabalho","S"],
+ [50,"Peste","A"],
+ [51,"Poliomielite por poliovírus selvagem","A"],
+ [52,"Raiva humana","A"],
+ [53,"Síndrome da rubéola congênita","A"],
+ [54,"Doenças exantemáticas",null,[["a","Sarampo","A"],["b","Rubéola","A"]]],
+ [55,"Sífilis",null,[["a","Adquirida","S"],["b","Congênita","S"],["c","Em gestante","S"]]],
+ [56,"Síndrome da paralisia flácida aguda","A"],
+ [57,"SIM-A associada à covid-19","A"],
+ [58,"SIM-P associada à covid-19","A"],
+ [59,"SRAG associada a coronavírus",null,[["a","SARS-CoV","A"],["b","MERS-CoV","A"],["c","SARS-CoV-2","A"]]],
+ [60,"Síndrome gripal suspeita de covid-19","A"],
+ [61,"Tétano",null,[["a","Acidental","M"],["b","Neonatal","M"]]],
+ [62,"Toxoplasmose gestacional e congênita","S"],
+ [63,"Transtornos mentais relacionados ao trabalho","S"],
+ [64,"Tuberculose","S"],
+ [65,"Varicela — caso grave internado ou óbito","SS"],
+ [66,"Violência",null,[["a","Doméstica e/ou outras violências","S"],["b","Sexual e tentativa de suicídio","M"]]]
+];
+  const cat=p=>p==="A"?"ms":p==="S"?"sem":"loc";
+  const cells=p=>{const d=c=>`<td>${c?`<span class="x ${c}"></span>`:""}</td>`;
+    if(p==="A")return d("ms")+d("ms")+d("ms")+d("");
+    if(p==="SS")return d("")+d("loc")+d("loc")+d("");
+    if(p==="M")return d("")+d("")+d("loc")+d("");
+    return d("")+d("")+d("")+d("sem");};
+  let h="";
+  for(const [n,name,p,subs,isNew] of NC_D){
+    const tag=isNew?'<span class="new">NOVO 2026</span>':"";
+    if(!subs){h+=`<tr data-c="${cat(p)}" data-g="${n}"><td class="n">${n}</td><td class="name">${name}${tag}</td>${cells(p)}</tr>`;continue;}
+    h+=`<tr class="group" data-g="${n}" data-head="1"><td class="n">${n}</td><td class="name">${name}</td><td></td><td></td><td></td><td></td></tr>`;
+    for(const [l,sn,sp] of subs)h+=`<tr class="sub" data-c="${cat(sp)}" data-g="${n}"><td class="n">${n}</td><td class="name" data-l="${l}">${sn}</td>${cells(sp)}</tr>`;
+  }
+  const tb=document.getElementById("ncBody");tb.innerHTML=h;
+  let f="all";const norm=s=>s.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
+  function apply(){
+    const q=norm(document.getElementById("ncQ").value.trim());const rows=[...tb.querySelectorAll("tr")];
+    const gt={};rows.forEach(r=>gt[r.dataset.g]=(gt[r.dataset.g]||"")+" "+norm(r.textContent));
+    const vis=new Set();
+    rows.filter(r=>!r.dataset.head).forEach(r=>{const ok=(f==="all"||r.dataset.c===f)&&(!q||gt[r.dataset.g].includes(q));r.classList.toggle("hide",!ok);if(ok)vis.add(r.dataset.g);});
+    rows.filter(r=>r.dataset.head).forEach(r=>r.classList.toggle("hide",!vis.has(r.dataset.g)));
+  }
+  document.querySelectorAll("#ncFilters .nc-chip").forEach(b=>b.onclick=()=>{document.querySelectorAll("#ncFilters .nc-chip").forEach(x=>x.classList.remove("on"));b.classList.add("on");f=b.dataset.f;apply();});
+  document.getElementById("ncQ").oninput=apply;
+  })();
+  </script>
+
+  <details class="nc-more">
+  <summary>▸ Ver tabela detalhada (suspeita/confirmação, regras de prova e suas anotações)</summary>
 
   <div class="rule-grid">
     <div class="rule-card">
@@ -1325,6 +1472,7 @@ td.disease-note { font-size: 0.69rem; color: var(--muted); font-family: 'JetBrai
     <span class="tag tag-comum">COMUM</span>
     <span class="tag tag-rara" style="background:#fffbe8">⚠️ EXCEÇÃO</span>
   </div>
+  </details>
 </div>
 
 <!-- ══════════════════════ RASTREAMENTO ══════════════════════ -->
